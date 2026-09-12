@@ -1,0 +1,199 @@
+[
+  {
+    "id": "fc_font",
+    "platform": "fc",
+    "title": "指定ascii.cの英数字・記号一覧",
+    "file": "fc_font.c",
+    "libs": [],
+    "expected": "Uppercase, lowercase, numbers and all 30 supplied punctuation glyphs",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_hello",
+    "platform": "fc",
+    "title": "最初の画面表示",
+    "file": "fc_hello.c",
+    "libs": [],
+    "expected": "HELLO WORLD and 042",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_arithmetic",
+    "platform": "fc",
+    "title": "変数・算術・型変換",
+    "file": "fc_arithmetic.c",
+    "libs": [],
+    "expected": "030",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_control",
+    "platform": "fc",
+    "title": "条件分岐と繰り返し",
+    "file": "fc_control.c",
+    "libs": [],
+    "expected": "042",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_aggregate",
+    "platform": "fc",
+    "title": "関数・配列・構造体・ポインタ",
+    "file": "fc_aggregate.c",
+    "libs": [],
+    "expected": "042",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_bits_memory",
+    "platform": "fc",
+    "title": "ビット操作・メモリ転送",
+    "file": "fc_bits_memory.c",
+    "libs": [],
+    "expected": "010",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_input",
+    "platform": "fc",
+    "title": "ボタン入力と押した瞬間",
+    "file": "fc_input.c",
+    "libs": [
+      "input.c"
+    ],
+    "expected": "000 initially; A increments once per press",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_fixed",
+    "platform": "fc",
+    "title": "固定小数点Q8.8",
+    "file": "fc_fixed.c",
+    "libs": [
+      "fixed.c"
+    ],
+    "expected": "012",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_entity",
+    "platform": "fc",
+    "title": "固定長オブジェクトプール",
+    "file": "fc_entity.c",
+    "libs": [
+      "entity.c"
+    ],
+    "expected": "001",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_debug",
+    "platform": "fc",
+    "title": "値の記録とアサート",
+    "file": "fc_debug.c",
+    "libs": [
+      "debug.c"
+    ],
+    "expected": "001; trace log contains HP=42",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_chain",
+    "platform": "fc",
+    "title": "座標履歴のリングバッファ",
+    "file": "fc_chain.c",
+    "libs": [
+      "chain.c"
+    ],
+    "expected": "042; history contains (20,30)",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_system",
+    "platform": "fc",
+    "title": "フレームカウンター",
+    "file": "fc_system.c",
+    "libs": [
+      "system.c"
+    ],
+    "expected": "002",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_scene",
+    "platform": "fc",
+    "title": "シーン番号の切替",
+    "file": "fc_scene.c",
+    "libs": [
+      "runtime.c",
+      "scene.c"
+    ],
+    "expected": "001; no callbacks registered",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_subpixel",
+    "platform": "fc",
+    "title": "Q5.3の1/8画素を整数座標へ加算",
+    "file": "fc_subpixel.c",
+    "libs": [],
+    "expected": "042; explicit game-side integration using header constants",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_scroll",
+    "platform": "fc",
+    "title": "NESの背景スクロール",
+    "file": "fc_scroll.c",
+    "libs": [],
+    "expected": "title scrolls horizontally",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_vram_queue",
+    "platform": "fc",
+    "title": "NMIでVRAM更新",
+    "file": "fc_vram_queue.c",
+    "libs": [],
+    "expected": "4 at (3,8)",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_sprite",
+    "platform": "fc",
+    "title": "NESのOAM",
+    "file": "fc_sprite.c",
+    "libs": [],
+    "expected": "A sprite on screen",
+    "options": [],
+    "kind": "original"
+  },
+  {
+    "id": "fc_sound",
+    "platform": "fc",
+    "title": "内蔵APUの効果音",
+    "file": "fc_sound.c",
+    "libs": [
+      "audio.c"
+    ],
+    "expected": "042 and a pulse tone",
+    "options": [],
+    "kind": "original"
+  }
+]
