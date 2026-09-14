@@ -1,5 +1,7 @@
 #include "audio.h"
 
+// Direct APU register bindings. Helpers below write complete register values
+// and channel-enable masks; they do not mix with an independent audio driver.
 __location(0x4000) u8 SQ1_VOL;
 __location(0x4001) u8 SQ1_SWEEP;
 __location(0x4002) u8 SQ1_LO;
@@ -21,6 +23,8 @@ __location(0x4013) u8 DMC_LEN;
 __location(0x4015) u8 APU_STATUS;
 __location(0x4017) u8 APU_FRAME;
 
+// Disable frame IRQs, enable the four tonal/noise channels and install quiet
+// control defaults. DMC remains disabled.
 void nes_apu_init(void)
 {
     APU_FRAME = 0x40;
@@ -35,11 +39,13 @@ void nes_apu_init(void)
     DMC_RAW = 0x00;
 }
 
+// Replace all five channel-enable bits in APU_STATUS; this is not an additive enable.
 void nes_apu_channel_enable(u8 mask)
 {
     APU_STATUS = (u8)(mask & 0x1F);
 }
 
+// Disable every channel and clear volume/DMC output settings used by this helper.
 void nes_apu_silence_all(void)
 {
     APU_STATUS = 0x00;
@@ -51,15 +57,19 @@ void nes_apu_silence_all(void)
     DMC_RAW = 0x00;
 }
 
+// Enable only pulse 1, disable its sweep and load control, 11-bit timer and
+// length-table index. Starting this effect disables the other APU channels.
 void nes_sfx_square1(u8 duty_volume, u16 period, u8 length_index)
 {
     APU_STATUS = 0x01;
     SQ1_SWEEP = 0x08;
     SQ1_VOL = duty_volume;
     SQ1_LO = (u8)period;
+    // Only the low five length-index bits and low eleven timer bits reach the registers.
     SQ1_HI = (u8)((u8)(length_index << 3) | (u8)((period >> 8) & 0x07));
 }
 
+// Enable only pulse 2 and load its control/timer/length fields, disabling other channels.
 void nes_sfx_square2(u8 duty_volume, u16 period, u8 length_index)
 {
     APU_STATUS = 0x02;
@@ -69,6 +79,7 @@ void nes_sfx_square2(u8 duty_volume, u16 period, u8 length_index)
     SQ2_HI = (u8)((u8)(length_index << 3) | (u8)((period >> 8) & 0x07));
 }
 
+// Enable only triangle and load linear-counter, timer and length fields.
 void nes_sfx_triangle(u8 linear, u16 period, u8 length_index)
 {
     APU_STATUS = 0x04;
@@ -77,6 +88,7 @@ void nes_sfx_triangle(u8 linear, u16 period, u8 length_index)
     TRI_HI = (u8)((u8)(length_index << 3) | (u8)((period >> 8) & 0x07));
 }
 
+// Enable only noise and load envelope/control, period/mode and length fields.
 void nes_sfx_noise(u8 volume, u8 period_mode, u8 length_index)
 {
     APU_STATUS = 0x08;
@@ -85,34 +97,43 @@ void nes_sfx_noise(u8 volume, u8 period_mode, u8 length_index)
     NOISE_HI = (u8)(length_index << 3);
 }
 
+// Trigger the predefined pulse-1 tick effect; it inherits the exclusive-channel behavior.
 void nes_sfx_tick_blip(void)
 {
     nes_sfx_square1(0x9A, 0x03F0, 4);
 }
 
+// Trigger the predefined pulse-1 movement effect.
 void nes_sfx_move_blip(void)
 {
     nes_sfx_square1(0x5A, 0x0280, 2);
 }
 
+// Convert a CPU sample address and byte length to DMC register units. Supply
+// an address in 0xC000-0xFFC0 aligned to 64 bytes and a representable length
+// 16*n+1 in 1..4081; inputs are narrowed without validation or bank management.
 void nes_dmc_config(u8 flags_rate, u8 output_level, u16 sample_addr, u16 sample_len)
 {
     DMC_FREQ = flags_rate;
     DMC_RAW = (u8)(output_level & 0x7F);
+    // Keep the sample bytes mapped at these CPU addresses during playback; this does not select a ROM bank.
     DMC_START = (u8)((sample_addr - 0xC000) >> 6);
     DMC_LEN = (u8)((sample_len - 1) >> 4);
 }
 
+// Enable DMC together with all four other channels by replacing the status mask.
 void nes_dmc_start(void)
 {
     APU_STATUS = 0x1F;
 }
 
+// Disable DMC while leaving all four other channel-enable bits set.
 void nes_dmc_stop(void)
 {
     APU_STATUS = 0x0F;
 }
 
+// Install sample parameters, then start DMC using the full-channel enable mask.
 void nes_dmc_play(u8 flags_rate, u8 output_level, u16 sample_addr, u16 sample_len)
 {
     nes_dmc_config(flags_rate, output_level, sample_addr, sample_len);

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+// Carry generated bank-overlay bytes and their disk placement from code generation to the image builder.
 sealed class FdsAutoOverlayFile
 {
     public int Id;
@@ -18,6 +19,7 @@ sealed class FdsAutoOverlayFile
     public byte[] Data;
 }
 
+// Return assembled image bytes and counts with nonfatal conversion warnings; errors are reported through Program.Error.
 sealed class FdsDiskImageBuildResult
 {
     public byte[] Image = new byte[0];
@@ -26,6 +28,7 @@ sealed class FdsDiskImageBuildResult
     public List<string> Warnings = new List<string>();
 }
 
+// Build fixed-size raw FDS side images from compiled PRG/CHR and optional metadata, with an optional 16-byte wrapper.
 sealed class FdsDiskImageBuilder
 {
     const int FdsHeaderSize = 16;
@@ -38,6 +41,7 @@ sealed class FdsDiskImageBuilder
     const int FdsNmiTriggerAddress = 0x2000; // PPUCTRL. Used by the approval/license bypass boot file.
     const int FdsBypassStallBytes = 8192;
 
+    // Internal resolved file record containing the payload bytes and physical disk ordering information.
     sealed class DiskFile
     {
         public int Side;
@@ -50,6 +54,8 @@ sealed class FdsDiskImageBuilder
         public byte[] Data;
     }
 
+    // Resolve boot data and optional overlays, assign file numbers, then concatenate all side images.
+    // Side gaps produce empty sides, and the optional wrapper records the side count in one byte.
     public static FdsDiskImageBuildResult BuildFromCompiledImage(
         byte[] prgRom,
         byte[] chrRom,
@@ -108,6 +114,8 @@ sealed class FdsDiskImageBuilder
         return result;
     }
 
+    // Construct a 0xFF-padded PRG boot file for native $6000-$DFFF or legacy $8000-$DFFF placement.
+    // The legacy path combines the first bank, lower common-bank bytes and relocated vectors, warning about omitted BIOS-region data.
     static byte[] BuildFdsPrgBootImage(byte[] prgRom, bool fdsPrgRamLayout, List<string> warnings)
     {
         int bootSize = fdsPrgRamLayout ? FdsPrgRamBootSize : LegacyPrgRamBootSize;
@@ -161,6 +169,7 @@ sealed class FdsDiskImageBuilder
         return dst;
     }
 
+    // Produce exactly 8 KiB of CHR data: clone an exact input, otherwise truncate or pad with zeros.
     static byte[] NormalizeChr(byte[] chrRom)
     {
         if (chrRom == null || chrRom.Length == 0)
@@ -175,6 +184,8 @@ sealed class FdsDiskImageBuilder
         return dst;
     }
 
+    // Use default PRG/CHR boot files when metadata is empty; otherwise resolve the listed files and append automatic overlays.
+    // Check duplicate ids after combining both sources.
     static List<DiskFile> BuildDiskFiles(byte[] autoPrg, byte[] autoChr, FdsDiskMetadata metadata, List<string> warnings, int autoPrgLoadBase, IReadOnlyList<FdsAutoOverlayFile> autoOverlayFiles)
     {
         var files = new List<DiskFile>();
@@ -230,6 +241,7 @@ sealed class FdsDiskImageBuilder
         return files;
     }
 
+    // Report the first duplicate id across all sides. This helper reports an error but does not stop its caller directly.
     static void ValidateNoDuplicateFileIds(List<DiskFile> files)
     {
         var seen = new HashSet<int>();
@@ -243,6 +255,8 @@ sealed class FdsDiskImageBuilder
         }
     }
 
+    // Append a side-zero boot write that enables PPU NMI and an 8 KiB non-boot delay payload.
+    // Choose unused ids above the side-zero maximum; byte-range validation is not performed in this helper.
     static void AddLicenseBypassBootFiles(List<DiskFile> files, List<string> warnings)
     {
         if (files == null) return;
@@ -283,6 +297,8 @@ sealed class FdsDiskImageBuilder
         warnings.Add("FDS approval/license bypass enabled: added KQFNMI boot file and KQFWAIT non-boot stall file. Use --fds-no-license-bypass to emit a traditional approval-screen disk layout.");
     }
 
+    // Prefer an explicit source path relative to the metadata file; otherwise select compiled PRG or CHR data by file type.
+    // Unfilled tails and unsupported source-less file types use zero bytes, with warnings where indicated.
     static byte[] ResolveFileData(FdsDiskFileMetadata f, byte[] autoPrg, byte[] autoChr, string baseDir, List<string> warnings, int autoPrgLoadBase)
     {
         if (!string.IsNullOrWhiteSpace(f.SourcePath))
@@ -304,6 +320,7 @@ sealed class FdsDiskImageBuilder
 
         if (f.FileType == 0)
         {
+            // Clamp load addresses below the automatic PRG base to its first byte before selecting the payload slice.
             int offset = Math.Max(0, f.LoadAddress - autoPrgLoadBase);
             int size = f.Size > 0 ? f.Size : Math.Max(0, autoPrg.Length - offset);
             if (offset < 0 || offset >= autoPrg.Length)
@@ -333,6 +350,7 @@ sealed class FdsDiskImageBuilder
         return new byte[0];
     }
 
+    // Clone unchanged input when size is unspecified or exact; otherwise resize with zero padding or truncation and warn.
     static byte[] ApplyDeclaredSize(byte[] raw, int declaredSize, List<string> warnings, string label)
     {
         raw = raw ?? new byte[0];
@@ -349,6 +367,8 @@ sealed class FdsDiskImageBuilder
         return data;
     }
 
+    // Within each side, keep explicit numbers and allocate missing numbers after them in id order.
+    // Existing duplicate explicit numbers are not rejected here.
     static void AssignFileNumbers(List<DiskFile> files)
     {
         foreach (var group in files.GroupBy(f => f.Side))
@@ -362,6 +382,8 @@ sealed class FdsDiskImageBuilder
         }
     }
 
+    // Write disk-info and count blocks followed by each file header/data block into a zero-filled fixed-size side.
+    // This byte-stream format omits physical gap and CRC encoding.
     static byte[] BuildSide(int side, List<DiskFile> files, string gameCode, List<string> warnings)
     {
         byte[] data = new byte[SideSize];
@@ -387,6 +409,8 @@ sealed class FdsDiskImageBuilder
         return data;
     }
 
+    // Emit the fixed disk-info template with format identifier, game code, side/disk numbers and highest boot file id.
+    // Boot eligibility is represented as an id threshold, not an independent flag in each on-disk file header.
     static byte[] BuildDiskInfoBlock(int side, List<DiskFile> files, string gameCode)
     {
         byte[] b = new byte[56];
@@ -420,6 +444,8 @@ sealed class FdsDiskImageBuilder
         return b;
     }
 
+    // Serialize file number/id, an eight-byte name, little-endian load address/size and the seven-bit file type.
+    // Values are masked to the on-disk widths; validation belongs to earlier stages.
     static byte[] BuildFileHeaderBlock(DiskFile f)
     {
         byte[] b = new byte[16];
@@ -437,6 +463,7 @@ sealed class FdsDiskImageBuilder
         return b;
     }
 
+    // Append a block only when it fits; otherwise report an error and leave the write position unchanged.
     static void CopyBlock(byte[] side, ref int pos, byte[] block, int sideIndex, List<string> warnings)
     {
         if (block == null) block = new byte[0];
@@ -449,6 +476,7 @@ sealed class FdsDiskImageBuilder
         pos += block.Length;
     }
 
+    // Uppercase and trim to three characters, defaulting empty input to KQF and padding short codes with spaces.
     static string NormalizeGameCode(string gameCode)
     {
         string s = (gameCode ?? "KQF").Trim().ToUpperInvariant();
@@ -458,6 +486,7 @@ sealed class FdsDiskImageBuilder
         return s;
     }
 
+    // Write a fixed-width ASCII field, truncating long text and space-padding short text.
     static void WriteAscii(byte[] dst, int offset, int length, string text)
     {
         byte[] raw = Encoding.ASCII.GetBytes(text ?? "");
@@ -465,6 +494,7 @@ sealed class FdsDiskImageBuilder
             dst[offset + i] = i < raw.Length ? raw[i] : (byte)0x20;
     }
 
+    // Test a bounds-clamped half-open byte range for data that would be lost rather than harmless padding.
     static bool ContainsNonFill(byte[] data, int start, int endExclusive, byte fill)
     {
         for (int i = Math.Max(0, start); i < Math.Min(data.Length, endExclusive); i++)

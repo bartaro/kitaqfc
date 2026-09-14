@@ -6,6 +6,7 @@ static class CodeGenerator
 {
     public static CodegenAnalysisReport LastReport { get; private set; } = new CodegenAnalysisReport();
 
+    // Run a fresh FC backend, publish its report and write the optional aggregate-layout diagnostic text.
     public static IReadOnlyList<Expr> CompileAll(Expr syntaxTree)
     {
         var impl = new CodegenImpl();
@@ -17,6 +18,7 @@ static class CodeGenerator
 
     sealed class CodegenImpl
     {
+        // Partition internal CPU RAM into OAM shadow, globals, local zero page, call arguments and default compiler temporaries.
         const int OamRamBase = 0x0200;
         const int OamRamLimitExclusive = 0x0300;
         const int GlobalRamBase = 0x0300;
@@ -28,6 +30,7 @@ static class CodeGenerator
         const int DefaultTempRamBase = 0x00D0;
         const int DefaultTempRamLength = 0x0030;
 
+        // Keep emitted nodes separate from collected function, storage and analysis metadata.
         readonly List<Expr> _assembly = new List<Expr>();
         readonly Dictionary<string, Expr> _functions = new Dictionary<string, Expr>(StringComparer.Ordinal);
         readonly Dictionary<string, CType> _functionReturnTypes = new Dictionary<string, CType>(StringComparer.Ordinal);
@@ -100,6 +103,7 @@ static class CodeGenerator
         const int VramqCapacity = 128;
         const int FdsFileHeaderSize = 17;
 
+        // Build the configured temporary pool so its lowest address is allocated first; initialize an optional dedicated-local cursor.
         public CodegenImpl()
         {
             int tempBase = Program.HasCustomNesTempRamWindow ? Program.NesTempRamBase : DefaultTempRamBase;
@@ -110,6 +114,7 @@ static class CodeGenerator
                 _nextDedicatedLocalRam = Program.NesLocalRamBase;
         }
 
+        // Carry bank, fixed-bank, ordering and section requests before concrete assembly placement.
         sealed class PlacementInfo
         {
             public int RequestedBank = 1;
@@ -118,6 +123,7 @@ static class CodeGenerator
             public string SectionName = null;
         }
 
+        // Describe a cross-bank call stub and its return width, including whether it needs an FDS overlay load.
         sealed class BankThunkInfo
         {
             public string Name;
@@ -127,6 +133,7 @@ static class CodeGenerator
             public int ReturnSize;
         }
 
+        // Represent named RAM storage, constants or readonly bytes together with source and ROM-placement metadata.
         sealed class StorageSlot
         {
             public string Name;
@@ -144,6 +151,7 @@ static class CodeGenerator
             public string SectionName = null;
         }
 
+        // Pair the enclosing loop's continue and break destinations.
         sealed class LoopLabels
         {
             public readonly string ContinueLabel;
@@ -156,12 +164,14 @@ static class CodeGenerator
             }
         }
 
+        // Associate the low- and high-byte labels of a generated arithmetic lookup table.
         sealed class ArithmeticLookupInfo
         {
             public string LowLabel;
             public string HighLabel;
         }
 
+        // Describe an intrinsic's result type and argument byte widths; emission is implemented separately.
         sealed class IntrinsicSignature
         {
             public readonly CType ReturnType;
@@ -174,6 +184,7 @@ static class CodeGenerator
             }
         }
 
+        // Keep a function's ABI, local bindings, nested-loop destinations and aggregate-return pointer together.
         sealed class FunctionContext
         {
             public readonly string Name;
@@ -193,10 +204,12 @@ static class CodeGenerator
             }
         }
 
+        // Register case-sensitive intrinsic names with their return types and argument widths in bytes.
         static Dictionary<string, IntrinsicSignature> BuildCompatibilityIntrinsicSignatures()
         {
             var map = new Dictionary<string, IntrinsicSignature>(StringComparer.Ordinal);
 
+            // Insert the signature, replacing any existing entry with the same exact name.
             void Add(string name, CType returnType, params int[] parameterSizes)
             {
                 map[name] = new IntrinsicSignature(returnType, parameterSizes);
@@ -371,11 +384,13 @@ static class CodeGenerator
             return map;
         }
 
+        // Look up the intrinsic spelling exactly in the signature catalog.
         static bool TryGetCompatibilityIntrinsicSignature(string funcName, out IntrinsicSignature signature)
         {
             return CompatibilityIntrinsicSignatures.TryGetValue(funcName, out signature);
         }
 
+        // Create unnamed-ABI parameter descriptors as unsigned bytes or words; field offsets remain zero for later layout.
         static FieldInfo[] BuildSyntheticParameters(IntrinsicSignature signature)
         {
             if (signature == null || signature.ParameterSizes == null || signature.ParameterSizes.Length == 0)
@@ -390,6 +405,8 @@ static class CodeGenerator
             return fields;
         }
 
+        // Reserve runtime RAM, collect declarations and validate configured windows before selecting reachable functions.
+        // Emit entry stubs, user code, helper routines and readonly bytes in that order.
         public IReadOnlyList<Expr> Run(Expr syntaxTree)
         {
             Expr[] items;
@@ -414,6 +431,8 @@ static class CodeGenerator
             return _assembly;
         }
 
+        // Process declarations in input order, registering function ABI/layout, folded constants, aggregates and storage.
+        // Extern/opaque/empty/assertion nodes do not emit storage in this pass.
         void CollectTopLevel(Expr[] items)
         {
             foreach (var item in items ?? Array.Empty<Expr>())
@@ -457,6 +476,7 @@ static class CodeGenerator
                     continue;
                 }
 
+                // A prototype updates the signature and placement record even when a definition was collected earlier.
                 if (current.Match(Tag.FunctionDecl, out retType, out name, out fields, out mustCheck))
                 {
                     if (!ValidateParameterList(name, fields))
@@ -480,6 +500,7 @@ static class CodeGenerator
                         Program.Error("error KQ0000: duplicate top-level symbol for --target=nes: {0}", name);
                         continue;
                     }
+                    // Store the folded value as a masked word; this table does not retain the declared constant type.
                     _constants[name] = value & 0xFFFF;
                     continue;
                 }
@@ -537,10 +558,13 @@ static class CodeGenerator
             }
         }
 
+        // Traverse references from entry/interrupt/runtime roots, profiled functions and fixed-bank functions.
+        // Record functions outside that reachable set for the optional library-removal report.
         HashSet<string> ComputeReachableFunctions()
         {
             var reachable = new HashSet<string>(StringComparer.Ordinal);
             var work = new Queue<string>();
+            // Queue a root only when a body exists, and visit each function name at most once.
             void AddRoot(string name)
             {
                 if (string.IsNullOrEmpty(name)) return;
@@ -581,6 +605,8 @@ static class CodeGenerator
             return reachable;
         }
 
+        // Find known symbolic assembly operands, named calls and explicit function-address references recursively.
+        // Call arguments are scanned, but a non-name call-target expression is not traversed by the call branch.
         IEnumerable<string> EnumerateReferencedFunctions(Expr expr)
         {
             if (expr == null) yield break;
@@ -626,6 +652,7 @@ static class CodeGenerator
             }
         }
 
+        // Peel up to sixteen supported bank/order/section/static/unsafe wrappers, then clamp a negative requested bank to zero.
         PlacementInfo ExtractPlacement(Expr item, out Expr unwrapped)
         {
             var placement = new PlacementInfo();
@@ -675,6 +702,8 @@ static class CodeGenerator
             return placement;
         }
 
+        // Apply configured bank selection and optional mapper heuristics, then force reset/NMI/IRQ into common bank zero.
+        // Derive fixed-placement and fast-call metadata from the resulting bank and ABI eligibility.
         CFunctionInfo CreateFunctionInfo(string functionName, FilePosition source, CType retType, FieldInfo[] fields, int mustCheck, bool isPrototype, bool isInline, PlacementInfo placement)
         {
             fields = fields ?? Array.Empty<FieldInfo>();
@@ -706,6 +735,8 @@ static class CodeGenerator
             };
         }
 
+        // Prefer common code for sufficiently hot or loop/update/draw/scroll-named functions on banked profiles.
+        // This selection uses names/profile counts, not a bank-capacity estimate.
         int ApplyMapperAwareBankPlacement(string functionName, int fallbackBank, FilePosition source)
         {
             if (fallbackBank == 0) return 0;
@@ -723,6 +754,7 @@ static class CodeGenerator
             return fallbackBank;
         }
 
+        // Permit only nonaggregate signatures with at most two parameters totaling two bytes and a zero-, one- or two-byte result.
         bool IsFastCallEligible(CType retType, FieldInfo[] fields)
         {
             fields = fields ?? Array.Empty<FieldInfo>();
@@ -740,6 +772,7 @@ static class CodeGenerator
             return retSize == 0 || retSize == 1 || retSize == 2;
         }
 
+        // Prefer an explicit function-bank override when one exists, otherwise keep the supplied fallback.
         int ResolveFunctionBankOverride(string functionName, int fallbackBank)
         {
             if (!string.IsNullOrEmpty(functionName) && Program.TryGetFunctionBankOverride(functionName, out int overrideBank))
@@ -747,6 +780,7 @@ static class CodeGenerator
             return fallbackBank;
         }
 
+        // Reserve the shared ABI areas and runtime globals/buffers before user storage, including currently unused feature state.
         void ReserveRuntimeState()
         {
             RecordRamAllocation("__kq_call_arg_area", "abi_call_args", CallArgBase, CallArgLimitExclusive - CallArgBase, true);
@@ -782,6 +816,7 @@ static class CodeGenerator
             _runtimeSretPtrHiAddress = ReserveInternalFastGlobal("__kq_sret_ptr_hi", CType.UInt8, "struct return destination pointer");
         }
 
+        // Allocate hot runtime storage from local zero page when enabled and space remains; otherwise use ordinary global RAM.
         int ReserveInternalFastGlobal(string name, CType type, string reason)
         {
             int size = GetStorageSize(type);
@@ -804,6 +839,7 @@ static class CodeGenerator
             return ReserveInternalGlobal(name, type);
         }
 
+        // Reserve a typed runtime slot from $0300-$07FF; on exhaustion report an error and return a placeholder base without advancing.
         int ReserveInternalGlobal(string name, CType type)
         {
             int size = GetStorageSize(type);
@@ -827,6 +863,7 @@ static class CodeGenerator
             return address;
         }
 
+        // Reserve at least one byte for a runtime buffer, recording its explicit byte size independently of its UInt8 type.
         int ReserveInternalGlobalBytes(string name, int size)
         {
             if (size <= 0) size = 1;
@@ -849,6 +886,7 @@ static class CodeGenerator
             return address;
         }
 
+        // Append a positive-size allocation and its memory-region classification to the report.
         void RecordRamAllocation(string name, string kind, int address, int size, bool conservative)
         {
             if (size <= 0) return;
@@ -863,6 +901,7 @@ static class CodeGenerator
             });
         }
 
+        // Classify a span only when its entire half-open interval fits one listed CPU region; otherwise report other.
         static string ClassifyCpuMemoryRegion(int address, int size)
         {
             int endExclusive = address + Math.Max(0, size);
@@ -875,6 +914,8 @@ static class CodeGenerator
             return "other";
         }
 
+        // Record selected numeric memory operands inside emitted functions; symbolic operands are skipped.
+        // Indirect operands describe the pointer location, while indexed spans use allocation metadata or a 256-byte fallback.
         void RecordRamAccess(string mnemonic, AsmOperand operand)
         {
             if (string.IsNullOrEmpty(_currentFunctionName) || _currentFunctionName == "<none>")
@@ -936,6 +977,7 @@ static class CodeGenerator
             // register protocols use them.
             if (operation == "read" && address >= 0x8000)
                 return;
+            // Mark indirect targets as dynamic; the two-byte span describes pointer storage, not the unknown destination range.
             bool dynamicTarget =
                 operand.Mode == AddressMode.IndirectX ||
                 operand.Mode == AddressMode.IndirectY;
@@ -945,6 +987,7 @@ static class CodeGenerator
                 operand.Mode == AddressMode.HighMemX ||
                 operand.Mode == AddressMode.HighMemY)
             {
+                // Use the smallest containing allocation to limit an indexed span; this is a report estimate, not runtime bounds enforcement.
                 var allocation = _ramAllocations
                     .Where(item =>
                         item.Size > 0 &&
@@ -970,6 +1013,7 @@ static class CodeGenerator
             });
         }
 
+        // Lay out a newly named aggregate once; repeated names leave the first registered layout unchanged.
         void RegisterAggregate(string name, AggregateLayout layout, FieldInfo[] fields, bool isPacked, int forcedAlign)
         {
             if (string.IsNullOrEmpty(name)) return;
@@ -978,6 +1022,8 @@ static class CodeGenerator
             _aggregates[name] = new AggregateInfo(layout, totalSize, finalAlign, isPacked, fields);
         }
 
+        // Place union fields at zero or assign aligned struct offsets, then compute total extent and aggregate alignment.
+        // Packed layouts suppress struct field padding and final tail padding; forced alignment replaces the computed alignment.
         FieldInfo[] LayoutAggregateFields(FieldInfo[] rawFields, AggregateLayout layout, bool isPacked, int forcedAlign, out int totalSize, out int finalAlign)
         {
             rawFields = rawFields ?? Array.Empty<FieldInfo>();
@@ -1017,6 +1063,7 @@ static class CodeGenerator
             return fields;
         }
 
+        // Fold each readonly initializer, reporting nonconstant expressions and supplying zero placeholders so traversal can continue.
         int[] EvaluateReadonlyExprs(string name, Expr[] exprs)
         {
             exprs = exprs ?? Array.Empty<Expr>();
@@ -1034,6 +1081,7 @@ static class CodeGenerator
             return values;
         }
 
+        // Reject duplicate data symbols, encode their initializer bytes and retain placement metadata for later emission.
         void RegisterReadonlyData(FilePosition source, CType type, string name, int[] values, PlacementInfo placement)
         {
             if (_constants.ContainsKey(name) || _globals.ContainsKey(name) || _readonlyData.ContainsKey(name))
@@ -1061,6 +1109,7 @@ static class CodeGenerator
             _orderedReadonlyData.Add(slot);
         }
 
+        // Honor an explicit fixed bank before data overrides; otherwise place pooled string symbols in common bank zero.
         int ResolveReadonlyRequestedBank(FilePosition source, string name, PlacementInfo placement)
         {
             int requestedBank = placement == null ? 1 : placement.RequestedBank;
@@ -1080,6 +1129,8 @@ static class CodeGenerator
             return requestedBank;
         }
 
+        // Infer an owner from the nearest preceding function position in the same file, then apply its bank override.
+        // No function-end range is checked, so this is a source-position heuristic.
         bool TryResolveOwningFunctionBank(FilePosition source, out int bank)
         {
             bank = 0;
@@ -1128,12 +1179,15 @@ static class CodeGenerator
             return false;
         }
 
+        // Encode supported scalar initializers little-endian and zero-fill the unused declared extent.
+        // Report excess initializers while sizing the placeholder output to contain them.
         byte[] EncodeReadonlyBytes(CType type, string name, int[] values)
         {
             values = values ?? Array.Empty<int>();
             CType elementType = type;
             int declaredCount = values.Length;
-            if (type != null && type.IsArray)
+            // Expression-sized arrays must reach the constant-evaluation branch below.
+            if (type != null && type.Tag == CTypeTag.Array)
             {
                 elementType = type.Subtype ?? CType.UInt8;
                 declaredCount = type.Dimension > 0 ? type.Dimension : values.Length;
@@ -1169,6 +1223,7 @@ static class CodeGenerator
             return bytes;
         }
 
+        // Emit readonly blocks in bank/order/name order, fixing bank-zero blocks and retaining source positions.
         void EmitReadonlyData()
         {
             if (_orderedReadonlyData.Count == 0) return;
@@ -1209,6 +1264,7 @@ static class CodeGenerator
             };
         }
 
+        // Deduplicate lookup tables by operation, bank, signedness and constant bits; register low and optional high byte arrays.
         ArithmeticLookupInfo EnsureArithmeticLookupTable(string opName, int constantValue, FunctionContext ctx, bool signedArithmetic, bool runtimeSigned, FilePosition source)
         {
             PlacementInfo placement = CreateArithmeticLookupPlacement(ctx);
@@ -1250,6 +1306,8 @@ static class CodeGenerator
             return info;
         }
 
+        // Evaluate all 256 runtime byte values, keeping the low word of each arithmetic result.
+        // Division/remainder by zero produce zero here; omit the high-byte table only when every entry is zero.
         void BuildArithmeticLookupTables(string opName, int constantValue, bool signedArithmetic, bool runtimeSigned, out int[] lowBytes, out int[] highBytes)
         {
             lowBytes = new int[256];
@@ -1301,6 +1359,7 @@ static class CodeGenerator
                 highBytes = null;
         }
 
+        // Replace a byte-sized runtime operand plus constant with indexed ROM lookup, returning the result in A/X.
         bool TryEmitConstantLookupArithmetic(string opName, Expr runtimeExpr, int constantValue, FunctionContext ctx, bool signedArithmetic)
         {
             if (runtimeExpr == null || ctx == null)
@@ -1321,6 +1380,7 @@ static class CodeGenerator
             return true;
         }
 
+        // Require known positive parameter sizes whose sum fits the sixteen-byte shared call-argument area.
         bool ValidateParameterList(string functionName, FieldInfo[] fields)
         {
             int bytes = 0;
@@ -1343,6 +1403,8 @@ static class CodeGenerator
             return true;
         }
 
+        // Accept matching repeated fixed slots, otherwise allocate a new fixed, high-memory, OAM-shadow or ordinary global slot.
+        // High-memory declarations use the local-like allocator and may fall back outside zero page.
         void DeclareGlobal(FilePosition source, MemoryRegion region, CType type, string name)
         {
             StorageSlot existing;
@@ -1417,6 +1479,8 @@ static class CodeGenerator
             }
         }
 
+        // Prefer available zero page, then the configured dedicated local window, then ordinary global RAM.
+        // An exhausted configured window reports an error rather than falling back to global RAM.
         int AllocateLocalLike(string name, int size, FilePosition source, string kind)
         {
             if (size <= 0)
@@ -1460,6 +1524,8 @@ static class CodeGenerator
             return ramAddress;
         }
 
+        // Check configured local/temp windows against allocations already recorded after top-level collection, then against each other.
+        // Only the temporary pool's own matching allocation is explicitly exempted.
         void ValidateConfiguredRamWindows()
         {
             if (Program.HasNesLocalRamWindow)
@@ -1509,11 +1575,13 @@ static class CodeGenerator
             }
         }
 
+        // Test strict overlap of two half-open address intervals; touching endpoints do not overlap.
         static bool RangesOverlap(int leftStart, int leftEndExclusive, int rightStart, int rightEndExclusive)
         {
             return leftStart < rightEndExclusive && rightStart < leftEndExclusive;
         }
 
+        // Choose a descriptive report reason from name substrings; this label does not control the allocation decision.
         string GuessZpReason(string name, FilePosition source)
         {
             string n = (name ?? "").ToLowerInvariant();
@@ -1522,12 +1590,14 @@ static class CodeGenerator
             return "whole-program zero-page allocator first-fit candidate";
         }
 
+        // Supply missing reset/NMI/IRQ entry points in common code and always emit the terminal hang loop.
         void EmitAutoEntryStubs()
         {
             if (!_functions.ContainsKey("__nes_reset"))
             {
                 EmitPlacement(0, true);
                 _assembly.Add(Expr.Make(Tag.Function, "__kq_reset_stub"));
+                // Initialize the FDS BIOS control bytes, mapper/PPU shadows and resident-bank state before enabling IRQs.
                 if (Program.NesMapperProfile.HasFds)
                 {
                     _assembly.Add(Expr.Make(Tag.Comment, "KITAQFC FDS auto-generated reset stub ($6000-$DFFF PRG-RAM, BIOS-safe startup)"));
@@ -1574,6 +1644,7 @@ static class CodeGenerator
                 EmitAsm("JMP", Abs("__kq_hang"));
             }
 
+            // The default NMI executes the queued VRAM work and increments the runtime frame counter before RTI.
             if (!_functions.ContainsKey("__nes_nmi"))
             {
                 EmitPlacement(0, true);
@@ -1596,6 +1667,7 @@ static class CodeGenerator
             EmitAsm("JMP", Abs("__kq_hang_loop"));
         }
 
+        // Emit reachable bodies in bank/placement/input order, with RTI for interrupt functions and RTS for ordinary functions.
         void EmitUserFunctions()
         {
             foreach (string functionKey in _orderedFunctionNames
@@ -1631,6 +1703,7 @@ static class CodeGenerator
             }
         }
 
+        // Warn about recorded direct self-calls when static frames are enabled; this check does not find indirect recursion cycles.
         void EmitStaticFrameSafetyDiagnostics()
         {
             if (!Program.EnableStaticFrameAllocator) return;
@@ -1644,6 +1717,7 @@ static class CodeGenerator
             }
         }
 
+        // Emit the common bank-switch helper, clamp invalid low bank numbers (and SUROM upper bounds), then emit requested call stubs.
         void EmitBankHelpers()
         {
             EmitPlacement(0, true);
@@ -1683,6 +1757,7 @@ static class CodeGenerator
             }
         }
 
+        // Traverse recorded call edges from user NMI/IRQ roots and reject reachable mapper writers or functions outside common bank zero.
         void ValidateSuromInterruptSafety()
         {
             if (!Program.NesMapperProfile.IsSurom512) return;
@@ -1711,6 +1786,7 @@ static class CodeGenerator
         }
 
 
+        // Save the caller bank on the CPU stack, switch and call, then restore the bank while retaining A/X return bytes in runtime slots.
         void EmitMapperBankThunkBody(BankThunkInfo info)
         {
             EmitAsm("LDA", Mem(_runtimeCurrentBankAddress));
@@ -1735,6 +1811,8 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Load the target overlay when needed, call it, and request restoration of the previous resident bank.
+        // Initial load failure returns its status; the later restore call's status is not checked here.
         void EmitFdsOverlayThunkBody(BankThunkInfo info)
         {
             string loaded = NewGeneratedLabel("fds_ovl_loaded");
@@ -1789,6 +1867,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Save an aggregate-return destination when needed, then copy incoming fast-call A/X or shared argument bytes into local slots.
         void EmitFunctionPrologue(FilePosition source, FieldInfo[] fields, FunctionContext ctx)
         {
             fields = fields ?? Array.Empty<FieldInfo>();
@@ -1842,6 +1921,7 @@ static class CodeGenerator
             }
         }
 
+        // Dispatch lowered statement nodes into storage, control flow, calls, returns or assembly; diagnose unsupported tags.
         void EmitStatement(Expr node, FunctionContext ctx)
         {
             if (node == null) return;
@@ -1887,6 +1967,7 @@ static class CodeGenerator
             }
 
             string opName;
+            // Lower a compound assignment to an assignment whose value reads the same lvalue expression.
             if (node.Match(Tag.AssignModify, out opName, out lhs, out rhs))
             {
                 EmitAssignment(lhs, Expr.Make(opName, lhs, rhs).WithSource(node.Source), ctx);
@@ -1947,6 +2028,7 @@ static class CodeGenerator
                 return;
             }
 
+            // Normalize a raw instruction, record its numeric memory/call observations and retain its source position.
             if (node.Match(Tag.Asm, out mnemonic, out operand))
             {
                 string normalizedMnemonic = NormalizeMnemonic(mnemonic);
@@ -2004,6 +2086,8 @@ static class CodeGenerator
             Program.Error("error KQ0000: --target=nes phase 5 unsupported statement tag in function {0}: {1}", ctx.Name, node.Tag);
         }
 
+        // Allocate a unique function-local slot, rejecting collisions with local or global data names.
+        // Slots use the shared local-like allocator and persist across emitted functions; optional static-frame metadata describes the allocation.
         StorageSlot DeclareLocal(FilePosition source, FunctionContext ctx, CType type, string name)
         {
             if (ctx.Locals.ContainsKey(name) || _constants.ContainsKey(name) || _globals.ContainsKey(name) || _readonlyData.ContainsKey(name))
@@ -2033,6 +2117,7 @@ static class CodeGenerator
             return slot;
         }
 
+        // Emit condition/body pairs with a shared exit; a final nonzero literal condition represents an unconditional else branch.
         void EmitIf(FilePosition source, Expr[] parts, FunctionContext ctx)
         {
             if (parts == null || parts.Length < 2 || (parts.Length % 2) != 0)
@@ -2067,6 +2152,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Label, endLabel).WithSource(source));
         }
 
+        // Attempt the optional counted-loop specialization, otherwise emit initialization, condition, body and increment with break/continue labels.
         void EmitFor(FilePosition source, Expr init, Expr test, Expr induct, Expr body, FunctionContext ctx)
         {
             if (Program.EnableLoopLoweringOptimizer && TryEmitCountedFor(source, init, test, induct, body, ctx))
@@ -2092,6 +2178,8 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Label, breakLabel).WithSource(source));
         }
 
+        // Recognize a named byte counter with constant start/limit and unit increment, then emit a compact compare/increment loop.
+        // The limit-256, start-zero case exits on wrap; signed counters use the generic comparison path.
         bool TryEmitCountedFor(FilePosition source, Expr init, Expr test, Expr induct, Expr body, FunctionContext ctx)
         {
             string var; int start; int limit;
@@ -2100,7 +2188,7 @@ static class CodeGenerator
             if (!TryMatchIncrement(induct, var)) return false;
             if (limit < 0 || limit > 256 || start < 0 || start > 255 || start >= limit) return false;
             StorageSlot slot;
-            if (!TryResolveStorage(ctx, var, out slot) || slot.Size != 1) return false;
+            if (!TryResolveStorage(ctx, var, out slot) || slot.Size != 1 || IsSignedIntegerType(slot.Type)) return false;
 
             string startLabel = NewGeneratedLabel("for_counted_start");
             string breakLabel = NewGeneratedLabel("for_counted_break");
@@ -2133,6 +2221,7 @@ static class CodeGenerator
             return true;
         }
 
+        // Accept an assignment of a foldable constant to a plain named loop counter.
         bool TryMatchForInit(Expr init, out string var, out int start)
         {
             var = null; start = 0;
@@ -2142,6 +2231,7 @@ static class CodeGenerator
             return TryEvaluateConstant(rhs, out start);
         }
 
+        // Accept a strict less-than comparison of that exact counter name against a foldable constant.
         bool TryMatchForLessThan(Expr test, string var, out int limit)
         {
             limit = 0;
@@ -2151,6 +2241,7 @@ static class CodeGenerator
             return TryEvaluateConstant(rhs, out limit);
         }
 
+        // Accept prefix/postfix increment or += with a constant one for the same named counter.
         bool TryMatchIncrement(Expr induct, string var)
         {
             Expr lhs; string n;
@@ -2163,6 +2254,7 @@ static class CodeGenerator
             return false;
         }
 
+        // Handle aggregate copies first; for scalar destinations, load the requested width and store the value through the lvalue.
         void EmitAssignment(Expr lhs, Expr rhs, FunctionContext ctx)
         {
             if (TryEmitAggregateAssignment(Expr.Make(Tag.Assign, lhs, rhs).WithSource(lhs.Source), lhs, rhs, ctx))
@@ -2175,6 +2267,8 @@ static class CodeGenerator
             EmitStoreLoadedValueToLvalue(lhs, ctx, size, preserveResult: false);
         }
 
+        // Claim assignments involving aggregates, checking compatible complete types and writable destinations.
+        // Write a call result directly to the destination when possible; otherwise emit a forward byte copy, releasing temporary pointer slots in finally blocks.
         bool TryEmitAggregateAssignment(Expr assignExpr, Expr lhs, Expr rhs, FunctionContext ctx)
         {
             CType leftType;
@@ -2237,6 +2331,7 @@ static class CodeGenerator
             return true;
         }
 
+        // Validate the result type, recover the saved return destination and forward an aggregate call or copy an existing value into it.
         void EmitAggregateReturn(Expr returnExpr, FunctionContext ctx)
         {
             CType valueType;
@@ -2280,6 +2375,7 @@ static class CodeGenerator
             }
         }
 
+        // Reject readonly named storage and recurse through fields; pointer/index forms are accepted here without pointee-const validation.
         bool CanWriteAggregateLvalue(Expr lvalue, FunctionContext ctx)
         {
             if (lvalue == null) return false;
@@ -2312,6 +2408,7 @@ static class CodeGenerator
             return false;
         }
 
+        // Materialize aggregate call results in newly allocated RAM, or take an existing aggregate source address.
         bool EmitAggregateSourceAddressIntoPair(Expr expr, FunctionContext ctx, int dstLo, int dstHi, CType expectedType)
         {
             CType retType;
@@ -2337,6 +2434,7 @@ static class CodeGenerator
             return EmitAddressIntoPair(expr, ctx, dstLo, dstHi, out ignored);
         }
 
+        // Allocate result storage and invoke an aggregate-returning call even when its value is discarded.
         void EmitAggregateCallToTemp(Expr callExpr, FunctionContext ctx, CType retType)
         {
             int tempAddr = AllocateAggregateTemp(callExpr, retType);
@@ -2344,6 +2442,7 @@ static class CodeGenerator
             EmitCallExpression(callExpr, ctx, expectedReturnSize: 0);
         }
 
+        // Check the expected aggregate result type, publish the caller destination pointer and emit the call.
         void EmitAggregateCallToAddress(Expr callExpr, FunctionContext ctx, int dstLo, int dstHi, CType expectedType)
         {
             CType retType;
@@ -2365,6 +2464,7 @@ static class CodeGenerator
             EmitCallExpression(callExpr, ctx, expectedReturnSize: 0);
         }
 
+        // Unpack a call expression and delegate argument/result handling, reporting malformed call nodes.
         void EmitCallExpression(Expr callExpr, FunctionContext ctx, int expectedReturnSize)
         {
             Expr funcExpr;
@@ -2377,6 +2477,7 @@ static class CodeGenerator
             EmitCall(callExpr.Source, funcExpr, args, ctx, expectedReturnSize);
         }
 
+        // Recognize call expressions whose inferred result is an aggregate.
         bool TryGetAggregateReturnCallType(Expr expr, FunctionContext ctx, out CType retType)
         {
             retType = null;
@@ -2386,6 +2487,7 @@ static class CodeGenerator
             return TryGetExprType(expr, ctx, out retType) && IsAggregateType(retType);
         }
 
+        // Copy the function-local saved return destination into the supplied pointer-byte slots, diagnosing a missing destination.
         bool EmitSavedStructReturnPointerIntoPair(FunctionContext ctx, int dstLo, int dstHi, FilePosition source)
         {
             if (ctx == null || ctx.StructReturnPointerSlot == null)
@@ -2400,6 +2502,7 @@ static class CodeGenerator
             return true;
         }
 
+        // Publish an existing low/high pointer pair in the shared aggregate-return ABI slots.
         void EmitSetGlobalStructReturnPointerFromPair(int srcLo, int srcHi)
         {
             EmitAsm("LDA", Mem(srcLo));
@@ -2408,6 +2511,7 @@ static class CodeGenerator
             EmitAsm("STA", Mem(_runtimeSretPtrHiAddress));
         }
 
+        // Publish a constant destination address, low byte first, in the shared aggregate-return ABI slots.
         void EmitSetGlobalStructReturnPointerToAddress(int address)
         {
             EmitAsm("LDA", Imm(address & 0xFF));
@@ -2416,6 +2520,7 @@ static class CodeGenerator
             EmitAsm("STA", Mem(_runtimeSretPtrHiAddress));
         }
 
+        // Store the masked low/high bytes of a constant address in the requested temporary pair.
         void EmitLoadImmediateAddressIntoPair(int address, int dstLo, int dstHi)
         {
             EmitAsm("LDA", Imm(address & 0xFF));
@@ -2424,6 +2529,7 @@ static class CodeGenerator
             EmitAsm("STA", Mem(dstHi));
         }
 
+        // Reserve at least one byte of global RAM for a fresh aggregate result; storage is not reused after the expression.
         int AllocateAggregateTemp(Expr origin, CType type)
         {
             int size = GetStorageSize(type);
@@ -2449,6 +2555,8 @@ static class CodeGenerator
             return address;
         }
 
+        // Emit an unrolled forward copy of at most 256 bytes through zero-page indirect pointers.
+        // The high-byte arguments are implicit in the adjacent pointer layout; overlapping ranges are not handled as memmove.
         void EmitCopyBytesFromPtrToPtr(int dstLo, int dstHi, int srcLo, int srcHi, int size, FilePosition source)
         {
             if (size <= 0) return;
@@ -2466,6 +2574,7 @@ static class CodeGenerator
             }
         }
 
+        // Copy at most 256 indexed source bytes into a checked slice of compiler temporary slots.
         void EmitCopyBytesFromPtrToTempBytes(int srcLo, int srcHi, int[] tempBytes, int offset, int size, FilePosition source)
         {
             if (size <= 0) return;
@@ -2483,6 +2592,7 @@ static class CodeGenerator
             }
         }
 
+        // Resolve a scalar destination width, rejecting whole arrays/aggregates and normalizing other storage widths to one or two bytes.
         int GetLvalueSize(Expr lvalue, FunctionContext ctx, bool requireWritable)
         {
             CType type;
@@ -2509,6 +2619,8 @@ static class CodeGenerator
             return size;
         }
 
+        // Infer storage/ABI types, preferring unsigned width classifications for foldable constants.
+        // Individual operator cases supply this backend's result rules and may not preserve source signedness.
         bool TryGetExprType(Expr expr, FunctionContext ctx, out CType type)
         {
             type = null;
@@ -2696,6 +2808,7 @@ static class CodeGenerator
             return false;
         }
 
+        // Resolve named, dereferenced, indexed or field lvalue types; direct readonly/array names return false even for read-only queries.
         bool TryGetLvalueType(Expr lvalue, FunctionContext ctx, bool requireWritable, out CType type)
         {
             type = null;
@@ -2767,6 +2880,8 @@ static class CodeGenerator
             return false;
         }
 
+        // Store A/X into named or computed storage, saving value bytes while computing an indirect address.
+        // When requested, reload the stored scalar result and release all temporary slots on every exit.
         void EmitStoreLoadedValueToLvalue(Expr lhs, FunctionContext ctx, int size, bool preserveResult)
         {
             string name;
@@ -2834,6 +2949,8 @@ static class CodeGenerator
             }
         }
 
+        // Resolve an addressable expression into caller-owned low/high temporary bytes.
+        // The reported size is scalar-normalized except for an aggregate call result.
         bool EmitAddressIntoPair(Expr lvalue, FunctionContext ctx, int dstLo, int dstHi, out int valueSize)
         {
             valueSize = 1;
@@ -2846,6 +2963,7 @@ static class CodeGenerator
             CType callRetType;
             if (TryGetAggregateReturnCallType(lvalue, ctx, out callRetType))
             {
+                // Give the callee backing storage for its aggregate result before forming the address.
                 int tempAddr = AllocateAggregateTemp(lvalue, callRetType);
                 EmitSetGlobalStructReturnPointerToAddress(tempAddr);
                 EmitCallExpression(lvalue, ctx, expectedReturnSize: 0);
@@ -2860,6 +2978,7 @@ static class CodeGenerator
                     Program.Error("error KQ0000: cannot take address of '{0}' for --target=nes phase 6.", name);
                     return false;
                 }
+                // ROM data uses assembler label relocations; writable storage has a fixed CPU address.
                 valueSize = NormalizeScalarSize(slot.Size);
                 if (slot.IsReadonlyData)
                 {
@@ -2885,6 +3004,7 @@ static class CodeGenerator
                     Program.Error("error KQ0000: --target=nes phase 6 expected a pointer in unary '*' expression.");
                     return false;
                 }
+                // Dereferencing for an address evaluates the pointer itself, without loading its pointee.
                 valueSize = NormalizeScalarSize(GetStorageSize(ptrType.Subtype));
                 EmitLoadValue(sub, ctx, 2);
                 EmitAsm("STA", Mem(dstLo));
@@ -2901,6 +3021,7 @@ static class CodeGenerator
                 }
 
                 valueSize = NormalizeScalarSize(GetStorageSize(baseType.Subtype));
+                // Use full element storage size for indexing, including aggregates larger than a word.
                 int elemSize = GetPointerElementStride(baseType);
                 EmitLoadValue(baseExpr, ctx, 2);
                 EmitAsm("STA", Mem(dstLo));
@@ -2909,10 +3030,13 @@ static class CodeGenerator
                 int constIndex;
                 if (TryEvaluateConstant(indexExpr, out constIndex))
                 {
+                    // Fold a constant element offset into the 16-bit CPU address.
                     EmitAddConstantToPair(dstLo, dstHi, (constIndex * elemSize) & 0xFFFF);
                     return true;
                 }
 
+                // The dynamic path currently zero-extends byte indices before scaling.
+                // There is no emitted array-bounds check in this address calculation.
                 int indexSize = NormalizeScalarSize(DetermineExprSize(indexExpr, ctx));
                 int[] idxTemps = AcquireTemps(2);
                 try
@@ -2942,6 +3066,7 @@ static class CodeGenerator
                 FieldInfo field;
                 if (!TryResolveField(baseExpr, fieldName, ctx, out field))
                     return false;
+                // Recursively address the containing object, then add the field layout offset.
                 int fieldSize = NormalizeScalarSize(GetStorageSize(field.Type));
                 if (!EmitAddressIntoPair(baseExpr, ctx, dstLo, dstHi, out valueSize))
                     return false;
@@ -2955,6 +3080,7 @@ static class CodeGenerator
             return false;
         }
 
+        // Load an lvalue into A, or A/X for a word; prefer direct byte-array addressing.
         void EmitLoadIndirectValue(Expr lvalue, FunctionContext ctx, int expectedSize)
         {
             if (TryEmitDirectByteIndexedLoad(lvalue, ctx))
@@ -2971,6 +3097,7 @@ static class CodeGenerator
                 if (!EmitAddressIntoPair(lvalue, ctx, ptrTemps[0], ptrTemps[1], out valueSize))
                     return;
 
+                // An explicit requested width determines how many adjacent bytes are loaded here.
                 int size = NormalizeScalarSize(expectedSize > 0 ? expectedSize : valueSize);
                 if (size <= 1)
                 {
@@ -3001,6 +3128,7 @@ static class CodeGenerator
             }
         }
 
+        // Return the computed CPU address in A/X and release the temporary pointer pair.
         void EmitAddressOfValue(Expr lvalue, FunctionContext ctx)
         {
             int[] ptrTemps = AcquireTemps(2);
@@ -3018,6 +3146,8 @@ static class CodeGenerator
             }
         }
 
+        // Recognize named arrays with one-byte elements for absolute or absolute-Y access.
+        // Only constant indices are range-checked here; other forms use the general path.
         bool TryResolveDirectByteIndex(
             Expr indexed,
             FunctionContext ctx,
@@ -3047,6 +3177,7 @@ static class CodeGenerator
             return NormalizeScalarSize(DetermineExprSize(indexExpr, ctx)) == 1;
         }
 
+        // Read a constant array slot directly, or evaluate a byte index once into Y.
         bool TryEmitDirectByteIndexedLoad(Expr indexed, FunctionContext ctx)
         {
             StorageSlot slot;
@@ -3073,6 +3204,7 @@ static class CodeGenerator
             return true;
         }
 
+        // Preserve the value in A while evaluating a dynamic array index, then store it.
         bool TryEmitDirectByteIndexedStore(Expr indexed, FunctionContext ctx, bool preserveResult)
         {
             StorageSlot slot;
@@ -3103,6 +3235,8 @@ static class CodeGenerator
             }
         }
 
+        // Add a constant modulo 65536, propagating low-byte carry when needed.
+        // A page-aligned offset can update the high byte alone.
         void EmitAddConstantToPair(int dstLo, int dstHi, int value)
         {
             value &= 0xFFFF;
@@ -3127,6 +3261,7 @@ static class CodeGenerator
             }
         }
 
+        // Subtract a word constant with the 6502 carry-as-no-borrow convention.
         void EmitSubConstantFromPair(int dstLo, int dstHi, int value)
         {
             value &= 0xFFFF;
@@ -3141,6 +3276,7 @@ static class CodeGenerator
             EmitAsm("STA", Mem(dstHi));
         }
 
+        // Add low bytes first, carrying overflow into the high-byte addition.
         void EmitAddPairToPair(int dstLo, int dstHi, int srcLo, int srcHi)
         {
             EmitAsm("CLC");
@@ -3152,6 +3288,7 @@ static class CodeGenerator
             EmitAsm("STA", Mem(dstHi));
         }
 
+        // Subtract low bytes first, propagating their borrow into the high-byte subtraction.
         void EmitSubPairFromPair(int dstLo, int dstHi, int srcLo, int srcHi)
         {
             EmitAsm("SEC");
@@ -3163,6 +3300,7 @@ static class CodeGenerator
             EmitAsm("STA", Mem(dstHi));
         }
 
+        // Derive the byte stride from the complete pointee type; unknown types use one byte.
         int GetPointerElementStride(CType pointerLikeType)
         {
             if (pointerLikeType == null) return 1;
@@ -3170,11 +3308,13 @@ static class CodeGenerator
             return Math.Max(1, GetStorageSize(pointerLikeType.Subtype));
         }
 
+        // Scale a 16-bit offset by a positive constant, retaining the low 16 result bits.
         void EmitScalePairByConstant(int dstLo, int dstHi, int factor)
         {
             factor = Math.Max(1, factor);
             if (factor == 1) return;
 
+            // Power-of-two strides need only carry-propagating shifts.
             if ((factor & (factor - 1)) == 0)
             {
                 while (factor > 1)
@@ -3198,6 +3338,7 @@ static class CodeGenerator
                 EmitAsm("STA", Mem(dstLo));
                 EmitAsm("STA", Mem(dstHi));
 
+                // For other strides, accumulate the selected powers of two from a saved multiplicand.
                 int remaining = factor;
                 while (remaining != 0)
                 {
@@ -3218,6 +3359,8 @@ static class CodeGenerator
             }
         }
 
+        // Record recognized NES actions for reports and emit advisory timing/mapper warnings.
+        // This analysis does not prove that rendering is disabled or that a call runs in NMI.
         void AnalyzeNesActionCall(FilePosition source, string funcName, Expr[] args, FunctionContext ctx)
         {
             NesActionCatalog.ActionInfo info;
@@ -3232,6 +3375,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Comment, string.Format("KUROSAKI_ACTION name={0} category={1} op={2} caller={3} bank={4}",
                 info.Name, info.Category, info.Operation, string.IsNullOrEmpty(caller) ? "<none>" : caller, callerBank)).WithSource(source));
 
+            // Timing classification uses the caller name rather than runtime interrupt state.
             bool inNmi = IsNmiLikeFunction(caller);
             if (info.DirectPpuAccess && info.Timing == NesActionCatalog.TimingClass.NmiOrRenderingOff && !inNmi)
             {
@@ -3252,6 +3396,7 @@ static class CodeGenerator
                 note = AppendNote(note, "oam_dma_outside_nmi");
             }
 
+            // Compare action requirements with the selected cartridge profile at compile time.
             if (info.RequiresFds && Program.NesMapperProfile.MapperKind != NesMapperKind.Fds)
             {
                 WarnOnce(ErrorCode.NesFdsApiMapperMismatch,
@@ -3272,6 +3417,7 @@ static class CodeGenerator
                 note = AppendNote(note, "mapper_mismatch");
             }
 
+            // Only statically known sprite indices at or above 64 trigger this diagnostic.
             if (info.OamIndexArgument >= 0 && args != null && info.OamIndexArgument < args.Length)
             {
                 int spriteIndex;
@@ -3286,6 +3432,7 @@ static class CodeGenerator
                 }
             }
 
+            // Keep every recognized use, including its source location and accumulated warning notes.
             _nesActionUses.Add(new NesActionUseInfo
             {
                 Name = info.Name,
@@ -3306,6 +3453,7 @@ static class CodeGenerator
             });
         }
 
+        // Treat NMI/vblank names as a heuristic; this does not verify a function call graph.
         static bool IsNmiLikeFunction(string name)
         {
             if (string.IsNullOrEmpty(name)) return false;
@@ -3315,12 +3463,14 @@ static class CodeGenerator
                    name.IndexOf("vblank", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
+        // Join multiple machine-readable diagnostic reasons with semicolons.
         static string AppendNote(string note, string value)
         {
             if (string.IsNullOrEmpty(note)) return value;
             return note + ";" + value;
         }
 
+        // Accept the normalized profile name or supported MMC3/FDS family aliases.
         bool MapperRequirementMatches(string requirement)
         {
             string r = (requirement ?? "").Trim().ToLowerInvariant();
@@ -3332,6 +3482,7 @@ static class CodeGenerator
             return false;
         }
 
+        // Deduplicate action diagnostics by the supplied key within this generator instance.
         void WarnOnce(ErrorCode code, string key, FilePosition source, string format, params object[] args)
         {
             if (!_nesActionWarningKeys.Add(key ?? "")) return;
@@ -3373,6 +3524,7 @@ static class CodeGenerator
             }
         }
 
+        // Dispatch recognized intrinsics and optimized direct calls before packing the ordinary argument area.
         void EmitCallCore(FilePosition source, Expr funcExpr, Expr[] args, FunctionContext ctx, int expectedReturnSize)
         {
             string funcName;
@@ -3384,6 +3536,7 @@ static class CodeGenerator
 
             AnalyzeNesActionCall(source, funcName, args, ctx);
 
+            // The direct bank-switch intrinsic evaluates a byte argument and calls the mapper helper.
             if (string.Equals(funcName, "__bankswitch", StringComparison.Ordinal))
             {
                 if (args == null || args.Length != 1)
@@ -3399,6 +3552,7 @@ static class CodeGenerator
             if (string.Equals(funcName, "__fds_overlay_farcall", StringComparison.Ordinal) ||
                 string.Equals(funcName, "__fds_farcall", StringComparison.Ordinal))
             {
+                // FDS overlay dispatch requires the configured FDS RAM layout and a named function target.
                 Expr[] farArgs = args ?? Array.Empty<Expr>();
                 if (farArgs.Length != 2)
                 {
@@ -3418,6 +3572,7 @@ static class CodeGenerator
                 }
                 int callerBank = ctx == null ? 0 : ctx.Bank;
                 int calleeBank = GetFunctionBank(targetName);
+                // Choose an overlay thunk from the target function metadata rather than evaluating the first FDS argument.
                 if (ShouldUseFdsOverlayThunk(callerBank, calleeBank))
                 {
                     string directFdsThunkName = EnsureFdsOverlayThunk(targetName, calleeBank);
@@ -3460,6 +3615,7 @@ static class CodeGenerator
                     return;
                 }
 
+                // Evaluate the requested far-call bank byte; the following dispatch uses the target function bank metadata.
                 EmitLoadValue(farArgs[0], ctx, 1);
 
                 int callerBank = ctx == null ? 0 : ctx.Bank;
@@ -3488,6 +3644,7 @@ static class CodeGenerator
 
             if (string.Equals(funcName, "__assert", StringComparison.Ordinal))
             {
+                // Test the condition through the byte-value path and evaluate an optional code only on failure.
                 Expr[] assertArgs = args ?? Array.Empty<Expr>();
                 if (assertArgs.Length != 1 && assertArgs.Length != 2)
                 {
@@ -3506,6 +3663,7 @@ static class CodeGenerator
                 return;
             }
 
+            // Try built-in expansion, small-body inlining and register arguments before the general call ABI.
             if (TryEmitKitaqfcIntrinsicCall(funcName, args, ctx))
                 return;
 
@@ -3516,6 +3674,7 @@ static class CodeGenerator
                 return;
 
             FieldInfo[] parameters;
+            // Prefer a visible prototype; recognized compatibility intrinsics can supply synthetic parameter types.
             bool haveVisiblePrototype = _functionParameters.TryGetValue(funcName, out parameters);
             parameters = parameters ?? Array.Empty<FieldInfo>();
             args = args ?? Array.Empty<Expr>();
@@ -3534,6 +3693,7 @@ static class CodeGenerator
                 return;
             }
 
+            // Reserve full storage width for every ordinary argument, including aggregate payloads.
             int totalArgBytes = 0;
             for (int i = 0; i < parameters.Length; i++)
             {
@@ -3552,6 +3712,7 @@ static class CodeGenerator
                 return;
             }
 
+            // Stage argument values away from the shared call area so nested calls cannot overwrite earlier arguments.
             int[] scratch = AcquireTemps(totalArgBytes);
             if (Program.ErrorCount > 0) return;
 
@@ -3560,6 +3721,7 @@ static class CodeGenerator
                 int offset = 0;
                 for (int i = 0; i < args.Length; i++)
                 {
+                    // Evaluate ordinary arguments in source order, copying aggregate bytes into the reserved scratch slots.
                     int argSize = GetStorageSize(parameters[i].Type);
                     if (IsAggregateType(parameters[i].Type))
                     {
@@ -3585,6 +3747,7 @@ static class CodeGenerator
                     offset += argSize;
                 }
 
+                // Publish all staged bytes to the shared call argument area immediately before dispatch.
                 for (int i = 0; i < totalArgBytes; i++)
                 {
                     EmitAsm("LDA", Mem(scratch[i]));
@@ -3603,6 +3766,8 @@ static class CodeGenerator
             }
         }
 
+        // Use A/X arguments only for an enabled fastcall target with at most two scalar-normalized bytes.
+        // Cross-bank calls fall back to the ordinary argument-area path.
         bool TryEmitFastCallV2(string funcName, Expr[] args, FunctionContext ctx, FilePosition source, int expectedReturnSize)
         {
             if (!Program.AbiFastCall || !IsFunctionFastCall(funcName)) return false;
@@ -3631,6 +3796,7 @@ static class CodeGenerator
             }
             else
             {
+                // For two byte arguments, evaluate the right argument first and preserve it while loading the left into A.
                 int rightTemp = AcquireTemp();
                 try
                 {
@@ -3649,6 +3815,7 @@ static class CodeGenerator
             return true;
         }
 
+        // Consider a visible small function body in a compatible bank, excluding direct self-inlining and aggregate returns.
         bool TryEmitSmallInlineCall(string funcName, Expr[] args, FunctionContext ctx, int expectedReturnSize)
         {
             if (!Program.EnableSmallFunctionAutoInline || string.IsNullOrEmpty(funcName)) return false;
@@ -3668,6 +3835,7 @@ static class CodeGenerator
             if (fields.Length != args.Length) return false;
             if (!IsSmallInlineCandidate(body, fields.Length)) return false;
 
+            // Substitute actual expression nodes for parameter names; no new parameter storage is created here.
             var subst = new Dictionary<string, Expr>(StringComparer.Ordinal);
             for (int i = 0; i < fields.Length; i++) subst[fields[i].Name] = args[i];
 
@@ -3687,6 +3855,7 @@ static class CodeGenerator
                 return true;
             }
 
+            // An unused return value permits a small statement body only when it contains no return statement.
             if (expectedReturnSize == 0 && !ContainsUnsafeInlineConstruct(body) && !ContainsReturnStatement(body))
             {
                 EmitStatement(SubstituteExpr(body, subst), ctx);
@@ -3696,11 +3865,13 @@ static class CodeGenerator
             return false;
         }
 
+        // Append the applied call-lowering decision and its reason to the compiler report.
         void RecordInlineDecision(FunctionContext ctx, string callee, string kind, string reason, bool applied)
         {
             _inlineDecisions.Add(new InlineDecisionInfo { Caller = ctx == null ? "<none>" : ctx.Name, Callee = callee ?? "", Kind = kind ?? "", Reason = reason ?? "", Applied = applied });
         }
 
+        // Limit expression-tree size using parameter count and the current caller hotness hint.
         bool IsSmallInlineCandidate(Expr body, int parameterCount)
         {
             if (body == null) return false;
@@ -3709,6 +3880,7 @@ static class CodeGenerator
             return CountExprNodes(body) <= budget;
         }
 
+        // Search expression children and expression arrays recursively for a return node.
         bool ContainsReturnStatement(Expr expr)
         {
             if (expr == null) return false;
@@ -3721,6 +3893,8 @@ static class CodeGenerator
             return false;
         }
 
+        // Reject the listed local/control-flow/assembly node forms before expression substitution.
+        // This structural filter does not analyze actual argument side effects.
         bool ContainsUnsafeInlineConstruct(Expr expr)
         {
             if (expr == null) return false;
@@ -3734,6 +3908,7 @@ static class CodeGenerator
             return false;
         }
 
+        // Count expression nodes recursively; non-expression metadata does not contribute to the budget.
         int CountExprNodes(Expr expr)
         {
             if (expr == null) return 0;
@@ -3746,6 +3921,7 @@ static class CodeGenerator
             return count;
         }
 
+        // Replace matching name nodes recursively while retaining source locations on rebuilt expressions.
         Expr SubstituteExpr(Expr expr, Dictionary<string, Expr> subst)
         {
             if (expr == null || subst == null || subst.Count == 0) return expr;
@@ -3775,17 +3951,23 @@ static class CodeGenerator
             return changed ? Expr.Make(next).WithSource(expr.Source) : expr;
         }
 
+        // Expand recognized public intrinsics into register accesses, inline code or shared helper calls.
+        // Return true for a recognized name even when its arguments produce a diagnostic.
         bool TryEmitKitaqfcIntrinsicCall(string funcName, Expr[] args, FunctionContext ctx)
         {
             args = args ?? Array.Empty<Expr>();
+            // Check exact arity before indexing an intrinsic argument array.
             bool Need(int n)
             {
                 if (args.Length == n) return true;
                 Program.Error("error KQ0000: {0} expects {1} argument(s), got {2}.", funcName, n, args.Length);
                 return false;
             }
+            // Request a byte value for hardware registers and byte-width helper arguments.
             void Load1(Expr e) { EmitLoadValue(e, ctx, 1); }
+            // Evaluate once, then store A at the requested CPU address.
             void Store1(Expr e, int addr) { Load1(e); EmitAsm("STA", Mem(addr)); }
+            // Stage the address before reading PPUSTATUS to reset the latch, then write high and low bytes to PPUADDR.
             void PpuAddr(Expr e)
             {
                 int[] t = AcquireTemps(2);
@@ -3802,6 +3984,7 @@ static class CodeGenerator
                 }
                 finally { ReleaseTemps(t); }
             }
+            // Route the FDS namespace through mapper-specific validation before ordinary intrinsic dispatch.
             if (funcName.StartsWith("__fds_", StringComparison.Ordinal))
                 return EmitFdsIntrinsicCall(funcName, args, ctx, Need, Load1);
 
@@ -3819,12 +4002,14 @@ static class CodeGenerator
                 case "__memset_small":
                     if (TryEmitMemcpyOrMemsetInline(funcName, args, ctx, isSet: true, lenIndex: 2, lenSize: 1)) return true;
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,1,1}, "__memset_small");
+                // These fixed-size copies bypass the variable-length helper argument area.
                 case "__copy16":
                     if (!Need(2)) return true;
                     EmitFixedMemcpy(args[0], args[1], 16, ctx); return true;
                 case "__copy32":
                     if (!Need(2)) return true;
                     EmitFixedMemcpy(args[0], args[1], 32, ctx); return true;
+                // Geometry helpers receive byte coordinates; the size array describes ABI packing, not result width.
                 case "__xy_in_rect":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1,1,1,1}, "__xy_in_rect");
                 case "__manhattan":
@@ -3844,6 +4029,7 @@ static class CodeGenerator
                 case "__bit_toggle":
                     if (TryEmitBitIntrinsicInline(funcName, args, ctx)) return true;
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,2}, "__bit_toggle");
+                // Arithmetic variants share argument packing here; signed/fixed-point arithmetic is implemented by their named helpers.
                 case "__mul16x8": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,1}, funcName);
                 case "__smul16x8": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,1}, funcName);
                 case "__mul8x8_hi": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1}, funcName);
@@ -3857,12 +4043,14 @@ static class CodeGenerator
                 case "__sdot3_q8_8": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,2,2,1,1,1}, funcName);
                 case "__sdot2_q1_7": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,2,1,1}, funcName);
                 case "__sdot3_q1_7": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,2,2,1,1,1}, funcName);
+                // Pass a word seed to the RNG helper; the zero-argument generator is called directly below.
                 case "__rng_seed":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2}, "__rng_seed");
                 case "__rng8":
                     if (!Need(0)) return true;
                     EmitAsm("JSR", Abs("__rng8"));
                     return true;
+                // Far-memory helpers pack the address, bank and length arguments according to their explicit byte/word signatures.
                 case "__far_memcpy":
                 case "__farmemcpy":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,1,2,2}, "__far_memcpy");
@@ -3870,42 +4058,51 @@ static class CodeGenerator
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,2}, "__farpeek8");
                 case "__farpeek16":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,2}, "__farpeek16");
+                // Rendering controls update the software PPUMASK shadow as well as the hardware register.
                 case "__ppu_on":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Imm(0x1E)); EmitAsm("STA", Mem(_runtimePpuMaskShadowAddress)); EmitAsm("STA", Mem(0x2001)); return true;
                 case "__ppu_off":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Imm(0)); EmitAsm("STA", Mem(_runtimePpuMaskShadowAddress)); EmitAsm("STA", Mem(0x2001)); return true;
+                // Keep the supplied mask available for later runtime code that restores PPU state.
                 case "__ppu_mask_set":
                     if (!Need(1)) return true;
                     Store1(args[0], _runtimePpuMaskShadowAddress); EmitAsm("STA", Mem(0x2001)); return true;
+                // Update the PPUCTRL shadow before writing the hardware register.
                 case "__ppu_ctrl_set":
                     if (!Need(1)) return true;
                     Store1(args[0], _runtimePpuCtrlShadowAddress); EmitAsm("STA", Mem(0x2000)); return true;
+                // Direct PPU address/data access does not wait for a safe rendering interval here.
                 case "__ppu_addr":
                     if (!Need(1)) return true;
                     PpuAddr(args[0]); return true;
                 case "__ppu_data":
                     if (!Need(1)) return true;
                     Load1(args[0]); EmitAsm("STA", Mem(0x2007)); return true;
+                // Reading PPUSTATUS also has hardware side effects; this is not a side-effect-free status cache.
                 case "__ppu_read_status":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Mem(0x2002)); return true;
                 case "__scroll_latch_reset":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Mem(0x2002)); return true;
+                // Store both scroll components, reset the write latch, then emit the X/Y pair.
                 case "__scroll_set":
                     if (!Need(2)) return true;
                     Store1(args[0], _runtimeScrollXAddress); Store1(args[1], _runtimeScrollYAddress);
                     EmitAsm("LDA", Mem(0x2002)); EmitAsm("LDA", Mem(_runtimeScrollXAddress)); EmitAsm("STA", Mem(0x2005)); EmitAsm("LDA", Mem(_runtimeScrollYAddress)); EmitAsm("STA", Mem(0x2005)); return true;
+                // Changing X rewrites both latch bytes, using the retained Y component.
                 case "__scroll_x_set":
                     if (!Need(1)) return true;
                     Store1(args[0], _runtimeScrollXAddress);
                     EmitAsm("LDA", Mem(0x2002)); EmitAsm("LDA", Mem(_runtimeScrollXAddress)); EmitAsm("STA", Mem(0x2005)); EmitAsm("LDA", Mem(_runtimeScrollYAddress)); EmitAsm("STA", Mem(0x2005)); return true;
+                // Changing Y rewrites both latch bytes, using the retained X component.
                 case "__scroll_y_set":
                     if (!Need(1)) return true;
                     Store1(args[0], _runtimeScrollYAddress);
                     EmitAsm("LDA", Mem(0x2002)); EmitAsm("LDA", Mem(_runtimeScrollXAddress)); EmitAsm("STA", Mem(0x2005)); EmitAsm("LDA", Mem(_runtimeScrollYAddress)); EmitAsm("STA", Mem(0x2005)); return true;
+                // Modify only the NMI-enable bit in the PPUCTRL shadow and publish the new register value.
                 case "__nmi_enable":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Mem(_runtimePpuCtrlShadowAddress)); EmitAsm("ORA", Imm(0x80)); EmitAsm("STA", Mem(_runtimePpuCtrlShadowAddress)); EmitAsm("STA", Mem(0x2000)); return true;
@@ -3914,13 +4111,17 @@ static class CodeGenerator
                     EmitAsm("LDA", Mem(_runtimePpuCtrlShadowAddress)); EmitAsm("AND", Imm(0x7F)); EmitAsm("STA", Mem(_runtimePpuCtrlShadowAddress)); EmitAsm("STA", Mem(0x2000)); return true;
                 case "__irq_disable": if (!Need(0)) return true; EmitAsm("SEI"); return true;
                 case "__irq_enable": if (!Need(0)) return true; EmitAsm("CLI"); return true;
+                // Return the saved processor status in A after masking IRQs; restore consumes a status byte, not a Boolean.
                 case "__irq_save": if (!Need(0)) return true; EmitAsm("PHP"); EmitAsm("SEI"); EmitAsm("PLA"); return true;
                 case "__irq_restore": if (!Need(1)) return true; Load1(args[0]); EmitAsm("PHA"); EmitAsm("PLP"); return true;
                 case "__nmi_wait": if (!Need(0)) return true; EmitAsm("JSR", Abs("__nmi_wait")); return true;
+                // Return the current NMI counter byte; callers decide how to compare it with their previous value.
                 case "__nmi_ready": if (!Need(0)) return true; EmitAsm("LDA", Mem(_runtimeNmiCounterAddress)); return true;
+                // Reset OAMADDR and transfer page 02; the page-selecting variant evaluates its own byte argument.
                 case "__oam_dma": if (!Need(0)) return true; EmitAsm("LDA", Imm(0)); EmitAsm("STA", Mem(0x2003)); EmitAsm("LDA", Imm(0x02)); EmitAsm("STA", Mem(0x4014)); return true;
                 case "__oam_dma_page": if (!Need(1)) return true; EmitAsm("LDA", Imm(0)); EmitAsm("STA", Mem(0x2003)); Load1(args[0]); EmitAsm("STA", Mem(0x4014)); return true;
                 case "__mapper_id": if (!Need(0)) return true; EmitAsm("LDA", Imm(Program.NesMapperProfile.MapperNumber & 0xFF)); return true;
+                // Validate constant SUROM switch-bank numbers on this path and record mapper-writing functions.
                 case "__prg_bank_set":
                 case "__bankswitch":
                     if (!Need(1)) return true;
@@ -3931,21 +4132,25 @@ static class CodeGenerator
                     }
                     _mapperWritingFunctions.Add(_currentFunctionName);
                     Load1(args[0]); EmitAsm("JSR", Abs("__kq_prg_set_bank_a")); return true;
+                // Controller sampling is delegated to runtime helpers; mask-only accessors below operate on supplied snapshots.
                 case "__pad_read1": if (!Need(0)) return true; EmitAsm("JSR", Abs("__pad_read1")); return true;
                 case "__pad_read2": if (!Need(0)) return true; EmitAsm("JSR", Abs("__pad_read2")); return true;
                 case "__pad_read1_safe": if (!Need(0)) return true; EmitAsm("JSR", Abs("__pad_read1_safe")); return true;
                 case "__pad_read2_safe": if (!Need(0)) return true; EmitAsm("JSR", Abs("__pad_read2_safe")); return true;
                 case "__pad_buttons": if (!Need(1)) return true; Load1(args[0]); EmitAsm("AND", Imm(0x0F)); return true;
                 case "__pad_dirs": if (!Need(1)) return true; Load1(args[0]); EmitAsm("AND", Imm(0xF0)); return true;
+                // Expansion-controller names alias the corresponding D1 sampling helpers.
                 case "__pad_read1_d1":
                 case "__exp_pad_read1":
                     if (!Need(0)) return true; EmitAsm("JSR", Abs("__pad_read1_d1")); return true;
                 case "__pad_read2_d1":
                 case "__exp_pad_read2":
                     if (!Need(0)) return true; EmitAsm("JSR", Abs("__pad_read2_d1")); return true;
+                // Both microphone aliases call the same second-controller helper.
                 case "__joypad2p_voice":
                 case "__mic_read2p":
                     if (!Need(0)) return true; EmitAsm("JSR", Abs("__mic_read2p")); return true;
+                // Expose the selected raw port bits; trigger/light helpers below perform their own interpretation.
                 case "__zapper_raw1": if (!Need(0)) return true; EmitAsm("LDA", Mem(0x4016)); EmitAsm("AND", Imm(0x18)); return true;
                 case "__zapper_raw2": if (!Need(0)) return true; EmitAsm("LDA", Mem(0x4017)); EmitAsm("AND", Imm(0x18)); return true;
                 case "__zapper_trigger1": if (!Need(0)) return true; EmitAsm("JSR", Abs("__zapper_trigger1")); return true;
@@ -3956,9 +4161,11 @@ static class CodeGenerator
                 case "__zapper_light2":
                 case "__zapper_light":
                     if (!Need(0)) return true; EmitAsm("JSR", Abs("__zapper_light2")); return true;
+                // Keyboard detection has no arguments; scan destinations are words and row/column selectors are bytes.
                 case "__fkb_detect": if (!Need(0)) return true; EmitAsm("JSR", Abs("__fkb_detect")); return true;
                 case "__fkb_scan": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2}, funcName);
                 case "__fkb_read_row_col": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1}, funcName);
+                // Optical and serial operations delegate timing to their shared runtime helpers.
                 case "__rob_flash": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1}, funcName);
                 case "__rob_pulse": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1}, funcName);
                 case "__rob_send_byte": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1}, funcName);
@@ -3966,37 +4173,47 @@ static class CodeGenerator
                 case "__serial_rx_bit": if (!Need(0)) return true; EmitAsm("JSR", Abs("__serial_rx_bit")); return true;
                 case "__midi_out_byte": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1}, funcName);
                 case "__midi_in_byte": if (!Need(0)) return true; EmitAsm("JSR", Abs("__midi_in_byte")); return true;
+                // Pack MIDI message fields as bytes; real-time commands below load their fixed status byte directly.
                 case "__midi_note_on": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1}, funcName);
                 case "__midi_note_off": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1}, funcName);
                 case "__midi_control_change": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1}, funcName);
                 case "__midi_program_change": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1}, funcName);
+                // Real-time MIDI commands send a single status byte through the common output routine.
                 case "__midi_clock": if (!Need(0)) return true; EmitAsm("LDA", Imm(0xF8)); EmitAsm("JSR", Abs("__kq_midi_out_a")); return true;
                 case "__midi_start": if (!Need(0)) return true; EmitAsm("LDA", Imm(0xFA)); EmitAsm("JSR", Abs("__kq_midi_out_a")); return true;
                 case "__midi_continue": if (!Need(0)) return true; EmitAsm("LDA", Imm(0xFB)); EmitAsm("JSR", Abs("__kq_midi_out_a")); return true;
                 case "__midi_stop": if (!Need(0)) return true; EmitAsm("LDA", Imm(0xFC)); EmitAsm("JSR", Abs("__kq_midi_out_a")); return true;
+                // Sprite helpers modify the runtime OAM representation; DMA remains a separate operation.
                 case "__oam_clear": if (!Need(0)) return true; EmitAsm("JSR", Abs("__oam_clear")); return true;
                 case "__sprite_set": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1,1,1}, funcName);
                 case "__sprite_move": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1}, funcName);
                 case "__sprite_tile": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1}, funcName);
                 case "__sprite_attr": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1}, funcName);
                 case "__sprite_hide": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1}, funcName);
+                // Metasprites combine three byte arguments with a word-sized data pointer.
                 case "__metasprite_draw": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1,2}, funcName);
+                // Direct VRAM transfers use word addresses/pointers and byte transfer counts.
                 case "__vram_write": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,2,1}, funcName);
                 case "__vram_fill": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,1,1}, funcName);
+                // Nametable and attribute helpers receive byte coordinates, values and optional table selectors.
                 case "__nametable_put": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1}, funcName);
                 case "__nametable_put_nt": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1,1}, funcName);
                 case "__nametable_rect": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1,1,1}, funcName);
                 case "__nametable_rect_nt": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1,1,1,1}, funcName);
                 case "__attr_set": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1}, funcName);
                 case "__attr_set_nt": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1,1}, funcName);
+                // Palette loaders receive a word pointer; their fixed data layout is handled by the runtime helper.
                 case "__palette_bg_load": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2}, funcName);
                 case "__palette_sp_load": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2}, funcName);
+                // Clear queued length and readiness; the overflow indicator has a separate reset intrinsic.
                 case "__vramq_clear":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Imm(0)); EmitAsm("STA", Mem(_runtimeVramqLenAddress)); EmitAsm("STA", Mem(_runtimeVramqReadyAddress)); return true;
+                // Publish queue readiness without executing its writes in the calling context.
                 case "__vramq_commit":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Imm(1)); EmitAsm("STA", Mem(_runtimeVramqReadyAddress)); return true;
+                // Execute the queue through the shared runtime routine; this dispatch adds no timing wait.
                 case "__vramq_exec":
                     if (!Need(0)) return true;
                     EmitAsm("JSR", Abs("__vramq_exec")); return true;
@@ -4009,12 +4226,15 @@ static class CodeGenerator
                 case "__vramq_clear_overflow":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Imm(0)); EmitAsm("STA", Mem(_runtimeVramqOverflowAddress)); return true;
+                // Return the fixed queue-storage capacity byte; this is distinct from queued length or remaining space.
                 case "__vramq_capacity":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Imm(VramqCapacity)); return true;
+                // Queue helpers encode single writes, pointer-based copies or fills using explicit argument widths.
                 case "__vramq_put": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,1}, funcName);
                 case "__vramq_copy": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,2,1}, funcName);
                 case "__vramq_fill": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2,1,1}, funcName);
+                // CHR selection is implemented only for CNROM/MMC3 here; SUROM reserves the shared register bit for PRG selection.
                 case "__chr_bank_set":
                 case "__chr_bank_set0":
                 case "__chr_bank_set1":
@@ -4032,11 +4252,13 @@ static class CodeGenerator
                     if (!Need(1)) return true;
                     _mapperWritingFunctions.Add(_currentFunctionName);
                     return EmitMirroringSet(args[0], ctx);
+                // MMC3 scanline setup writes the latch and reload registers; enabling the IRQ is a separate operation.
                 case "__mapper_irq_set":
                 case "__irq_scanline_set":
                     if (!Need(1)) return true;
                     if (Program.NesMapperProfile.MapperKind != NesMapperKind.Mmc3) { Program.Error("error KQFC2402: __irq_scanline_set currently supports MMC3 only."); return true; }
                     Load1(args[0]); EmitAsm("STA", Mem(0xC000)); EmitAsm("STA", Mem(0xC001)); return true;
+                // For MMC3, the write address controls enable/disable behavior; the current A value is not interpreted here.
                 case "__mapper_irq_enable":
                     if (!Need(0)) return true;
                     if (Program.NesMapperProfile.MapperKind == NesMapperKind.Mmc3) EmitAsm("STA", Mem(0xE001)); else Program.Error("error KQFC2403: __mapper_irq_enable currently supports MMC3 only."); return true;
@@ -4044,12 +4266,15 @@ static class CodeGenerator
                 case "__mapper_irq_ack":
                     if (!Need(0)) return true;
                     if (Program.NesMapperProfile.MapperKind == NesMapperKind.Mmc3) EmitAsm("STA", Mem(0xE000)); else Program.Error("error KQFC2404: {0} currently supports MMC3 only.", funcName); return true;
+                // Sprite-zero synchronization and split scrolling remain delegated to their timing-sensitive runtime helpers.
                 case "__sprite0_wait_hit": if (!Need(0)) return true; EmitAsm("JSR", Abs("__sprite0_wait_hit")); return true;
                 case "__split_scroll_sprite0": return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1}, funcName);
             }
             return false;
         }
 
+        // Inline constant lengths from 0 through 32; memset additionally requires a constant fill byte.
+        // Longer or dynamic transfers fall back to the named helper.
         bool TryEmitMemcpyOrMemsetInline(string funcName, Expr[] args, FunctionContext ctx, bool isSet, int lenIndex, int lenSize)
         {
             args = args ?? Array.Empty<Expr>();
@@ -4059,6 +4284,7 @@ static class CodeGenerator
             if (len < 0 || len > 32) return false;
             int valueConst = 0;
             if (isSet && !TryEvaluateConstant(args[1], out valueConst)) return false;
+            // A zero-length expansion emits no address or fill evaluation in this helper.
             if (len == 0) return true;
             if (isSet)
             {
@@ -4082,6 +4308,8 @@ static class CodeGenerator
             return true;
         }
 
+        // Stage destination and source pointers, then emit a forward byte copy with constant Y offsets.
+        // This helper does not provide overlap-safe memmove behavior.
         void EmitFixedMemcpy(Expr dstExpr, Expr srcExpr, int len, FunctionContext ctx)
         {
             int[] ptr = AcquireTemps(4);
@@ -4103,6 +4331,7 @@ static class CodeGenerator
             finally { ReleaseTemps(ptr); }
         }
 
+        // Specialize widths 8, 16, 32 and 64 into word shifts and a byte-X addition, returning A/X.
         bool TryEmitMapIndexInline(Expr[] args, FunctionContext ctx)
         {
             args = args ?? Array.Empty<Expr>();
@@ -4136,11 +4365,14 @@ static class CodeGenerator
             return true;
         }
 
+        // Use a constant bit index within a 256-byte indexed window to emit one byte read/modify/write.
+        // Bit tests leave the masked bit value in A, without normalizing it to 1.
         bool TryEmitBitIntrinsicInline(string funcName, Expr[] args, FunctionContext ctx)
         {
             args = args ?? Array.Empty<Expr>();
             if (args.Length != 2) return false;
             if (!TryEvaluateConstant(args[1], out int bit) || bit < 0) return false;
+            // Split the bit number into a byte displacement and an in-byte mask.
             int byteOffset = bit >> 3;
             if (byteOffset > 255) return false;
             int mask = 1 << (bit & 7);
@@ -4177,10 +4409,12 @@ static class CodeGenerator
             return true;
         }
 
+        // Translate the byte mode into the selected mapper register format; unsupported mappers produce a diagnostic.
         bool EmitMirroringSet(Expr modeExpr, FunctionContext ctx)
         {
             switch (Program.NesMapperProfile.MapperKind)
             {
+                // Combine one-screen selection in bit 4 with the current PRG bank, converting the runtime bank from one-based numbering.
                 case NesMapperKind.Axrom:
                     EmitLoadValue(modeExpr, ctx, 1);
                     EmitAsm("AND", Imm(1));
@@ -4194,6 +4428,7 @@ static class CodeGenerator
                     EmitAsm("STA", Mem(0x8000));
                     return true;
 
+                // Expand the four logical modes into the four two-bit nametable selectors in MMC5 register 5105.
                 case NesMapperKind.Mmc5:
                     EmitLoadValue(modeExpr, ctx, 1);
                     EmitAsm("AND", Imm(3));
@@ -4231,6 +4466,7 @@ static class CodeGenerator
                     EmitAsm("AND", Imm(1));
                     EmitAsm("STA", Mem(0xA000));
                     return true;
+                // Select FME7 register 0C, then publish the two-bit mirroring value.
                 case NesMapperKind.Fme7:
                     EmitLoadValue(modeExpr, ctx, 1);
                     EmitAsm("AND", Imm(3));
@@ -4252,6 +4488,7 @@ static class CodeGenerator
                         EmitAsm("LDA", Imm(0x80));
                         EmitAsm("STA", Mem(0x8000));
                         EmitAsm("LDA", Mem(_runtimeMmc1ControlShadowAddress));
+                        // The SUROM control write runs under a saved IRQ status and preserves its control-register shadow.
                         EmitMmc1SerialWriteFromA(0x8000, "mmc1_surom_control");
                         EmitAsm("PLP");
                         return true;
@@ -4264,6 +4501,7 @@ static class CodeGenerator
                     EmitAsm("STA", Mem(0x8000));
                     EmitAsm("LDX", Imm(5));
                     {
+                        // Shift the ordinary MMC1 control value out least-significant bit first over five writes.
                         string loop = NewGeneratedLabel("mmc1_mirroring_loop");
                         _assembly.Add(Expr.Make(Tag.Label, loop));
                         EmitAsm("LDA", Mem(_runtimeMapperTempAddress));
@@ -4280,6 +4518,7 @@ static class CodeGenerator
             }
         }
 
+        // Permit the availability query on every mapper, then enforce FDS for all remaining names.
         bool EmitFdsIntrinsicCall(string funcName, Expr[] args, FunctionContext ctx, Func<int, bool> Need, Action<Expr> Load1)
         {
             bool isFds = Program.NesMapperProfile.MapperKind == NesMapperKind.Fds;
@@ -4296,17 +4535,20 @@ static class CodeGenerator
             }
             switch (funcName)
             {
+                // Return the inverted low status bit from 4032; this operation does not wait.
                 case "__fds_disk_ready":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Mem(0x4032));
                     EmitAsm("AND", Imm(0x01));
                     EmitAsm("EOR", Imm(0x01));
                     return true;
+                // Expose status bit 2 as the raw mask value 0 or 4, rather than a normalized Boolean.
                 case "__fds_side":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Mem(0x4032));
                     EmitAsm("AND", Imm(0x04));
                     return true;
+                // Read status register 4030 directly; the caller receives its complete byte value.
                 case "__fds_error":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Mem(0x4030));
@@ -4316,6 +4558,7 @@ static class CodeGenerator
                     if (!Need(0)) return true;
                     EmitAsm("JSR", Abs("__fds_wait_ready"));
                     return true;
+                // Enable the configured disk/sound register gates and initialize the two sound-control registers.
                 case "__fds_sound_enable":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Imm(0x83));
@@ -4325,12 +4568,14 @@ static class CodeGenerator
                     EmitAsm("LDA", Imm(0x00));
                     EmitAsm("STA", Mem(0x408A));
                     return true;
+                // Wave, modulation and frequency operations pass word arguments to their dedicated helpers.
                 case "__fds_wave_load":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2}, "__fds_wave_load");
                 case "__fds_mod_load":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2}, "__fds_mod_load");
                 case "__fds_freq_set":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {2}, "__fds_freq_set");
+                // Clamp the direct volume field to six bits and set the fixed-volume control bit.
                 case "__fds_volume_set":
                     if (!Need(1)) return true;
                     Load1(args[0]);
@@ -4340,22 +4585,26 @@ static class CodeGenerator
                     return true;
                 case "__fds_env_set":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,1,1}, "__fds_env_set");
+                // File helpers use byte identifiers and word memory addresses/lengths.
                 case "__fds_load_file":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,2}, "__fds_load_file");
                 case "__fds_save_file":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1,2,2}, "__fds_save_file");
+                // Overlay/bank-loading helpers receive a byte bank selector; residency queries use the runtime state below.
                 case "__fds_load_overlay":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1}, "__fds_load_overlay");
                 case "__fds_load_bank":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1}, "__fds_load_bank");
                 case "__fds_require_bank":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1}, "__fds_require_bank");
+                // Read the runtime resident-bank byte without starting a disk transfer.
                 case "__fds_current_bank":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Mem(_runtimeFdsResidentBankAddress));
                     return true;
                 case "__fds_is_bank_resident":
                     return EmitKitaqfcHelperCall(funcName, args, ctx, new[] {1}, "__fds_is_bank_resident");
+                // Read the first byte of the emitted overlay-function table as its count.
                 case "__fds_overlay_function_count":
                     if (!Need(0)) return true;
                     EmitAsm("LDA", Abs("__kq_fds_overlay_function_table"));
@@ -4374,6 +4623,8 @@ static class CodeGenerator
             }
         }
 
+        // Evaluate arguments into scratch bytes before copying them into the shared call area and issuing JSR.
+        // Each signature entry is normalized to one or two bytes.
         bool EmitKitaqfcHelperCall(string publicName, Expr[] args, FunctionContext ctx, int[] parameterSizes, string helperName)
         {
             args = args ?? Array.Empty<Expr>();
@@ -4402,6 +4653,8 @@ static class CodeGenerator
             return true;
         }
 
+        // Update named one- or two-byte storage, scaling pointer steps by the complete pointee size.
+        // The sign of delta selects increment versus decrement; the optional result is the updated value.
         void EmitIncDec(Expr target, int delta, FunctionContext ctx, bool wantValue)
         {
             string name;
@@ -4476,11 +4729,14 @@ static class CodeGenerator
                 LoadFromSlot(slot);
         }
 
+        // Request the one-byte expression-loading path.
         void EmitLoadA(Expr expr, FunctionContext ctx)
         {
             EmitLoadValue(expr, ctx, 1);
         }
 
+        // Emit a scalar result in A, or A/X for a word, selecting code by expression shape.
+        // Requested width is normalized to one or two bytes; aggregate values use separate copy paths.
         void EmitLoadValue(Expr expr, FunctionContext ctx, int expectedSize)
         {
             expectedSize = NormalizeScalarSize(expectedSize);
@@ -4521,6 +4777,7 @@ static class CodeGenerator
                         EmitAsm("LDA", Imm(slot.ConstantValue & 0xFF));
                         if (expectedSize == 2) EmitAsm("LDX", Imm((slot.ConstantValue >> 8) & 0xFF));
                     }
+                    // Named readonly data and arrays produce their base address, not a load of the first element.
                     else if (slot.IsReadonlyData || (slot.Type != null && slot.Type.IsArray))
                     {
                         if (slot.IsReadonlyData)
@@ -4577,6 +4834,7 @@ static class CodeGenerator
                 }
             }
 
+            // Delegate addressable scalar reads, then clear X when a byte lvalue is requested as a word.
             if (expr.Match(Tag.Load, out lhs) || expr.Match(Tag.Index, out lhs, out rhs) || expr.Match(Tag.Field, out lhs, out name))
             {
                 EmitLoadIndirectValue(expr, ctx, expectedSize);
@@ -4589,6 +4847,7 @@ static class CodeGenerator
             {
                 if (TryEmitAggregateAssignment(expr, lhs, rhs, ctx))
                     return;
+                // Use the destination width for assignment, retaining its stored result and zero-extending byte assignments when requested.
                 int assignSize = GetLvalueSize(lhs, ctx, requireWritable: true);
                 if (Program.ErrorCount > 0) return;
                 EmitLoadValue(rhs, ctx, assignSize);
@@ -4601,6 +4860,7 @@ static class CodeGenerator
             string opName;
             if (expr.Match(Tag.AssignModify, out opName, out lhs, out rhs))
             {
+                // Rebuild compound assignment as a load/operation/store expression for the normal assignment path.
                 EmitLoadValue(Expr.Make(Tag.Assign, lhs, Expr.Make(opName, lhs, rhs).WithSource(expr.Source)).WithSource(expr.Source), ctx, expectedSize);
                 return;
             }
@@ -4614,6 +4874,7 @@ static class CodeGenerator
                         "struct/union call result cannot be used as a scalar value");
                     return;
                 }
+                // Call using the declared result width before widening a byte return for its enclosing expression.
                 int returnSize = NormalizeScalarSize(DetermineExprSize(expr, ctx));
                 EmitCall(expr.Source, funcExpr, args, ctx, returnSize);
                 if (expectedSize == 2 && returnSize == 1)
@@ -4635,6 +4896,7 @@ static class CodeGenerator
 
             if (expr.Match(Tag.Cast, out castType, out castSubexpr))
             {
+                // Load enough bytes for either side of the cast, then clear X for a byte cast used as a word.
                 int castSize = NormalizeScalarSize(TypeStorageSize(castType));
                 int sourceSize = NormalizeScalarSize(DetermineExprSize(castSubexpr, ctx));
                 int loadSize = Math.Max(castSize, sourceSize);
@@ -4645,6 +4907,7 @@ static class CodeGenerator
             }
             if (expr.Match(Tag.Conditional, out condExpr, out trueExpr, out falseExpr))
             {
+                // Select one conditional arm at runtime and request the same result width from either arm.
                 string falseLabel = NewGeneratedLabel("cond_false");
                 string doneLabel = NewGeneratedLabel("cond_done");
                 EmitBranchIfFalse(condExpr, falseLabel, ctx);
@@ -4682,6 +4945,7 @@ static class CodeGenerator
                     return;
                 }
 
+                // Load the named pre-update value before emitting the separate storage increment.
                 LoadFromSlot(postIncSlot);
                 EmitIncDec(lhs, +1, ctx, false);
                 if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1) EmitAsm("LDX", Imm(0));
@@ -4713,6 +4977,7 @@ static class CodeGenerator
                     return;
                 }
 
+                // Load the named pre-update value before emitting the separate storage decrement.
                 LoadFromSlot(postDecSlot);
                 EmitIncDec(lhs, -1, ctx, false);
                 if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1) EmitAsm("LDX", Imm(0));
@@ -4729,6 +4994,7 @@ static class CodeGenerator
                 EmitBinaryMath(lhs, rhs, ctx, add: false, size: expectedSize);
                 return;
             }
+            // Delegate multiplication/division/remainder to their arithmetic emitters rather than the requested-width add/subtract path.
             if (expr.Match(Tag.Multiply, out lhs, out rhs))
             {
                 EmitMultiplyExpression(lhs, rhs, ctx);
@@ -4744,6 +5010,7 @@ static class CodeGenerator
                 EmitDivideOrModulusExpression(lhs, rhs, ctx, wantRemainder: true);
                 return;
             }
+            // Bitwise operations apply independently to the requested byte or word result.
             if (expr.Match(Tag.BitwiseAnd, out lhs, out rhs))
             {
                 EmitBinaryLogical("AND", lhs, rhs, ctx, expectedSize);
@@ -4802,6 +5069,7 @@ static class CodeGenerator
                 EmitShift(lhs, rhs, ctx, expectedSize, leftShift: false);
                 return;
             }
+            // Materialize comparison/logical results as a Boolean byte, clearing X for word contexts.
             if (IsComparisonTag(expr.Tag) || expr.Tag == Tag.LogicalAnd || expr.Tag == Tag.LogicalOr)
             {
                 EmitBooleanToA(expr, ctx);
@@ -4812,6 +5080,7 @@ static class CodeGenerator
             Program.Error("error KQ0000: --target=nes phase 5 unsupported expression tag in function {0}: {1}", ctx.Name, expr.Tag);
         }
 
+        // Scale integer offsets for pointer addition/subtraction; otherwise emit byte or word arithmetic.
         void EmitBinaryMath(Expr lhs, Expr rhs, FunctionContext ctx, bool add, int size)
         {
             CType leftType;
@@ -4835,6 +5104,7 @@ static class CodeGenerator
                     {
                         EmitAsm("STA", Mem(baseTemps[0]));
                         EmitAsm("STX", Mem(baseTemps[1]));
+                        // Fold the element displacement into the 16-bit address domain before adding or subtracting it.
                         int scaledOffset = (constOffset * stride) & 0xFFFF;
                         if (add)
                             EmitAddConstantToPair(baseTemps[0], baseTemps[1], scaledOffset);
@@ -4853,6 +5123,7 @@ static class CodeGenerator
                 int[] ptrTemps = AcquireTemps(4);
                 try
                 {
+                    // For dynamic pointer arithmetic, stage the scaled offset before evaluating the base address.
                     EmitLoadValue(offsetExpr, ctx, 2);
                     EmitAsm("STA", Mem(ptrTemps[0]));
                     EmitAsm("STX", Mem(ptrTemps[1]));
@@ -4927,6 +5198,8 @@ static class CodeGenerator
             }
         }
 
+        // Use an immediate RHS when possible; otherwise stage it while evaluating the left operand.
+        // Word operations combine low and high bytes separately.
         void EmitBinaryLogical(string mnemonic, Expr lhs, Expr rhs, FunctionContext ctx, int size)
         {
             size = NormalizeScalarSize(size);
@@ -4976,6 +5249,7 @@ static class CodeGenerator
             }
         }
 
+        // Prefer an eligible constant lookup, otherwise emit a sixteen-step word multiply returning the low result word.
         void EmitMultiplyExpression(Expr lhs, Expr rhs, FunctionContext ctx)
         {
             bool signedArithmetic = ShouldUseSignedArithmetic(lhs, rhs, ctx);
@@ -5005,6 +5279,7 @@ static class CodeGenerator
                     EmitAsm("AND", Imm(0x80));
                     EmitAsm("STA", Mem(signTemp));
 
+                    // For signed multiplication, save the result sign and convert operands to magnitudes before the unsigned loop.
                     string leftPositive = NewGeneratedLabel("mul_lhs_positive");
                     EmitAsm("LDA", Mem(leftHi));
                     EmitAsm("BPL", Rel(leftPositive));
@@ -5022,6 +5297,7 @@ static class CodeGenerator
                 EmitAsm("STA", Mem(resultLo));
                 EmitAsm("STA", Mem(resultHi));
 
+                // Accumulate selected shifted multiplicands while consuming one multiplier bit per iteration.
                 string loopLabel = NewGeneratedLabel("mul_loop");
                 string skipAddLabel = NewGeneratedLabel("mul_skip_add");
                 EmitAsm("LDY", Imm(16));
@@ -5048,6 +5324,7 @@ static class CodeGenerator
 
                 if (signedArithmetic)
                 {
+                    // Restore the product sign after the magnitude loop; arithmetic remains modulo 65536.
                     string signDone = NewGeneratedLabel("mul_sign_done");
                     EmitAsm("LDA", Mem(signTemp));
                     EmitAsm("BEQ", Rel(signDone));
@@ -5064,6 +5341,7 @@ static class CodeGenerator
             }
         }
 
+        // Prefer an eligible constant lookup, otherwise emit word division and select quotient or remainder in A/X.
         void EmitDivideOrModulusExpression(Expr lhs, Expr rhs, FunctionContext ctx, bool wantRemainder)
         {
             bool signedArithmetic = ShouldUseSignedArithmetic(lhs, rhs, ctx);
@@ -5099,6 +5377,7 @@ static class CodeGenerator
                     EmitAsm("AND", Imm(0x80));
                     EmitAsm("STA", Mem(signQTemp));
 
+                    // Save separate quotient/remainder signs, then divide operand magnitudes.
                     string dividendPositive = NewGeneratedLabel("div_dividend_positive");
                     EmitAsm("LDA", Mem(dividendHi));
                     EmitAsm("BPL", Rel(dividendPositive));
@@ -5114,6 +5393,7 @@ static class CodeGenerator
 
                 EmitAsm("LDA", Mem(divisorLo));
                 EmitAsm("ORA", Mem(divisorHi));
+                // A zero divisor takes the explicit zero-quotient/zero-remainder path in this emitter.
                 string nonZeroDivisor = NewGeneratedLabel("div_non_zero");
                 string doneLabel = NewGeneratedLabel("div_done");
                 EmitAsm("BNE", Rel(nonZeroDivisor));
@@ -5132,6 +5412,7 @@ static class CodeGenerator
                 EmitAsm("STA", Mem(remainderLo));
                 EmitAsm("STA", Mem(remainderHi));
 
+                // Shift sixteen dividend bits into the remainder, subtracting the divisor when the unsigned remainder is large enough.
                 string loopLabel = NewGeneratedLabel("div_loop");
                 string skipSubtract = NewGeneratedLabel("div_skip_subtract");
                 string doSubtract = NewGeneratedLabel("div_do_subtract");
@@ -5173,6 +5454,7 @@ static class CodeGenerator
 
                 if (signedArithmetic)
                 {
+                    // Apply the operand-sign XOR to the quotient and the original dividend sign to the remainder.
                     string quotientSignDone = NewGeneratedLabel("div_qsign_done");
                     EmitAsm("LDA", Mem(signQTemp));
                     EmitAsm("BEQ", Rel(quotientSignDone));
@@ -5196,6 +5478,7 @@ static class CodeGenerator
             }
         }
 
+        // Load words unchanged; extend byte operands with either zero or their sign byte into the requested temporary pair.
         void EmitLoadArithmeticOperandToTemps(Expr expr, FunctionContext ctx, int loTemp, int hiTemp, bool signExtend)
         {
             int operandSize = NormalizeScalarSize(DetermineExprSize(expr, ctx));
@@ -5228,6 +5511,7 @@ static class CodeGenerator
             EmitAsm("STA", Mem(hiTemp));
         }
 
+        // Negate a word in place by complementing both bytes and propagating the low-byte increment carry.
         void EmitNegateTempPair(int loTemp, int hiTemp)
         {
             EmitAsm("LDA", Mem(loTemp));
@@ -5241,6 +5525,7 @@ static class CodeGenerator
             EmitAsm("STA", Mem(hiTemp));
         }
 
+        // Emit constant-count logical shifts; right shifts retain the source width before any requested truncation.
         void EmitShift(Expr lhs, Expr rhs, FunctionContext ctx, int size, bool leftShift)
         {
             size = NormalizeScalarSize(size);
@@ -5255,6 +5540,7 @@ static class CodeGenerator
                 return;
             }
 
+            // Normalize the shift count modulo 16, including counts outside the native word width.
             shiftCount &= 0x0F;
             EmitLoadValue(lhs, ctx, operandSize);
             if (Program.ErrorCount > 0 || shiftCount == 0)
@@ -5297,6 +5583,7 @@ static class CodeGenerator
             }
         }
 
+        // Materialize a branch condition as exactly 0 or 1 in A.
         void EmitBooleanToA(Expr expr, FunctionContext ctx)
         {
             string trueLabel = NewGeneratedLabel("bool_true");
@@ -5309,6 +5596,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Label, endLabel).WithSource(expr.Source));
         }
 
+        // Invert a supported short condition around an absolute JMP so the destination need not fit a relative offset.
         void EmitLongBranch(string mnemonic, string targetLabel, FilePosition source)
         {
             string skipLabel = NewGeneratedLabel("branch_skip");
@@ -5335,6 +5623,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Label, skipLabel).WithSource(source));
         }
 
+        // Lower false branches with short-circuit logic and width-aware zero tests.
         void EmitBranchIfFalse(Expr expr, string falseLabel, FunctionContext ctx)
         {
             if (expr == null || expr.Match(Tag.Empty)) return;
@@ -5364,6 +5653,7 @@ static class CodeGenerator
 
             if (expr.Match(Tag.LogicalOr, out lhs, out rhs))
             {
+                // A true left operand satisfies OR without evaluating the right operand on this emitted path.
                 string skipFalse = NewGeneratedLabel("or_true_skip");
                 EmitBranchIfTrue(lhs, skipFalse, ctx);
                 EmitBranchIfFalse(rhs, falseLabel, ctx);
@@ -5380,6 +5670,7 @@ static class CodeGenerator
             if (DetermineExprSize(expr, ctx) == 2)
             {
                 EmitLoadValue(expr, ctx, 2);
+                // A nonzero high byte is sufficient to avoid the false branch; otherwise test A as the low byte.
                 string nonZeroLabel = NewGeneratedLabel("nz16_skip_false");
                 EmitAsm("CPX", Imm(0));
                 EmitAsm("BNE", Rel(nonZeroLabel));
@@ -5393,6 +5684,7 @@ static class CodeGenerator
             EmitLongBranch("BEQ", falseLabel, expr.Source);
         }
 
+        // Lower true branches with short-circuit logic and a test of both bytes for word-valued conditions.
         void EmitBranchIfTrue(Expr expr, string trueLabel, FunctionContext ctx)
         {
             if (expr == null || expr.Match(Tag.Empty)) return;
@@ -5415,6 +5707,7 @@ static class CodeGenerator
 
             if (expr.Match(Tag.LogicalAnd, out lhs, out rhs))
             {
+                // A false left operand stops AND before the right operand is evaluated on this emitted path.
                 string skipTrue = NewGeneratedLabel("and_false_skip");
                 EmitBranchIfFalse(lhs, skipTrue, ctx);
                 EmitBranchIfTrue(rhs, trueLabel, ctx);
@@ -5449,6 +5742,7 @@ static class CodeGenerator
             EmitLongBranch("BNE", trueLabel, expr.Source);
         }
 
+        // Invert the comparison for a false branch, then choose unsigned-byte or promoted word comparison.
         void EmitComparison(string cmpTag, Expr lhs, Expr rhs, string targetLabel, bool branchWhenTrue, FunctionContext ctx, FilePosition source)
         {
             if (!branchWhenTrue)
@@ -5459,9 +5753,11 @@ static class CodeGenerator
 
             int size = Math.Max(DetermineExprSize(lhs, ctx), DetermineExprSize(rhs, ctx));
             size = NormalizeScalarSize(size);
-            if (size == 2)
+            // Signed byte operands require word promotion before comparison.
+            bool signedComparison = ShouldUseSignedArithmetic(lhs, rhs, ctx);
+            if (size == 2 || signedComparison)
             {
-                EmitComparison16(cmpTag, lhs, rhs, targetLabel, ctx, source);
+                EmitComparison16(cmpTag, lhs, rhs, targetLabel, ctx, source, signedComparison);
                 return;
             }
 
@@ -5507,16 +5803,33 @@ static class CodeGenerator
             Program.Error("error KQ0000: unsupported comparison tag for --target=nes phase 5: {0}", cmpTag);
         }
 
-        void EmitComparison16(string cmpTag, Expr lhs, Expr rhs, string targetLabel, FunctionContext ctx, FilePosition source)
+        // Compare high bytes first and use low bytes to resolve ties; signed order is represented by biased high bytes.
+        void EmitComparison16(string cmpTag, Expr lhs, Expr rhs, string targetLabel, FunctionContext ctx, FilePosition source, bool signedComparison)
         {
-            int[] rhsTemps = AcquireTemps(2);
+            int[] rhsTemps = AcquireTemps(signedComparison ? 4 : 2);
             try
             {
-                EmitLoadValue(rhs, ctx, 2);
-                EmitAsm("STA", Mem(rhsTemps[0]));
-                EmitAsm("STX", Mem(rhsTemps[1]));
-
-                EmitLoadValue(lhs, ctx, 2);
+                if (signedComparison)
+                {
+                    // Extend each operand according to its own signedness, then flip
+                    // both sign bits so the existing unsigned high/low tests retain signed order.
+                    EmitLoadArithmeticOperandToTemps(rhs, ctx, rhsTemps[0], rhsTemps[1], IsSignedArithmeticOperand(rhs, ctx));
+                    EmitAsm("LDA", Mem(rhsTemps[1]));
+                    EmitAsm("EOR", Imm(0x80));
+                    EmitAsm("STA", Mem(rhsTemps[1]));
+                    EmitLoadArithmeticOperandToTemps(lhs, ctx, rhsTemps[2], rhsTemps[3], IsSignedArithmeticOperand(lhs, ctx));
+                    EmitAsm("LDA", Mem(rhsTemps[3]));
+                    EmitAsm("EOR", Imm(0x80));
+                    EmitAsm("TAX");
+                    EmitAsm("LDA", Mem(rhsTemps[2]));
+                }
+                else
+                {
+                    EmitLoadValue(rhs, ctx, 2);
+                    EmitAsm("STA", Mem(rhsTemps[0]));
+                    EmitAsm("STX", Mem(rhsTemps[1]));
+                    EmitLoadValue(lhs, ctx, 2);
+                }
 
                 if (cmpTag == Tag.Equal)
                 {
@@ -5592,6 +5905,7 @@ static class CodeGenerator
             }
         }
 
+        // Leave byte comparison flags from CMP, staging a dynamic RHS before evaluating the left operand.
         void EmitCompareOperands8(Expr lhs, Expr rhs, FunctionContext ctx)
         {
             int rhsConst;
@@ -5616,6 +5930,7 @@ static class CodeGenerator
             }
         }
 
+        // Resolve locals before globals and readonly data, then expose named constants as synthetic value slots.
         bool TryResolveStorage(FunctionContext ctx, string name, out StorageSlot slot)
         {
             if (ctx != null && ctx.Locals.TryGetValue(name, out slot)) return true;
@@ -5640,6 +5955,7 @@ static class CodeGenerator
             return false;
         }
 
+        // Resolve one pointer layer and look up the named member in the registered aggregate layout.
         bool TryResolveField(Expr baseExpr, string fieldName, FunctionContext ctx, out FieldInfo field)
         {
             field = null;
@@ -5672,6 +5988,7 @@ static class CodeGenerator
             return true;
         }
 
+        // Use aggregate layout alignment when available; other stored values use one- or two-byte alignment.
         int GetNaturalAlignment(CType type)
         {
             int size = GetStorageSize(type);
@@ -5689,6 +6006,7 @@ static class CodeGenerator
             return type != null && type.WithoutConst().IsStructOrUnion;
         }
 
+        // Require the same unqualified aggregate kind and name with a known nonnegative layout size.
         bool IsSameCompleteAggregateType(CType leftType, CType rightType)
         {
             if (!IsAggregateType(leftType) || !IsAggregateType(rightType)) return false;
@@ -5699,6 +6017,7 @@ static class CodeGenerator
             return _aggregates.TryGetValue(left.Name, out info) && info != null && info.TotalSize >= 0;
         }
 
+        // Calculate object size recursively, resolving expression-based array extents and returning zero for unknown layouts.
         int GetStorageSize(CType type)
         {
             if (type == null) return 0;
@@ -5735,6 +6054,7 @@ static class CodeGenerator
             return 0;
         }
 
+        // Lease a scratch byte; exhaustion reports a compile error before returning the diagnostic fallback slot.
         int AcquireTemp()
         {
             if (_freeTemps.Count == 0)
@@ -5745,6 +6065,7 @@ static class CodeGenerator
             return _freeTemps.Pop();
         }
 
+        // Lease a group only when all requested scratch bytes are available; exhaustion leaves the pool unchanged.
         int[] AcquireTemps(int count)
         {
             if (count <= 0) return Array.Empty<int>();
@@ -5758,12 +6079,14 @@ static class CodeGenerator
             return temps;
         }
 
+        // Return a scratch address once, avoiding duplicate free-pool entries.
         void ReleaseTemp(int temp)
         {
             if (!_freeTemps.Contains(temp))
                 _freeTemps.Push(temp);
         }
 
+        // Release grouped scratch bytes in reverse order so later leases can reuse the original ordering.
         void ReleaseTemps(int[] temps)
         {
             if (temps == null) return;
@@ -5771,6 +6094,7 @@ static class CodeGenerator
                 ReleaseTemp(temps[i]);
         }
 
+        // Evaluate supported constant forms without emitting instructions; unresolved forms return false.
         bool TryEvaluateConstant(Expr expr, out int value)
         {
             if (expr == null)
@@ -5796,6 +6120,7 @@ static class CodeGenerator
                 args[0] != null &&
                 args[0].Match(Tag.Name, out string bankedSymbol))
             {
+                // Resolve __bankof from placement metadata and keep the byte-sized bank value.
                 value = ResolveSymbolBank(bankedSymbol) & 0xFF;
                 return true;
             }
@@ -5823,6 +6148,7 @@ static class CodeGenerator
             {
                 return TryEvaluateOffsetof(offsetofType, offsetofPath, out value);
             }
+            // This evaluator currently passes casts through; destination-width conversion is not applied here.
             if (expr.Match(Tag.Cast, out CType _ctype, out sub)) return TryEvaluateConstant(sub, out value);
             if (expr.Match(Tag.LogicalNot, out sub))
             {
@@ -5874,6 +6200,7 @@ static class CodeGenerator
                 int a, b;
                 if (TryEvaluateConstant(left, out a) && TryEvaluateConstant(right, out b) && b != 0)
                 {
+                    // This constant path divides masked unsigned words, independently of runtime signed arithmetic.
                     value = ((a & 0xFFFF) / (b & 0xFFFF)) & 0xFFFF;
                     return true;
                 }
@@ -5928,6 +6255,7 @@ static class CodeGenerator
                 int a, b;
                 if (TryEvaluateConstant(left, out a) && TryEvaluateConstant(right, out b))
                 {
+                    // Apply the host right shift before masking the result; the count is reduced modulo 16.
                     value = (a >> (b & 15)) & 0xFFFF;
                     return true;
                 }
@@ -6009,6 +6337,7 @@ static class CodeGenerator
             return false;
         }
 
+        // Walk a dotted member path through aggregate layouts and accumulate member offsets.
         bool TryEvaluateOffsetof(CType type, string path, out int value)
         {
             value = 0;
@@ -6054,6 +6383,7 @@ static class CodeGenerator
             return true;
         }
 
+        // Prefer constant value width, then inferred scalar type, then expression-shape fallbacks.
         int DetermineExprSize(Expr expr, FunctionContext ctx)
         {
             if (expr == null) return 1;
@@ -6118,6 +6448,7 @@ static class CodeGenerator
                    tag == Tag.GreaterThan || tag == Tag.GreaterThanOrEqual;
         }
 
+        // Use registered function placement, then a configured override, with bank one as the named-function fallback.
         int GetFunctionBank(string functionName)
         {
             if (string.IsNullOrEmpty(functionName)) return 0;
@@ -6129,6 +6460,7 @@ static class CodeGenerator
             return 1;
         }
 
+        // Unspecified placement sorts after functions with an explicit order.
         int GetFunctionPlacementOrder(string functionName)
         {
             CFunctionInfo info;
@@ -6143,6 +6475,7 @@ static class CodeGenerator
             return _functionInfos.TryGetValue(functionName, out info) && info != null && info.HasFixedBank;
         }
 
+        // Resolve function or readonly-data bank metadata, including readonly placement overrides.
         int ResolveSymbolBank(string symbolName)
         {
             if (string.IsNullOrEmpty(symbolName)) return 0;
@@ -6157,6 +6490,7 @@ static class CodeGenerator
             return 0;
         }
 
+        // Emit a placement marker only when the requested bank or fixedness changes.
         void EmitPlacement(int bank, bool isFixed)
         {
             int fixedInt = isFixed ? 1 : 0;
@@ -6177,6 +6511,7 @@ static class CodeGenerator
             return EnsureBankThunkCore(targetName, targetBank, useFdsOverlay: true);
         }
 
+        // Intern a bank/target-specific thunk and preserve first-request order for later emission.
         string EnsureBankThunkCore(string targetName, int targetBank, bool useFdsOverlay)
         {
             string prefix = useFdsOverlay ? "__kq_fds_thunk" : "__kq_thunk";
@@ -6197,6 +6532,7 @@ static class CodeGenerator
             return thunkName;
         }
 
+        // Aggregate repeated call sites by caller, callee and dispatch kind for the call report.
         void RecordCallEdge(string callee, int calleeBank, string kind, bool viaThunk, bool viaFarcall)
         {
             string key = string.Format("{0}|{1}|{2}|{3}|{4}", _currentFunctionName, callee, kind, viaThunk ? 1 : 0, viaFarcall ? 1 : 0);
@@ -6219,6 +6555,7 @@ static class CodeGenerator
             edge.Count++;
         }
 
+        // Include a raw JSR in call reports only when its symbolic target is a known function.
         void RecordRawAssemblyCall(string mnemonic, AsmOperand operand)
         {
             if (!string.Equals(mnemonic, "JSR", StringComparison.OrdinalIgnoreCase) ||
@@ -6237,6 +6574,7 @@ static class CodeGenerator
                 viaFarcall: false);
         }
 
+        // Require enabled FDS overlay support and a different overlay bank before choosing an overlay thunk.
         bool ShouldUseFdsOverlayThunk(int callerBank, int calleeBank)
         {
             return Program.NesMapperProfile.HasFds &&
@@ -6246,6 +6584,7 @@ static class CodeGenerator
                 calleeBank != callerBank;
         }
 
+        // Select an FDS overlay thunk, safe direct JSR, or implicit mapper-bank thunk and record that choice.
         void EmitResolvedCall(string funcName, int callerBank, FilePosition source, int expectedReturnSize)
         {
             int calleeBank = GetFunctionBank(funcName);
@@ -6280,6 +6619,7 @@ static class CodeGenerator
             RecordCallEdge(funcName, calleeBank, "bank_thunk", viaThunk: true, viaFarcall: false);
         }
 
+        // Translate the logical bank in A into mapper-specific register writes using runtime scratch and shadow state.
         void EmitMapperSwitchSequence()
         {
             switch (Program.NesMapperProfile.BankSwitchKind)
@@ -6287,6 +6627,7 @@ static class CodeGenerator
                 case NesBankSwitchKind.None:
                     return;
 
+                // These profiles select a 16 KiB window using the zero-based physical bank.
                 case NesBankSwitchKind.Uxrom:
                 case NesBankSwitchKind.Vrc6:
                     EmitAsm("SEC");
@@ -6294,6 +6635,7 @@ static class CodeGenerator
                     EmitAsm("STA", Mem(0x8000));
                     return;
 
+                // Combine the zero-based PRG selection with the saved single-screen mirroring bits.
                 case NesBankSwitchKind.Axrom:
                     EmitAsm("SEC");
                     EmitAsm("SBC", Imm(1));
@@ -6302,6 +6644,7 @@ static class CodeGenerator
                     EmitAsm("STA", Mem(0x8000));
                     return;
 
+                // Reset the serial latch and write five low-to-high bits of the PRG bank number.
                 case NesBankSwitchKind.Mmc1:
                     EmitAsm("SEC");
                     EmitAsm("SBC", Imm(1));
@@ -6321,6 +6664,7 @@ static class CodeGenerator
                     }
                     return;
 
+                // Preserve processor status and mask IRQs while updating the outer and inner SUROM bank fields.
                 case NesBankSwitchKind.Mmc1Surom:
                     EmitAsm("PHP");
                     EmitAsm("SEI");
@@ -6347,6 +6691,7 @@ static class CodeGenerator
                     EmitAsm("PLP");
                     return;
 
+                // Map a logical 16 KiB bank through consecutive 8 KiB registers six and seven.
                 case NesBankSwitchKind.Mmc3:
                     EmitAsm("SEC");
                     EmitAsm("SBC", Imm(1));
@@ -6364,6 +6709,7 @@ static class CodeGenerator
                     EmitAsm("STA", Mem(0x8001));
                     return;
 
+                // Select consecutive 8 KiB ROM banks with the ROM-selection bit set in both register values.
                 case NesBankSwitchKind.Mmc5:
                     EmitAsm("SEC");
                     EmitAsm("SBC", Imm(1));
@@ -6377,6 +6723,7 @@ static class CodeGenerator
                     EmitAsm("STA", Mem(0x5115));
                     return;
 
+                // Write the two consecutive 8 KiB banks comprising the logical 16 KiB window.
                 case NesBankSwitchKind.Vrc7:
                     EmitAsm("SEC");
                     EmitAsm("SBC", Imm(1));
@@ -6389,6 +6736,7 @@ static class CodeGenerator
                     EmitAsm("STA", Mem(0x8010));
                     return;
 
+                // Select registers eight and nine in turn to map consecutive 8 KiB PRG banks.
                 case NesBankSwitchKind.Fme7:
                     EmitAsm("SEC");
                     EmitAsm("SBC", Imm(1));
@@ -6411,6 +6759,7 @@ static class CodeGenerator
             }
         }
 
+        // Serialize five bits from A to one MMC1 register, using the second mapper scratch byte and X as a counter.
         void EmitMmc1SerialWriteFromA(int address, string labelKind)
         {
             EmitAsm("STA", Mem(_runtimeMapperTemp2Address));
@@ -6425,12 +6774,14 @@ static class CodeGenerator
             EmitAsm("BNE", Rel(loop));
         }
 
+        // Combine the configured horizontal/vertical mirroring with fixed-last-bank PRG mode.
         static int GetMmc1ControlValue()
         {
             int mirroring = Program.NesCartridge.Mirroring == NesMirroringKind.Vertical ? 2 : 3;
             return 0x0C | mirroring;
         }
 
+        // Emit intrinsic helper functions in fixed bank zero, including shared implementation aliases.
         void EmitIntrinsicHelpers()
         {
             EmitPlacement(0, true);
@@ -6472,17 +6823,20 @@ static class CodeGenerator
             EmitHelperSplitScrollSprite0();
         }
 
+        // Mark a helper function boundary for assembly, placement and reachability processing.
         void EmitHelperStart(string name)
         {
             _assembly.Add(Expr.Make(Tag.Function, name));
         }
 
+        // Tail-jump from a public alias to its shared implementation without adding a return frame.
         void EmitHelperAlias(string publicName, string targetName)
         {
             EmitHelperStart(publicName);
             EmitAsm("JMP", Abs(targetName));
         }
 
+        // Snapshot the NMI counter and spin until it changes; the runtime NMI handler must be active.
         void EmitHelperNmiWait()
         {
             EmitHelperStart("__nmi_wait");
@@ -6496,6 +6850,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Latch controllers, read eight serial data bits and assemble the result from the least significant bit upward.
         void EmitHelperPadRead(string name, int port)
         {
             EmitHelperStart(name);
@@ -6524,6 +6879,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Repeat paired controller reads until both samples agree; the retry loop has no fixed attempt limit.
         void EmitHelperPadSafe(string name, string readHelper)
         {
             EmitHelperStart(name);
@@ -6537,6 +6893,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Build the same eight-button result using the selected input line mask instead of data bit zero.
         void EmitHelperPadReadMasked(string name, int port, int mask)
         {
             EmitHelperStart(name);
@@ -6565,6 +6922,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Read an input mask and return exactly zero or one, optionally interpreting a cleared bit as active.
         void EmitNormalizeBoolFromMask(int port, int mask, bool invert)
         {
             string zero = NewGeneratedLabel("bool_zero");
@@ -6580,6 +6938,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Expose microphone/trigger signals directly and invert the active-low light-sensor bit.
         void EmitHelperMicAndZapper()
         {
             EmitHelperStart("__mic_read2p");
@@ -6594,6 +6953,7 @@ static class CodeGenerator
             EmitNormalizeBoolFromMask(0x4017, 0x08, true);
         }
 
+        // Emit six NOPs for a fixed short keyboard settling interval without using loop registers.
         void EmitKeyboardDelayShort()
         {
             for (int i = 0; i < 6; i++) EmitAsm("NOP");
@@ -6605,8 +6965,10 @@ static class CodeGenerator
             for (int i = 0; i < 25; i++) EmitAsm("NOP");
         }
 
+        // Emit keyboard scan, row/column read and detection helpers using the controller-port matrix signals.
         void EmitHelperFamilyBasicKeyboard()
         {
+            // Reset the matrix and store two masked samples for each of nine rows into the caller buffer.
             EmitHelperStart("__fkb_scan");
             EmitAsm("LDA", Imm(0x05));
             EmitAsm("STA", Mem(0x4016));
@@ -6635,6 +6997,7 @@ static class CodeGenerator
             EmitAsm("STA", Mem(0x4016));
             EmitAsm("RTS");
 
+            // Advance to the requested row, select its low/high sample and return raw bits 1 through 4.
             EmitHelperStart("__fkb_read_row_col");
             EmitAsm("LDA", Imm(0x05));
             EmitAsm("STA", Mem(0x4016));
@@ -6666,6 +7029,7 @@ static class CodeGenerator
             EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("RTS");
 
+            // Check for the expected selected-row and disabled-matrix bit patterns.
             EmitHelperStart("__fkb_detect");
             EmitAsm("LDA", Imm(0x09));
             EmitAsm("STA", Mem(CallArgBase));
@@ -6687,8 +7051,10 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Emit rendering-mask flashes, frame-counted pulses and a most-significant-bit-first optical byte sequence.
         void EmitHelperRobOptical()
         {
+            // Select the rendering mask from the argument and wait for one NMI-counter change.
             EmitHelperStart("__rob_flash");
             EmitAsm("LDA", Mem(CallArgBase));
             string black = NewGeneratedLabel("rob_black");
@@ -6705,6 +7071,7 @@ static class CodeGenerator
             EmitAsm("JSR", Abs("__nmi_wait"));
             EmitAsm("RTS");
 
+            // Emit the requested number of enabled frames followed by the requested disabled frames.
             EmitHelperStart("__rob_pulse");
             EmitAsm("LDX", Mem(CallArgBase));
             string onLoop = NewGeneratedLabel("rob_on_loop");
@@ -6732,6 +7099,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Label, pulseDone));
             EmitAsm("RTS");
 
+            // Choose a four/two or two/four frame pulse pattern for each current high bit.
             EmitHelperStart("__rob_send_byte");
             EmitAsm("LDA", Mem(CallArgBase));
             EmitAsm("STA", Mem(_runtimeIntrinsicTmp0Address));
@@ -6764,18 +7132,21 @@ static class CodeGenerator
 
         void EmitMidiBitDelay()
         {
-            // Approximate 31250 bps bit cell without clobbering X/Y loop counters.
+            // Emit 29 NOPs without changing X/Y; serial instruction overhead is additional.
             for (int i = 0; i < 29; i++) EmitAsm("NOP");
         }
 
+        // Emit controller-port serial bit I/O and byte/message helpers using a shared delay sequence.
         void EmitHelperSerialMidi()
         {
+            // Write the low argument bit to the controller strobe port.
             EmitHelperStart("__serial_tx_bit");
             EmitAsm("LDA", Mem(CallArgBase));
             EmitAsm("AND", Imm(1));
             EmitAsm("STA", Mem(0x4016));
             EmitAsm("RTS");
 
+            // Normalize input data bit four to a zero/one return value.
             EmitHelperStart("__serial_rx_bit");
             EmitAsm("LDA", Mem(0x4017));
             EmitAsm("AND", Imm(0x10));
@@ -6789,6 +7160,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Label, rxd));
             EmitAsm("RTS");
 
+            // Send a low start bit, eight least-significant-first data bits and a high stop bit.
             EmitHelperStart("__kq_midi_out_a");
             EmitAsm("STA", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("LDA", Imm(0));
@@ -6817,6 +7189,7 @@ static class CodeGenerator
             EmitAsm("JSR", Abs("__kq_midi_out_a"));
             EmitAsm("RTS");
 
+            // Wait for a low start signal, sample eight bits into a shift register and return the assembled byte.
             EmitHelperStart("__midi_in_byte");
             string waitStart = NewGeneratedLabel("midi_wait_start");
             _assembly.Add(Expr.Make(Tag.Label, waitStart));
@@ -6846,6 +7219,7 @@ static class CodeGenerator
             EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("RTS");
 
+            // Compose the channelized note-on status, then send note and velocity arguments.
             EmitHelperStart("__midi_note_on");
             EmitAsm("LDA", Mem(CallArgBase));
             EmitAsm("AND", Imm(0x0F));
@@ -6857,6 +7231,7 @@ static class CodeGenerator
             EmitAsm("JSR", Abs("__kq_midi_out_a"));
             EmitAsm("RTS");
 
+            // Compose the note-off status and transmit its two supplied data bytes.
             EmitHelperStart("__midi_note_off");
             EmitAsm("LDA", Mem(CallArgBase));
             EmitAsm("AND", Imm(0x0F));
@@ -6868,6 +7243,7 @@ static class CodeGenerator
             EmitAsm("JSR", Abs("__kq_midi_out_a"));
             EmitAsm("RTS");
 
+            // Compose a control-change status and transmit controller number and value.
             EmitHelperStart("__midi_control_change");
             EmitAsm("LDA", Mem(CallArgBase));
             EmitAsm("AND", Imm(0x0F));
@@ -6879,6 +7255,7 @@ static class CodeGenerator
             EmitAsm("JSR", Abs("__kq_midi_out_a"));
             EmitAsm("RTS");
 
+            // Compose a program-change status followed by its single data byte.
             EmitHelperStart("__midi_program_change");
             EmitAsm("LDA", Mem(CallArgBase));
             EmitAsm("AND", Imm(0x0F));
@@ -6889,6 +7266,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Hide all 64 shadow-OAM sprites by writing an off-screen Y value every four bytes at page two.
         void EmitHelperOamClear()
         {
             EmitHelperStart("__oam_clear");
@@ -6902,6 +7280,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Reset the PPU address latch, then write the high and low bytes of the first pointer argument.
         void EmitPpuAddrFromCallArg()
         {
             EmitAsm("LDA", Mem(0x2002));
@@ -6911,6 +7290,7 @@ static class CodeGenerator
             EmitAsm("STA", Mem(0x2006));
         }
 
+        // Stream the byte-counted source into PPUDATA; a zero count writes no bytes.
         void EmitHelperVramWrite()
         {
             EmitHelperStart("__vram_write");
@@ -6929,6 +7309,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Write the fill value to PPUDATA for a byte-sized count, with zero treated as an empty fill.
         void EmitHelperVramFill()
         {
             EmitHelperStart("__vram_fill");
@@ -6946,6 +7327,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Calculate the first nametable cell address and write one tile through the PPU data port.
         void EmitHelperNametablePut()
         {
             EmitHelperStart("__nametable_put");
@@ -6973,6 +7355,7 @@ static class CodeGenerator
         }
 
 
+        // Select one of four nametables, calculate its cell address and write the supplied tile.
         void EmitHelperNametablePutNt()
         {
             EmitHelperStart("__nametable_put_nt");
@@ -7007,6 +7390,7 @@ static class CodeGenerator
         }
 
 
+        // Set the supplied palette base and stream sixteen bytes from the caller pointer.
         void EmitHelperPalette(string name, int ppuAddress)
         {
             EmitHelperStart(name);
@@ -7026,6 +7410,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Wait for the current sprite-zero flag to clear, then wait for the next hit; no timeout is emitted.
         void EmitHelperSprite0WaitHit()
         {
             EmitHelperStart("__sprite0_wait_hit");
@@ -7042,6 +7427,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Wait for sprite zero, reset the shared PPU latch and write the two scroll arguments.
         void EmitHelperSplitScrollSprite0()
         {
             EmitHelperStart("__split_scroll_sprite0");
@@ -7054,13 +7440,16 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Emit forward byte-copy/fill loops and their byte-count wrappers, followed by bit-operation helpers.
         void EmitHelperMemoryAndBit()
         {
+            // Promote the byte count to a word by clearing its high byte before entering memcpy.
             EmitHelperStart("__memcpy_small");
             EmitAsm("LDA", Imm(0));
             EmitAsm("STA", Mem(CallArgBase + 5));
             EmitAsm("JMP", Abs("__memcpy"));
 
+            // Advance both argument pointers and decrement the word count in place; overlapping copies are not reversed.
             EmitHelperStart("__memcpy");
             string mloop = NewGeneratedLabel("memcpy_loop");
             string mdone = NewGeneratedLabel("memcpy_done");
@@ -7093,11 +7482,13 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Label, mdone));
             EmitAsm("RTS");
 
+            // Clear the high count byte for the small-fill wrapper.
             EmitHelperStart("__memset_small");
             EmitAsm("LDA", Imm(0));
             EmitAsm("STA", Mem(CallArgBase + 4));
             EmitAsm("JMP", Abs("__memset"));
 
+            // Advance the destination pointer while consuming the word count in the shared argument area.
             EmitHelperStart("__memset");
             string sloop = NewGeneratedLabel("memset_loop");
             string sdone = NewGeneratedLabel("memset_done");
@@ -7131,6 +7522,7 @@ static class CodeGenerator
             EmitBitHelper("__bit_toggle", "toggle");
         }
 
+        // Build a low-three-bit mask and an indexed byte offset, then test or update the selected bit.
         void EmitBitHelper(string name, string op)
         {
             EmitHelperStart(name);
@@ -7152,6 +7544,11 @@ static class CodeGenerator
             EmitAsm("LDA", Mem(CallArgBase + 3));
             EmitAsm("STA", Mem(_runtimeIntrinsicTmp2Address));
             for (int i = 0; i < 3; i++) { EmitAsm("LSR", Mem(_runtimeIntrinsicTmp2Address)); EmitAsm("ROR", Mem(_runtimeIntrinsicTmp1Address)); }
+            // Fold the high displacement into the pointer; indirect-Y adds the low byte and its carry.
+            EmitAsm("LDA", Mem(CallArgBase + 1));
+            EmitAsm("CLC");
+            EmitAsm("ADC", Mem(_runtimeIntrinsicTmp2Address));
+            EmitAsm("STA", Mem(CallArgBase + 1));
             EmitAsm("LDY", Mem(_runtimeIntrinsicTmp1Address));
             EmitAsm("LDA", IndY(CallArgBase));
             switch (op)
@@ -7182,8 +7579,10 @@ static class CodeGenerator
             }
         }
 
+        // Emit word-by-byte multiplication and compose MAC/dot-product helpers from those integer products.
         void EmitHelperMath()
         {
+            // Consume eight multiplier bits and accumulate the low product word in shared temporaries, returning A/X.
             EmitHelperStart("__mul16x8");
             EmitAsm("LDA", Imm(0));
             EmitAsm("STA", Mem(_runtimeIntrinsicTmp0Address));
@@ -7210,6 +7609,7 @@ static class CodeGenerator
             EmitAsm("LDX", Mem(_runtimeIntrinsicTmp1Address));
             EmitAsm("RTS");
 
+            // Zero-extend the byte multiplicand, reuse word multiplication and return its high byte.
             EmitHelperStart("__mul8x8_hi");
             EmitAsm("LDA", Mem(CallArgBase + 1));
             EmitAsm("STA", Mem(_runtimeIntrinsicTmp2Address));
@@ -7221,6 +7621,7 @@ static class CodeGenerator
             EmitAsm("TXA");
             EmitAsm("RTS");
 
+            // Convert signed operands to magnitudes, multiply, then restore the product sign modulo 65536.
             EmitHelperStart("__smul16x8");
             EmitAsm("LDA", Imm(0));
             EmitAsm("STA", Mem(_runtimeIntrinsicTmp2Address));
@@ -7260,6 +7661,7 @@ static class CodeGenerator
             EmitDot3Helper("__sdot3_q8_8", "__smul16x8");
         }
 
+        // Save the accumulator outside the multiply argument bytes, then add it to the selected product.
         void EmitMacHelper(string name, string mulHelper)
         {
             EmitHelperStart(name);
@@ -7280,6 +7682,7 @@ static class CodeGenerator
         }
 
 
+        // Stage the second operand pair and first product in spare argument bytes before accumulating the second product.
         void EmitDot2Helper(string name, string mulHelper)
         {
             EmitHelperStart(name);
@@ -7305,6 +7708,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Preserve all later operands before multiply calls overwrite their input slots; accumulate three low-word products.
         void EmitDot3Helper(string name, string mulHelper)
         {
             EmitHelperStart(name);
@@ -7348,6 +7752,7 @@ static class CodeGenerator
         }
 
 
+        // Emit rectangle tests, byte distance, word map-index arithmetic and persistent RNG state operations.
         void EmitHelperGeometryAndRng()
         {
             EmitHelperStart("__xy_in_rect");
@@ -7399,6 +7804,7 @@ static class CodeGenerator
             EmitAsm("ADC", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("RTS");
 
+            // Save X-coordinate separately while multiplying width by Y, then add X with carry into the high byte.
             EmitHelperStart("__map_index");
             // args: x, y, width. Return y * width + x as u16.
             EmitAsm("LDA", Mem(CallArgBase));      // x
@@ -7421,6 +7827,7 @@ static class CodeGenerator
             EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("RTS");
 
+            // Replace both bytes of the persistent generator state with the supplied seed.
             EmitHelperStart("__rng_seed");
             EmitAsm("LDA", Mem(CallArgBase));
             EmitAsm("STA", Mem(_runtimeRngLoAddress));
@@ -7432,6 +7839,7 @@ static class CodeGenerator
             // 16-bit Galois LFSR: if low bit set, shift right then xor $B400.
             EmitAsm("LDA", Mem(_runtimeRngLoAddress));
             EmitAsm("ORA", Mem(_runtimeRngHiAddress));
+            // Replace the all-zero LFSR state with a deterministic nonzero seed before advancing.
             string seeded = NewGeneratedLabel("rng_seeded");
             EmitAsm("BNE", Rel(seeded));
             EmitAsm("LDA", Imm(0x5A));
@@ -7456,8 +7864,10 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Save the current PRG bank on the CPU stack, perform the read/copy, then restore that bank.
         void EmitHelperFarMemory()
         {
+            // Keep the fetched byte in intrinsic scratch while the bank-switch helper restores the previous mapping.
             EmitHelperStart("__farpeek8");
             // args: bank, addr16. Return A.
             EmitAsm("LDA", Mem(_runtimeCurrentBankAddress));
@@ -7472,6 +7882,7 @@ static class CodeGenerator
             EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("RTS");
 
+            // Retain both fetched bytes across bank restoration and return the word in A/X.
             EmitHelperStart("__farpeek16");
             // args: bank, addr16. Return A=lo, X=hi.
             EmitAsm("LDA", Mem(_runtimeCurrentBankAddress));
@@ -7490,6 +7901,7 @@ static class CodeGenerator
             EmitAsm("LDX", Mem(_runtimeIntrinsicTmp1Address));
             EmitAsm("RTS");
 
+            // Consume the word count while advancing source/destination pointers; zero count still restores the saved bank.
             EmitHelperStart("__far_memcpy");
             // args: dst16, bank, src16, len16.
             EmitAsm("LDA", Mem(_runtimeCurrentBankAddress));
@@ -7530,8 +7942,10 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Encode fixed-size put/fill/copy records and emit the interpreter for a committed queue.
         void EmitHelperVramQueue()
         {
+            // Append tag 3, a little-endian PPU address and one tile byte after reserving four queue bytes.
             EmitHelperStart("__vramq_put");
             EmitVramqOverflowGuard(4);
             EmitAsm("LDA", Imm(3)); EmitAsm("STA", new AsmOperand(_runtimeVramqBufferAddress, AddressMode.AbsoluteX)); EmitAsm("INX");
@@ -7539,6 +7953,7 @@ static class CodeGenerator
             EmitAsm("STX", Mem(_runtimeVramqLenAddress));
             EmitAsm("RTS");
 
+            // Append tag 2, address, byte count and fill value in the interpreter record order.
             EmitHelperStart("__vramq_fill");
             EmitVramqOverflowGuard(5);
             EmitAsm("LDA", Imm(2)); EmitAsm("STA", new AsmOperand(_runtimeVramqBufferAddress, AddressMode.AbsoluteX)); EmitAsm("INX");
@@ -7546,6 +7961,7 @@ static class CodeGenerator
             EmitAsm("STX", Mem(_runtimeVramqLenAddress));
             EmitAsm("RTS");
 
+            // Append tag 1, address, byte count and a source pointer; source data is read when the queue executes.
             EmitHelperStart("__vramq_copy");
             EmitVramqOverflowGuard(6);
             EmitAsm("LDA", Imm(1)); EmitAsm("STA", new AsmOperand(_runtimeVramqBufferAddress, AddressMode.AbsoluteX)); EmitAsm("INX");
@@ -7553,6 +7969,7 @@ static class CodeGenerator
             EmitAsm("STX", Mem(_runtimeVramqLenAddress));
             EmitAsm("RTS");
 
+            // Execute only a ready queue, dispatching by record tag until its length or an unknown tag ends processing.
             EmitHelperStart("__vramq_exec");
             string done = NewGeneratedLabel("vramq_exec_done");
             string loopq = NewGeneratedLabel("vramq_exec_loop");
@@ -7586,6 +8003,7 @@ static class CodeGenerator
             EmitAsm("STX", Mem(CallArgBase + 1));
             EmitAsm("LDA", Mem(0x2002)); EmitAsm("LDA", Mem(_runtimeIntrinsicTmp1Address)); EmitAsm("STA", Mem(0x2006)); EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address)); EmitAsm("STA", Mem(0x2006));
             EmitAsm("LDY", Imm(0));
+            // Keep the next record position outside X while streaming the fill count through Y.
             string fillLoop = NewGeneratedLabel("vramq_fill_loop");
             string fillDone = NewGeneratedLabel("vramq_fill_done");
             _assembly.Add(Expr.Make(Tag.Label, fillLoop));
@@ -7603,6 +8021,7 @@ static class CodeGenerator
             EmitAsm("STX", Mem(CallArgBase + 2));
             EmitAsm("LDA", Mem(0x2002)); EmitAsm("LDA", Mem(_runtimeIntrinsicTmp1Address)); EmitAsm("STA", Mem(0x2006)); EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address)); EmitAsm("STA", Mem(0x2006));
             EmitAsm("LDY", Imm(0));
+            // Read the queued source through indirect-Y addressing, then restore the next record position.
             string copyLoop = NewGeneratedLabel("vramq_copy_loop");
             string copyDone = NewGeneratedLabel("vramq_copy_done");
             _assembly.Add(Expr.Make(Tag.Label, copyLoop));
@@ -7618,6 +8037,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Reject an append that cannot fit its complete record, set overflow and return without changing queue length.
         void EmitVramqOverflowGuard(int recordSize)
         {
             string ok = NewGeneratedLabel("vramq_space_ok");
@@ -7630,6 +8050,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Label, ok));
         }
 
+        // Append one argument byte and advance X to the next queue slot.
         void EmitVramqWriteArgByte(int argOffset)
         {
             EmitAsm("LDA", Mem(CallArgBase + argOffset));
@@ -7637,12 +8058,14 @@ static class CodeGenerator
             EmitAsm("INX");
         }
 
+        // Consume the next two queue bytes as a little-endian PPU address in scratch.
         void EmitVramqReadToTmpAddr()
         {
             EmitAsm("LDA", new AsmOperand(_runtimeVramqBufferAddress, AddressMode.AbsoluteX)); EmitAsm("INX"); EmitAsm("STA", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("LDA", new AsmOperand(_runtimeVramqBufferAddress, AddressMode.AbsoluteX)); EmitAsm("INX"); EmitAsm("STA", Mem(_runtimeIntrinsicTmp1Address));
         }
 
+        // Fill each row from a computed nametable-zero address, advancing the row start by 32 bytes.
         void EmitHelperNametableRect()
         {
             EmitHelperStart("__nametable_rect");
@@ -7678,6 +8101,7 @@ static class CodeGenerator
         }
 
 
+        // Use the selected nametable base, then fill rows while preserving the original row width.
         void EmitHelperNametableRectNt()
         {
             EmitHelperStart("__nametable_rect_nt");
@@ -7720,6 +8144,7 @@ static class CodeGenerator
         }
 
 
+        // Write the full attribute byte covering the requested tile coordinate in nametable zero.
         void EmitHelperAttrSet()
         {
             EmitHelperStart("__attr_set");
@@ -7735,6 +8160,7 @@ static class CodeGenerator
         }
 
 
+        // Select the nametable and write its complete attribute byte; this does not merge a single palette quadrant.
         void EmitHelperAttrSetNt()
         {
             EmitHelperStart("__attr_set_nt");
@@ -7757,8 +8183,10 @@ static class CodeGenerator
         }
 
 
+        // Emit shadow-OAM field updates and terminated metasprite-stream expansion.
         void EmitHelperSprites()
         {
+            // Store Y, tile, attributes and X in hardware OAM byte order for the selected entry.
             EmitHelperStart("__sprite_set");
             EmitSpriteIndexToX();
             EmitAsm("LDA", Mem(CallArgBase + 2)); EmitAsm("STA", new AsmOperand(OamRamBase + 0, AddressMode.AbsoluteX));
@@ -7767,27 +8195,32 @@ static class CodeGenerator
             EmitAsm("LDA", Mem(CallArgBase + 1)); EmitAsm("STA", new AsmOperand(OamRamBase + 3, AddressMode.AbsoluteX));
             EmitAsm("RTS");
 
+            // Replace only the entry coordinates, retaining its tile and attribute bytes.
             EmitHelperStart("__sprite_move");
             EmitSpriteIndexToX();
             EmitAsm("LDA", Mem(CallArgBase + 2)); EmitAsm("STA", new AsmOperand(OamRamBase + 0, AddressMode.AbsoluteX));
             EmitAsm("LDA", Mem(CallArgBase + 1)); EmitAsm("STA", new AsmOperand(OamRamBase + 3, AddressMode.AbsoluteX));
             EmitAsm("RTS");
 
+            // Replace one shadow-OAM tile byte.
             EmitHelperStart("__sprite_tile");
             EmitSpriteIndexToX();
             EmitAsm("LDA", Mem(CallArgBase + 1)); EmitAsm("STA", new AsmOperand(OamRamBase + 1, AddressMode.AbsoluteX));
             EmitAsm("RTS");
 
+            // Replace one shadow-OAM attribute byte.
             EmitHelperStart("__sprite_attr");
             EmitSpriteIndexToX();
             EmitAsm("LDA", Mem(CallArgBase + 1)); EmitAsm("STA", new AsmOperand(OamRamBase + 2, AddressMode.AbsoluteX));
             EmitAsm("RTS");
 
+            // Move the selected sprite off-screen by writing its Y byte.
             EmitHelperStart("__sprite_hide");
             EmitSpriteIndexToX();
             EmitAsm("LDA", Imm(0xF0)); EmitAsm("STA", new AsmOperand(OamRamBase + 0, AddressMode.AbsoluteX));
             EmitAsm("RTS");
 
+            // Expand four-byte records into successive OAM entries until the reserved DX terminator is encountered.
             EmitHelperStart("__metasprite_draw");
             // args: oam_index, base_x, base_y, metasprite_ptr16.
             // stream: dx, dy, tile, attr ... dx=$FF terminates. Returns next OAM index in A.
@@ -7827,6 +8260,7 @@ static class CodeGenerator
             EmitAsm("CLC");
             EmitAsm("ADC", Imm(4));
             EmitAsm("STA", Mem(CallArgBase + 3));
+            // Propagate stream-pointer page carry after consuming the complete four-byte record.
             string msPtrOk = NewGeneratedLabel("metasprite_ptr_ok");
             EmitAsm("BCC", Rel(msPtrOk));
             EmitAsm("INC", Mem(CallArgBase + 4));
@@ -7839,6 +8273,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Convert a sprite index to its four-byte offset in the OAM page.
         void EmitSpriteIndexToX()
         {
             EmitAsm("LDA", Mem(CallArgBase));
@@ -7847,6 +8282,7 @@ static class CodeGenerator
             EmitAsm("TAX");
         }
 
+        // Search compiled six-byte file records by ID and return existence or little-endian size; this does not scan the disk.
         void EmitFdsMetadataSearch(bool foundReturnsSize)
         {
             string loop = NewGeneratedLabel("fds_meta_loop");
@@ -7885,6 +8321,7 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Emit FDS BIOS-call wrappers, overlay residency tracking and sound-register transfer helpers.
         void EmitHelperFds()
         {
             // Wildcard Disk ID for BIOS direct-pointer routines. $FF means "do not compare" for that field.
@@ -7892,6 +8329,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.ReadonlyData, "__kq_fds_metadata_table", (Program.FdsMetadata ?? FdsDiskMetadata.Empty).BuildRuntimeTable()));
             _assembly.Add(Expr.Make(Tag.ReadonlyData, "__kq_fds_overlay_function_table", new byte[] { 0 }));
 
+            // Wait for the disk-inserted status bit to clear; this loop checks presence and has no timeout.
             EmitHelperStart("__fds_wait_ready");
             string loop = NewGeneratedLabel("fds_wait_ready_loop");
             _assembly.Add(Expr.Make(Tag.Label, loop));
@@ -7900,6 +8338,7 @@ static class CodeGenerator
             EmitAsm("BNE", Rel(loop));
             EmitAsm("RTS");
 
+            // Build a one-file load list and supply inline wildcard-ID/list pointers to the BIOS LoadFiles entry.
             EmitHelperStart("__fds_load_file");
             EmitAsm("LDA", Mem(CallArgBase));
             EmitAsm("STA", Mem(_runtimeFdsLoadListAddress));
@@ -7910,6 +8349,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Word, string.Format("${0:X4}", _runtimeFdsLoadListAddress)));
             EmitAsm("RTS");
 
+            // Use the same BIOS loading convention for an overlay file identifier.
             EmitHelperStart("__fds_load_overlay");
             EmitAsm("LDA", Mem(CallArgBase));
             EmitAsm("STA", Mem(_runtimeFdsLoadListAddress));
@@ -7920,6 +8360,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Word, string.Format("${0:X4}", _runtimeFdsLoadListAddress)));
             EmitAsm("RTS");
 
+            // Translate logical banks starting at two to overlay file IDs, optionally reusing the recorded resident bank.
             EmitHelperStart("__fds_load_bank");
             string fdsLoadBankOk = NewGeneratedLabel("fds_load_bank_ok");
             string fdsLoadBankLoad = NewGeneratedLabel("fds_load_bank_load");
@@ -7950,12 +8391,14 @@ static class CodeGenerator
             EmitAsm("CMP", Imm(0));
             EmitAsm("BNE", Rel(fdsLoadBankDone));
             EmitAsm("LDA", Mem(_runtimeIntrinsicTmp1Address));
+            // Update both bank shadows only after the BIOS load reports success.
             EmitAsm("STA", Mem(_runtimeFdsResidentBankAddress));
             EmitAsm("STA", Mem(_runtimeCurrentBankAddress));
             _assembly.Add(Expr.Make(Tag.Label, fdsLoadBankDone));
             EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("RTS");
 
+            // Return success for the recorded resident bank, otherwise dispatch a bank load.
             EmitHelperStart("__fds_require_bank");
             string fdsRequireLoad = NewGeneratedLabel("fds_require_load");
             EmitAsm("LDA", Mem(CallArgBase));
@@ -7967,6 +8410,7 @@ static class CodeGenerator
             EmitAsm("JSR", Abs("__fds_load_bank"));
             EmitAsm("RTS");
 
+            // Compare the requested bank with the software residency record and return zero or one.
             EmitHelperStart("__fds_is_bank_resident");
             string fdsResidentYes = NewGeneratedLabel("fds_resident_yes");
             EmitAsm("LDA", Mem(CallArgBase));
@@ -7978,12 +8422,15 @@ static class CodeGenerator
             EmitAsm("LDA", Imm(1));
             EmitAsm("RTS");
 
+            // Query file existence in the compiled metadata table.
             EmitHelperStart("__fds_file_exists");
             EmitFdsMetadataSearch(foundReturnsSize: false);
 
+            // Return the compiled metadata size, using zero for an unmatched ID.
             EmitHelperStart("__fds_file_size");
             EmitFdsMetadataSearch(foundReturnsSize: true);
 
+            // Construct a RAM-source WriteFile header and invoke the BIOS with inline descriptor pointers.
             EmitHelperStart("__fds_save_file");
             // Build a minimal BIOS WriteFile header in RAM.
             // args: id, src, len. File number uses id; file name is "KQFCFILE"; load/source addr = src.
@@ -8008,6 +8455,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Word, string.Format("${0:X4}", _runtimeFdsFileHeaderAddress)));
             EmitAsm("RTS");
 
+            // Enable wave-RAM writes, copy 64 source bytes, then clear the wave-write control register.
             EmitHelperStart("__fds_wave_load");
             EmitAsm("LDA", Imm(0x80)); EmitAsm("STA", Mem(0x4089));
             EmitAsm("LDY", Imm(0));
@@ -8019,6 +8467,7 @@ static class CodeGenerator
             EmitAsm("LDA", Imm(0x00)); EmitAsm("STA", Mem(0x4089));
             EmitAsm("RTS");
 
+            // Stream 32 source bytes to the modulation-table write port; setup of modulation state belongs to the caller.
             EmitHelperStart("__fds_mod_load");
             EmitAsm("LDY", Imm(0));
             string modLoop = NewGeneratedLabel("fds_mod_loop");
@@ -8028,11 +8477,13 @@ static class CodeGenerator
             EmitAsm("INY"); EmitAsm("CPY", Imm(32)); EmitAsm("BNE", Rel(modLoop));
             EmitAsm("RTS");
 
+            // Write the low frequency byte and only the low four bits of its high byte.
             EmitHelperStart("__fds_freq_set");
             EmitAsm("LDA", Mem(CallArgBase)); EmitAsm("STA", Mem(0x4082));
             EmitAsm("LDA", Mem(CallArgBase + 1)); EmitAsm("AND", Imm(0x0F)); EmitAsm("STA", Mem(0x4083));
             EmitAsm("RTS");
 
+            // Write the supplied volume-envelope, modulation-envelope and envelope-speed registers.
             EmitHelperStart("__fds_env_set");
             EmitAsm("LDA", Mem(CallArgBase)); EmitAsm("STA", Mem(0x4080));
             EmitAsm("LDA", Mem(CallArgBase + 1)); EmitAsm("STA", Mem(0x4084));
@@ -8040,10 +8491,12 @@ static class CodeGenerator
             EmitAsm("RTS");
         }
 
+        // Collect compiler analysis records in deterministic order for reports and downstream tooling.
         public CodegenAnalysisReport BuildCodegenAnalysisReport()
         {
             var report = new CodegenAnalysisReport();
 
+            // Describe each known function, including prototypes, with its requested placement and calling convention.
             foreach (var kv in _functionInfos.OrderBy(x => x.Key, StringComparer.Ordinal))
             {
                 var fi = kv.Value;
@@ -8063,6 +8516,7 @@ static class CodeGenerator
                 });
             }
 
+            // Report named readonly slots using requested banks; actual placement records are collected separately below.
             foreach (var slot in _orderedReadonlyData
                 .Where(x => x != null && !string.IsNullOrEmpty(x.Name))
                 .OrderBy(x => x.RequestedBank)
@@ -8081,6 +8535,7 @@ static class CodeGenerator
                 });
             }
 
+            // Keep caller, callee and call kind ordering stable across dictionary iteration order.
             foreach (var edge in _callReportMap.Values
                 .OrderBy(x => x.Caller, StringComparer.Ordinal)
                 .ThenBy(x => x.Callee, StringComparer.Ordinal)
@@ -8089,6 +8544,7 @@ static class CodeGenerator
                 report.Calls.Add(edge);
             }
 
+            // Retain source locations for recorded NES actions so diagnostics can identify their origin.
             foreach (var action in _nesActionUses
                 .OrderBy(x => x.Caller, StringComparer.Ordinal)
                 .ThenBy(x => x.Name, StringComparer.Ordinal)
@@ -8097,12 +8553,14 @@ static class CodeGenerator
                 report.NesActions.Add(action);
             }
 
+            // List allocated memory by address and frame slots by owning function.
             report.ZpAllocations.AddRange(_zpAllocations.OrderBy(x => x.Address).ThenBy(x => x.Name, StringComparer.Ordinal));
             report.StaticFrameSlots.AddRange(_staticFrameSlots.OrderBy(x => x.Function, StringComparer.Ordinal).ThenBy(x => x.Address));
             report.RamAllocations.AddRange(_ramAllocations
                 .OrderBy(x => x.Address)
                 .ThenBy(x => x.Kind, StringComparer.Ordinal)
                 .ThenBy(x => x.Name, StringComparer.Ordinal));
+            // Collapse accesses with identical function, bank, operation, address, span and dynamic-target status.
             report.RamAccesses.AddRange(_ramAccesses
                 .GroupBy(x => string.Format("{0}|{1}|{2}|{3}|{4}|{5}",
                     x.Function, x.Bank, x.Operation, x.Address, x.Span, x.DynamicTarget ? 1 : 0),
@@ -8112,6 +8570,7 @@ static class CodeGenerator
                 .ThenBy(x => x.Function, StringComparer.Ordinal)
                 .ThenBy(x => x.Address)
                 .ThenBy(x => x.Operation, StringComparer.Ordinal));
+            // Append recorded optimization decisions and bank placements without rerunning those passes.
             report.InlineDecisions.AddRange(_inlineDecisions.OrderBy(x => x.Caller, StringComparer.Ordinal).ThenBy(x => x.Callee, StringComparer.Ordinal));
             report.LoopLowerings.AddRange(_loopLowerings.OrderBy(x => x.Function, StringComparer.Ordinal).ThenBy(x => x.Variable, StringComparer.Ordinal));
             report.LtoRemovedFunctions.AddRange(_ltoRemovedFunctions.OrderBy(x => x.Name, StringComparer.Ordinal));
@@ -8120,6 +8579,7 @@ static class CodeGenerator
             return report;
         }
 
+        // Render aggregate sizes, alignment and field offsets in a stable human-readable layout listing.
         public string BuildAggregateLayoutText()
         {
             var sb = new System.Text.StringBuilder();
@@ -8156,6 +8616,7 @@ static class CodeGenerator
             return sb.ToString();
         }
 
+        // Use zero bytes for void, two for pointers, exact aggregate storage and normalized scalar widths in ABI reports.
         int SizeOfTypeLoose(CType type)
         {
             if (type == null || type == CType.Void) return 0;
@@ -8164,6 +8625,7 @@ static class CodeGenerator
             return NormalizeScalarSize(GetStorageSize(type));
         }
 
+        // Classify AST tags that can produce a value; this is not a purity check and includes calls and assignments.
         static bool IsValueExpression(Expr expr)
         {
             if (expr == null) return false;
@@ -8178,6 +8640,7 @@ static class CodeGenerator
                    tag == Tag.PostDecrement || tag == Tag.Assign || tag == Tag.AssignModify;
         }
 
+        // Keep aggregate storage sizes while limiting ordinary scalar values to one or two bytes.
         int TypeStorageSize(CType type)
         {
             if (type == null || type == CType.Void) return 0;
@@ -8186,45 +8649,53 @@ static class CodeGenerator
             return NormalizeScalarSize(size);
         }
 
+        // Map storage widths to the byte/word scalar register convention.
         static int NormalizeScalarSize(int size)
         {
             return size >= 2 ? 2 : 1;
         }
 
+        // Read the type signedness flag, treating an absent type as unsigned.
         static bool IsSignedIntegerType(CType type)
         {
             return type != null && type.IsSigned;
         }
 
+        // Interpret the low byte as a signed two-complement value in the host integer type.
         static int SignExtend8(int value)
         {
             value &= 0xFF;
             return (value & 0x80) != 0 ? value - 0x100 : value;
         }
 
+        // Interpret the low word as a signed two-complement value in the host integer type.
         static int SignExtend16(int value)
         {
             value &= 0xFFFF;
             return (value & 0x8000) != 0 ? value - 0x10000 : value;
         }
 
+        // Mask lookup constants to a target word before applying the selected signed interpretation.
         static int InterpretArithmeticLookupConstant(int constantValue, bool signedArithmetic)
         {
             int bits = constantValue & 0xFFFF;
             return signedArithmetic ? SignExtend16(bits) : bits;
         }
 
+        // Accept integer and enumeration types for arithmetic promotion.
         static bool IsIntegerLike(CType type)
         {
             return type != null && (type.IsInteger || type.IsEnum);
         }
 
+        // Promote to a word, selecting signed arithmetic when either operand type is signed.
         static CType PromoteIntegerBinaryType(CType leftType, CType rightType)
         {
             bool hasSigned = IsSignedIntegerType(leftType) || IsSignedIntegerType(rightType);
             return hasSigned ? CType.Int16 : CType.UInt16;
         }
 
+        // Resolve an expression in its function context before checking its signedness.
         bool IsSignedArithmeticOperand(Expr expr, FunctionContext ctx)
         {
             if (expr == null) return false;
@@ -8232,6 +8703,7 @@ static class CodeGenerator
             return TryGetExprType(expr, ctx, out type) && IsSignedIntegerType(type);
         }
 
+        // Reject known noninteger operands, then apply this compiler's binary signedness promotion rule.
         bool ShouldUseSignedArithmetic(Expr left, Expr right, FunctionContext ctx)
         {
             CType leftType;
@@ -8243,12 +8715,14 @@ static class CodeGenerator
             return IsSignedIntegerType(PromoteIntegerBinaryType(leftType, rightType));
         }
 
+        // Choose a byte only when the masked target word fits without a nonzero high byte.
         static int ConstantStorageSize(int value)
         {
             int v = value & 0xFFFF;
             return v <= 0x00FF ? 1 : 2;
         }
 
+        // Query declared function metadata; missing names do not imply a fastcall convention.
         bool IsFunctionFastCall(string funcName)
         {
             if (string.IsNullOrEmpty(funcName)) return false;
@@ -8256,6 +8730,7 @@ static class CodeGenerator
             return _functionInfos.TryGetValue(funcName, out info) && info != null && info.IsFastCall;
         }
 
+        // Resolve intrinsic or declared scalar return widths; aggregates use separate storage and unknown functions default to a byte.
         int GetFunctionReturnSize(string funcName)
         {
             if (string.Equals(funcName, "__bankof", StringComparison.Ordinal)) return 1;
@@ -8272,6 +8747,7 @@ static class CodeGenerator
             return 1;
         }
 
+        // Return the complementary comparison for branch inversion, leaving unrelated tags unchanged.
         static string InvertComparisonTag(string tag)
         {
             if (tag == Tag.Equal) return Tag.NotEqual;
@@ -8283,6 +8759,7 @@ static class CodeGenerator
             return tag;
         }
 
+        // Store the low byte from A and, for a word slot, the high byte from X.
         void StoreToSlot(StorageSlot slot)
         {
             EmitAsm("STA", Mem(slot.Address));
@@ -8290,6 +8767,7 @@ static class CodeGenerator
                 EmitAsm("STX", Mem(slot.Address + 1));
         }
 
+        // Load A and optionally X from a byte/word slot; byte loads leave X unchanged.
         void LoadFromSlot(StorageSlot slot)
         {
             EmitAsm("LDA", Mem(slot.Address));
@@ -8297,17 +8775,20 @@ static class CodeGenerator
                 EmitAsm("LDX", Mem(slot.Address + 1));
         }
 
+        // Give emitted internal labels a monotonically increasing suffix within this generator.
         string NewGeneratedLabel(string prefix)
         {
             _labelCounter++;
             return string.Format("__kq_{0}_{1}", prefix, _labelCounter);
         }
 
+        // Append an implicit-operand instruction after canonicalizing its mnemonic.
         void EmitAsm(string mnemonic)
         {
             _assembly.Add(Expr.Make(Tag.Asm, NormalizeMnemonic(mnemonic), AsmOperand.Implicit));
         }
 
+        // Resolve known absolute operands and record RAM access metadata before appending the instruction.
         void EmitAsm(string mnemonic, AsmOperand operand)
         {
             string normalizedMnemonic = NormalizeMnemonic(mnemonic);
@@ -8316,6 +8797,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.Asm, normalizedMnemonic, normalizedOperand));
         }
 
+        // Resolve local storage before globals and constants, preserving addressing mode, modifiers and comments; leave other symbols for assembly.
         AsmOperand NormalizeAsmOperandForEmission(AsmOperand operand, FunctionContext ctx)
         {
             operand = operand ?? AsmOperand.Implicit;
@@ -8342,11 +8824,13 @@ static class CodeGenerator
             return operand;
         }
 
+        // Trim mnemonic text and canonicalize it without culture-dependent casing.
         static string NormalizeMnemonic(string mnemonic)
         {
             return (mnemonic ?? "").Trim().ToUpperInvariant();
         }
 
+        // Construct byte immediates, word addresses and symbolic operands in the addressing modes used by the emitters.
         static AsmOperand Imm(int value) { return new AsmOperand(value & 0xFF, AddressMode.Immediate); }
         static AsmOperand ImmLo(string label) { return new AsmOperand(label, ImmediateModifier.LowByte); }
         static AsmOperand ImmHi(string label) { return new AsmOperand(label, ImmediateModifier.HighByte); }

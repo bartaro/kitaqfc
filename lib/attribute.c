@@ -9,16 +9,20 @@ extern unsigned short nes_attr_base_from_nt(unsigned short nt_base);
 extern unsigned char nes_vram_queue_try_write(unsigned short ppu_addr, unsigned char* src, unsigned char len);
 extern void nes_attr_shadow_set_quad(unsigned char tile_x, unsigned char tile_y, unsigned char pal_index);
 
+// Convert a tile X coordinate to a two-tile quadrant X coordinate.
 static unsigned char nes_attr_rect_left(unsigned char tile_x)
 {
     return (unsigned char)(tile_x >> 1);
 }
 
+// Convert a tile Y coordinate to a two-tile quadrant Y coordinate.
 static unsigned char nes_attr_rect_top(unsigned char tile_y)
 {
     return (unsigned char)(tile_y >> 1);
 }
 
+// Copy 64 already-packed attribute bytes into shadow storage. This does not
+// convert one palette ID per tile into NES attribute bitfields.
 void nes_attr_shadow_build_from_palette_map(unsigned char* src64)
 {
     unsigned char i;
@@ -30,6 +34,9 @@ void nes_attr_shadow_build_from_palette_map(unsigned char* src64)
     }
 }
 
+// Apply a palette to every two-by-two tile quadrant touched by the rectangle.
+// Width/height must be nonzero and the rectangle must stay within the nametable;
+// there is no clipping before the byte-sized endpoint arithmetic.
 void nes_attr_shadow_fill_rect(unsigned char tile_x, unsigned char tile_y, unsigned char width, unsigned char height, unsigned char pal_index)
 {
     unsigned char qx0;
@@ -65,6 +72,13 @@ void nes_attr_shadow_fill_rect(unsigned char tile_x, unsigned char tile_y, unsig
     }
 }
 
+// Queue shadow-byte rows using the half-tile coordinates computed below.
+// These indices are used directly as byte indices, unlike the four-tile byte
+// indexing in nes_attr_shadow_set_quad; this is not a general tile-to-attribute
+// rectangle conversion. Keep each row within the eight-byte local buffer and
+// all indices within the 64-byte shadow. Failure may leave earlier rows queued.
+// For a complete packed attribute upload, use nes_attr_queue_all. This retained rectangle routine
+// does not share the quadrant-to-byte addressing used by the shadow updater.
 unsigned char nes_attr_queue_rect(unsigned short nt_base, unsigned char tile_x, unsigned char tile_y, unsigned char width, unsigned char height)
 {
     unsigned char qx0;
@@ -73,6 +87,8 @@ unsigned char nes_attr_queue_rect(unsigned short nt_base, unsigned char tile_x, 
     unsigned char qy1;
     unsigned char row;
     unsigned char col;
+    // The runtime queue copies these local bytes before return; they are not retained pointers.
+    // Caller coordinates must keep each computed row length within eight bytes.
     unsigned char line[8];
     unsigned short ppu_addr;
     unsigned char len;

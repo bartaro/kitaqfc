@@ -1,8 +1,10 @@
-// NMIでVRAM更新
+// Submit a VRAM update for the NMI handler.
 // Expected: 4 at (3,8)
 #include "fc_common.h"
 
 
+// Queue tile 52 at nametable address 0x2103, corresponding to (3,8), and
+// commit the queue so the NMI update path displays the digit 4.
 void main(void) {
     m_init();
     m_text(2,3,"VRAM QUEUE");

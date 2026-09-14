@@ -11,6 +11,7 @@
  * aliases over KITAQFC intrinsics so the compiler can still record the exact
  * NES action for diagnostics and KUROSAKI metadata.
  */
+// These aliases use the compiler intrinsic queue. They do not select the separate C runtime queue.
 #define nes_vram_put(addr, value)          __vramq_put((addr), (value))
 #define nes_vram_copy(addr, src, len)      __vramq_copy((addr), (src), (len))
 #define nes_vram_fill(addr, value, len)    __vramq_fill((addr), (value), (len))
@@ -18,10 +19,12 @@
 #define nes_vram_clear_queue()             __vramq_clear()
 
 #define nes_oam_clear()                    __oam_clear()
+// This zero-argument macro hides the same-named page-argument C runtime function in included code.
 #define nes_oam_dma()                      __oam_dma()
 #define nes_sprite_set(i,x,y,t,a)          __sprite_set((i),(x),(y),(t),(a))
 #define nes_sprite_move(i,x,y)             __sprite_move((i),(x),(y))
 #define nes_sprite_hide(i)                 __sprite_hide((i))
+// Select the compiler intrinsic implementation even when the C metasprite header is also included.
 #define nes_metasprite_draw(i,x,y,data)    __metasprite_draw((i),(x),(y),(data))
 
 #define nes_pad1()                         __pad_read1_safe()

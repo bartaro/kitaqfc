@@ -8,6 +8,7 @@ using System.Collections.Generic;
 // This is the main hook for KITAQFC's NES-specific DSL direction.
 static class NesActionCatalog
 {
+    // Classify the catalog's intended execution context for downstream diagnostics; this enum does not enforce timing.
     public enum TimingClass
     {
         Any,
@@ -18,6 +19,8 @@ static class NesActionCatalog
         FdsOnly,
     }
 
+    // Store descriptive operation metadata and capability hints consumed by code generation and reports.
+    // These mutable records describe intended actions rather than observations of an executed ROM.
     public sealed class ActionInfo
     {
         public string Name;
@@ -31,6 +34,7 @@ static class NesActionCatalog
         public bool PerformsOamDma;
         public bool RequiresFds;
         public string MapperRequirement;
+        // Use -1 when the catalog does not identify an argument position for the corresponding OAM quantity.
         public int OamIndexArgument = -1;
         public int OamSpriteCountArgument = -1;
         public string KurosakiKind;
@@ -38,18 +42,23 @@ static class NesActionCatalog
 
     static readonly Dictionary<string, ActionInfo> _map = Build();
 
+    // Look up an exact, case-sensitive intrinsic name; null/empty or unknown names return false with no record.
     public static bool TryGet(string name, out ActionInfo info)
     {
         if (string.IsNullOrEmpty(name)) { info = null; return false; }
         return _map.TryGetValue(name, out info);
     }
 
+    // Expose the stored record objects through the dictionary value collection, without cloning or sorting them.
     public static IEnumerable<ActionInfo> All => _map.Values;
 
+    // Create the fixed catalog once, grouping operation names by hardware-facing role.
     static Dictionary<string, ActionInfo> Build()
     {
         var m = new Dictionary<string, ActionInfo>(StringComparer.Ordinal);
 
+        // Create or replace one record. Normalize a null mapper requirement to empty text and
+        // default a blank KUROSAKI category to the action category.
         void Add(string name, string category, string op, string desc, TimingClass timing = TimingClass.Any,
             bool directPpu = false, bool queuePpu = false, bool oamShadow = false, bool oamDma = false,
             bool fds = false, string mapper = "", int oamIndexArg = -1, int oamSpriteCountArg = -1,

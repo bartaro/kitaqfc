@@ -9,6 +9,7 @@ using System.Threading;
 
 static partial class Program
 {
+    // Pair a stable snippet ID and category with the verbatim source fragment emitted by the CLI.
     sealed class VibeSnippet
     {
         public string Id;
@@ -17,6 +18,7 @@ static partial class Program
         public string Body;
     }
 
+    // Retain the invocation directory and quoted arguments alongside a UTC timestamp.
     sealed class VibeHistoryEntry
     {
         public DateTime TimestampUtc;
@@ -24,6 +26,7 @@ static partial class Program
         public string ArgsLine;
     }
 
+    // Normalize structured diagnostics and text-log matches into the fields needed by fixhint.
     sealed class VibeDiagRecord
     {
         public string Severity;
@@ -35,12 +38,14 @@ static partial class Program
         public int Column;
     }
 
+    // Store a textual assembly-line count per function marker, not an encoded size or cycle estimate.
     sealed class VibeAsmFunctionStat
     {
         public string Name;
         public int InstructionCount;
     }
 
+    // Compare existence, size and modification time without hashing dependency contents.
     struct VibeFileStamp
     {
         public bool Exists;
@@ -48,13 +53,16 @@ static partial class Program
         public long LastWriteTicksUtc;
     }
 
+    // Build the in-memory snippet catalog once before subcommand dispatch.
     static readonly Dictionary<string, VibeSnippet> _vibeSnippets = BuildVibeSnippetLibrary();
+    // Separate known tool subcommands from presumed compile invocations when selecting history entries.
     static readonly HashSet<string> _subcommandSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         "test", "attrviz", "src2asm", "symfind", "romdiff", "kqhelp",
         "template", "fixhint", "irsum", "conventions", "snippet", "devserver", "recipe"
     };
 
+    // Append one tab-delimited invocation record; inability to write history must not stop compilation.
     static void TryAppendCommandHistory(string[] argsArray)
     {
         try
@@ -78,6 +86,7 @@ static partial class Program
         }
     }
 
+    // Place history under the detected repository, falling back to the current directory.
     static string GetCommandHistoryPath()
     {
         string root = FindRepoRoot(Environment.CurrentDirectory);
@@ -85,18 +94,21 @@ static partial class Program
         return Path.Combine(root, "integration_test", "reports", "COMMAND_HISTORY.log");
     }
 
+    // Preserve argument boundaries using the existing process-argument quoting convention.
     static string BuildHistoryArgsLine(IEnumerable<string> args)
     {
         if (args == null) return "";
         return string.Join(" ", args.Select(a => QuoteArg(a ?? "")));
     }
 
+    // Remove tab and line delimiters from a history field so it occupies one record column.
     static string SanitizeHistoryField(string s)
     {
         if (string.IsNullOrEmpty(s)) return "";
         return s.Replace("\r", " ").Replace("\n", " ").Replace("\t", " ");
     }
 
+    // Generate an FC source prototype and selected sidecars, guarding every output before writing.
     static bool TryRunVibeTemplateCommand(string[] argsArray)
     {
         if (argsArray == null || argsArray.Length == 0) return false;
@@ -106,8 +118,6 @@ static partial class Program
         bool overwrite = false;
         bool includeBuildScript = true;
         bool includeReadme = true;
-        bool cgbMode = false;
-
         for (int i = 1; i < argsArray.Length; i++)
         {
             string a = argsArray[i] ?? "";
@@ -115,136 +125,137 @@ static partial class Program
             if (a == "--overwrite") overwrite = true;
             else if (a == "--no-build-script") includeBuildScript = false;
             else if (a == "--no-readme") includeReadme = false;
-            else if (a == "--cgb") cgbMode = true;
             else if (a.StartsWith("--out=", StringComparison.Ordinal)) outPath = ValueAfterEquals(a);
             else if (!a.StartsWith("-", StringComparison.Ordinal)) outPath = a;
             else
             {
                 Console.Error.WriteLine("error KQ0000: unknown template option: " + a);
-                Console.Error.WriteLine("usage: kitaqfc template [out.c] [--out=<file.c>] [--cgb] [--overwrite] [--no-build-script] [--no-readme]");
+                Console.Error.WriteLine("usage: kitaqfc template [out.c] [--out=<file.c>] [--overwrite] [--no-build-script] [--no-readme]");
                 Environment.Exit(1);
                 return true;
             }
         }
-
         if (string.IsNullOrWhiteSpace(outPath))
         {
             Console.Error.WriteLine("error KQ0000: template output path is empty");
             Environment.Exit(1);
             return true;
         }
-
-        if (!Path.HasExtension(outPath))
-            outPath += ".c";
-
+        if (!Path.HasExtension(outPath)) outPath += ".c";
         string fullOut = Path.GetFullPath(outPath);
-        string outDir = Path.GetDirectoryName(fullOut);
-        if (!string.IsNullOrWhiteSpace(outDir)) Directory.CreateDirectory(outDir);
-
-        if (File.Exists(fullOut) && !overwrite)
-        {
-            Console.Error.WriteLine("error KQ0000: output exists (use --overwrite): " + fullOut);
-            Environment.Exit(1);
-            return true;
-        }
-
+        string outDir = Path.GetDirectoryName(fullOut) ?? Environment.CurrentDirectory;
         string stem = Path.GetFileNameWithoutExtension(fullOut);
-        string source = BuildVibePrototypeSource(stem, cgbMode);
-        IoUtil.WriteAllTextUtf8Robust(fullOut, source, allowAlternatePath: true);
+        string romOut = Path.Combine(outDir, stem + ".nes");
+        string scriptPath = Path.Combine(outDir, stem + "_build.ps1");
+        string readmePath = Path.Combine(outDir, stem + "_README.md");
+        var outputs = new List<string> { fullOut };
+        if (includeBuildScript) outputs.Add(scriptPath);
+        if (includeReadme) outputs.Add(readmePath);
+        // Check all requested files before producing any partial replacement.
+        foreach (string output in outputs)
+        {
+            if (!overwrite && File.Exists(output))
+            {
+                Console.Error.WriteLine("error KQ0000: output exists (use --overwrite): " + output);
+                Environment.Exit(1);
+                return true;
+            }
+        }
+        Directory.CreateDirectory(outDir);
+        IoUtil.WriteAllTextUtf8Robust(fullOut, BuildVibePrototypeSource(), allowAlternatePath: true);
         Console.WriteLine("[template] source: " + fullOut);
-
-        string romOut = Path.Combine(outDir ?? ".", stem + ".nes");
         if (includeBuildScript)
         {
-            string scriptPath = Path.Combine(outDir ?? ".", stem + "_build.ps1");
-            IoUtil.WriteAllTextUtf8Robust(scriptPath, BuildVibePrototypeBuildScript(Path.GetFileName(fullOut), Path.GetFileName(romOut)), allowAlternatePath: true);
+            IoUtil.WriteAllTextUtf8Robust(scriptPath,
+                BuildVibePrototypeBuildScript(Path.GetFileName(fullOut), Path.GetFileName(romOut)), allowAlternatePath: true);
             Console.WriteLine("[template] build script: " + scriptPath);
         }
-
         if (includeReadme)
         {
-            string readme = Path.Combine(outDir ?? ".", stem + "_README.md");
             var sb = new StringBuilder();
-            sb.AppendLine("# Quick Prototype");
+            sb.AppendLine("# KITAQFC Quick Prototype");
             sb.AppendLine();
-            sb.AppendLine("1. Build:");
-            sb.AppendLine("   `kitaqfc " + Path.GetFileName(fullOut) + " -o " + Path.GetFileName(romOut) + " --profile=dev --fast-build --cache --deps-out`");
-            sb.AppendLine("2. Run on emulator/hardware and iterate.");
-            sb.AppendLine("3. Add snippets with `kitaqfc snippet list` / `kitaqfc snippet get <id>`.");
-            IoUtil.WriteAllTextUtf8Robust(readme, sb.ToString(), allowAlternatePath: true);
-            Console.WriteLine("[template] readme: " + readme);
+            sb.AppendLine("The backdrop alternates between blue and green every 32 frames. Hold A for red.");
+            sb.AppendLine("This single-file NROM example needs no external CHR or font asset.");
+            sb.AppendLine("Rendering and NMI stay disabled; WaitVBlank polls PPUSTATUS before direct palette updates.");
+            sb.AppendLine();
+            sb.AppendLine("1. Open a terminal in this folder and build:");
+            sb.AppendLine("   `kitaqfc " + QuoteArg(Path.GetFileName(fullOut)) + " -o " + QuoteArg(Path.GetFileName(romOut)) + " --profile=dev --fast-build`");
+            if (includeBuildScript)
+                sb.AppendLine("   Or run the adjacent build script; -Compiler accepts a compiler path, and -Release selects the release profile.");
+            sb.AppendLine("2. Open the .nes file in KUROSAKI and check the color change and A-button response.");
+            sb.AppendLine("3. Browse `kitaqfc snippet list` and retrieve a fragment with `kitaqfc snippet get <id>`.");
+            sb.AppendLine("   Read each fragment's prerequisites. Reuse the existing WaitVBlank instead of defining it twice.");
+            sb.AppendLine("   The SRAM fragments specifically require an MMC3 board with PRG RAM; use --mapper=mmc3 --battery for battery-backed saves.");
+            IoUtil.WriteAllTextUtf8Robust(readmePath, sb.ToString(), allowAlternatePath: true);
+            Console.WriteLine("[template] readme: " + readmePath);
         }
-
-        Console.WriteLine("[template] instant build:");
-        Console.WriteLine("kitaqfc " + QuoteArg(Path.GetFileName(fullOut)) + " -o " + QuoteArg(Path.GetFileName(romOut)) + " --profile=dev --fast-build --cache --deps-out");
-
+        Console.WriteLine("[template] build from " + outDir + ":");
+        Console.WriteLine("kitaqfc " + QuoteArg(Path.GetFileName(fullOut)) + " -o " + QuoteArg(Path.GetFileName(romOut)) + " --profile=dev --fast-build");
         Environment.Exit(0);
         return true;
     }
 
-    static string BuildVibePrototypeSource(string stem, bool cgbMode)
+    // Emit a self-contained PPU-status-polled example with visible controller feedback.
+    static string BuildVibePrototypeSource()
     {
-        var sb = new StringBuilder();
-        sb.AppendLine("#pragma bank 0");
-        sb.AppendLine();
-        sb.AppendLine("// Auto-generated single-file prototype.");
-        sb.AppendLine("// Build: kitaqfc " + stem + ".c -o " + stem + ".nes --profile=dev --fast-build --cache");
-        sb.AppendLine();
-        sb.AppendLine("// Hardware register declarations (keep __location in ascending order).");
-        sb.AppendLine("__location(0xFF40) u8 LCDC;");
-        sb.AppendLine("__location(0xFF44) u8 LY;");
-        sb.AppendLine("__location(0xFF47) u8 BGP;");
-        sb.AppendLine();
-        sb.AppendLine("__wram u8 g_frame;");
-        sb.AppendLine("__wram u8 g_flash;");
-        sb.AppendLine();
-        sb.AppendLine("void WaitVBlank() {");
-        sb.AppendLine("    if ((LCDC & 0x80) == 0) return;");
-        sb.AppendLine("    while (LY >= 144) { }");
-        sb.AppendLine("    while (LY < 144) { }");
-        sb.AppendLine("}");
-        sb.AppendLine();
-        sb.AppendLine("void main() {");
-        sb.AppendLine("    BGP = 0xE4;");
-        if (cgbMode)
-        {
-            sb.AppendLine(" // CGB-safe template: only writes DMG-compatible registers by default.");
-            sb.AppendLine();
-        }
-        sb.AppendLine("    g_frame = 0;");
-        sb.AppendLine("    g_flash = 0;");
-        sb.AppendLine("    while (1) {");
-        sb.AppendLine("        WaitVBlank();");
-        sb.AppendLine("        g_frame++;");
-        sb.AppendLine("        if ((g_frame & 31) == 0) {");
-        sb.AppendLine("            g_flash ^= 1;");
-        sb.AppendLine("            if (g_flash != 0) BGP = 0x1B;");
-        sb.AppendLine("            else BGP = 0xE4;");
-        sb.AppendLine("        }");
-        sb.AppendLine("    }");
-        sb.AppendLine("}");
-        return sb.ToString();
+        return @"#pragma bank 0
+
+// KITAQFC single-file NROM example: blue/green backdrop, red while A is held.
+// Build with the adjacent script or: kitaqfc quickstart.c -o quickstart.nes
+__wram u8 g_frame;
+__wram u8 g_flash;
+
+// Poll PPUSTATUS with NMI disabled. Reading the status clears its VBlank flag.
+// Call once per frame; do not combine this polling loop with an NMI frame waiter.
+void WaitVBlank(void) {
+    while ((__ppu_read_status() & 0x80) == 0) { }
+}
+
+// Keep rendering disabled so this first example needs no tiles or font data.
+void main(void) {
+    __ppu_ctrl_set(0);
+    __ppu_off();
+    __ppu_read_status();
+    WaitVBlank();
+    WaitVBlank();
+    g_frame = 0;
+    g_flash = 0;
+    while (1) {
+        WaitVBlank();
+        g_frame++;
+        if ((g_frame & 31) == 0) g_flash ^= 1;
+
+        // Latch controller 1; bit 0 is A. Update the universal backdrop color.
+        __ppu_addr(0x3F00);
+        if ((__pad_read1() & 1) != 0) __ppu_data(0x16);
+        else if (g_flash != 0) __ppu_data(0x1A);
+        else __ppu_data(0x01);
+        // Leave the palette address range before the next visible frame.
+        __ppu_addr(0);
+    }
+}
+";
     }
 
+    // Emit literal argument arrays and build from the script directory, restoring the caller's location.
     static string BuildVibePrototypeBuildScript(string sourceName, string romName)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("param(");
-        sb.AppendLine("    [switch]$Release");
-        sb.AppendLine(")");
+        sb.AppendLine("param([switch]$Release, [string]$Compiler = 'kitaqfc')");
         sb.AppendLine("$ErrorActionPreference = 'Stop'");
-        sb.AppendLine("$args = @('" + sourceName.Replace("'", "''") + "', '-o', '" + romName.Replace("'", "''") + "', '--cache', '--deps-out')");
-        sb.AppendLine("if ($Release) {");
-        sb.AppendLine("    $args += '--profile=release'");
-        sb.AppendLine("} else {");
-        sb.AppendLine("    $args += '--profile=dev'");
-        sb.AppendLine("    $args += '--fast-build'");
-        sb.AppendLine("}");
-        sb.AppendLine("& kitaqfc @args");
-        sb.AppendLine("exit $LASTEXITCODE");
+        sb.AppendLine("if (Test-Path -LiteralPath $Compiler -PathType Leaf) { $Compiler = (Resolve-Path -LiteralPath $Compiler).Path }");
+        sb.AppendLine("$compileArgs = @('" + sourceName.Replace("'", "''") + "', '-o', '" + romName.Replace("'", "''") + "', '--cache', '--deps-out')");
+        sb.AppendLine("if ($Release) { $compileArgs += '--profile=release' }");
+        sb.AppendLine("else { $compileArgs += '--profile=dev'; $compileArgs += '--fast-build' }");
+        sb.AppendLine("Push-Location -LiteralPath $PSScriptRoot");
+        sb.AppendLine("try { & $Compiler @compileArgs; $buildExit = $LASTEXITCODE }");
+        sb.AppendLine("finally { Pop-Location }");
+        sb.AppendLine("exit $buildExit");
         return sb.ToString();
     }
 
+    // Write workflow guidance to stdout or a report file without executing the suggested commands.
     static bool TryRunConventionsCommand(string[] argsArray)
     {
         if (argsArray == null || argsArray.Length == 0) return false;
@@ -287,10 +298,11 @@ static partial class Program
         return true;
     }
 
+    // Assemble the built-in workflow guide and its generation timestamp.
     static string BuildProjectConventionsText()
     {
         var sb = new StringBuilder();
-        sb.AppendLine("# KITAQGB Project Conventions");
+        sb.AppendLine("# KITAQFC Project Conventions");
         sb.AppendLine();
         sb.AppendLine("generated_utc=" + DateTime.UtcNow.ToString("O"));
         sb.AppendLine();
@@ -316,6 +328,7 @@ static partial class Program
         return sb.ToString();
     }
 
+    // List catalog metadata, retrieve one case-sensitive ID, or concatenate a case-insensitive category.
     static bool TryRunSnippetLibraryCommand(string[] argsArray)
     {
         if (argsArray == null || argsArray.Length == 0) return false;
@@ -333,7 +346,7 @@ static partial class Program
         if (string.Equals(sub, "list", StringComparison.OrdinalIgnoreCase))
         {
             var sb = new StringBuilder();
-            sb.AppendLine("# KITAQGB snippet library");
+            sb.AppendLine("# KITAQFC snippet library");
             foreach (var s in _vibeSnippets.Values.OrderBy(v => v.Category, StringComparer.Ordinal).ThenBy(v => v.Id, StringComparer.Ordinal))
             {
                 sb.AppendLine(s.Id + "  [" + s.Category + "]  " + s.Title);
@@ -374,6 +387,7 @@ static partial class Program
                 return true;
             }
 
+            // Return the selected fragment verbatim apart from a normalized final newline.
             string text = snip.Body.TrimEnd() + Environment.NewLine;
             if (outPath == "-")
             {
@@ -411,6 +425,7 @@ static partial class Program
                 }
             }
 
+            // Select all entries or filter by category before applying stable category/ID ordering.
             IEnumerable<VibeSnippet> selected = string.Equals(category, "all", StringComparison.OrdinalIgnoreCase)
                 ? _vibeSnippets.Values
                 : _vibeSnippets.Values.Where(v => string.Equals(v.Category, category, StringComparison.OrdinalIgnoreCase));
@@ -424,7 +439,7 @@ static partial class Program
             }
 
             var sb = new StringBuilder();
-            sb.AppendLine("// KITAQGB snippet bundle");
+            sb.AppendLine("// KITAQFC snippet bundle");
             sb.AppendLine("// category=" + category);
             sb.AppendLine();
             foreach (var s in list)
@@ -450,94 +465,80 @@ static partial class Program
         return true;
     }
 
+    // Register FC fragments with explicit hardware and caller prerequisites.
     static Dictionary<string, VibeSnippet> BuildVibeSnippetLibrary()
     {
         var map = new Dictionary<string, VibeSnippet>(StringComparer.Ordinal);
-
         void Add(string id, string category, string title, string body)
         {
-            map[id] = new VibeSnippet
-            {
-                Id = id,
-                Category = category,
-                Title = title,
-                Body = body
-            };
+            map[id] = new VibeSnippet { Id = id, Category = category, Title = title, Body = body };
         }
-
-        Add(
-            "input.poll_joypad",
-            "input",
-            "Joypad Poll",
-@"u8 PollJoypad() {
-    // requires: __location(0xFF00) u8 P1;
-    P1 = 0x20;
-    u8 dpad = (~P1) & 0x0F;
-    P1 = 0x10;
-    u8 buttons = ((~P1) & 0x0F) << 4;
-    return (u8)(buttons | dpad);
+        // The runtime helper latches controller 1 and assembles its serial bits.
+        Add("input.poll_joypad", "input", "Poll FC controller 1",
+@"// Return A=1, B=2, Select=4, Start=8, Up=16, Down=32, Left=64, Right=128.
+u8 PollJoypad(void) {
+    return __pad_read1();
 }");
-
-        Add(
-            "render.wait_vblank",
-            "render",
-            "Wait VBlank",
-@"void WaitVBlank() {
-    // requires:
-    // __location(0xFF40) u8 LCDC;
-    // __location(0xFF44) u8 LY;
-    if ((LCDC & 0x80) == 0) return;
-    while (LY >= 144) { }
-    while (LY < 144) { }
+        // Use status polling only when another handler is not consuming VBlank.
+        Add("render.wait_vblank", "render", "Wait for FC VBlank (polling)",
+@"// Requires NMI disabled (__ppu_ctrl_set(0)); do not mix with __nmi_wait().
+// Reading PPUSTATUS clears VBlank and resets the PPU address/scroll latch.
+void WaitVBlank(void) {
+    while ((__ppu_read_status() & 0x80) == 0) { }
 }");
-
-        Add(
-            "render.clear_oam4",
-            "render",
-            "Clear 4 sprites",
-@"void ClearOam4() {
-    __store8(0xFE00, 0);
-    __store8(0xFE01, 0);
-    __store8(0xFE02, 0);
-    __store8(0xFE03, 0);
+        // Hide four entries in the compiler's OAM buffer before transferring it.
+        Add("render.clear_oam4", "render", "Hide the first four FC sprites",
+@"// Initialize the OAM buffer with __oam_clear() or __sprite_set() first.
+// Call with rendering disabled or during VBlank; this DMA copies all 64 entries.
+void ClearOam4(void) {
+    __sprite_hide(0);
+    __sprite_hide(1);
+    __sprite_hide(2);
+    __sprite_hide(3);
+    __oam_dma();
 }");
+        // Use the second NES pulse channel with a finite length-counter duration.
+        Add("sound.beep_ch2", "sound", "Beep on FC pulse channel 2",
+@"__location(0x4004) u8 SNIP_PULSE2_VOLUME;
+__location(0x4005) u8 SNIP_PULSE2_SWEEP;
+__location(0x4006) u8 SNIP_PULSE2_TIMER;
+__location(0x4007) u8 SNIP_PULSE2_LENGTH;
+__location(0x4015) u8 SNIP_APU_ENABLE;
+__location(0x4017) u8 SNIP_APU_FRAME;
 
-        Add(
-            "sound.beep_ch2",
-            "sound",
-            "Simple CH2 beep",
-@"void SfxBeepCh2() {
-    // requires:
-    // __location(0xFF16) u8 NR21;
-    // __location(0xFF17) u8 NR22;
-    // __location(0xFF18) u8 NR23;
-    // __location(0xFF19) u8 NR24;
-    NR21 = 0x80;
-    NR22 = 0xF3;
-    NR23 = 0x40;
-    NR24 = 0x87;
+// Start a short pulse tone. This standalone effect disables all other APU channels.
+void SfxBeepCh2(void) {
+    SNIP_APU_FRAME = 0x40;
+    SNIP_APU_ENABLE = 0x02;
+    SNIP_PULSE2_SWEEP = 0x08;
+    SNIP_PULSE2_VOLUME = 0x9A;
+    SNIP_PULSE2_TIMER = 0xFD;
+    SNIP_PULSE2_LENGTH = 0x20;
 }");
+        // MMC3 PRG-RAM control is mapper-specific, not a universal NES RAM switch.
+        Add("sram.enable_disable", "sram", "MMC3 PRG RAM access control",
+@"// Requires an MMC3 board with PRG RAM at $6000-$7FFF: build with --mapper=mmc3.
+// Add --battery only for battery-backed RAM. These registers do not apply to other mappers.
+__location(0xA001) u8 SNIP_MMC3_RAM_CONTROL;
 
-        Add(
-            "sram.enable_disable",
-            "sram",
-            "Enable / Disable SRAM",
-@"void SRAM_Enable()  { __store8(0x0000, 0x0A); }
-void SRAM_Disable() { __store8(0x0000, 0x00); }");
-
-        Add(
-            "sram.save_byte",
-            "sram",
-            "Save one byte",
-@"void SRAM_SaveByte(u16 addr, u8 value) {
+// Enable PRG-RAM reads and writes on MMC3.
+void SRAM_Enable(void) { SNIP_MMC3_RAM_CONTROL = 0x80; }
+// Disable PRG-RAM access after a save; re-enable it before reading saved bytes.
+void SRAM_Disable(void) { SNIP_MMC3_RAM_CONTROL = 0x00; }");
+        // Bound the destination to the mapper's save window before dereferencing it.
+        Add("sram.save_byte", "sram", "Save one byte to MMC3 PRG RAM",
+@"// Requires the sram.enable_disable fragment and an MMC3 board with PRG RAM.
+// Writes one byte only within $6000-$7FFF; invalid addresses leave memory untouched.
+void SRAM_SaveByte(u16 addr, u8 value) {
+    if (addr < 0x6000 || addr >= 0x8000) return;
     SRAM_Enable();
-    __store8(addr, value);
+    *((u8*)addr) = value;
     SRAM_Disable();
 }");
-
         return map;
     }
 
+    // Read compiler diagnostics, fill missing suggestions, and emit a severity-prioritized subset.
     static bool TryRunFixHintCommand(string[] argsArray)
     {
         if (argsArray == null || argsArray.Length == 0) return false;
@@ -605,12 +606,14 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
             return true;
         }
 
+        // Choose the structured-output parser by its marker fields; other input uses the diagnostic-log pattern.
         List<VibeDiagRecord> records;
         if (LooksLikeDiagJson(text))
             records = ParseDiagJsonRecords(text);
         else
             records = ParseDiagnosticLogRecords(text);
 
+        // Keep supplied suggestions; otherwise try the code-specific hint before the message-based fallback.
         foreach (var r in records)
         {
             if (string.IsNullOrWhiteSpace(r.Suggestion))
@@ -619,6 +622,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
                 r.Suggestion = GetFallbackFixSuggestion(r.Message);
         }
 
+        // Prioritize fatal/errors before warnings and limit output after sorting by diagnostic code.
         var selected = records
             .Where(r => !string.IsNullOrWhiteSpace(r.Message))
             .OrderBy(r => FixHintSeverityRank(r.Severity))
@@ -627,7 +631,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
             .ToList();
 
         var sb = new StringBuilder();
-        sb.AppendLine("# KITAQGB shortest fix suggestions");
+        sb.AppendLine("# KITAQFC shortest fix suggestions");
         sb.AppendLine("input=" + Path.GetFullPath(inPath));
         sb.AppendLine("diagnostics_found=" + records.Count);
         sb.AppendLine("suggestions_emitted=" + selected.Count);
@@ -667,6 +671,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return true;
     }
 
+    // Recognize expected marker names without validating the JSON document.
     static bool LooksLikeDiagJson(string text)
     {
         if (string.IsNullOrWhiteSpace(text)) return false;
@@ -674,6 +679,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
                text.IndexOf("\"exit_code\"", StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
+    // Match the compiler's fixed-order diagnostic object layout; this regex is not a general JSON parser.
     static List<VibeDiagRecord> ParseDiagJsonRecords(string json)
     {
         var list = new List<VibeDiagRecord>();
@@ -699,6 +705,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return list;
     }
 
+    // Decode common JSON escapes and individual UTF-16 code units, preserving an incomplete trailing slash.
     static string JsonUnescape(string s)
     {
         if (string.IsNullOrEmpty(s)) return "";
@@ -755,6 +762,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return sb.ToString();
     }
 
+    // Read one diagnostic per matching log line, accepting optional source location fields.
     static List<VibeDiagRecord> ParseDiagnosticLogRecords(string text)
     {
         var list = new List<VibeDiagRecord>();
@@ -784,6 +792,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return list;
     }
 
+    // Resolve a valid text code through the shared diagnostic suggestion table.
     static string GetFixSuggestionFromTextCode(string codeText, string message)
     {
         int n = ParseKqCode(codeText);
@@ -796,6 +805,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return "";
     }
 
+    // Require the KQ prefix and four-character numeric suffix; return -1 when parsing fails.
     static int ParseKqCode(string codeText)
     {
         if (string.IsNullOrWhiteSpace(codeText)) return -1;
@@ -806,6 +816,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return -1;
     }
 
+    // Use ordered message keywords only when the diagnostic supplies no more specific suggestion.
     static string GetFallbackFixSuggestion(string message)
     {
         if (string.IsNullOrWhiteSpace(message)) return "Run again with --diag-json for structured hints.";
@@ -821,6 +832,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return "Reduce the code to a minimal repro, then reintroduce pieces incrementally.";
     }
 
+    // Assign lower sort ranks to more severe diagnostics; unknown labels sort last.
     static int FixHintSeverityRank(string severity)
     {
         if (string.IsNullOrWhiteSpace(severity)) return 3;
@@ -832,6 +844,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return 3;
     }
 
+    // Count textual IR markers and assembly lines from available dumps without running an optimizer or model.
     static bool TryRunAiIrSummaryCommand(string[] argsArray)
     {
         if (argsArray == null || argsArray.Length == 0) return false;
@@ -894,6 +907,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
             return true;
         }
 
+        // Summarize each selected dump independently; auto-discovered IR and assembly may come from different builds.
         int irLines = CountLinesFast(irText);
         int asmLines = CountLinesFast(asmText);
         int irFunctions = CountRegex(irText, "\\(\\$function\\b");
@@ -910,7 +924,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
             .ToList();
 
         var sb = new StringBuilder();
-        sb.AppendLine("# KITAQGB AI IR short summary");
+        sb.AppendLine("# KITAQFC AI IR short summary");
         sb.AppendLine("generated_utc=" + DateTime.UtcNow.ToString("O"));
         sb.AppendLine("ir_file=" + (string.IsNullOrWhiteSpace(irPath) ? "<none>" : Path.GetFullPath(irPath)));
         sb.AppendLine("asm_file=" + (string.IsNullOrWhiteSpace(asmPath) ? "<none>" : Path.GetFullPath(asmPath)));
@@ -941,12 +955,14 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return true;
     }
 
+    // Return the number of non-overlapping textual pattern matches, with empty input contributing zero.
     static int CountRegex(string text, string pattern)
     {
         if (string.IsNullOrEmpty(text)) return 0;
         return Regex.Matches(text, pattern).Count;
     }
 
+    // Count newline boundaries plus the initial line; a trailing newline contributes an empty final line.
     static int CountLinesFast(string text)
     {
         if (string.IsNullOrEmpty(text)) return 0;
@@ -958,6 +974,8 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return n;
     }
 
+    // Group nonblank, noncomment, nonlabel lines after function markers.
+    // Counts are textual: directives also count, and repeated function names share one total.
     static List<VibeAsmFunctionStat> ParseAsmFunctionStats(string asmText, out int functionCount, out int instructionCount)
     {
         functionCount = 0;
@@ -992,6 +1010,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return map.Select(kv => new VibeAsmFunctionStat { Name = kv.Key, InstructionCount = kv.Value }).ToList();
     }
 
+    // Build once, then poll recorded dependencies and rebuild after an observed change until a stop condition.
     static bool TryRunDevServerCommand(string[] argsArray)
     {
         if (argsArray == null || argsArray.Length == 0) return false;
@@ -1059,9 +1078,11 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
             depsPath = Path.Combine(root, "integration_test", "reports", "devserver.deps.txt");
         depsPath = Path.GetFullPath(depsPath);
 
+        // Supply the child build defaults and a dependency-output path before starting the loop.
         compileArgs = PrepareDevServerCompileArgs(compileArgs, depsPath);
 
         bool stopRequested = false;
+        // Request a graceful loop exit on Ctrl+C; the current synchronous child invocation is not cancelled here.
         Console.CancelKeyPress += (sender, e) =>
         {
             e.Cancel = true;
@@ -1070,13 +1091,16 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
 
         string exePath = Process.GetCurrentProcess().MainModule.FileName;
         int buildCount = 0;
+        int lastBuildExit = 0;
         while (!stopRequested)
         {
             buildCount++;
             Console.WriteLine("[devserver] build #{0}", buildCount);
             int code = RunChildCompiler(exePath, compileArgs.ToArray(), Environment.CurrentDirectory);
+            lastBuildExit = code;
             Console.WriteLine("[devserver] exit={0}", code);
 
+            // Stop after the requested number of builds before loading another dependency snapshot.
             if (once) break;
             if (maxBuilds > 0 && buildCount >= maxBuilds) break;
             if (stopRequested) break;
@@ -1096,6 +1120,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
                 }
             }
 
+            // Take a fresh baseline after each build so the next polling phase observes later file changes.
             var stamps = BuildFileStampMap(deps);
             Console.WriteLine("[devserver] watching {0} file(s)", deps.Count);
 
@@ -1105,16 +1130,19 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
                 var changed = DetectChangedFiles(deps, stamps, maxFiles: 10);
                 if (changed.Count == 0) continue;
 
+                // Apply one fixed delay after the first observed change; this is not a wait-until-stable debounce loop.
                 if (debounceMs > 0) Thread.Sleep(debounceMs);
                 Console.WriteLine("[devserver] changed: " + string.Join(", ", changed.Select(Path.GetFileName)));
                 break;
             }
         }
 
-        Environment.Exit(0);
+        // Propagate the last build result when a bounded run or orderly stop ends the loop.
+        Environment.Exit(lastBuildExit);
         return true;
     }
 
+    // Remove nested watch mode and add missing fast-build, cache and dependency-output defaults.
     static List<string> PrepareDevServerCompileArgs(List<string> compileArgs, string depsPath)
     {
         var args = new List<string>();
@@ -1138,6 +1166,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return args;
     }
 
+    // Combine listed dependencies with command-line sources, retaining missing files so creation can be detected.
     static HashSet<string> LoadDevServerDependencyFiles(string depsPath, List<string> compileArgs)
     {
         var files = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1169,6 +1198,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return files;
     }
 
+    // Snapshot dependency metadata using case-insensitive path keys.
     static Dictionary<string, VibeFileStamp> BuildFileStampMap(IEnumerable<string> files)
     {
         var map = new Dictionary<string, VibeFileStamp>(StringComparer.OrdinalIgnoreCase);
@@ -1181,6 +1211,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return map;
     }
 
+    // Represent absent or unreadable files uniformly as missing; existing files contribute size and UTC timestamp.
     static VibeFileStamp GetFileStamp(string path)
     {
         try
@@ -1203,6 +1234,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         }
     }
 
+    // Update stamps for encountered changes and return a bounded list; later paths wait for another scan.
     static List<string> DetectChangedFiles(IEnumerable<string> files, Dictionary<string, VibeFileStamp> lastMap, int maxFiles)
     {
         var changed = new List<string>();
@@ -1229,6 +1261,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return changed;
     }
 
+    // Select recent history and generate a readable recipe plus an optional replay script without executing either.
     static bool TryRunRecipeCommand(string[] argsArray)
     {
         if (argsArray == null || argsArray.Length == 0) return false;
@@ -1287,6 +1320,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
             return true;
         }
 
+        // Choose the latest compile/test/devserver independently within the requested history window.
         var tail = entries.Skip(Math.Max(0, entries.Count - last)).ToList();
         var lastCompile = tail.LastOrDefault(IsCompileHistoryEntry);
         var lastTest = tail.LastOrDefault(e => StartsWithSubcommand(e.ArgsLine, "test"));
@@ -1326,6 +1360,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return true;
     }
 
+    // Read three tab-delimited columns, discard malformed timestamps, and normalize accepted timestamps to UTC.
     static List<VibeHistoryEntry> LoadHistoryEntries(string historyPath)
     {
         var list = new List<VibeHistoryEntry>();
@@ -1348,6 +1383,7 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return list;
     }
 
+    // Treat a nonempty first argument outside the known subcommand set as a compile invocation.
     static bool IsCompileHistoryEntry(VibeHistoryEntry e)
     {
         if (e == null) return false;
@@ -1357,12 +1393,14 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return true;
     }
 
+    // Compare only the extracted first argument when classifying a recorded command.
     static bool StartsWithSubcommand(string argsLine, string cmd)
     {
         string first = FirstArgFromArgsLine(argsLine);
         return string.Equals(first, cmd, StringComparison.OrdinalIgnoreCase);
     }
 
+    // Read the first quoted or whitespace-delimited token using the history format's lightweight quote handling.
     static string FirstArgFromArgsLine(string argsLine)
     {
         if (string.IsNullOrWhiteSpace(argsLine)) return "";
@@ -1384,10 +1422,11 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return s.Substring(0, sp);
     }
 
+    // Describe selected commands with their recorded directories and include up to ten recent invocations.
     static string BuildRecipeMarkdown(string historyPath, List<VibeHistoryEntry> tail, VibeHistoryEntry lastCompile, VibeHistoryEntry lastTest, VibeHistoryEntry lastDevServer)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("# KITAQGB Repro Recipe");
+        sb.AppendLine("# KITAQFC Repro Recipe");
         sb.AppendLine();
         sb.AppendLine("generated_utc=" + DateTime.UtcNow.ToString("O"));
         sb.AppendLine("history_file=" + Path.GetFullPath(historyPath));
@@ -1438,38 +1477,54 @@ void SRAM_Disable() { __store8(0x0000, 0x00); }");
         return sb.ToString();
     }
 
+    // Replay each recorded native argument line in its own directory without shell evaluation.
+    // Quoting here protects PowerShell source; ProcessStartInfo handles the native argument transport.
     static string BuildRecipeScript(VibeHistoryEntry lastCompile, VibeHistoryEntry lastTest, VibeHistoryEntry lastDevServer)
     {
-        string cwd = lastCompile?.WorkingDirectory ?? lastTest?.WorkingDirectory ?? lastDevServer?.WorkingDirectory ?? Environment.CurrentDirectory;
-        cwd = cwd ?? Environment.CurrentDirectory;
-
         var sb = new StringBuilder();
+        sb.AppendLine("param([string]$Compiler = '')");
         sb.AppendLine("$ErrorActionPreference = 'Stop'");
-        sb.AppendLine("Set-Location '" + (cwd.Replace("'", "''")) + "'");
-        sb.AppendLine("$compiler = Join-Path (Get-Location) 'kitaqfc.exe'");
-        sb.AppendLine("if (!(Test-Path $compiler)) { $compiler = 'kitaqfc' }");
+        sb.AppendLine("$script:compilerOverride = ''");
+        sb.AppendLine("if ($Compiler) { $script:compilerOverride = (Get-Command -Name $Compiler -CommandType Application -ErrorAction Stop).Source }");
         sb.AppendLine();
-        if (lastCompile != null)
+        sb.AppendLine("# Keep history arguments as data, including dollar signs, quotes and shell punctuation.");
+        sb.AppendLine("function Invoke-RecordedCompiler([string]$Directory, [string]$Arguments) {");
+        sb.AppendLine("    $selectedCompiler = $script:compilerOverride");
+        sb.AppendLine("    if (!$selectedCompiler) {");
+        sb.AppendLine("        $candidate = Join-Path $Directory 'kitaqfc.exe'");
+        sb.AppendLine("        if (Test-Path -LiteralPath $candidate -PathType Leaf) { $selectedCompiler = $candidate }");
+        sb.AppendLine("        else { $selectedCompiler = (Get-Command kitaqfc -CommandType Application -ErrorAction Stop).Source }");
+        sb.AppendLine("    }");
+        sb.AppendLine("    $startInfo = New-Object System.Diagnostics.ProcessStartInfo");
+        sb.AppendLine("    $startInfo.FileName = $selectedCompiler");
+        sb.AppendLine("    $startInfo.WorkingDirectory = $Directory");
+        sb.AppendLine("    $startInfo.Arguments = $Arguments");
+        sb.AppendLine("    $startInfo.UseShellExecute = $false");
+        sb.AppendLine("    $startInfo.CreateNoWindow = $true");
+        sb.AppendLine("    $child = [System.Diagnostics.Process]::Start($startInfo)");
+        sb.AppendLine("    try { $child.WaitForExit(); return $child.ExitCode }");
+        sb.AppendLine("    finally { $child.Dispose() }");
+        sb.AppendLine("}");
+        sb.AppendLine();
+
+        // Single-quoted PowerShell literals double apostrophes; no other character is evaluated.
+        string Literal(string value) => "'" + (value ?? "").Replace("'", "''") + "'";
+        void AppendStep(VibeHistoryEntry entry)
         {
-            sb.AppendLine("& $compiler " + lastCompile.ArgsLine);
-            sb.AppendLine("if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }");
+            if (entry == null) return;
+            string directory = string.IsNullOrWhiteSpace(entry.WorkingDirectory)
+                ? Environment.CurrentDirectory : entry.WorkingDirectory;
+            sb.AppendLine("$replayExit = Invoke-RecordedCompiler -Directory " + Literal(directory) + " -Arguments " + Literal(entry.ArgsLine));
+            sb.AppendLine("if ($replayExit -ne 0) { exit $replayExit }");
             sb.AppendLine();
         }
-        if (lastTest != null)
-        {
-            sb.AppendLine("& $compiler " + lastTest.ArgsLine);
-            sb.AppendLine("if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }");
-            sb.AppendLine();
-        }
-        if (lastDevServer != null)
-        {
-            sb.AppendLine("& $compiler " + lastDevServer.ArgsLine);
-            sb.AppendLine("if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }");
-            sb.AppendLine();
-        }
+        AppendStep(lastCompile);
+        AppendStep(lastTest);
+        AppendStep(lastDevServer);
         sb.AppendLine("exit 0");
         return sb.ToString();
     }
+
 }
 
 

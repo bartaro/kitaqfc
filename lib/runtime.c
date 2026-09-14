@@ -19,6 +19,7 @@ __location(0x2006) unsigned char PPUADDR;
 __location(0x2007) unsigned char PPUDATA;
 __location(0x4014) unsigned char OAMDMA;
 
+// Reserve CPU page 02 for OAM shadow and 0300..03BF for this runtime queue; avoid overlapping other allocations.
 __location(0x0200) unsigned char nes_oam_shadow[256];
 __location(0x0300) unsigned char nes_vram_queue_data[192];
 
@@ -26,12 +27,16 @@ unsigned char nes_nmi_counter;
 unsigned char nes_vram_queue_used;
 unsigned char nes_vram_queue_overflow;
 
+// Discard pending VRAM commands and clear the overflow latch; no PPU writes occur.
 void nes_vram_queue_clear(void)
 {
     nes_vram_queue_used = 0;
     nes_vram_queue_overflow = 0;
 }
 
+// Copy a literal payload into the queue and publish its new used length last.
+// The command format reserves bit 7 of len for fills: callers must pass len <= 127
+// and ensure queue production cannot race its NMI consumer.
 unsigned char nes_vram_queue_try_write(unsigned short ppu_addr, unsigned char* src, unsigned char len)
 {
     unsigned char used;
@@ -40,6 +45,8 @@ unsigned char nes_vram_queue_try_write(unsigned short ppu_addr, unsigned char* s
     unsigned char dst_index;
 
     used = nes_vram_queue_used;
+    // Each literal record costs three header bytes plus len payload bytes.
+    // len <=127 is a caller precondition; unlike the fill path it is not validated here.
     need = (unsigned char)(len + 3);
 
     if ((unsigned char)(used + need) < used)
@@ -70,6 +77,9 @@ unsigned char nes_vram_queue_try_write(unsigned short ppu_addr, unsigned char* s
     return 1;
 }
 
+// Queue a four-byte fill record: address high/low, length with bit 7 set, value.
+// Reject lengths above 127 and latch overflow on any capacity/format failure.
+// A zero-length fill still occupies its four-byte record and performs no PPUDATA writes when consumed.
 unsigned char nes_vram_queue_try_fill(unsigned short ppu_addr, unsigned char value, unsigned char len)
 {
     unsigned char used;
@@ -102,6 +112,11 @@ unsigned char nes_vram_queue_try_fill(unsigned short ppu_addr, unsigned char val
     return 1;
 }
 
+// Consume complete records in order during a safe PPU access period. Reading
+// PPUSTATUS resets the shared address latch before each address pair. The caller
+// is responsible for ensuring the transfer fits its NMI/VBlank time budget.
+// Consume only well-formed records produced by these APIs, with no concurrent producer.
+// The PPUCTRL increment mode remains active; use increment one for ordinary contiguous rows.
 void nes_vram_queue_nmi_flush(void)
 {
     unsigned char i;
@@ -148,6 +163,7 @@ void nes_vram_queue_nmi_flush(void)
     nes_vram_queue_used = 0;
 }
 
+// Flush queued VRAM updates before advancing the 8-bit NMI completion counter.
 void __nes_nmi(void)
 {
     if (nes_vram_queue_used != 0)
@@ -157,6 +173,8 @@ void __nes_nmi(void)
     nes_nmi_counter = nes_nmi_counter + 1;
 }
 
+// Wait until the NMI handler advances its counter. NMI must already be enabled
+// and able to execute; this polling loop has no timeout.
 void nes_wait_nmi(void)
 {
     unsigned char start;
@@ -166,6 +184,8 @@ void nes_wait_nmi(void)
     }
 }
 
+// Wait for the current VBlank to end, then for the next one to begin. Each
+// PPUSTATUS read has hardware side effects, including clearing the VBlank flag.
 void nes_vblank_wait(void)
 {
     while ((PPUSTATUS & 0x80) != 0)
@@ -176,6 +196,7 @@ void nes_vblank_wait(void)
     }
 }
 
+// Reset the PPU address latch with a status read, then write the high/low address bytes.
 void nes_ppu_seek(unsigned short ppu_addr)
 {
     unsigned char latch;
@@ -185,6 +206,9 @@ void nes_ppu_seek(unsigned short ppu_addr)
     latch = latch;
 }
 
+// Write len source bytes directly through PPUDATA. Call only during an appropriate
+// PPU access period; the address increment mode comes from the current PPUCTRL.
+// Even a zero-length operation seeks the PPU address and changes the shared latch state.
 void nes_ppu_stream_write(unsigned short ppu_addr, unsigned char* src, unsigned short len)
 {
     nes_ppu_seek(ppu_addr);
@@ -196,6 +220,8 @@ void nes_ppu_stream_write(unsigned short ppu_addr, unsigned char* src, unsigned 
     }
 }
 
+// Write value repeatedly through PPUDATA, using the current PPU address increment
+// mode. This routine does not wait for VBlank or disable rendering.
 void nes_ppu_stream_fill(unsigned short ppu_addr, unsigned char value, unsigned short len)
 {
     nes_ppu_seek(ppu_addr);
@@ -207,6 +233,8 @@ void nes_ppu_stream_fill(unsigned short ppu_addr, unsigned char value, unsigned 
 }
 
 
+// Reset the OAM destination and DMA one 256-byte CPU page. The hardware stalls
+// the CPU during transfer; page is the source address high byte.
 void nes_oam_dma(unsigned char page)
 {
     OAMADDR = 0;

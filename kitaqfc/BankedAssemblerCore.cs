@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+// Active FC image assembler: place units in logical banks, resolve addresses, encode bytes and assemble mapper-specific PRG/FDS outputs.
 sealed class BankedAssemblerCore
 {
     const int HeaderSize = 16;
@@ -17,6 +18,7 @@ sealed class BankedAssemblerCore
     const int FdsCommonBankLimitExclusive = 0xE000 - ResetStubReserve;
     const int FdsSwitchableBankLimitExclusive = 0xA000;
 
+    // Keep a function or data unit's requested constraints, stable input order and current placement estimate together.
     sealed class PlacedUnit
     {
         public int Index;
@@ -44,6 +46,7 @@ sealed class BankedAssemblerCore
     bool _commonReplicaEqual = true;
     string _commonReplicaSha256 = "";
 
+    // Select the $6000-$DFFF RAM layout only for an FDS profile with the corresponding output option enabled.
     bool UsesFdsPrgRamLayout
     {
         get { return _profile.HasFds && Program.FdsPrgRamLayoutEnabled; }
@@ -51,6 +54,7 @@ sealed class BankedAssemblerCore
 
     public AssemblerAnalysisReport LastReport { get; private set; } = new AssemblerAnalysisReport();
 
+    // Describe logical banks 2+ as non-boot overlay files, checking id range, conflicts and the merged 42-record runtime limit.
     List<FdsDiskFileMetadata> BuildFdsAutoOverlayMetadataRecords()
     {
         var list = new List<FdsDiskFileMetadata>();
@@ -94,6 +98,7 @@ sealed class BankedAssemblerCore
         return list;
     }
 
+    // Replace existing runtime-table data nodes with user metadata plus generated overlays; report whether the bytes changed.
     bool ApplyFdsRuntimeMetadataTable(List<PlacedUnit> units)
     {
         if (!UsesFdsPrgRamLayout) return false;
@@ -123,6 +128,8 @@ sealed class BankedAssemblerCore
     }
 
 
+    // Build a count-prefixed table for functions placed in overlay banks, sorted by bank/address/name, and replace its existing data node.
+    // Each entry records bank, file id, address, size and a 16-bit name hash.
     bool ApplyFdsOverlayFunctionTable(List<PlacedUnit> units)
     {
         if (!UsesFdsPrgRamLayout || !Program.FdsOverlayFunctionTableEnabled) return false;
@@ -174,6 +181,7 @@ sealed class BankedAssemblerCore
         return changed;
     }
 
+    // Compute a deterministic wrapping hash from each character's low byte; collisions are not detected here.
     static int StableNameHash16(string name)
     {
         unchecked
@@ -188,6 +196,7 @@ sealed class BankedAssemblerCore
         }
     }
 
+    // Resolve generated metadata back to emitted bank buffers and clone their bytes for disk-file export.
     List<FdsAutoOverlayFile> BuildFdsAutoOverlayDiskFiles()
     {
         var list = new List<FdsAutoOverlayFile>();
@@ -226,6 +235,7 @@ sealed class BankedAssemblerCore
         return list;
     }
 
+    // Clone the bank image, optionally removing trailing 0xFF fill while retaining at least one byte.
     byte[] CloneAndMaybeTrimFdsOverlay(byte[] image)
     {
         if (image == null) return new byte[0];
@@ -241,6 +251,7 @@ sealed class BankedAssemblerCore
         return data;
     }
 
+    // Filter the configured prefix to printable non-space ASCII, append the bank number, and fit the result to eight characters.
     string BuildFdsOverlayFileName(int bank)
     {
         string prefix = Program.FdsOverlayNamePrefix ?? "KQFB";
@@ -253,6 +264,7 @@ sealed class BankedAssemblerCore
         return name;
     }
 
+    // Compare generated table payloads byte-for-byte so unchanged data does not trigger another layout pass.
     static bool ByteArrayEquals(byte[] a, byte[] b)
     {
         if (object.ReferenceEquals(a, b)) return true;
@@ -262,12 +274,15 @@ sealed class BankedAssemblerCore
         return true;
     }
 
+    // Iterate placement, FDS tables and long-branch expansion, then encode banks and startup tails.
+    // Build an iNES image or requested FDS output, stopping at the explicit error-count checks between stages.
     public string Run(IReadOnlyList<Expr> assembly, string outputFilename)
     {
         var units = ParseUnits(assembly ?? Array.Empty<Expr>());
         if (Program.ErrorCount > 0) return outputFilename;
 
         bool layoutStable = false;
+        // Bound layout retries to eight passes; this loop has no separate convergence-failure diagnostic after the final pass.
         for (int pass = 0; pass < 8; pass++)
         {
             layoutStable = AssignActualBanks(units);
@@ -346,6 +361,7 @@ sealed class BankedAssemblerCore
         return outputFilename;
     }
 
+    // Print the emitted disk image counts and forward its nonfatal conversion warnings.
     void EmitFdsBuildWarnings(string path, FdsDiskImageBuildResult result)
     {
         if (result == null) return;
@@ -354,6 +370,8 @@ sealed class BankedAssemblerCore
             Program.Warning("warning: " + warning);
     }
 
+    // Split functions and readonly declarations into placement units, carrying bank directives and leading comments forward.
+    // Keep inline word data with its current unit to preserve BIOS direct-pointer call layout.
     List<PlacedUnit> ParseUnits(IReadOnlyList<Expr> assembly)
     {
         var units = new List<PlacedUnit>();
@@ -363,6 +381,7 @@ sealed class BankedAssemblerCore
         bool placementFixed = false;
         int nextIndex = 0;
 
+        // Estimate and append the current unit before starting a new function, data block or bank directive.
         Action finalize = () =>
         {
             if (current == null) return;
@@ -371,6 +390,7 @@ sealed class BankedAssemblerCore
             current = null;
         };
 
+        // Capture the active requested bank/fixed flag and attach buffered comments to the next unit.
         Func<bool, string, PlacedUnit> createUnit = (isFunction, name) =>
         {
             var unit = new PlacedUnit
@@ -443,6 +463,8 @@ sealed class BankedAssemblerCore
         return units;
     }
 
+    // Reserve common and fixed-bank units first, then place movable units in input order at or above their requested bank.
+    // Track whether assignments and the highest switchable-bank count changed.
     bool AssignActualBanks(List<PlacedUnit> units)
     {
         var bankUsage = new Dictionary<int, int>();
@@ -471,6 +493,19 @@ sealed class BankedAssemblerCore
 
         foreach (var unit in (units ?? new List<PlacedUnit>()).Where(x => x.RequestedBank > 0 && !x.HasFixedBank).OrderBy(x => x.Index))
         {
+            // Every candidate bank must reserve its reset tail on these profiles.
+            int largestCapacity = BankSize;
+            if (_profile.RequiresPerBankResetStub &&
+                _profile.ResetVectorReplication == ResetVectorReplicationKind.EveryPhysical16KBank)
+                largestCapacity -= ResetStubReserve;
+            if (unit.EstimatedSize > largestCapacity)
+            {
+                Program.Error("error KQ0000: NES assembler unit '{0}' cannot fit in any switchable bank ({1} bytes > {2} bytes).",
+                    string.IsNullOrEmpty(unit.PrimaryName) ? "<anonymous>" : unit.PrimaryName,
+                    unit.EstimatedSize, largestCapacity);
+                return false;
+            }
+
             int bank = Math.Max(1, unit.RequestedBank);
             while (true)
             {
@@ -505,6 +540,7 @@ sealed class BankedAssemblerCore
         return stable;
     }
 
+    // Accumulate reserved bytes and report an overflow before updating the bank-usage entry.
     void AddBankUsage(Dictionary<int, int> bankUsage, int bank, int amount, PlacedUnit unit)
     {
         int used = 0;
@@ -518,6 +554,7 @@ sealed class BankedAssemblerCore
         bankUsage[bank] = used;
     }
 
+    // Estimate a unit from its bank's CPU base, rather than from its eventual position after earlier units.
     int EstimateUnitSize(PlacedUnit unit, IReadOnlyDictionary<string, int> symbols)
     {
         int bank = unit == null ? 1 : (unit.ActualBank != 0 ? unit.ActualBank : unit.RequestedBank == 0 ? 0 : 1);
@@ -528,6 +565,7 @@ sealed class BankedAssemblerCore
         return Math.Max(0, pc - startPc);
     }
 
+    // Advance the estimate for skips, alignment, data, words and instructions; metadata or unrecognized nodes consume no bytes here.
     int AdvancePcForEstimate(int bank, int pc, Expr e, IReadOnlyDictionary<string, int> symbols)
     {
         if (e == null) return pc;
@@ -548,6 +586,8 @@ sealed class BankedAssemblerCore
         return pc;
     }
 
+    // Walk units in bank/input order and iterate forward-reference sizes up to eight times, updating each unit's start address.
+    // Symbol names share one CPU-address dictionary across banks; only their first occurrence is inserted.
     Dictionary<string, int> BuildAddressMap(List<PlacedUnit> units)
     {
         var previous = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -620,6 +660,8 @@ sealed class BankedAssemblerCore
         return previous;
     }
 
+    // Rewrite out-of-range conditional branches within each placed unit using the current address map.
+    // The generated-label counter is local to this invocation.
     bool ExpandLongBranches(List<PlacedUnit> units, IReadOnlyDictionary<string, int> symbols)
     {
         bool changed = false;
@@ -688,6 +730,8 @@ sealed class BankedAssemblerCore
         return changed;
     }
 
+    // Expand a resolved symbolic conditional branch outside signed-byte range into its inverse branch over an absolute JMP.
+    // Numeric targets and modified operands are left for normal encoding checks.
     bool TryExpandLongBranch(Expr e, string mnemonic, AsmOperand operand, IReadOnlyDictionary<string, int> symbols, int pc, List<Expr> expanded, ref int branchCounter)
     {
         if (operand == null || operand.Mode != AddressMode.Relative || operand.Modifier != ImmediateModifier.None || !operand.Base.HasValue)
@@ -722,6 +766,7 @@ sealed class BankedAssemblerCore
         return true;
     }
 
+    // Fill the common image and every logical switchable bank through the highest assigned bank with 0xFF.
     void InitializeBankImages()
     {
         FillWithFF(_commonBankImage);
@@ -734,6 +779,7 @@ sealed class BankedAssemblerCore
         }
     }
 
+    // Resolve a $/0x hexadecimal word literal or an exact symbol name; decimal text is not interpreted as a literal here.
     bool TryResolveWordValue(string label, out int value)
     {
         value = 0;
@@ -751,6 +797,7 @@ sealed class BankedAssemblerCore
         return _symbols.TryGetValue(label, out value);
     }
 
+    // Emit each unit at its estimated bank/start and record function and readonly-data extents for the report.
     void Pass2(List<PlacedUnit> units)
     {
         _functionSizes.Clear();
@@ -844,6 +891,7 @@ sealed class BankedAssemblerCore
         }
     }
 
+    // Generate the reserved startup/vector tail, install it in common code, and replicate it to banks required by the profile.
     void WriteResetAndVectors()
     {
         int resetTarget = ResolveVectorTarget("__nes_reset", "__kq_reset_stub", "main", "__kq_hang_loop");
@@ -865,6 +913,8 @@ sealed class BankedAssemblerCore
         }
     }
 
+    // Emit mapper-specific startup register writes followed by the reset jump; reserve the last six bytes for vectors.
+    // Native FDS layout uses its separate BIOS-compatible tail builder.
     byte[] BuildResetTail(int resetTarget, int nmiTarget, int irqTarget)
     {
         if (UsesFdsPrgRamLayout)
@@ -952,6 +1002,7 @@ sealed class BankedAssemblerCore
         return tail;
     }
 
+    // Emit a five-iteration least-significant-bit-first MMC1 register write loop using A and X.
     static void AppendMmc1SerialWrite(List<byte> code, int address, int value)
     {
         code.Add(0xA9); code.Add((byte)(value & 0x1F)); // LDA #value
@@ -965,12 +1016,14 @@ sealed class BankedAssemblerCore
         code.Add(0xD0); code.Add(0xF5);                // BNE loop (-11, back to PHA)
     }
 
+    // Combine fixed-last PRG banking bits with vertical or horizontal mirroring; other requested modes take the horizontal value.
     static int GetMmc1ControlValue()
     {
         int mirroring = Program.NesCartridge.Mirroring == NesMirroringKind.Vertical ? 2 : 3;
         return 0x0C | mirroring;
     }
 
+    // Build the native FDS reset/vector area with the optional boot-NMI sequence, then the application reset jump.
     byte[] BuildFdsResetTail(int resetTarget, int nmiTarget, int irqTarget)
     {
         var tail = new byte[ResetStubReserve];
@@ -1016,6 +1069,7 @@ sealed class BankedAssemblerCore
         return tail;
     }
 
+    // Arrange logical bank buffers into native FDS RAM, duplicated-common, SUROM or ordinary final-common PRG layouts.
     byte[] BuildPrgRom()
     {
         if (UsesFdsPrgRamLayout)
@@ -1042,6 +1096,7 @@ sealed class BankedAssemblerCore
             return prg;
         }
 
+        // Place switchable banks around reserved physical banks 15/31, replicate reset tails, and verify both common-bank copies match.
         if (_profile.PrgLayout == NesPrgLayoutKind.SuromOuter256FixedTop16)
         {
             if (_switchableBankCount > _profile.LogicalSwitchBankMax)
@@ -1092,6 +1147,7 @@ sealed class BankedAssemblerCore
         return rom;
     }
 
+    // Enforce CHR-RAM-only boards or load a nonzero multiple of 8 KiB; absent input supplies a zero-filled 8 KiB CHR image.
     byte[] LoadChrRom()
     {
         string path = Program.NesChrRomPath ?? "";
@@ -1137,6 +1193,7 @@ sealed class BankedAssemblerCore
         }
     }
 
+    // Encode iNES mapper, PRG/CHR unit counts, battery and mirroring flags; SUROM also declares one 8 KiB PRG-RAM unit.
     byte[] BuildHeader(int prgRomSize, int chrRomSize)
     {
         byte[] header = new byte[HeaderSize];
@@ -1158,6 +1215,8 @@ sealed class BankedAssemblerCore
         return header;
     }
 
+    // Report function/readonly extents and common-copy checks from assembled banks.
+    // ROM size describes the iNES-shaped PRG/CHR image even when the primary artifact is FDS.
     AssemblerAnalysisReport BuildReport(int prgRomSize, int chrRomSize)
     {
         var report = new AssemblerAnalysisReport();
@@ -1183,6 +1242,7 @@ sealed class BankedAssemblerCore
         return report;
     }
 
+    // Check a bank-specific cursor against its CPU base and reported upper limit, allowing equality at the endpoint.
     void ValidatePc(int bank, int pc, FilePosition source, string context)
     {
         int baseCpu = GetCpuBase(bank);
@@ -1198,6 +1258,7 @@ sealed class BankedAssemblerCore
         }
     }
 
+    // Write into a bank's allocated 16 KiB image after a bounds check; reserved-tail limits are checked by layout validation.
     void WriteBytes(int bank, int cpuAddress, byte[] bytes, FilePosition source)
     {
         var target = GetBankImage(bank);
@@ -1210,16 +1271,19 @@ sealed class BankedAssemblerCore
         Buffer.BlockCopy(bytes, 0, target, offset, bytes.Length);
     }
 
+    // Write a masked little-endian word through the bank buffer bounds check.
     void WriteWord(int bank, int cpuAddress, int value, FilePosition source)
     {
         WriteBytes(bank, cpuAddress, new byte[] { (byte)(value & 0xFF), (byte)((value >> 8) & 0xFF) }, source);
     }
 
+    // Select common bank zero or the allocated switchable bank buffer.
     byte[] GetBankImage(int bank)
     {
         return bank == 0 ? _commonBankImage : _switchableBankImages[bank];
     }
 
+    // Use the first available vector symbol, falling back to the common-bank CPU base.
     int ResolveVectorTarget(params string[] candidates)
     {
         foreach (var candidate in candidates)
@@ -1230,23 +1294,27 @@ sealed class BankedAssemblerCore
         return GetCpuBase(0);
     }
 
+    // Subtract the reserved startup/vector tail from common code and any switchable bank requiring a reset replica.
     int GetBankCapacity(int bank)
     {
         return bank == 0 || RequiresResetTailForLogicalBank(bank) ? (BankSize - ResetStubReserve) : BankSize;
     }
 
+    // Map logical common/switchable banks to their cartridge or native-FDS CPU windows.
     int GetCpuBase(int bank)
     {
         if (UsesFdsPrgRamLayout) return bank == 0 ? FdsCommonCpuBase : FdsSwitchableCpuBase;
         return bank == 0 ? CommonCpuBase : SwitchableCpuBase;
     }
 
+    // Choose the cursor limit for the configured window and reset-tail policy; capacity accounting is also performed separately.
     int GetBankLimitExclusive(int bank)
     {
         if (UsesFdsPrgRamLayout) return bank == 0 ? FdsCommonBankLimitExclusive : FdsSwitchableBankLimitExclusive;
         return bank == 0 || RequiresResetTailForLogicalBank(bank) ? CommonBankLimitExclusive : SwitchableBankLimitExclusive;
     }
 
+    // Apply the profile's physical-bank replication policy, translating SUROM logical banks before checking high-bank parity.
     bool RequiresResetTailForLogicalBank(int bank)
     {
         if (bank <= 0 || !_profile.RequiresPerBankResetStub) return false;
@@ -1262,6 +1330,8 @@ sealed class BankedAssemblerCore
         }
     }
 
+    // Translate logical bank/CPU address into a PRG payload offset, excluding the iNES header.
+    // Duplicated common code uses its first physical copy for reporting.
     int GetFileOffset(int bank, int cpuAddress)
     {
         int offsetWithinBank = cpuAddress - GetCpuBase(bank);
@@ -1279,6 +1349,7 @@ sealed class BankedAssemblerCore
         return ((bank - 1) * BankSize) + offsetWithinBank;
     }
 
+    // Group by actual logical bank while retaining input order within each bank.
     IEnumerable<IGrouping<int, PlacedUnit>> OrderedUnitsByBank(IEnumerable<PlacedUnit> units)
     {
         return (units ?? Enumerable.Empty<PlacedUnit>())
@@ -1287,21 +1358,25 @@ sealed class BankedAssemblerCore
             .GroupBy(x => x.ActualBank);
     }
 
+    // Use the common-bank layout limit as the first address of the reserved reset tail.
     int GetResetStubCpuAddress()
     {
         return GetBankLimitExclusive(0);
     }
 
+    // Return the first 8 KiB index of the final common bank in the ordinary PRG layout.
     int GetCommonSecondLast8kIndex()
     {
         return _switchableBankCount * 2;
     }
 
+    // Return the final common bank's second 8 KiB index.
     int GetCommonLast8kIndex()
     {
         return (_switchableBankCount * 2) + 1;
     }
 
+    // Append an absolute JMP opcode and its little-endian target address to generated startup code.
     static void WriteJmp(List<byte> bytes, int target)
     {
         bytes.Add(0x4C);
@@ -1309,22 +1384,27 @@ sealed class BankedAssemblerCore
         bytes.Add((byte)((target >> 8) & 0xFF));
     }
 
+    // Store the low 16 bits at a caller-validated array position.
     static void WriteWordToArray(byte[] data, int offset, int value)
     {
         data[offset] = (byte)(value & 0xFF);
         data[offset + 1] = (byte)((value >> 8) & 0xFF);
     }
 
+    // Initialize every byte to the ROM/unused-bank fill value.
     static void FillWithFF(byte[] data)
     {
         for (int i = 0; i < data.Length; i++) data[i] = 0xFF;
     }
 
+    // Trim and uppercase the mnemonic before opcode lookup.
     static string NormalizeMnemonic(string mnemonic)
     {
         return (mnemonic ?? "").Trim().ToUpperInvariant();
     }
 
+    // Choose the supported opcode/addressing form, resolve its value, and emit little-endian operand bytes.
+    // Check relative displacements and single-byte ranges; two-byte values are masked to 16 bits.
     byte[] EncodeInstruction(string mnemonic, AsmOperand operand, int pc, FilePosition source)
     {
         var actualMode = NormalizeAddressMode(operand, mnemonic, pc, source);
@@ -1366,6 +1446,8 @@ sealed class BankedAssemblerCore
         return new byte[] { opcode, (byte)(value & 0xFF), (byte)((value >> 8) & 0xFF) };
     }
 
+    // Keep explicit immediate/relative/indirect forms; shrink absolute forms to zero-page variants when supported and in range.
+    // Use the unmodified address for that width decision.
     AddressMode NormalizeAddressMode(AsmOperand operand, string mnemonic, int pc, FilePosition source)
     {
         operand = operand ?? AsmOperand.Implicit;
@@ -1401,6 +1483,7 @@ sealed class BankedAssemblerCore
         return operand.Mode;
     }
 
+    // Resolve symbol plus addend without reporting missing forward symbols; optional BANK extraction yields zero in this representation.
     static bool TryResolveOperandValueForEstimate(AsmOperand operand, IReadOnlyDictionary<string, int> symbols, out int value, bool applyModifier = true)
     {
         operand = operand ?? AsmOperand.Implicit;
@@ -1428,6 +1511,7 @@ sealed class BankedAssemblerCore
         return true;
     }
 
+    // Predict zero-page shrinking from currently known unmodified values; retain the original mode for unresolved symbols.
     static AddressMode EstimateAddressMode(string mnemonic, AsmOperand operand, IReadOnlyDictionary<string, int> symbols, int pc)
     {
         operand = operand ?? AsmOperand.Implicit;
@@ -1461,11 +1545,13 @@ sealed class BankedAssemblerCore
         return operand.Mode;
     }
 
+    // Add one opcode byte to the estimated addressing-mode width without validating a matching opcode.
     static int GetEstimatedInstructionSize(string mnemonic, AsmOperand operand, IReadOnlyDictionary<string, int> symbols, int pc)
     {
         return 1 + OperandSize(EstimateAddressMode(mnemonic, operand, symbols, pc));
     }
 
+    // Compare every symbol address and count to detect convergence of the iterative size estimate.
     static bool SymbolMapsEqual(IReadOnlyDictionary<string, int> left, IReadOnlyDictionary<string, int> right)
     {
         if (ReferenceEquals(left, right)) return true;
@@ -1478,6 +1564,8 @@ sealed class BankedAssemblerCore
         return true;
     }
 
+    // Resolve symbol plus addend and optional low/high-byte extraction, reporting an unknown base.
+    // BANK returns zero here; this dictionary stores CPU addresses rather than bank identities.
     int ResolveOperandValue(AsmOperand operand, AddressMode mode, int pc, FilePosition source, bool applyModifier = true)
     {
         operand = operand ?? AsmOperand.Implicit;
@@ -1506,6 +1594,7 @@ sealed class BankedAssemblerCore
         return value;
     }
 
+    // Use one operand byte for zero-page/immediate/relative/indexed-indirect modes, none for implicit, and two otherwise.
     static int OperandSize(AddressMode mode)
     {
         if (mode == AddressMode.Implicit) return 0;
@@ -1517,21 +1606,25 @@ sealed class BankedAssemblerCore
 
     static readonly Dictionary<string, byte> Opcodes = BuildOpcodeTable();
 
+    // Look up the opcode by normalized mnemonic and addressing-mode key.
     static bool TryGetOpcode(string mnemonic, AddressMode mode, out byte opcode)
     {
         return Opcodes.TryGetValue(MakeOpcodeKey(mnemonic, mode), out opcode);
     }
 
+    // Combine the uppercase mnemonic with the enum mode so each supported encoding has a distinct key.
     static string MakeOpcodeKey(string mnemonic, AddressMode mode)
     {
         return mnemonic.ToUpperInvariant() + "|" + mode.ToString();
     }
 
+    // Register one opcode mapping; a repeated key replaces the previous entry.
     static void Def(Dictionary<string, byte> map, string mnemonic, AddressMode mode, byte opcode)
     {
         map[MakeOpcodeKey(mnemonic, mode)] = opcode;
     }
 
+    // Declare the supported 6502 encodings explicitly, including accumulator shifts as implicit-mode instructions.
     static Dictionary<string, byte> BuildOpcodeTable()
     {
         var map = new Dictionary<string, byte>(StringComparer.OrdinalIgnoreCase);

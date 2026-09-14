@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// Legacy SM83 opcode metadata retained with the GB disassembler. This is not a 6502 instruction table;
+// the NES backend disables this disassembly path through SupportsDisassembly.
 public static class AsmInfo
 {
+    // Tables are publicly mutable; operand sizes count bytes following the base opcode, not total instruction length.
     public static string[] Mnemonics = new string[256];
     public static int[] OperandFormats = new int[256];
     public static int[] OperandSizes = new int[10];
@@ -20,6 +23,7 @@ public static class AsmInfo
     public const int IND = 6;
     public const int LDH = 7;
 
+    // Compatibility aliases retain the legacy table layout; indexed forms map to the invalid mode.
     public const int IMM = IMM8;
     public const int ZPG = LDH;
 
@@ -30,6 +34,7 @@ public static class AsmInfo
     public const int ZXI = INV;
     public const int ZYI = INV;
 
+    // Initialize unknown slots, operand lengths and display formats, then populate the legacy base-opcode table.
     static AsmInfo()
     {
         for (int i = 0; i < 256; i++) { Mnemonics[i] = "???"; OperandFormats[i] = INV; }
@@ -52,6 +57,7 @@ public static class AsmInfo
         OperandFormatStrings[IND] = " [HL]";
         OperandFormatStrings[LDH] = " [$FF00+${0:X2}]";
 
+        // Define control flow and interrupt opcodes, with conditions encoded in mnemonic names.
         Def(0x00, "NOP", IMP);
         Def(0xF3, "DI", IMP);
         Def(0xFB, "EI", IMP);
@@ -89,6 +95,7 @@ public static class AsmInfo
         Def(0xF7, "RST_30", IMP);
         Def(0xFF, "RST_38", IMP);
 
+        // Define immediate and register loads; register selections are encoded in the opcode itself.
         Def(0x3E, "LD_A_IMM", IMM8);
         Def(0x06, "LD_B_IMM", IMM8);
         Def(0x0E, "LD_C_IMM", IMM8);
@@ -105,6 +112,7 @@ public static class AsmInfo
         Def(0x67, "LD_H_A", IMP); Def(0x60, "LD_H_B", IMP); Def(0x61, "LD_H_C", IMP); Def(0x62, "LD_H_D", IMP); Def(0x63, "LD_H_E", IMP); Def(0x64, "LD_H_H", IMP); Def(0x65, "LD_H_L", IMP);
         Def(0x6F, "LD_L_A", IMP); Def(0x68, "LD_L_B", IMP); Def(0x69, "LD_L_C", IMP); Def(0x6A, "LD_L_D", IMP); Def(0x6B, "LD_L_E", IMP); Def(0x6C, "LD_L_H", IMP); Def(0x6D, "LD_L_L", IMP);
 
+        // Define absolute, high-memory and indirect loads using their corresponding operand widths.
         Def(0xEA, "LD_MEM_A", ABS);
         Def(0xFA, "LD_A_MEM", ABS);
 
@@ -136,10 +144,12 @@ public static class AsmInfo
 
         Def(0x31, "LD_SP_IMM", IMM16);
         Def(0xF9, "LD_SP_HL", IMP);
+        // REL also tags signed SP-offset operands here; consumers must distinguish those from JR branch destinations.
         Def(0xF8, "LD_HL_SP_IMM", REL);
         Def(0xE8, "ADD_SP_IMM", REL);
         Def(0x08, "LD_MEM_SP", IMM16);
 
+        // Install stack, arithmetic and logical families, including register-pair operations.
         Def(0xC5, "PUSH_BC", IMP); Def(0xC1, "POP_BC", IMP);
         Def(0xD5, "PUSH_DE", IMP); Def(0xD1, "POP_DE", IMP);
         Def(0xE5, "PUSH_HL", IMP); Def(0xE1, "POP_HL", IMP);
@@ -223,6 +233,7 @@ public static class AsmInfo
         Def(0x29, "ADD_HL_HL", IMP);
         Def(0x39, "ADD_HL_SP", IMP);
 
+        // Install accumulator rotates and a CB prefix marker; the disassembler decodes the second byte separately.
         Def(0x07, "RLCA", IMP); Def(0x17, "RLA", IMP);
         Def(0x0F, "RRCA", IMP); Def(0x1F, "RRA", IMP);
         Def(0xCB, "PREFIX_CB", IMP);
@@ -233,12 +244,14 @@ public static class AsmInfo
         Def(0x27, "DAA", IMP);
     }
 
+    // Write one opcode slot without validating the index, format or duplicate definitions.
     static void Def(int opcode, string mnemonic, int format)
     {
         Mnemonics[opcode] = mnemonic;
         OperandFormats[opcode] = format;
     }
 
+    // List the legacy relative branch mnemonics, excluding non-branch signed SP-offset forms.
     public static readonly string[] ShortJumpInstructions = new string[]
     {
         "JR", "JR_NZ", "JR_Z", "JR_NC", "JR_C"

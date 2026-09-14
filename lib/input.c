@@ -5,13 +5,16 @@ u8 kq_input_keys;
 u8 kq_input_press_keys;
 u8 kq_input_release_keys;
 u8 kq_input_repeat_keys;
+// One countdown per logical button; reads of input state do not poll hardware or advance timers.
 static u8 input_repeat_timer[8];
 
+// Map one of eight logical button indices to its mask bit.
 static u8 input_mask_for_index(u8 index)
 {
     return (u8)(1 << index);
 }
 
+// Remap the NES serial-read bit order to the shared KITAQ BTN_* layout.
 static u8 input_translate_pad(u8 raw)
 {
     u8 out;
@@ -27,6 +30,7 @@ static u8 input_translate_pad(u8 raw)
     return out;
 }
 
+// Clear held/edge/repeat masks and reset each independent repeat countdown.
 void input_init(void)
 {
     u8 i;
@@ -42,6 +46,9 @@ void input_init(void)
     }
 }
 
+// Read controller 1 through the safe intrinsic, translate its bit order and
+// derive press/release edges. Repeat delays count calls to this function, so
+// call it once per intended input tick.
 void input_update(void)
 {
     u8 i;
@@ -74,9 +81,15 @@ void input_update(void)
     }
 }
 
+// Return true when any masked logical button is held.
 u8 input_down(u8 mask) { return (u8)((kq_input_keys & mask) != 0); }
+// Return true when any masked button became pressed in the latest input update.
 u8 input_pressed(u8 mask) { return (u8)((kq_input_press_keys & mask) != 0); }
+// Return true when any masked button became released in the latest update.
 u8 input_released(u8 mask) { return (u8)((kq_input_release_keys & mask) != 0); }
+// Return true for a masked initial press or scheduled repeat pulse.
 u8 input_repeat(u8 mask) { return (u8)((kq_input_repeat_keys & mask) != 0); }
+// Read the complete translated held-button mask.
 u8 input_current(void) { return kq_input_keys; }
+// Read the translated held-button mask from before the latest update.
 u8 input_previous(void) { return kq_input_prev_keys; }

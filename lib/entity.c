@@ -1,12 +1,16 @@
 #include "entity.h"
 
+// Fixed-capacity storage keeps entity addresses stable and avoids heap allocation.
+// IDs are reusable slot indices; 0xFF denotes allocation failure or no sprite.
 static Entity entity_pool[ENTITY_MAX];
 
+// Reset every slot before the game starts using the pool.
 void entity_init(void)
 {
     entity_clear_all();
 }
 
+// Release every entity and restore deterministic defaults, including the no-sprite sentinel.
 void entity_clear_all(void)
 {
     u8 i;
@@ -25,6 +29,8 @@ void entity_clear_all(void)
     }
 }
 
+// Claim the first inactive slot, initialize its state, and return its index.
+// Return 0xFF when the pool is full; callers must check before using the ID.
 u8 entity_create(u8 type, s16 x, s16 y)
 {
     u8 i;
@@ -47,12 +53,16 @@ u8 entity_create(u8 type, s16 x, s16 y)
     return 0xFF;
 }
 
+// Release a valid slot without clearing its payload. Reallocation resets the payload;
+// a saved pointer or ID must not be treated as a persistent entity identity.
 void entity_destroy(u8 id)
 {
     if (id >= ENTITY_MAX) return;
     entity_pool[(__safe_index u8)id].active = 0;
 }
 
+// Return a pointer only for a currently active slot. Invalid or inactive IDs return null.
+// The pointer aliases pool storage and may refer to a different entity after slot reuse.
 Entity* entity_get(u8 id)
 {
     if (id >= ENTITY_MAX) return 0;
@@ -60,16 +70,21 @@ Entity* entity_get(u8 id)
     return &entity_pool[(__safe_index u8)id];
 }
 
+// Compatibility placeholder: this implementation does not invoke callbacks.
+// The game must iterate active IDs and call its update routines explicitly.
 void entity_update_all(EntityFn fn)
 {
     if (fn == 0) return;
 }
 
+// Compatibility placeholder: this implementation does not draw or invoke callbacks.
+// The game must iterate active IDs and submit its own sprite data.
 void entity_draw_all(EntityFn fn)
 {
     if (fn == 0) return;
 }
 
+// Count occupied slots without changing entity state.
 u8 entity_count_active(void)
 {
     u8 i;

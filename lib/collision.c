@@ -9,6 +9,9 @@ struct NesBox16 {
     unsigned char h;
 };
 
+// Test two axis-aligned world boxes using exclusive right/bottom edges.
+// Coordinate-plus-size sums must fit u16; touching edges return false.
+// Require positive width and height for both boxes. Empty boxes are not explicitly rejected here.
 unsigned char nes_box16_intersects(struct NesBox16* a, struct NesBox16* b)
 {
     unsigned short a_right;
@@ -41,6 +44,8 @@ unsigned char nes_box16_intersects(struct NesBox16* a, struct NesBox16* b)
     return 1;
 }
 
+// Test a half-open box: left/top edges are included and right/bottom edges
+// excluded. Callers provide valid pointers and non-overflowing edge coordinates.
 unsigned char nes_box16_contains_point(struct NesBox16* box, unsigned short px, unsigned short py)
 {
     unsigned short right;

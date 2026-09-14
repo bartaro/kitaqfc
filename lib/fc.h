@@ -1,6 +1,9 @@
 #ifndef FC_H
 #define FC_H
 
+// Convenience header collecting FC interfaces. Inclusion provides declarations
+// and aliases, not every implementation; link only the source modules required
+// by the selected runtime, avoiding alternative helpers with conflicting symbols.
 #include "core.h"
 #include "intrinsics.h"
 #include "system.h"
@@ -35,6 +38,8 @@
 #include "vrc6_sound.h"
 #include "vrc7_sound.h"
 #include "mapper.h"
+// This final include adds function-like macros, including zero-argument nes_oam_dma.
+// Use selective headers when calling the page-argument runtime API with the same name.
 #include "nes_game.h"
 
 #endif

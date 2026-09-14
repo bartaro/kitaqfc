@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+// Public FC assembly facade. Assemble delegates to BankedAssemblerCore; the private fixed-32-KiB path below is retained separately.
 sealed class Assembler
 {
     const int HeaderSize = 16;
@@ -22,11 +23,13 @@ sealed class Assembler
     readonly byte[] _prg = new byte[PrgRomSize];
     readonly string _branchLabelPrefix = "__kq_asm_branch_" + global::System.Guid.NewGuid().ToString("N");
 
+    // Initialize the retained fixed-size PRG image with 0xFF fill.
     Assembler()
     {
         for (int i = 0; i < _prg.Length; i++) _prg[i] = 0xFF;
     }
 
+    // Run the active banked implementation and copy its analysis report to the public facade.
     public static string Assemble(IReadOnlyList<Expr> assembly, string outputFilename)
     {
         var core = new BankedAssemblerCore();
@@ -35,6 +38,8 @@ sealed class Assembler
         return result;
     }
 
+    // Retained fixed NROM path: expand branches, resolve and encode, install vectors, then combine header/PRG/CHR.
+    // The public Assemble entry does not invoke this method.
     string Run(IReadOnlyList<Expr> assembly, string outputFilename)
     {
         assembly = ExpandLongBranches(assembly ?? new List<Expr>());
@@ -65,6 +70,8 @@ sealed class Assembler
         return outputFilename;
     }
 
+    // Repeat address estimation and long-branch expansion until unchanged or eight passes are exhausted.
+    // The branch-label counter spans all passes in this fixed-image implementation.
     IReadOnlyList<Expr> ExpandLongBranches(IReadOnlyList<Expr> assembly)
     {
         var current = (assembly ?? Array.Empty<Expr>()).ToList();
@@ -138,6 +145,7 @@ sealed class Assembler
         return current;
     }
 
+    // Write the optional estimated assembly listing, reporting file errors as nonfatal warnings.
     void WriteExpandedAssemblyDebugDump(IReadOnlyList<Expr> assembly)
     {
         if (!Program.EnableDebugOutput) return;
@@ -152,6 +160,7 @@ sealed class Assembler
         }
     }
 
+    // List each node with its current estimated CPU cursor, advancing only for layout or byte-emitting nodes.
     string BuildExpandedAssemblyDebugDump(IReadOnlyList<Expr> assembly)
     {
         var sb = new StringBuilder();
@@ -226,6 +235,8 @@ sealed class Assembler
         return sb.ToString();
     }
 
+    // Expand a resolved symbolic conditional branch outside signed-byte range into its inverse branch over an absolute JMP.
+    // Numeric targets and modified operands are left for normal encoding checks.
     bool TryExpandLongBranch(Expr e, string mnemonic, AsmOperand operand, Dictionary<string, int> symbols, int pc, List<Expr> expanded, ref int branchCounter)
     {
         if (operand == null || operand.Mode != AddressMode.Relative || operand.Modifier != ImmediateModifier.None || !operand.Base.HasValue)
@@ -261,6 +272,7 @@ sealed class Assembler
         return true;
     }
 
+    // Iterate up to eight symbol/size passes, using previous addresses for forward references and current addresses once encountered.
     Dictionary<string, int> BuildAddressMap(IReadOnlyList<Expr> assembly)
     {
         var previous = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -329,6 +341,7 @@ sealed class Assembler
         return previous;
     }
 
+    // Define symbols and function cursor extents while checking placement against the reserved vector table.
     void Pass1(IReadOnlyList<Expr> assembly)
     {
         var symbols = BuildAddressMap(assembly);
@@ -336,6 +349,7 @@ sealed class Assembler
         string currentFunction = null;
         int currentFunctionStart = 0;
 
+        // Record the completed function as its full cursor span, then clear the current-function marker.
         Action finalizeFunction = () =>
         {
             if (string.IsNullOrEmpty(currentFunction)) return;
@@ -421,6 +435,7 @@ sealed class Assembler
         finalizeFunction();
     }
 
+    // Resolve a $/0x hexadecimal word literal or an exact symbol name; decimal text is not interpreted as a literal here.
     bool TryResolveWordValue(string label, out int value)
     {
         value = 0;
@@ -438,6 +453,7 @@ sealed class Assembler
         return _symbols.TryGetValue(label, out value);
     }
 
+    // Walk the resolved stream again and write data, words and encoded instructions into the fixed PRG buffer.
     void Pass2(IReadOnlyList<Expr> assembly)
     {
         int pc = CpuBase;
@@ -497,6 +513,7 @@ sealed class Assembler
         }
     }
 
+    // Reject empty or duplicate global labels instead of replacing an existing address.
     void DefineSymbol(string label, int value, FilePosition source)
     {
         if (string.IsNullOrEmpty(label))
@@ -513,11 +530,13 @@ sealed class Assembler
         _symbols[label] = value;
     }
 
+    // Trim and uppercase the mnemonic before opcode lookup.
     static string NormalizeMnemonic(string mnemonic)
     {
         return (mnemonic ?? "").Trim().ToUpperInvariant();
     }
 
+    // Read at most 8 KiB of optional CHR data, padding short input with zeros; errors return an empty-filled placeholder.
     byte[] LoadChrRom()
     {
         var chr = new byte[ChrRomSize];
@@ -550,6 +569,7 @@ sealed class Assembler
         }
     }
 
+    // Keep the cursor within $8000 through the start of the vector table; the endpoint may equal the vector address.
     void ValidatePc(int pc, FilePosition source, string context)
     {
         if (pc < CpuBase)
@@ -563,6 +583,7 @@ sealed class Assembler
         }
     }
 
+    // Translate a CPU address into the fixed PRG buffer and reject writes outside its allocation.
     void WriteBytes(int cpuAddress, byte[] bytes, FilePosition source)
     {
         int offset = cpuAddress - CpuBase;
@@ -574,6 +595,7 @@ sealed class Assembler
         Buffer.BlockCopy(bytes, 0, _prg, offset, bytes.Length);
     }
 
+    // Write the low 16 bits in little-endian order after checking both bytes fit the PRG buffer.
     void WriteWord(int cpuAddress, int value, FilePosition source)
     {
         int offset = cpuAddress - CpuBase;
@@ -586,11 +608,13 @@ sealed class Assembler
         _prg[offset + 1] = (byte)((value >> 8) & 0xFF);
     }
 
+    // Store a vector target through the same checked word writer without a source-code position.
     void WriteVector(int vectorCpuAddress, int targetCpuAddress)
     {
         WriteWord(vectorCpuAddress, targetCpuAddress, FilePosition.Unknown);
     }
 
+    // Use the first defined fallback name, or the PRG CPU base when no candidate exists.
     int ResolveVectorTarget(params string[] candidates)
     {
         foreach (var candidate in candidates)
@@ -601,6 +625,7 @@ sealed class Assembler
         return CpuBase;
     }
 
+    // Emit the fixed mapper-zero, horizontal-mirroring iNES header for this retained NROM-only path.
     static byte[] BuildHeader()
     {
         byte[] header = new byte[HeaderSize];
@@ -615,6 +640,8 @@ sealed class Assembler
         return header;
     }
 
+    // Estimate used PRG by its last non-0xFF byte before vectors and include the first-pass function extents.
+    // Trailing intentional 0xFF data is indistinguishable from unused fill here.
     AssemblerAnalysisReport BuildReport()
     {
         var report = new AssemblerAnalysisReport();
@@ -635,6 +662,8 @@ sealed class Assembler
         return report;
     }
 
+    // Choose the supported opcode/addressing form, resolve its value, and emit little-endian operand bytes.
+    // Check relative displacements and single-byte ranges; two-byte values are masked to 16 bits.
     byte[] EncodeInstruction(string mnemonic, AsmOperand operand, int pc, FilePosition source)
     {
         var actualMode = NormalizeAddressMode(operand, mnemonic, pc, source);
@@ -679,6 +708,8 @@ sealed class Assembler
         return new byte[] { opcode, (byte)(value & 0xFF), (byte)((value >> 8) & 0xFF) };
     }
 
+    // Keep explicit immediate/relative/indirect forms; shrink absolute forms to zero-page variants when supported and in range.
+    // Use the unmodified address for that width decision.
     AddressMode NormalizeAddressMode(AsmOperand operand, string mnemonic, int pc, FilePosition source)
     {
         operand = operand ?? AsmOperand.Implicit;
@@ -721,6 +752,7 @@ sealed class Assembler
         return operand.Mode;
     }
 
+    // Resolve symbol plus addend without reporting missing forward symbols; optional BANK extraction yields zero in this representation.
     static bool TryResolveOperandValueForEstimate(AsmOperand operand, IReadOnlyDictionary<string, int> symbols, out int value, bool applyModifier = true)
     {
         operand = operand ?? AsmOperand.Implicit;
@@ -749,6 +781,7 @@ sealed class Assembler
         return true;
     }
 
+    // Predict zero-page shrinking from currently known unmodified values; retain the original mode for unresolved symbols.
     static AddressMode EstimateAddressMode(string mnemonic, AsmOperand operand, IReadOnlyDictionary<string, int> symbols, int pc)
     {
         operand = operand ?? AsmOperand.Implicit;
@@ -788,12 +821,14 @@ sealed class Assembler
         return operand.Mode;
     }
 
+    // Add one opcode byte to the estimated addressing-mode width without validating a matching opcode.
     static int GetEstimatedInstructionSize(string mnemonic, AsmOperand operand, IReadOnlyDictionary<string, int> symbols, int pc)
     {
         AddressMode mode = EstimateAddressMode(mnemonic, operand, symbols, pc);
         return 1 + OperandSize(mode);
     }
 
+    // Compare every symbol address and count to detect convergence of the iterative size estimate.
     static bool SymbolMapsEqual(IReadOnlyDictionary<string, int> left, IReadOnlyDictionary<string, int> right)
     {
         if (ReferenceEquals(left, right)) return true;
@@ -807,6 +842,8 @@ sealed class Assembler
         return true;
     }
 
+    // Resolve symbol plus addend and optional low/high-byte extraction, reporting an unknown base.
+    // BANK returns zero here; this dictionary stores CPU addresses rather than bank identities.
     int ResolveOperandValue(AsmOperand operand, AddressMode mode, int pc, FilePosition source, bool applyModifier = true)
     {
         operand = operand ?? AsmOperand.Implicit;
@@ -836,6 +873,7 @@ sealed class Assembler
         return value;
     }
 
+    // Recognize the four shift/rotate mnemonics that have an accumulator encoding.
     static bool IsAccumulatorMnemonic(string mnemonic)
     {
         return string.Equals(mnemonic, "ASL", StringComparison.OrdinalIgnoreCase) ||
@@ -844,12 +882,14 @@ sealed class Assembler
                string.Equals(mnemonic, "ROR", StringComparison.OrdinalIgnoreCase);
     }
 
+    // Return opcode plus declared operand width without zero-page shrinking or symbol resolution.
     static int GetInstructionSize(string mnemonic, AsmOperand operand)
     {
         AddressMode mode = operand == null ? AddressMode.Implicit : operand.Mode;
         return 1 + OperandSize(mode);
     }
 
+    // Use one operand byte for zero-page/immediate/relative/indexed-indirect modes, none for implicit, and two otherwise.
     static int OperandSize(AddressMode mode)
     {
         if (mode == AddressMode.Implicit) return 0;
@@ -859,21 +899,25 @@ sealed class Assembler
 
     static readonly Dictionary<string, byte> Opcodes = BuildOpcodeTable();
 
+    // Look up the opcode by normalized mnemonic and addressing-mode key.
     static bool TryGetOpcode(string mnemonic, AddressMode mode, out byte opcode)
     {
         return Opcodes.TryGetValue(MakeOpcodeKey(mnemonic, mode), out opcode);
     }
 
+    // Combine the uppercase mnemonic with the enum mode so each supported encoding has a distinct key.
     static string MakeOpcodeKey(string mnemonic, AddressMode mode)
     {
         return mnemonic.ToUpperInvariant() + "|" + mode.ToString();
     }
 
+    // Register one opcode mapping; a repeated key replaces the previous entry.
     static void Def(Dictionary<string, byte> map, string mnemonic, AddressMode mode, byte opcode)
     {
         map[MakeOpcodeKey(mnemonic, mode)] = opcode;
     }
 
+    // Declare the supported 6502 encodings explicitly, including accumulator shifts as implicit-mode instructions.
     static Dictionary<string, byte> BuildOpcodeTable()
     {
         var map = new Dictionary<string, byte>(StringComparer.OrdinalIgnoreCase);

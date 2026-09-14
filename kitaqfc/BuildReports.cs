@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
+// Capture a function's placement constraints and argument/return widths for ABI reports.
 sealed class FunctionAbiInfo
 {
     public string Name;
@@ -20,6 +21,7 @@ sealed class FunctionAbiInfo
     public int[] ParamSizes = new int[0];
 }
 
+// Track requested versus actual ROM placement and final byte ranges for read-only data.
 sealed class ReadonlyDataInfo
 {
     public string Name;
@@ -34,6 +36,8 @@ sealed class ReadonlyDataInfo
     public int CpuAddress;
 }
 
+// Aggregate one caller/callee relationship, including bank-crossing strategy and
+// the latest observed argument-size/source details used by report generation.
 sealed class CallEdgeInfo
 {
     public string Caller;
@@ -49,6 +53,8 @@ sealed class CallEdgeInfo
     public string LastSource;
 }
 
+// Describe a generated NES operation and its timing, PPU/OAM and mapper/FDS
+// requirements so tools can connect compiler intent to runtime observations.
 sealed class NesActionUseInfo
 {
     public string Name;
@@ -68,6 +74,7 @@ sealed class NesActionUseInfo
     public string Note;
 }
 
+// Describe a selected restart vector, its target and estimated net code-size saving.
 sealed class RstSelectionInfo
 {
     public int Vector;
@@ -76,6 +83,7 @@ sealed class RstSelectionInfo
     public int NetBytes;
 }
 
+// Record a zero-page allocation and the allocator's stated reason for assigning it.
 sealed class ZpAllocationInfo
 {
     public string Name;
@@ -85,6 +93,7 @@ sealed class ZpAllocationInfo
     public string Reason;
 }
 
+// Identify the RAM slot assigned to a function-local static frame value.
 sealed class StaticFrameSlotInfo
 {
     public string Function;
@@ -94,6 +103,7 @@ sealed class StaticFrameSlotInfo
     public string Region;
 }
 
+// Describe allocated RAM and whether the reported allocation is conservative.
 sealed class RamAllocationInfo
 {
     public string Name;
@@ -104,6 +114,7 @@ sealed class RamAllocationInfo
     public bool Conservative;
 }
 
+// Record an emitted memory operation, its known span/region and whether its target is dynamic.
 sealed class RamAccessInfo
 {
     public string Function;
@@ -115,6 +126,7 @@ sealed class RamAccessInfo
     public bool DynamicTarget;
 }
 
+// Retain both applied and rejected inline decisions together with their reasons.
 sealed class InlineDecisionInfo
 {
     public string Caller;
@@ -124,6 +136,7 @@ sealed class InlineDecisionInfo
     public bool Applied;
 }
 
+// Record the loop variable, limit and selected lowering strategy with source context.
 sealed class LoopLoweringInfo
 {
     public string Function;
@@ -133,12 +146,14 @@ sealed class LoopLoweringInfo
     public string Source;
 }
 
+// Explain why a function was removed by whole-program reachability/optimization work.
 sealed class LtoRemovalInfo
 {
     public string Name;
     public string Reason;
 }
 
+// Record a bank assignment, its rationale and the hotness value considered during placement.
 sealed class BankPlacementInfo
 {
     public string Name;
@@ -147,6 +162,8 @@ sealed class BankPlacementInfo
     public int Hotness;
 }
 
+// Collect facts and decisions emitted by code generation; this object stores
+// report data and does not itself validate or execute the generated ROM.
 sealed class CodegenAnalysisReport
 {
     public readonly List<FunctionAbiInfo> Functions = new List<FunctionAbiInfo>();
@@ -168,6 +185,7 @@ sealed class CodegenAnalysisReport
     public readonly List<string> CgbGuardedRegisters = new List<string>();
 }
 
+// Record before/after line counts and the textual diff for one optimizer pass.
 sealed class OptimizerPassReport
 {
     public string Name;
@@ -179,6 +197,7 @@ sealed class OptimizerPassReport
     public string DiffText;
 }
 
+// Collect pass results and per-vector restart rewrite counts from an optimization run.
 sealed class OptimizerAnalysisReport
 {
     public readonly List<OptimizerPassReport> Passes = new List<OptimizerPassReport>();
@@ -186,6 +205,7 @@ sealed class OptimizerAnalysisReport
     public int TotalRstRewrites;
 }
 
+// Keep file offsets distinct from CPU addresses when reporting placed function sizes.
 sealed class FunctionSizeInfo
 {
     public string Name;
@@ -196,12 +216,14 @@ sealed class FunctionSizeInfo
     public int CpuAddress;
 }
 
+// Store final layout measurements and metadata produced by assembly for downstream reports.
 sealed class AssemblerAnalysisReport
 {
     public readonly List<FunctionSizeInfo> FunctionSizes = new List<FunctionSizeInfo>();
     public readonly List<ReadonlyDataInfo> ReadonlyData = new List<ReadonlyDataInfo>();
     public int[] BankMaxPc = new int[0];
     public int RomSizeBytes;
+    // Use -1 when separate PRG/CHR size measurements have not been supplied.
     public int PrgRomSizeBytes = -1;
     public int ChrRomSizeBytes = -1;
     public int UsedBytes;
@@ -211,6 +233,7 @@ sealed class AssemblerAnalysisReport
 
 static class BuildReportUtil
 {
+    // Hash the supplied bytes as lowercase hexadecimal; null is treated as an empty byte sequence.
     public static string ComputeSha256Hex(byte[] data)
     {
         if (data == null) data = new byte[0];
@@ -221,12 +244,17 @@ static class BuildReportUtil
         }
     }
 
+    // Return an empty string for a missing/empty path; otherwise read and hash the
+    // file. Existing-file read failures propagate rather than becoming a fake digest.
     public static string ComputeSha256HexOfFile(string path)
     {
         if (string.IsNullOrEmpty(path) || !File.Exists(path)) return "";
         return ComputeSha256Hex(File.ReadAllBytes(path));
     }
 
+    // Apply the legacy 16 KiB fixed/switchable-window address convention: bank zero
+    // is unchanged and later offsets map into 0x4000-0x7FFF. This helper is not a
+    // general mapper-aware NES address translator; negative sentinel values pass through.
     public static int CpuAddrFromFileOffset(int fileOffset)
     {
         const int bankSize = 0x4000;
@@ -235,6 +263,7 @@ static class BuildReportUtil
         return bankSize + (fileOffset & (bankSize - 1));
     }
 
+    // Format an optional integer array as a comma-separated report field; empty input yields an empty string.
     public static string JoinInts(int[] values)
     {
         if (values == null || values.Length == 0) return "";

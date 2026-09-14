@@ -1,8 +1,9 @@
-// ビット操作・メモリ転送
+// Bit operations and memory copying.
 // Expected: 010
 #include "fc_common.h"
 
 
+// Clear the source bytes, set bits 3 and 1, copy the buffer, and display 8 + 2 = 10.
 void main(void) {
     m_init();
     m_text(2,3,"BITS MEMORY");

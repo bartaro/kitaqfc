@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
+// Describe one disk file and its runtime load record; image-only side, number, name and source fields are kept separately.
 sealed class FdsDiskFileMetadata
 {
     public int Id;
@@ -19,6 +20,8 @@ sealed class FdsDiskFileMetadata
     public int Side = 0;
     public int FileNumber = -1;
 
+    // Pack id, little-endian size/address and type into six bytes, with overlay in bit 7 of the type byte.
+    // This packing method masks values; metadata validation is performed by the file loader.
     public byte[] ToRuntimeRecord()
     {
         return new byte[]
@@ -33,6 +36,7 @@ sealed class FdsDiskFileMetadata
     }
 }
 
+// Hold files in ascending id order for deterministic runtime tables and metadata exports.
 sealed class FdsDiskMetadata
 {
     public static readonly FdsDiskMetadata Empty = new FdsDiskMetadata("", new List<FdsDiskFileMetadata>());
@@ -41,17 +45,20 @@ sealed class FdsDiskMetadata
     public IReadOnlyList<FdsDiskFileMetadata> Files { get; private set; }
     public bool HasFiles { get { return Files != null && Files.Count > 0; } }
 
+    // Sort a copied list of file references; the individual metadata objects remain shared and mutable.
     public FdsDiskMetadata(string sourcePath, List<FdsDiskFileMetadata> files)
     {
         SourcePath = sourcePath ?? "";
         Files = (files ?? new List<FdsDiskFileMetadata>()).OrderBy(f => f.Id).ToList();
     }
 
+    // Build the runtime table from the configured files alone.
     public byte[] BuildRuntimeTable()
     {
         return BuildRuntimeTable(null);
     }
 
+    // Append each six-byte load record in id order, followed by the reserved 0xFF end marker.
     public byte[] BuildRuntimeTable(IEnumerable<FdsDiskFileMetadata> additionalFiles)
     {
         var bytes = new List<byte>();
@@ -61,6 +68,7 @@ sealed class FdsDiskMetadata
         return bytes.ToArray();
     }
 
+    // Append non-null additional files and sort by id; this merge does not validate duplicates or table capacity.
     public IReadOnlyList<FdsDiskFileMetadata> GetMergedFiles(IEnumerable<FdsDiskFileMetadata> additionalFiles)
     {
         var merged = new List<FdsDiskFileMetadata>();
@@ -70,6 +78,7 @@ sealed class FdsDiskMetadata
         return merged.OrderBy(f => f.Id).ToList();
     }
 
+    // Serialize the current sorted records, omitting optional fields that still have their default values.
     public string ToNormalizedJson()
     {
         var sb = new StringBuilder();
@@ -104,11 +113,14 @@ sealed class FdsDiskMetadata
         return sb.ToString();
     }
 
+    // Escape backslashes and quotes only; control characters are not encoded by this helper.
     static string EscapeJson(string value)
     {
         return (value ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"");
     }
 
+    // Resolve the input path, choose the JSON-like or delimited reader, and validate records before constructing the result.
+    // An empty path returns the shared empty metadata instance.
     public static FdsDiskMetadata LoadFromFile(string path)
     {
         if (string.IsNullOrWhiteSpace(path)) return Empty;
@@ -119,12 +131,15 @@ sealed class FdsDiskMetadata
         return new FdsDiskMetadata(full, files);
     }
 
+    // Select the JSON-like reader when the first non-whitespace character opens an object or array.
     static bool LooksLikeJson(string text)
     {
         string t = (text ?? "").TrimStart();
         return t.StartsWith("{") || t.StartsWith("[");
     }
 
+    // Read flat brace-delimited records with aliased keys; nested structure and JSON escape sequences are not fully parsed.
+    // Skip objects without a recognized id and use defaults for absent optional fields.
     static List<FdsDiskFileMetadata> ParseJsonLike(string text)
     {
         var files = new List<FdsDiskFileMetadata>();
@@ -147,6 +162,7 @@ sealed class FdsDiskMetadata
         return files;
     }
 
+    // Read unquoted comma/tab/space-separated fields, skipping headers, comment lines and rows with fewer than three columns.
     static List<FdsDiskFileMetadata> ParseDelimited(string text)
     {
         var files = new List<FdsDiskFileMetadata>();
@@ -174,6 +190,7 @@ sealed class FdsDiskMetadata
         return files;
     }
 
+    // Try key aliases in priority order and parse a matched quoted or bare decimal/0x value.
     static bool TryReadInt(string obj, string keyAlternatives, out int value)
     {
         foreach (string key in keyAlternatives.Split('|'))
@@ -189,6 +206,7 @@ sealed class FdsDiskMetadata
         return false;
     }
 
+    // Try key aliases for the supported quoted or bare boolean spellings.
     static bool TryReadBool(string obj, string keyAlternatives, out bool value)
     {
         foreach (string key in keyAlternatives.Split('|'))
@@ -204,6 +222,7 @@ sealed class FdsDiskMetadata
         return false;
     }
 
+    // Return the first matching quoted value without JSON unescaping; embedded quote characters end the match.
     static bool TryReadString(string obj, string keyAlternatives, out string value)
     {
         foreach (string key in keyAlternatives.Split('|'))
@@ -219,12 +238,14 @@ sealed class FdsDiskMetadata
         return false;
     }
 
+    // Add the delimited field name and line number to numeric conversion failures.
     static int ParseNumber(string token, string field, int lineNo)
     {
         try { return ParseNumberToken(token); }
         catch { throw new FormatException("invalid FDS metadata " + field + " at line " + lineNo + ": " + token); }
     }
 
+    // Accept decimal numbers or unsigned-looking $/0x hexadecimal prefixes using invariant-culture conversion.
     static int ParseNumberToken(string token)
     {
         string t = (token ?? "").Trim();
@@ -233,12 +254,15 @@ sealed class FdsDiskMetadata
         return int.Parse(t, CultureInfo.InvariantCulture);
     }
 
+    // Recognize the affirmative spellings; every other token is treated as false.
     static bool ParseBoolToken(string token)
     {
         string t = (token ?? "").Trim().ToLowerInvariant();
         return t == "1" || t == "true" || t == "yes" || t == "y" || t == "overlay";
     }
 
+    // Require 1..42 records, unique ids below the 0xFF sentinel, and representable size/address/type/side/number fields.
+    // This does not validate external file contents, load-region overlap or per-side image capacity.
     static void ValidateFiles(List<FdsDiskFileMetadata> files, string path)
     {
         if (files == null || files.Count == 0)

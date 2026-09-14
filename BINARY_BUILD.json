@@ -1,238 +1,152 @@
 {
-  "built_on": "2026-09-13",
+  "built_on": "2026-09-14",
+  "licensor": "DAISUKE OBA",
   "configuration": "Release",
-  "target_framework": ".NET Framework 4.8",
-  "platform": "AnyCPU",
   "build_command": ".\\scripts\\build.ps1",
   "build_exit_code": 0,
-  "warnings": 17,
-  "source_changes": "C# source files relocated without content changes; project Release copy target updated.",
+  "source_revision_before_packaging": "06213113d1195e7b780831c83668381dd02c5501",
+  "source_state": "Reviewed publication working tree; source_inputs hashes identify the recorded files.",
+  "source_inventory_scope": "Compiler project and build entry point.",
   "source_inputs": [
     {
       "path": "kitaqfc/AsmInfo.cs",
-      "sha256": "8511619b646b854be192d934788fff66136fc8284cc68918c25217dfeef4dde1"
+      "sha256": "5cb5144a3a7167a2b6f13478af06eb0818cfbbfdc3cd01334fb77516bccdcf96"
     },
     {
       "path": "kitaqfc/Assembler.cs",
-      "sha256": "8fdb00a5266e5e57e8e61f65c3fa4c952f70673c3dce976a9e17d40a5829d55d"
+      "sha256": "c1486d56cef50a861a71224b9df66da068011f79975e3ab9391692b47383cb3c"
     },
     {
       "path": "kitaqfc/BankedAssemblerCore.cs",
-      "sha256": "f74cf0ee45e38d126de67ee0ff25a4bcfccb8f6508ea9776c6c5eb580c43c18b"
-    },
-    {
-      "path": "kitaqfc/DebugExporter.cs",
-      "sha256": "d800025d836e0e0b272e7504d25c56863c6280f2e7fba9c952beb8abccfc2635"
-    },
-    {
-      "path": "kitaqfc/Lowerer.cs",
-      "sha256": "30de5e7cc2fe23ddb4bf0874f63868994c03f6cf866d432d8cbb6244151f984f"
-    },
-    {
-      "path": "kitaqfc/Optimizer.cs",
-      "sha256": "eb64efe5d49e9eb02bfca58ec2501c6089e225ccd0bbb51094113901477d37cc"
-    },
-    {
-      "path": "kitaqfc/Other.cs",
-      "sha256": "07231c63ce08d4bc963142d3b132f668747f62801b04c69ea049d6c53dbcf87b"
-    },
-    {
-      "path": "kitaqfc/CType.cs",
-      "sha256": "9e4338890e4c18e2b51fca613d571cb2f8c7570a547fe41f124f45520f5eeda6"
-    },
-    {
-      "path": "kitaqfc/Disassembler.cs",
-      "sha256": "1a9399b45a63111a2cd74b54442ba2458afd290672588972e97ca8e1961b0fb9"
-    },
-    {
-      "path": "kitaqfc/Expr.cs",
-      "sha256": "cd2db83d2b4de875d673aa554be27575aa8eb7d9e190596ab72f0b6358af4c07"
-    },
-    {
-      "path": "kitaqfc/IoUtil.cs",
-      "sha256": "55bfdaff6a8484ae53e81f43e7f311e274768da06e6b9ea0e7ecbbc8aadbefcf"
-    },
-    {
-      "path": "kitaqfc/Maybe.cs",
-      "sha256": "ee7a4d09e3ae4db484ebac0f828a63bf595015cf90b05d2261309fec85de8a7c"
-    },
-    {
-      "path": "kitaqfc/Parser.cs",
-      "sha256": "e08b805b7c61acff9fe67c1870748f0dd72531ef14670b399f74cff9fc326bce"
-    },
-    {
-      "path": "kitaqfc/Program.cs",
-      "sha256": "225ad88c8b7926a5759102e06ed6e7588dd211f5d5ee7a4c4515715958bb2990"
-    },
-    {
-      "path": "kitaqfc/Program.DebugTools.cs",
-      "sha256": "457a052f0c1b424d6c1d38ea78085fa8d4587d80eb16d969dc2356c65d922417"
-    },
-    {
-      "path": "kitaqfc/Program.VibeTools.cs",
-      "sha256": "5de803efbc7d14d11ab7572d9020472914a434cd566db22557edae07328348a7"
+      "sha256": "0700930f81f468f3e954d7865b94d9112b33104ad00c267454345673ab5da140"
     },
     {
       "path": "kitaqfc/BuildReports.cs",
-      "sha256": "f27dd32a48fc7ab31d5629b293d09ad66df22999c9dd87b0e1c0f7ec52cf96a6"
+      "sha256": "63e4a4a1177de722dd346c6ac9f20ae8cf316cb57fd212dcc2cd6582dc7f4f3f"
     },
     {
-      "path": "kitaqfc/NesActionCatalog.cs",
-      "sha256": "c8f090f1b2057942f316fb2edc0edd6ffbaee3df8c5addb8d3078715fb4f3691"
-    },
-    {
-      "path": "kitaqfc/NesCartridge.cs",
-      "sha256": "53ef3895cbfcea7b41100a399f237a76f957de3b536ab547f095251344437a5e"
-    },
-    {
-      "path": "kitaqfc/FdsDiskMetadata.cs",
-      "sha256": "7f1a9c6f1c9ff5e5f765bac42cbdfb911f3c0bf39e8a20ad4dadea25a76a26b1"
-    },
-    {
-      "path": "kitaqfc/FdsDiskImageBuilder.cs",
-      "sha256": "f60a3bcbe7669babf269121b6d36817ae73de8897207a526477fb70665d37734"
-    },
-    {
-      "path": "kitaqfc/RomHeaderPatcher.cs",
-      "sha256": "b4c31f6bead183e61fa3e2fdc6dfc589358d981e69d54687fee3e46a660c8790"
-    },
-    {
-      "path": "kitaqfc/Tokenizer.cs",
-      "sha256": "744330ec6b091df499d7bcc2634a435c45a677e4da0d267d708a88b9650f83e2"
+      "path": "kitaqfc/CType.cs",
+      "sha256": "4f99133318339dd9931699086d0381cc6fd0212e370fe4dcb56f59b7157a47de"
     },
     {
       "path": "kitaqfc/CodeGenerator.cs",
-      "sha256": "d792631557bb1077dfd5fcbe44f94bd7501b1b9c3ddde7c7fccc28d1d009d031"
+      "sha256": "5dbf6672424b503d9e2624365a9770f703f402e407dc5a6ff6049bfd8252bbae"
     },
     {
-      "path": "kitaqfc/TargetBackend.cs",
-      "sha256": "d2528bd06d97a0e33fca8fe9eef8a0cfdc98579d80edd01c8b989fa4d29fa96a"
+      "path": "kitaqfc/DebugExporter.cs",
+      "sha256": "a14ff83f2456bfcf128165bea13e2d5fd87eb0b9edf1c3e2d73747c47838452e"
+    },
+    {
+      "path": "kitaqfc/Disassembler.cs",
+      "sha256": "9a921867a3f816fb951e32e017acd5b04be9ddaf0369402c5dc71cfc29feac46"
+    },
+    {
+      "path": "kitaqfc/Expr.cs",
+      "sha256": "cd4ef209434c7942657fa236ae0bbd5d796658f79d3e0df91f7bfba8d90e4649"
+    },
+    {
+      "path": "kitaqfc/FdsDiskImageBuilder.cs",
+      "sha256": "45473c8b21a31eb00bda1dcf2cf95fb707ceec3e525f1b1c22e2a1b995ef365a"
+    },
+    {
+      "path": "kitaqfc/FdsDiskMetadata.cs",
+      "sha256": "a1cc772fb236d3b7dd5327675f3bd759b054fb0b8e406d2c8d7b3e13e0c0b736"
+    },
+    {
+      "path": "kitaqfc/IoUtil.cs",
+      "sha256": "17f0ec2a7596b94c1a0334a19defd0c959367bef710bb4870ff92601f63b9ffb"
+    },
+    {
+      "path": "kitaqfc/Lowerer.cs",
+      "sha256": "72da4219c8a43bc9995c88ac1830894f559f1e9d37402c7be0d125199e5f0633"
+    },
+    {
+      "path": "kitaqfc/Maybe.cs",
+      "sha256": "4df9faa279a8030316e025a18b91bb04c61c4b72940eb08ee2709d2a09d0bc9c"
     },
     {
       "path": "kitaqfc/Minimizer.cs",
-      "sha256": "463b7a357ccff7794699c3d9ad93c4f83372c6a0a06f36ad2b21d374692d9592"
+      "sha256": "5df8489811f7c48d16ef92bf804215cf718ac3ca28e404d9a3f95e1d14e10a94"
+    },
+    {
+      "path": "kitaqfc/NesActionCatalog.cs",
+      "sha256": "434e3f55281615fb33a06b3b1f6803aaf7f052f137ca7ced296c4549ea510e24"
+    },
+    {
+      "path": "kitaqfc/NesCartridge.cs",
+      "sha256": "25577e5e708f1eabd93f90fc6563d94443faae73ae2d47bbb2e795e27f986a0c"
+    },
+    {
+      "path": "kitaqfc/Optimizer.cs",
+      "sha256": "b05b52b4630de79a0f7f55d358579da3884db27e716c55ae42293480fc03c5b8"
+    },
+    {
+      "path": "kitaqfc/Other.cs",
+      "sha256": "6bf85ad20728bff7db405f1612f4ba8db50870164e56d6bfd20198d1f22d2db5"
+    },
+    {
+      "path": "kitaqfc/Parser.cs",
+      "sha256": "f89810e6632a4674f6d5139025072ebb0b7d6effd77aecb30668c16c5a30dd9e"
+    },
+    {
+      "path": "kitaqfc/Program.DebugTools.cs",
+      "sha256": "b5906a95225665a961cae30b432ee46c37159f06532a3c9a0b7f94a2208afd1f"
+    },
+    {
+      "path": "kitaqfc/Program.VibeTools.cs",
+      "sha256": "d71f5fd062f2064692fef716f9cc16f1ddf81e4ec807ba409b78ee965d5b86e9"
+    },
+    {
+      "path": "kitaqfc/Program.cs",
+      "sha256": "c9627a583a68332765166e1f088657817712866734e6db24724a1fc904553914"
+    },
+    {
+      "path": "kitaqfc/RomHeaderPatcher.cs",
+      "sha256": "8b49be9811f3b58db9328dda523881548c56adfa8253b25d5cead6a051308877"
+    },
+    {
+      "path": "kitaqfc/TargetBackend.cs",
+      "sha256": "a7a3843e5bf163a91b2f84c0d22bba83ce9a766848ea2b8bbe917c29b146e9e2"
+    },
+    {
+      "path": "kitaqfc/Tokenizer.cs",
+      "sha256": "073919183c4710dc5dd16d2bf75e351882a761c0ce46339dffdfca33e16e36ee"
+    },
+    {
+      "path": "kitaqfc/app.config",
+      "sha256": "d61bde901e7189cc97d45a1d4c4aa39d4c4de2b68419773ec774338506d659ad"
     },
     {
       "path": "kitaqfc/kitaqfc.csproj",
       "sha256": "ce11c70174d1e8f12efc612bd3a1f720517416bba050f644328e317eeb47f230"
     },
     {
-      "path": "kitaqfc/app.config",
-      "sha256": "d61bde901e7189cc97d45a1d4c4aa39d4c4de2b68419773ec774338506d659ad"
+      "path": "scripts/build.ps1",
+      "sha256": "3d0eb28ef0da96f47ccbb906d00fa91d81f5196ff34560b80e6b2c4e8337ee4e"
     }
   ],
-  "outputs": [
-    {
-      "path": "kitaqfc.exe",
-      "bytes": 642560,
-      "sha256": "d4351894f3e8a66855cde93f3e578a298d27197ef1fd53781ec16550e63a98e5"
-    },
-    {
-      "path": "kitaqfc.exe.config",
-      "bytes": 161,
-      "sha256": "d61bde901e7189cc97d45a1d4c4aa39d4c4de2b68419773ec774338506d659ad"
-    }
-  ],
-  "manual_sample_compilations": [
-    {
-      "id": "fc_font",
-      "compile": "passed",
-      "rom_sha256": "d78891a2c2f4b3f72e43e1d5bb0b49f0ec57aeabc82e823e8fe62999d7814b4b"
-    },
-    {
-      "id": "fc_hello",
-      "compile": "passed",
-      "rom_sha256": "a6ed6e0653bb6b44a40ac89b76662feb96e7ce6ded699b81eca2a3c941372822"
-    },
-    {
-      "id": "fc_arithmetic",
-      "compile": "passed",
-      "rom_sha256": "66b8b8fc51797cf61cba0ae59f771a5691fbb6a43e345706ca7d0123c09b6885"
-    },
-    {
-      "id": "fc_control",
-      "compile": "passed",
-      "rom_sha256": "4781a9a58437b722ccc7a2bef2488cb1a5841e33437592eb6708f75d1a27769e"
-    },
-    {
-      "id": "fc_aggregate",
-      "compile": "passed",
-      "rom_sha256": "b47f4d935c1c12a81a2301bf3c2a3b7e5f615aa3aeeb06cfb65cb8eb2a9fdfd7"
-    },
-    {
-      "id": "fc_bits_memory",
-      "compile": "passed",
-      "rom_sha256": "2bec8ef7845570b7395884acca5924ce6677e87dd76fe3a2ffa860a7274813a5"
-    },
-    {
-      "id": "fc_input",
-      "compile": "passed",
-      "rom_sha256": "6842cca69cda7103a135f5cca9d45701698dc67de310ffe0c5f62a9698d21366"
-    },
-    {
-      "id": "fc_fixed",
-      "compile": "passed",
-      "rom_sha256": "74a1a4ff472a3f122d98d70e0cf4ef4635c4c80091468408c27bf9aaeafdd0c0"
-    },
-    {
-      "id": "fc_entity",
-      "compile": "passed",
-      "rom_sha256": "8d0352586ec28fc5ef9201b65dc8a766821ff05d7b2e5fc503163b2320a1c76c"
-    },
-    {
-      "id": "fc_debug",
-      "compile": "passed",
-      "rom_sha256": "448886fc703639d08d6d6741f3b5d7ac95ec383138c02f5989016e182424855f"
-    },
-    {
-      "id": "fc_chain",
-      "compile": "passed",
-      "rom_sha256": "1644e7996e0070deb6f7878696d70f37becf6c5904590308f01d3703ce45ab3e"
-    },
-    {
-      "id": "fc_system",
-      "compile": "passed",
-      "rom_sha256": "13e95666f9ad34664e4ad9f24d9dd396ee9dd5770c3eb463b4d8f1060451864a"
-    },
-    {
-      "id": "fc_scene",
-      "compile": "passed",
-      "rom_sha256": "51035c640facf6e1f7e6e1e69a5abca4e08907493572d089c2754fc33ace9cf7"
-    },
-    {
-      "id": "fc_subpixel",
-      "compile": "passed",
-      "rom_sha256": "d292f6475e049a5ec6689942428fde4b78f91f59c94cfcafa63518aa7d9763e5"
-    },
-    {
-      "id": "fc_scroll",
-      "compile": "passed",
-      "rom_sha256": "b7ec1fc849ec08cd04796b2a5713bfaefb3c1d0d05b05f572219587ce8fcd9c2"
-    },
-    {
-      "id": "fc_vram_queue",
-      "compile": "passed",
-      "rom_sha256": "277ab055c0727bdbda53053c67b790f62f2ee3b848b984fe0eded396d9d953d9"
-    },
-    {
-      "id": "fc_sprite",
-      "compile": "passed",
-      "rom_sha256": "c06d0cf9a84c3af4684e797a2ea33d2e79eefadfd15f9b088aa122fbec718d94"
-    },
-    {
-      "id": "fc_sound",
-      "compile": "passed",
-      "rom_sha256": "d8bc533e524ef1bf7fbf6f0d86f696df02646449efc445f63ab87f359f323a7c"
-    }
-  ],
-  "standalone_samples": [
-    "hello",
-    "entity"
-  ],
-  "help_check": {
-    "usage_displayed": true,
-    "exit_code": 1,
-    "note": "Existing behavior: --help prints usage and returns 1, including in the preceding publication build."
+  "binary": {
+    "path": "kitaqfc.exe",
+    "bytes": 650752,
+    "sha256": "4f1f7cca2a2f00dcee6110c733daaa4a5a6922199d3886ad230b5b816299fd27",
+    "imported_system_dlls": [
+      "mscoree.dll"
+    ]
   },
-  "runtime_scope": "Compiler startup and ROM compilation checked; emulator and physical-hardware behavior not retested for this layout change."
+  "checks": [
+    {
+      "check": "--help captured",
+      "exit_code": 1
+    },
+    {
+      "check": "Current manual sample compilation",
+      "samples": 18,
+      "frames_per_run": null,
+      "result": "all passed",
+      "evidence": "https://bartaro.github.io/kitaq-docs/verification/current/samples.json"
+    }
+  ],
+  "scope": "Windows CLI release. Compilation and bounded emulator execution are separate checks; no blanket physical-hardware or peripheral compatibility claim.",
+  "target_framework": ".NET Framework 4.8",
+  "platform": "AnyCPU"
 }

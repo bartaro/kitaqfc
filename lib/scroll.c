@@ -15,17 +15,22 @@ unsigned char nes_scroll_ctrl_base;
 unsigned short nes_scroll_camera_x;
 unsigned short nes_scroll_camera_y;
 
+// Store PPUCTRL bits other than the two nametable-selection bits for later application.
 void nes_scroll_set_base_ctrl(unsigned char ctrl)
 {
     nes_scroll_ctrl_base = (unsigned char)(ctrl & 0xFC);
 }
 
+// Store camera coordinates without touching hardware registers.
 void nes_scroll_set(unsigned short camera_x, unsigned short camera_y)
 {
     nes_scroll_camera_x = camera_x;
     nes_scroll_camera_y = camera_y;
 }
 
+// Combine bit 8 of each camera coordinate with base PPUCTRL, reset the latch
+// by reading PPUSTATUS, and write low-byte X/Y scroll. This uses 256-unit
+// wrapping on both axes rather than normalizing Y to a 240-pixel nametable height.
 void nes_scroll_apply(void)
 {
     unsigned char ctrl;
@@ -37,6 +42,7 @@ void nes_scroll_apply(void)
     y_hi = (unsigned char)((nes_scroll_camera_y >> 8) & 1);
     ctrl = (unsigned char)(nes_scroll_ctrl_base | x_hi | (unsigned char)(y_hi << 1));
 
+    // Replace the whole control register, so the saved base also determines NMI and increment mode.
     PPUCTRL = ctrl;
 
     latch = PPUSTATUS;
@@ -45,6 +51,8 @@ void nes_scroll_apply(void)
     latch = latch;
 }
 
+// Subtract the screen anchor from the world point into unsigned camera
+// coordinates. Underflow wraps; world-edge clamping belongs to the game.
 void nes_camera_follow_center(unsigned short target_x, unsigned short target_y, unsigned char center_x, unsigned char center_y)
 {
     nes_scroll_camera_x = target_x - center_x;

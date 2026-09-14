@@ -15,12 +15,15 @@ struct NesActor {
     unsigned char flags;
 };
 
+// Set the actor's 16-bit world position without updating cached screen coordinates.
 void nes_actor_set_world(struct NesActor* actor, unsigned short x, unsigned short y)
 {
     actor->world_x = x;
     actor->world_y = y;
 }
 
+// Subtract the camera and retain only the low coordinate bytes. This performs
+// wrapping projection, not clipping; callers must hide actors outside the viewport.
 void nes_actor_update_screen(struct NesActor* actor, unsigned short camera_x, unsigned short camera_y)
 {
     unsigned short dx;
@@ -33,11 +36,16 @@ void nes_actor_update_screen(struct NesActor* actor, unsigned short camera_x, un
     actor->screen_y = (unsigned char)dy;
 }
 
+// Draw the byte-stream metasprite at cached screen coordinates and return its
+// next OAM index. Actor attr/flags are not applied by this wrapper.
 unsigned char nes_actor_draw_metasprite(struct NesActor* actor, unsigned char oam_index, unsigned char* metasprite)
 {
     return nes_metasprite_draw(oam_index, actor->screen_x, actor->screen_y, metasprite);
 }
 
+// Test overlap in world coordinates with exclusive right/bottom edges. Keep
+// position-plus-size sums within u16; touching edges are not collisions.
+// Require positive widths and heights; zero extents are not rejected before the edge tests.
 unsigned char nes_actor_collide(struct NesActor* a, struct NesActor* b)
 {
     unsigned short a_right;

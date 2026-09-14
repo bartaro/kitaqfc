@@ -1,5 +1,6 @@
 using System;
 
+// Compiler-supported mapper families; CLI aliases are normalized to these values before profile selection.
 enum NesMapperKind
 {
     Nrom,
@@ -15,6 +16,7 @@ enum NesMapperKind
     Fds,
 }
 
+// Requested nametable mirroring mode for cartridge header generation.
 enum NesMirroringKind
 {
     Horizontal,
@@ -22,6 +24,7 @@ enum NesMirroringKind
     FourScreen,
 }
 
+// Optional board-specific constraints layered on a mapper family.
 enum NesBoardKind
 {
     Auto,
@@ -29,6 +32,7 @@ enum NesBoardKind
     Surom512,
 }
 
+// Describe where common code is placed relative to switchable 16 KiB PRG banks.
 enum NesPrgLayoutKind
 {
     FixedTop16,
@@ -36,6 +40,7 @@ enum NesPrgLayoutKind
     SuromOuter256FixedTop16,
 }
 
+// Select the code-generation protocol for mapper register writes, including the SUROM outer-bank variant.
 enum NesBankSwitchKind
 {
     None,
@@ -51,6 +56,7 @@ enum NesBankSwitchKind
     Fds,
 }
 
+// Specify which physical banks receive reset-vector support for mapper power-on states.
 enum ResetVectorReplicationKind
 {
     CommonOnly,
@@ -58,6 +64,7 @@ enum ResetVectorReplicationKind
     EveryPhysical16KBank,
 }
 
+// Centralize mapper layout, RAM and startup requirements for code generation and image assembly.
 sealed class NesCartridgeProfile
 {
     public NesMapperKind MapperKind { get; private set; }
@@ -86,6 +93,7 @@ sealed class NesCartridgeProfile
     public string HeaderKind { get; private set; }
     public ResetVectorReplicationKind ResetVectorReplication { get; private set; }
 
+    // Capture one profile's constraints. The common-bank array is retained by reference rather than copied.
     NesCartridgeProfile(
         NesMapperKind mapperKind,
         NesBoardKind boardKind,
@@ -144,6 +152,8 @@ sealed class NesCartridgeProfile
     public bool SupportsBankedCode => SupportsPrgBanking || UsesDuplicatedCommonBank;
     public bool IsSurom512 => BoardKind == NesBoardKind.Surom512;
 
+    // Translate one-based logical switch banks to zero-based physical banks.
+    // SUROM skips physical bank 15, reserving banks 15 and 31 for common code; other profiles only subtract one.
     public int LogicalToPhysicalBank(int logicalBank)
     {
         if (!IsSurom512) return logicalBank - 1;
@@ -153,13 +163,17 @@ sealed class NesCartridgeProfile
         return index < 15 ? index : index + 1;
     }
 
+    // Select the mapper with automatic board normalization.
     public static NesCartridgeProfile ForMapper(NesMapperKind mapper)
     {
         return For(mapper, NesBoardKind.Auto);
     }
 
+    // Choose a board override first, otherwise a mapper-specific profile; unrecognized mapper values fall back to NROM.
+    // Callers must validate a requested mapper/board combination before relying on the result.
     public static NesCartridgeProfile For(NesMapperKind mapper, NesBoardKind board)
     {
+        // Use 512 KiB PRG ROM, CHR RAM and two outer-256-KiB common banks for the SUROM board.
         if (board == NesBoardKind.Surom512)
         {
             return new NesCartridgeProfile(
@@ -201,6 +215,7 @@ sealed class NesCartridgeProfile
     }
 }
 
+// Mutable CLI choices derive their effective profile on demand; an explicit battery value overrides the board default.
 sealed class NesCartridgeOptions
 {
     public NesMapperKind MapperKind { get; set; } = NesMapperKind.Nrom;
@@ -212,6 +227,8 @@ sealed class NesCartridgeOptions
 
     public NesCartridgeProfile Profile => NesCartridgeProfile.For(MapperKind, BoardKind);
 
+    // Resolve accepted aliases to a mapper family; only the surom512 alias also changes BoardKind.
+    // Both mapper24 and mapper26 aliases select the VRC6 profile whose emitted mapper number is 24.
     public bool TrySetMapper(string raw, out string error)
     {
         string value = (raw ?? "").Trim().ToLowerInvariant();
@@ -293,6 +310,7 @@ sealed class NesCartridgeOptions
         }
     }
 
+    // Set the board constraint independently; mapper compatibility is checked by ValidateCombination.
     public bool TrySetBoard(string raw, out string error)
     {
         string value = (raw ?? "").Trim().ToLowerInvariant();
@@ -309,6 +327,7 @@ sealed class NesCartridgeOptions
         }
     }
 
+    // Reject the explicit SUROM board unless MMC1 was selected.
     public bool ValidateCombination(out string error)
     {
         if (BoardKind == NesBoardKind.Surom512 && MapperKind != NesMapperKind.Mmc1)
@@ -320,6 +339,7 @@ sealed class NesCartridgeOptions
         return true;
     }
 
+    // Resolve the supported horizontal, vertical and four-screen aliases without altering the choice on failure.
     public bool TrySetMirroring(string raw, out string error)
     {
         string value = (raw ?? "").Trim().ToLowerInvariant();

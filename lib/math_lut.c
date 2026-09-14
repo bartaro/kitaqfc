@@ -2,6 +2,8 @@
 
 // Math.c
 
+// The retained sine table contains 254 initialized bytes, centered near 128.
+// Valid initialized indices are 0..253; do not assume a full wrapping byte phase.
 __prg_rom u8 MATH_SIN[] = {
     128, 131, 134, 137, 140, 143, 146, 149, 152, 156, 159, 162, 165, 168, 171, 174,
     176, 179, 182, 185, 188, 191, 193, 196, 199, 201, 204, 206, 209, 211, 213, 216,

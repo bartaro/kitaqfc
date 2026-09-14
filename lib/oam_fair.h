@@ -19,5 +19,7 @@ extern u8 oam_fair_limit;
 extern u8 oam_fair_tile;
 extern u8 oam_fair_attr;
 extern u8 oam_fair_drawn;
+// Append visible pool entries using the configured common tile/attributes. The emitter stops at byte cursor 252,
+// leaving slot 63 unused to avoid cursor wrap. Hide unused trailing OAM entries separately before DMA.
 void OAM_FairDraw(void);
 #endif

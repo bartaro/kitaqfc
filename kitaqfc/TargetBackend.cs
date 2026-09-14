@@ -6,6 +6,7 @@ enum CompilationTargetKind
     Nes,
 }
 
+// Immutable target capabilities used to gate CLI features and choose output defaults.
 sealed class CompilationTargetInfo
 {
     public CompilationTargetKind Kind { get; private set; }
@@ -17,6 +18,7 @@ sealed class CompilationTargetInfo
     public bool SupportsAnalysisReports { get; private set; }
     public bool SupportsFunctionBankRelayout { get; private set; }
 
+    // Capture the target identity and supported pipeline features in one configuration record.
     CompilationTargetInfo(CompilationTargetKind kind, string cliName, string displayName, string defaultOutputExtension,
         bool supportsRomHeaderPatching, bool supportsDisassembly, bool supportsAnalysisReports, bool supportsFunctionBankRelayout)
     {
@@ -40,6 +42,9 @@ sealed class CompilationTargetInfo
         supportsAnalysisReports: true,
         supportsFunctionBankRelayout: true);
 
+    // Accept NES aliases case-insensitively after trimming. Empty input selects NES;
+    // GB aliases receive a specific unsupported-target error. The out target remains
+    // NES even on failure, so callers must check the Boolean result.
     public static bool TryParse(string raw, out CompilationTargetInfo target, out string error)
     {
         string value = (raw ?? "").Trim().ToLowerInvariant();
@@ -70,6 +75,7 @@ sealed class CompilationTargetInfo
     }
 }
 
+// Separate common pipeline orchestration from target-specific generation, assembly and reports.
 interface ICompilationBackend
 {
     CompilationTargetInfo TargetInfo { get; }
@@ -81,6 +87,8 @@ interface ICompilationBackend
 
 static class TargetBackendFactory
 {
+    // Construct the sole backend in this build. The target parameter is currently
+    // unused because target parsing has already restricted accepted targets to NES.
     public static ICompilationBackend Create(CompilationTargetInfo target)
     {
         return new NesCompilationBackend();
@@ -90,14 +98,18 @@ static class TargetBackendFactory
 sealed class NesCompilationBackend : ICompilationBackend
 {
     public CompilationTargetInfo TargetInfo => CompilationTargetInfo.Nes;
+    // Expose the generators' latest shared reports, or fresh empty reports when none exist.
+    // These properties are not snapshots owned by this backend instance.
     public CodegenAnalysisReport CodegenReport => CodeGenerator.LastReport ?? new CodegenAnalysisReport();
     public AssemblerAnalysisReport AssemblerReport => Assembler.LastReport ?? new AssemblerAnalysisReport();
 
+    // Delegate syntax-tree code generation to the NES generator and return its assembly expressions.
     public IReadOnlyList<Expr> CompileAll(Expr syntaxTree)
     {
         return CodeGenerator.CompileAll(syntaxTree);
     }
 
+    // Assemble the generated expressions and return the assembler's actual output path.
     public string Assemble(IReadOnlyList<Expr> assembly, string outputFilename)
     {
         return Assembler.Assemble(assembly, outputFilename);

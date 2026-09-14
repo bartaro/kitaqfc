@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+// Rewrite assembly IR using local patterns and record textual pass summaries.
+// Pattern matching is not a whole-program register/flag liveness proof.
 class Optimizer
 {
+    // Keep the latest report in shared static state; a new Optimize call replaces it.
     public static OptimizerAnalysisReport LastReport { get; private set; } = new OptimizerAnalysisReport();
 
+    // Copy the input list, treating null as empty. Level zero skips all rewrites;
+    // higher levels run two peephole sweeps, register/load reuse and fallthrough cleanup.
     public static List<Expr> Optimize(List<Expr> sourceLines, int optLevel)
     {
         var report = new OptimizerAnalysisReport();
@@ -27,6 +32,8 @@ class Optimizer
         return lines;
     }
 
+    // Run one pass and compare diagnostic lines by position. Added/removed counts are net length differences,
+    // not an edit-distance diff or measurements of encoded instruction bytes.
     static List<Expr> RunWithDiff(string passName, List<Expr> before, Func<List<Expr>, List<Expr>> pass, OptimizerAnalysisReport report)
     {
         var beforeLines = before.Select(ShowExprForDiff).ToList();
@@ -56,6 +63,7 @@ class Optimizer
         return after;
     }
 
+    // Render assembly operands or general IR nodes for reports, omitting implicit operand text.
     static string ShowExprForDiff(Expr e)
     {
         string m;
@@ -68,6 +76,8 @@ class Optimizer
         return e.Show();
     }
 
+    // Show at most 120 differing positions or tail entries, with no insertion alignment.
+    // One changed position can emit several text lines; the limit counts entries, not output lines.
     static string BuildSimpleDiff(List<string> before, List<string> after)
     {
         const int MaxLines = 120;
@@ -114,6 +124,7 @@ class Optimizer
         return sb.ToString();
     }
 
+    // Apply adjacent 6502 patterns in one forward sweep, preserving source coordinates for a rewritten tail call.
     static List<Expr> ApplyO1Peepholes(List<Expr> lines)
     {
         var outLines = new List<Expr>(lines.Count);
@@ -136,6 +147,7 @@ class Optimizer
             if (TargetsImmediatelyFollowingLabel(lines, i, mnemonic, operand))
                 continue;
 
+            // Replace a symbolic call immediately followed by RTS with a tail jump.
             if (hasImmediateNextAsm && mnemonic == "JSR" && IsAbsoluteLabelOperand(operand) && nextMnemonic == "RTS")
             {
                 outLines.Add(Expr.MakeAsm("JMP", operand.WithMode(AddressMode.Absolute)).WithSource(cur.Source));
@@ -143,6 +155,7 @@ class Optimizer
                 continue;
             }
 
+            // Keep the first of two inverse transfers; it already leaves both registers with the same value.
             if (hasImmediateNextAsm && AreMirrorTransfers(mnemonic, nextMnemonic))
             {
                 outLines.Add(cur);
@@ -150,6 +163,7 @@ class Optimizer
                 continue;
             }
 
+            // Keep one copy of selected idempotent instructions; instruction timing and interrupt sampling are not preserved.
             if (hasImmediateNextAsm && mnemonic == nextMnemonic && IsDuplicateSafeInstruction(mnemonic))
             {
                 outLines.Add(cur);
@@ -157,6 +171,8 @@ class Optimizer
                 continue;
             }
 
+            // Remove compare-zero when the preceding recognized instruction sets the tested register's zero flag.
+            // Only the adjacent Z branch is checked; this rule does not analyze carry use beyond that branch.
             if (hasImmediateNextAsm && IsImmediateZero(operand) && (nextMnemonic == "BEQ" || nextMnemonic == "BNE"))
             {
                 if (mnemonic == "CMP" && PreviousInstructionSetsZeroFromA(lines, i))
@@ -185,6 +201,8 @@ class Optimizer
         return outLines;
     }
 
+    // Reuse tracked A/X/Y values within uninterrupted IR regions, preserving comments and resetting at boundaries.
+    // Load elimination also requires the corresponding zero/negative flags to be current.
     static List<Expr> ApplyMiniCsePass(List<Expr> lines)
     {
         var outLines = new List<Expr>(lines.Count);
@@ -249,6 +267,7 @@ class Optimizer
         return outLines;
     }
 
+    // Track value identities for A/X/Y and which register supplied the current zero/negative flags.
     sealed class TrackedRegisterState
     {
         string _aKey;
@@ -256,6 +275,7 @@ class Optimizer
         string _yKey;
         string _flagRegister;
 
+        // Discard all value and flag-source knowledge.
         public void Reset()
         {
             _aKey = null;
@@ -264,12 +284,14 @@ class Optimizer
             _flagRegister = null;
         }
 
+        // Require both the same value identity and flags already describing the destination register.
         public bool CanElideLoad(string registerName, string valueKey)
         {
             return string.Equals(GetKey(registerName), valueKey, StringComparison.Ordinal) &&
                    string.Equals(_flagRegister, registerName, StringComparison.Ordinal);
         }
 
+        // Choose an available A-to-X/Y or X/Y-to-A transfer for a known value; no direct X/Y transfer exists here.
         public string TryGetTransferMnemonic(string registerName, string valueKey)
         {
             if (registerName == "A")
@@ -288,12 +310,15 @@ class Optimizer
             return null;
         }
 
+        // Remember the loaded value and mark its destination as the source of zero/negative flags.
         public void ApplyTrackedLoad(string registerName, string valueKey)
         {
             SetKey(registerName, valueKey);
             _flagRegister = registerName;
         }
 
+        // Invalidate memory-derived identities on recognized writes, then model register/flag effects.
+        // Unknown instructions clear all state; known flag-neutral instructions retain it.
         public void Observe(string mnemonic, AsmOperand operand)
         {
             if (mnemonic == null)
@@ -405,6 +430,7 @@ class Optimizer
             }
         }
 
+        // Drop cached memory identities while retaining immediate constants and the flag-source marker.
         void InvalidateMemoryBackedValues()
         {
             if (IsMemoryKey(_aKey)) _aKey = null;
@@ -412,6 +438,7 @@ class Optimizer
             if (IsMemoryKey(_yKey)) _yKey = null;
         }
 
+        // Read a supported register identity; callers supply A/X/Y, with other strings falling back to Y.
         string GetKey(string registerName)
         {
             if (registerName == "A") return _aKey;
@@ -419,6 +446,7 @@ class Optimizer
             return _yKey;
         }
 
+        // Assign a supported register identity; callers supply A/X/Y, with other strings selecting Y.
         void SetKey(string registerName, string valueKey)
         {
             if (registerName == "A") _aKey = valueKey;
@@ -426,12 +454,14 @@ class Optimizer
             else _yKey = valueKey;
         }
 
+        // Identify keys produced for concrete memory addresses, excluding immediate constants.
         static bool IsMemoryKey(string key)
         {
             return key != null && key.StartsWith("MEM:", StringComparison.Ordinal);
         }
     }
 
+    // Map LDA/LDX/LDY to a destination register and attempt to derive a reusable operand identity.
     static bool TryGetTrackedLoad(string mnemonic, AsmOperand operand, out string targetReg, out string valueKey)
     {
         targetReg = null;
@@ -445,6 +475,8 @@ class Optimizer
         return TryGetTrackedValueKey(operand, out valueKey);
     }
 
+    // Track unmodified numeric immediates or numeric absolute/zero-page reads outside the excluded I/O range.
+    // Symbolic, indexed and indirect operands are deliberately untracked.
     static bool TryGetTrackedValueKey(AsmOperand operand, out string valueKey)
     {
         valueKey = null;
@@ -469,11 +501,14 @@ class Optimizer
         return false;
     }
 
+    // Exclude PPU mirrors and the base APU/controller/I/O range 2000-401F.
+    // Mapper-specific expansion registers outside this range are not classified here.
     static bool IsVolatileAbsoluteAddress(int address)
     {
         return address >= 0x2000 && address < 0x4020;
     }
 
+    // Look backward past trivia for a known A-result instruction; memory shifts do not qualify.
     static bool PreviousInstructionSetsZeroFromA(List<Expr> lines, int currentIndex)
     {
         int prev = FindPreviousAsmIndex(lines, currentIndex - 1);
@@ -506,6 +541,7 @@ class Optimizer
         }
     }
 
+    // Look backward past trivia for a listed X load, transfer or increment/decrement.
     static bool PreviousInstructionSetsZeroFromX(List<Expr> lines, int currentIndex)
     {
         int prev = FindPreviousAsmIndex(lines, currentIndex - 1);
@@ -519,6 +555,7 @@ class Optimizer
         return mnemonic == "LDX" || mnemonic == "TAX" || mnemonic == "TSX" || mnemonic == "INX" || mnemonic == "DEX";
     }
 
+    // Look backward past trivia for a listed Y load, transfer or increment/decrement.
     static bool PreviousInstructionSetsZeroFromY(List<Expr> lines, int currentIndex)
     {
         int prev = FindPreviousAsmIndex(lines, currentIndex - 1);
@@ -532,6 +569,7 @@ class Optimizer
         return mnemonic == "LDY" || mnemonic == "TAY" || mnemonic == "INY" || mnemonic == "DEY";
     }
 
+    // Skip comments/sections backward and return the nearest assembly node; stop at any other node.
     static int FindPreviousAsmIndex(List<Expr> lines, int startIndex)
     {
         for (int i = startIndex; i >= 0; i--)
@@ -543,6 +581,7 @@ class Optimizer
         return -1;
     }
 
+    // Match a symbolic jump/branch destination against the next non-trivia label or function marker.
     static bool TargetsImmediatelyFollowingLabel(List<Expr> lines, int currentIndex, string mnemonic, AsmOperand operand)
     {
         if (!IsJumpOrBranch(mnemonic))
@@ -564,6 +603,7 @@ class Optimizer
         return false;
     }
 
+    // Find the next non-comment/non-section node, or -1 at the end.
     static int FindNextSignificantIndex(List<Expr> lines, int startIndex)
     {
         for (int i = startIndex; i < lines.Count; i++)
@@ -574,11 +614,13 @@ class Optimizer
         return -1;
     }
 
+    // Treat comments and section markers as skippable for local instruction/label searches.
     static bool IsTriviaNode(Expr expr)
     {
         return expr != null && (expr.MatchTag(Tag.Comment) || expr.MatchTag(Tag.Section));
     }
 
+    // Recognize JMP and the eight ordinary conditional branches.
     static bool IsJumpOrBranch(string mnemonic)
     {
         if (mnemonic == "JMP") return true;
@@ -586,6 +628,7 @@ class Optimizer
                mnemonic == "BMI" || mnemonic == "BPL" || mnemonic == "BVC" || mnemonic == "BVS";
     }
 
+    // Extract a zero-offset symbolic target from an absolute JMP or relative conditional branch.
     static bool TryGetTargetLabel(string mnemonic, AsmOperand operand, out string label)
     {
         label = null;
@@ -609,6 +652,7 @@ class Optimizer
         return false;
     }
 
+    // Recognize adjacent opposite-direction transfers through A.
     static bool AreMirrorTransfers(string first, string second)
     {
         return (first == "TAX" && second == "TXA") ||
@@ -617,6 +661,7 @@ class Optimizer
                (first == "TYA" && second == "TAY");
     }
 
+    // Select repeatable flag setters, NOP and register transfers for adjacent duplicate removal.
     static bool IsDuplicateSafeInstruction(string mnemonic)
     {
         return mnemonic == "CLC" || mnemonic == "SEC" || mnemonic == "CLI" || mnemonic == "SEI" ||
@@ -624,11 +669,13 @@ class Optimizer
                mnemonic == "TAX" || mnemonic == "TXA" || mnemonic == "TAY" || mnemonic == "TYA";
     }
 
+    // Accept a symbolic absolute operand, including a nonzero displacement; no label resolution occurs here.
     static bool IsAbsoluteLabelOperand(AsmOperand operand)
     {
         return operand != null && operand.Mode == AddressMode.Absolute && operand.Base.HasValue;
     }
 
+    // Test an unmodified numeric immediate after masking to its emitted byte width.
     static bool IsImmediateZero(AsmOperand operand)
     {
         return operand != null &&
@@ -638,6 +685,7 @@ class Optimizer
                ((operand.Offset & 0xFF) == 0);
     }
 
+    // Reset tracked state at ordinary jumps, calls, returns and conditional branches.
     static bool IsControlFlowOrCall(string mnemonic)
     {
         return mnemonic == "JMP" || mnemonic == "JSR" ||
@@ -646,6 +694,8 @@ class Optimizer
                mnemonic == "BMI" || mnemonic == "BPL" || mnemonic == "BVC" || mnemonic == "BVS";
     }
 
+    // Recognize stores, memory increments/decrements and non-accumulator shifts/rotates.
+    // Stack pushes are not classified as memory writes by this helper.
     static bool IsMemoryWrite(string mnemonic, AsmOperand operand)
     {
         if (mnemonic == "STA" || mnemonic == "STX" || mnemonic == "STY" || mnemonic == "INC" || mnemonic == "DEC")
@@ -658,11 +708,14 @@ class Optimizer
         return false;
     }
 
+    // Recognize unconditional JMP/RTS/RTI fallthrough terminators.
     static bool IsTerminator(string mnemonic)
     {
         return mnemonic == "JMP" || mnemonic == "RTS" || mnemonic == "RTI";
     }
 
+    // Drop fallthrough assembly and intervening comments/sections after a terminator until a label/function
+    // or another non-assembly node resumes output; this is not whole-program reachability.
     static List<Expr> RemoveUnreachable(List<Expr> lines)
     {
         var outLines = new List<Expr>(lines.Count);
