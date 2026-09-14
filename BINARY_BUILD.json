@@ -4,7 +4,7 @@
   "configuration": "Release",
   "build_command": ".\\scripts\\build.ps1",
   "build_exit_code": 0,
-  "source_revision_before_packaging": "06213113d1195e7b780831c83668381dd02c5501",
+  "source_revision_before_packaging": "dfd8ca339e5a8935aa082f9f79e38202cae6050f",
   "source_state": "Reviewed publication working tree; source_inputs hashes identify the recorded files.",
   "source_inventory_scope": "Compiler project and build entry point.",
   "source_inputs": [
@@ -30,7 +30,7 @@
     },
     {
       "path": "kitaqfc/CodeGenerator.cs",
-      "sha256": "5dbf6672424b503d9e2624365a9770f703f402e407dc5a6ff6049bfd8252bbae"
+      "sha256": "77842ef4b6284ab9b84b9a537043174d549a150648c538559062f45a42f16eea"
     },
     {
       "path": "kitaqfc/DebugExporter.cs",
@@ -127,26 +127,41 @@
   ],
   "binary": {
     "path": "kitaqfc.exe",
-    "bytes": 650752,
-    "sha256": "4f1f7cca2a2f00dcee6110c733daaa4a5a6922199d3886ad230b5b816299fd27",
+    "bytes": 655872,
+    "sha256": "ee3c09b45a457a24db3b95b5ab73dd54b587daccfac319eb6d2fb4ce5af1f847",
     "imported_system_dlls": [
       "mscoree.dll"
     ]
   },
   "checks": [
     {
-      "check": "--help captured",
-      "exit_code": 1
+      "check": "Entity lifecycle and typed callback runtime/pixel regressions",
+      "cases": 7,
+      "callback_assertions_per_variant": 24,
+      "variants": 4,
+      "frames_per_run": 120,
+      "result": "all passed",
+      "evidence": "https://bartaro.github.io/kitaq-docs/verification/api-entity/results.json"
     },
     {
-      "check": "Current manual sample compilation",
+      "check": "Existing FC manual samples: build and bounded emulator smoke",
       "samples": 18,
-      "frames_per_run": null,
+      "frames_per_run": 120,
       "result": "all passed",
-      "evidence": "https://bartaro.github.io/kitaq-docs/verification/current/samples.json"
+      "evidence": "https://bartaro.github.io/kitaq-docs/verification/api-entity/fc-regression/results.json"
     }
   ],
   "scope": "Windows CLI release. Compilation and bounded emulator execution are separate checks; no blanket physical-hardware or peripheral compatibility claim.",
   "target_framework": ".NET Framework 4.8",
-  "platform": "AnyCPU"
+  "platform": "AnyCPU",
+  "library_inputs": [
+    {
+      "path": "lib/entity.h",
+      "sha256": "d6a48286b59970bee79a8fb3bc6952614a238d95ca37b714e3d4f52c27991453"
+    },
+    {
+      "path": "lib/entity.c",
+      "sha256": "96197eca2ad3431a6d82a29e5db59205fb6ca9a4d36465d83b9f3a47f3617ef0"
+    }
+  ]
 }

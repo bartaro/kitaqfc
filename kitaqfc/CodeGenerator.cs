@@ -34,6 +34,7 @@ static class CodeGenerator
         readonly List<Expr> _assembly = new List<Expr>();
         readonly Dictionary<string, Expr> _functions = new Dictionary<string, Expr>(StringComparer.Ordinal);
         readonly Dictionary<string, CType> _functionReturnTypes = new Dictionary<string, CType>(StringComparer.Ordinal);
+        readonly HashSet<string> _addressTakenFunctions = new HashSet<string>(StringComparer.Ordinal);
         readonly Dictionary<string, FieldInfo[]> _functionParameters = new Dictionary<string, FieldInfo[]>(StringComparer.Ordinal);
         readonly List<string> _orderedFunctionNames = new List<string>();
         readonly Dictionary<string, CFunctionInfo> _functionInfos = new Dictionary<string, CFunctionInfo>(StringComparer.Ordinal);
@@ -417,6 +418,13 @@ static class CodeGenerator
 
             ReserveRuntimeState();
             CollectTopLevel(items);
+            // Address-taken functions share the ordinary argument-area ABI with typed indirect calls.
+            // Their addresses also keep them alive when library LTO removes unused direct-call bodies.
+            foreach (string name in EnumerateFunctionValues(syntaxTree))
+            {
+                _addressTakenFunctions.Add(name);
+                if (_functionInfos.TryGetValue(name, out CFunctionInfo addressInfo)) addressInfo.IsFastCall = false;
+            }
             ValidateConfiguredRamWindows();
             if (Program.ErrorCount > 0) return _assembly;
 
@@ -576,6 +584,7 @@ static class CodeGenerator
             AddRoot("__nes_reset");
             AddRoot("__nes_nmi");
             AddRoot("__nes_irq");
+            foreach (string target in _addressTakenFunctions) AddRoot(target);
             foreach (var name in _orderedFunctionNames)
             {
                 if (name.StartsWith("__nes_", StringComparison.Ordinal) || name.StartsWith("__kq_", StringComparison.Ordinal)) AddRoot(name);
@@ -603,6 +612,32 @@ static class CodeGenerator
                 }
             }
             return reachable;
+        }
+
+        // Find functions used as values, excluding named direct-call targets.
+        IEnumerable<string> EnumerateFunctionValues(Expr expr)
+        {
+            if (expr == null) yield break;
+            if (expr.Match(Tag.Name, out string name) && _functions.ContainsKey(name)) yield return name;
+            if (expr.Match(Tag.Asm, out string mnemonic, out AsmOperand operand) &&
+                mnemonic != "JSR" && mnemonic != "JMP" && operand != null && operand.Base.HasValue &&
+                _functions.ContainsKey(operand.Base.Value)) yield return operand.Base.Value;
+            if (expr.MatchAny(Tag.Call, out Expr target, out Expr[] args))
+            {
+                if (!target.Match(Tag.Name, out string directName))
+                    foreach (string value in EnumerateFunctionValues(target)) yield return value;
+                foreach (Expr arg in args ?? Array.Empty<Expr>())
+                    foreach (string value in EnumerateFunctionValues(arg)) yield return value;
+                yield break;
+            }
+            foreach (object arg in expr.GetArgs().Skip(1))
+            {
+                if (arg is Expr child)
+                    foreach (string value in EnumerateFunctionValues(child)) yield return value;
+                else if (arg is Expr[] children)
+                    foreach (Expr item in children)
+                        foreach (string value in EnumerateFunctionValues(item)) yield return value;
+            }
         }
 
         // Find known symbolic assembly operands, named calls and explicit function-address references recursively.
@@ -1649,8 +1684,16 @@ static class CodeGenerator
             {
                 EmitPlacement(0, true);
                 _assembly.Add(Expr.Make(Tag.Function, "__kq_nmi_default"));
+                // NMI may interrupt argument evaluation, a pointer dispatch or an ordinary expression.
+                // Preserve registers and every shared byte touched by the queue executor; RTI restores P.
+                EmitAsm("PHA"); EmitAsm("TXA"); EmitAsm("PHA"); EmitAsm("TYA"); EmitAsm("PHA");
+                int[] queueScratch = { CallArgBase, CallArgBase + 1, CallArgBase + 2,
+                    _runtimeIntrinsicTmp0Address, _runtimeIntrinsicTmp1Address, _runtimeIntrinsicTmp2Address };
+                foreach (int address in queueScratch) { EmitAsm("LDA", Mem(address)); EmitAsm("PHA"); }
                 EmitAsm("JSR", Abs("__vramq_exec"));
                 EmitAsm("INC", Mem(_runtimeNmiCounterAddress));
+                foreach (int address in queueScratch.Reverse()) { EmitAsm("PLA"); EmitAsm("STA", Mem(address)); }
+                EmitAsm("PLA"); EmitAsm("TAY"); EmitAsm("PLA"); EmitAsm("TAX"); EmitAsm("PLA");
                 EmitAsm("RTI");
             }
 
@@ -1793,6 +1836,15 @@ static class CodeGenerator
             EmitAsm("PHA");
             EmitAsm("LDA", Imm(info.TargetBank));
             EmitAsm("JSR", Abs("__kq_prg_set_bank_a"));
+            // Cross-bank callers stage ordinary argument bytes because switching destroys A/X.
+            // Reload the callee's register ABI only after the mapper helper has finished.
+            if (IsFunctionFastCall(info.TargetName) &&
+                _functionParameters.TryGetValue(info.TargetName, out FieldInfo[] thunkParameters))
+            {
+                int bytes = thunkParameters.Sum(p => GetStorageSize(p.Type));
+                if (bytes > 0) EmitAsm("LDA", Mem(CallArgBase));
+                if (bytes > 1) EmitAsm("LDX", Mem(CallArgBase + 1));
+            }
             EmitAsm("JSR", Abs(info.TargetName));
             if (info.ReturnSize > 0)
             {
@@ -2657,6 +2709,13 @@ static class CodeGenerator
             }
             if (expr.Match(Tag.AddressOf, out sub))
             {
+                if (sub.Match(Tag.Name, out string functionName) &&
+                    _functionInfos.TryGetValue(functionName, out CFunctionInfo function))
+                {
+                    type = CType.MakePointer(CType.MakeFunction(function.ReturnType,
+                        function.Parameters.Select(p => p.Type).ToArray()));
+                    return true;
+                }
                 CType lvType;
                 if (TryGetLvalueType(sub, ctx, requireWritable: false, out lvType))
                 {
@@ -2702,6 +2761,11 @@ static class CodeGenerator
                 return TryGetLvalueType(lhs, ctx, requireWritable: false, out type);
             if (expr.MatchAny(Tag.Call, out funcExpr, out args))
             {
+                if (TryGetCallableType(funcExpr, ctx, out CType callable))
+                {
+                    type = callable.Subtype;
+                    return true;
+                }
                 string funcName;
                 if (funcExpr.Match(Tag.Name, out funcName))
                 {
@@ -2973,6 +3037,13 @@ static class CodeGenerator
             }
             if (lvalue.Match(Tag.Name, out name))
             {
+                if (_functionInfos.ContainsKey(name) && !TryResolveStorage(ctx, name, out slot))
+                {
+                    EmitAsm("LDA", ImmLo(name)); EmitAsm("STA", Mem(dstLo));
+                    EmitAsm("LDA", ImmHi(name)); EmitAsm("STA", Mem(dstHi));
+                    valueSize = 2;
+                    return true;
+                }
                 if (!TryResolveStorage(ctx, name, out slot) || slot.IsConstant)
                 {
                     Program.Error("error KQ0000: cannot take address of '{0}' for --target=nes phase 6.", name);
@@ -3527,10 +3598,15 @@ static class CodeGenerator
         // Dispatch recognized intrinsics and optimized direct calls before packing the ordinary argument area.
         void EmitCallCore(FilePosition source, Expr funcExpr, Expr[] args, FunctionContext ctx, int expectedReturnSize)
         {
+            if (TryGetCallableType(funcExpr, ctx, out CType callable))
+            {
+                EmitIndirectCall(source, funcExpr, args ?? Array.Empty<Expr>(), ctx, callable);
+                return;
+            }
             string funcName;
             if (!funcExpr.Match(Tag.Name, out funcName))
             {
-                Program.Error("error KQ0000: --target=nes phase 5 supports only direct calls.");
+                Program.Error("error KQFC2610: call target must be a function name or a typed function pointer.");
                 return;
             }
 
@@ -3714,10 +3790,9 @@ static class CodeGenerator
 
             // Stage argument values away from the shared call area so nested calls cannot overwrite earlier arguments.
             int[] scratch = AcquireTemps(totalArgBytes);
-            if (Program.ErrorCount > 0) return;
-
             try
             {
+                if (Program.ErrorCount > 0) return;
                 int offset = 0;
                 for (int i = 0; i < args.Length; i++)
                 {
@@ -3764,6 +3839,73 @@ static class CodeGenerator
             {
                 ReleaseTemps(scratch);
             }
+        }
+
+        // Preserve the pointed-to signature, including a 16-bit return, for fn(...) and (*fn)(...).
+        bool TryGetCallableType(Expr target, FunctionContext ctx, out CType functionType)
+        {
+            functionType = null;
+            if (!TryGetExprType(target, ctx, out CType type) || type == null) return false;
+            if (type.IsPointer) type = type.Subtype;
+            if (type == null || !type.IsFunction) return false;
+            functionType = type;
+            return true;
+        }
+
+        // A 6502 RTS dispatch consumes a synthetic target-1 address above the JSR return address.
+        // Only registers and the CPU stack are used during dispatch, avoiding a shared mutable JMP pointer.
+        // These are near pointers: the caller must keep the target's PRG bank mapped, and static C frames
+        // remain non-reentrant. Aggregate callback parameters/returns require a separate ABI and are rejected.
+        void EmitIndirectCall(FilePosition source, Expr target, Expr[] args, FunctionContext ctx, CType signature)
+        {
+            CType[] types = signature.ParamTypes ?? Array.Empty<CType>();
+            if (args.Length != types.Length || IsAggregateType(signature.Subtype) ||
+                types.Any(t => IsAggregateType(t) || GetStorageSize(t) < 1 || GetStorageSize(t) > 2))
+            {
+                Program.Error("error KQFC2610: indirect call requires the declared argument count and scalar/pointer parameters and return type.");
+                return;
+            }
+            int argBytes = types.Sum(t => GetStorageSize(t));
+            if (argBytes > CallArgLimitExclusive - CallArgBase || _freeTemps.Count < argBytes + 2)
+            {
+                Program.Error("error KQFC2611: indirect call exceeds the argument area or available temporary scratch.");
+                return;
+            }
+            int[] scratch = AcquireTemps(argBytes + 2);
+            try
+            {
+                // Dereferencing a function pointer designates the function; it must not load its first opcodes.
+                if (target.Match(Tag.Load, out Expr pointer) &&
+                    TryGetExprType(target, ctx, out CType targetType) && targetType.IsFunction) target = pointer;
+                EmitLoadValue(target, ctx, 2);
+                EmitAsm("STA", Mem(scratch[argBytes]));
+                EmitAsm("STX", Mem(scratch[argBytes + 1]));
+                int offset = 0;
+                for (int i = 0; i < args.Length; i++)
+                {
+                    int size = GetStorageSize(types[i]);
+                    EmitLoadValue(args[i], ctx, size);
+                    EmitAsm("STA", Mem(scratch[offset++]));
+                    if (size == 2) EmitAsm("STX", Mem(scratch[offset++]));
+                }
+                for (int i = 0; i < argBytes; i++)
+                {
+                    EmitAsm("LDA", Mem(scratch[i]));
+                    EmitAsm("STA", Mem(CallArgBase + i));
+                }
+                EmitAsm("LDA", Mem(scratch[argBytes]));
+                EmitAsm("LDX", Mem(scratch[argBytes + 1]));
+                string dispatch = NewGeneratedLabel("callback_dispatch");
+                string done = NewGeneratedLabel("callback_return");
+                EmitAsm("JSR", Abs(dispatch));
+                EmitAsm("JMP", Abs(done));
+                _assembly.Add(Expr.Make(Tag.Label, dispatch).WithSource(source));
+                EmitAsm("SEC"); EmitAsm("SBC", Imm(1)); EmitAsm("TAY");
+                EmitAsm("TXA"); EmitAsm("SBC", Imm(0)); EmitAsm("PHA");
+                EmitAsm("TYA"); EmitAsm("PHA"); EmitAsm("RTS");
+                _assembly.Add(Expr.Make(Tag.Label, done).WithSource(source));
+            }
+            finally { ReleaseTemps(scratch); }
         }
 
         // Use A/X arguments only for an enabled fastcall target with at most two scalar-normalized bytes.
@@ -4804,6 +4946,12 @@ static class CodeGenerator
                             else EmitAsm("LDX", Imm(0));
                         }
                     }
+                    return;
+                }
+                if (_functionInfos.ContainsKey(name))
+                {
+                    EmitAsm("LDA", ImmLo(name));
+                    if (expectedSize == 2) EmitAsm("LDX", ImmHi(name));
                     return;
                 }
                 Program.Error("error KQ0000: unknown symbol in expression for --target=nes: {0}", name);

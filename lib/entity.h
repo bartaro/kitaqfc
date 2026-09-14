@@ -23,7 +23,7 @@ typedef __packed struct Entity {
 } Entity;
 
 // An entity callback receives a slot ID, not a persistent object handle.
-// The FC update/draw entry points are currently placeholders and do not call it.
+// Use a callback in common PRG bank 0, or keep its bank mapped throughout dispatch.
 typedef void (*EntityFn)(u8 id);
 
 // Reset every slot before the game starts using the pool.
@@ -35,11 +35,11 @@ u8 entity_create(u8 type, s16 x, s16 y);
 void entity_destroy(u8 id);
 // Returns null for an invalid or inactive ID; the returned pointer aliases reusable pool storage.
 Entity* entity_get(u8 id);
-// Compatibility placeholder: this implementation does not invoke callbacks.
-// The game must iterate active IDs and call its update routines explicitly.
+// Call fn(id) for each active slot in ascending order. A null callback does nothing.
+// Changes to later slots take effect during the same traversal. Do not reenter this traversal.
 void entity_update_all(EntityFn fn);
-// Compatibility placeholder: this implementation does not draw or invoke callbacks.
-// The game must iterate active IDs and submit its own sprite data.
+// Call the drawing callback for each active slot, using the same traversal rules as update.
+// The callback submits drawing data; the pool does not allocate sprites.
 void entity_draw_all(EntityFn fn);
 // Count occupied slots without changing entity state.
 u8 entity_count_active(void);

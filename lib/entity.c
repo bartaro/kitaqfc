@@ -70,18 +70,24 @@ Entity* entity_get(u8 id)
     return &entity_pool[(__safe_index u8)id];
 }
 
-// Compatibility placeholder: this implementation does not invoke callbacks.
-// The game must iterate active IDs and call its update routines explicitly.
+// Visit active slots in ascending ID order and pass each ID to the callback.
+// Check activity when visiting the slot, so callback changes affect subsequent visits.
 void entity_update_all(EntityFn fn)
 {
+    u8 i;
     if (fn == 0) return;
+    i = 0;
+    while (i < ENTITY_MAX) {
+        if (entity_pool[(__safe_index u8)i].active != 0) fn(i);
+        i = (u8)(i + 1);
+    }
 }
 
-// Compatibility placeholder: this implementation does not draw or invoke callbacks.
-// The game must iterate active IDs and submit its own sprite data.
+// Use the same active-slot traversal for the game's drawing callback.
+// The callback submits drawing data; the entity pool does not allocate sprites.
 void entity_draw_all(EntityFn fn)
 {
-    if (fn == 0) return;
+    entity_update_all(fn);
 }
 
 // Count occupied slots without changing entity state.
