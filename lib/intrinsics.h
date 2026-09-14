@@ -79,7 +79,7 @@ u8 __bankof(u16 symbol_or_function);
 void __bankswitch(u8 bank);
 // Use the same mapper PRG-switch helper as __bankswitch; retain executable code in a valid mapping.
 void __prg_bank_set(u8 bank);
-// Invoke the compiler banked-call path; target placement and calling convention must match the selected mapper.
+// Call a declared zero-argument function; placement selects its bank and its declared type determines the result.
 u8 __farcall(u8 bank, u16 func);
 // Switch to the source bank, copy len bytes forward and restore the previous bank.
 // Keep destination RAM and helper code accessible throughout; overlapping copies are not memmove.

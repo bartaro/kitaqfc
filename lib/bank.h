@@ -31,7 +31,7 @@ u16 farptr_read16(BankPtr ptr);
 // Copy len bytes from a far pointer; the caller provides a sufficiently large destination.
 void farptr_read(BankPtr ptr, void* dst, u16 len);
 
-// Route a compiler-recognized function target through the far-call intrinsic; this is not a general
+// Route a declared zero-argument function through the far-call intrinsic; this is not a general
 // callback-pointer dispatcher. Mapper support and fixed-bank call-site rules still apply.
 #define far_call(bank, func) __farcall((bank), func)
 

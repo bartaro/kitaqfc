@@ -3797,19 +3797,6 @@ static class CodeGenerator
 
             AnalyzeNesActionCall(source, funcName, args, ctx);
 
-            // The direct bank-switch intrinsic evaluates a byte argument and calls the mapper helper.
-            if (string.Equals(funcName, "__bankswitch", StringComparison.Ordinal))
-            {
-                if (args == null || args.Length != 1)
-                {
-                    Program.Error("error KQ0000: __bankswitch(bank) expects exactly 1 argument.");
-                    return;
-                }
-                EmitLoadValue(args[0], ctx, 1);
-                EmitAsm("JSR", Abs("__kq_prg_set_bank_a"));
-                return;
-            }
-
             if (string.Equals(funcName, "__fds_overlay_farcall", StringComparison.Ordinal) ||
                 string.Equals(funcName, "__fds_farcall", StringComparison.Ordinal))
             {
@@ -3866,6 +3853,18 @@ static class CodeGenerator
                 if (!farArgs[1].Match(Tag.Name, out targetName))
                 {
                     Program.Error("error KQ0000: __farcall(bank, func) requires the 2nd argument to be a function name.");
+                    return;
+                }
+                // This intrinsic supplies no callback arguments. A variable name
+                // is not a static function target, even when its value is a pointer.
+                if (!_functionParameters.TryGetValue(targetName, out FieldInfo[] farParameters))
+                {
+                    Program.Error("error KQFC2610: __farcall requires a declared function name; use an ordinary typed call for a function pointer.");
+                    return;
+                }
+                if (farParameters.Length != 0)
+                {
+                    Program.Error("error KQFC2610: __farcall requires a callback with no parameters.");
                     return;
                 }
                 if (Program.NesMapperProfile.IsSurom512 &&
