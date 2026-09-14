@@ -145,6 +145,7 @@ static class CodeGenerator
             public int ConstantValue;
             public bool IsReadonlyData;
             public byte[] ReadonlyBytes;
+            public Expr[] ReadonlyInitializers;
             public FilePosition Source;
             public int RequestedBank = 1;
             public bool HasFixedBank = false;
@@ -538,7 +539,7 @@ static class CodeGenerator
                 }
                 if (current.Match(Tag.ReadonlyData, out type, out name, out roExprs))
                 {
-                    RegisterReadonlyData(current.Source, type, name, EvaluateReadonlyExprs(name, roExprs), placement);
+                    RegisterReadonlyData(current.Source, type, name, roExprs, placement);
                     continue;
                 }
 
@@ -1098,33 +1099,22 @@ static class CodeGenerator
             return fields;
         }
 
-        // Fold each readonly initializer, reporting nonconstant expressions and supplying zero placeholders so traversal can continue.
-        int[] EvaluateReadonlyExprs(string name, Expr[] exprs)
-        {
-            exprs = exprs ?? Array.Empty<Expr>();
-            int[] values = new int[exprs.Length];
-            for (int i = 0; i < exprs.Length; i++)
-            {
-                int v;
-                if (!TryEvaluateConstant(exprs[i], out v))
-                {
-                    Program.Error("error KQ0000: --target=nes phase 6 requires readonly data initializers to be constant-foldable: {0}", name);
-                    v = 0;
-                }
-                values[i] = v;
-            }
-            return values;
-        }
-
         // Reject duplicate data symbols, encode their initializer bytes and retain placement metadata for later emission.
         void RegisterReadonlyData(FilePosition source, CType type, string name, int[] values, PlacementInfo placement)
+        {
+            RegisterReadonlyData(source, type, name,
+                (values ?? Array.Empty<int>()).Select(v => Expr.Make(Tag.Integer, v)).ToArray(), placement);
+        }
+
+        // Delay expression encoding until all global symbols exist, allowing forward addresses.
+        void RegisterReadonlyData(FilePosition source, CType type, string name, Expr[] values, PlacementInfo placement)
         {
             if (_constants.ContainsKey(name) || _globals.ContainsKey(name) || _readonlyData.ContainsKey(name))
             {
                 Program.Error("error KQ0000: duplicate top-level symbol for --target=nes: {0}", name);
                 return;
             }
-            byte[] bytes = EncodeReadonlyBytes(type, name, values ?? Array.Empty<int>());
+            byte[] bytes = new byte[Math.Max(0, GetStorageSize(type))];
             if (Program.ErrorCount > 0) return;
             var slot = new StorageSlot
             {
@@ -1134,6 +1124,7 @@ static class CodeGenerator
                 Size = bytes.Length,
                 IsReadonlyData = true,
                 ReadonlyBytes = bytes,
+                ReadonlyInitializers = values ?? Array.Empty<Expr>(),
                 Source = source,
                 RequestedBank = ResolveReadonlyRequestedBank(source, name, placement),
                 HasFixedBank = placement != null && placement.HasFixedBank,
@@ -1214,48 +1205,235 @@ static class CodeGenerator
             return false;
         }
 
-        // Encode supported scalar initializers little-endian and zero-fill the unused declared extent.
-        // Report excess initializers while sizing the placeholder output to contain them.
-        byte[] EncodeReadonlyBytes(CType type, string name, int[] values)
+        // Route arrays to element encoding and reject multiple initializers for a nonarray object.
+        byte[] EncodeReadonlyDataInitializers(Expr origin, CType type, Expr[] valueExprs, List<Expr> relocations, int objectOffset)
         {
-            values = values ?? Array.Empty<int>();
-            CType elementType = type;
-            int declaredCount = values.Length;
-            // Expression-sized arrays must reach the constant-evaluation branch below.
-            if (type != null && type.Tag == CTypeTag.Array)
+            if (type != null && type.IsArray)
+                return EncodeReadonlyArrayInitializer(origin, type, valueExprs, relocations, objectOffset);
+
+            int size = Math.Max(1, GetStorageSize(type));
+            if (valueExprs == null || valueExprs.Length == 0)
+                return new byte[size];
+            if (valueExprs.Length > 1)
+                Program.Error(origin.Source, ErrorCode.ParseError, "too many initializers for readonly data");
+
+            return EncodeReadonlyInitializer(origin, type, valueExprs[0], relocations, objectOffset);
+        }
+
+        // Encode nested arrays/aggregates recursively or serialize a scalar constant in little-endian byte order.
+        byte[] EncodeReadonlyInitializer(Expr origin, CType type, Expr init, List<Expr> relocations, int objectOffset)
+        {
+            if (type == null) type = CType.UInt8;
+
+            if (IsEmptyReadonlyInitializer(init))
+                return new byte[Math.Max(1, GetStorageSize(type))];
+
+            if (type.IsArray)
             {
-                elementType = type.Subtype ?? CType.UInt8;
-                declaredCount = type.Dimension > 0 ? type.Dimension : values.Length;
-            }
-            else if (type != null && type.Tag == CTypeTag.ArrayWithDimensionExpression)
-            {
-                elementType = type.Subtype ?? CType.UInt8;
-                int dim;
-                if (type.DimensionExpression != null && TryEvaluateConstant(type.DimensionExpression, out dim) && dim > 0)
-                    declaredCount = dim;
+                Expr[] items;
+                if (init != null && init.MatchAny(Tag.Sequence, out items))
+                    return EncodeReadonlyArrayInitializer(origin, type, items ?? Array.Empty<Expr>(), relocations, objectOffset);
+                return EncodeReadonlyArrayInitializer(origin, type, new Expr[] { init }, relocations, objectOffset);
             }
 
-            int elemSize = NormalizeScalarSize(GetStorageSize(elementType));
-            if (elemSize != 1 && elemSize != 2)
+            if (type.IsStructOrUnion)
+                return EncodeReadonlyAggregateInitializer(origin, type, init, relocations, objectOffset);
+
+            Expr[] scalarItems;
+            if (init != null && init.MatchAny(Tag.Sequence, out scalarItems))
             {
-                Program.Error("error KQ0000: --target=nes phase 6 readonly data currently supports only 8-bit/16-bit scalar elements: {0}", name);
-                return Array.Empty<byte>();
+                if (scalarItems == null || scalarItems.Length == 0)
+                    return new byte[Math.Max(1, GetStorageSize(type))];
+                if (scalarItems.Length > 1)
+                    Program.Error(origin.Source, ErrorCode.ParseError, "too many initializers for scalar readonly data");
+                init = scalarItems[0];
             }
-            if (declaredCount < values.Length)
+
+            int size = Math.Max(1, GetStorageSize(type));
+            if (size > 4)
+                Program.Error(origin.Source, ErrorCode.ParseError, "readonly data scalar initializer supports sizes up to 4 bytes (got {0})", size);
+
+            if (type.IsPointer && size == 2 && TryGetReadonlyPointer(init, false, out AsmOperand address))
             {
-                Program.Error("error KQ0000: --target=nes phase 6 readonly data initializer overflow for '{0}'.", name);
-                declaredCount = values.Length;
+                relocations.Add(Expr.Make(Tag.Word, objectOffset, address).WithSource(init.Source));
+                return new byte[size];
             }
+
+            int value = ReadonlyConstant(init);
+            byte[] bytes = new byte[size];
+            uint u = (uint)value;
+            for (int i = 0; i < size; i++)
+                bytes[i] = (byte)((u >> (8 * i)) & 0xFF);
+            return bytes;
+        }
+
+        // Allocate the full declared array extent, zero omitted elements and copy each encoded initializer at its stride.
+        byte[] EncodeReadonlyArrayInitializer(Expr origin, CType arrayType, Expr[] items, List<Expr> relocations, int objectOffset)
+        {
+            CType elemType = arrayType.Subtype ?? CType.UInt8;
+            int elemSize = Math.Max(1, GetStorageSize(elemType));
+            int declaredCount = GetReadonlyArrayDimension(origin, arrayType);
+            if (declaredCount < 0) declaredCount = 0;
+
+            items = items ?? Array.Empty<Expr>();
+            if (items.Length > declaredCount)
+                Program.Error(origin.Source, ErrorCode.ParseError, "too many initializers for readonly array (got {0}, declared {1})", items.Length, declaredCount);
 
             byte[] bytes = new byte[declaredCount * elemSize];
-            for (int i = 0; i < values.Length; i++)
+            int n = Math.Min(items.Length, declaredCount);
+            for (int i = 0; i < n; i++)
             {
-                int v = values[i] & 0xFFFF;
-                bytes[i * elemSize] = (byte)(v & 0xFF);
-                if (elemSize == 2)
-                    bytes[i * elemSize + 1] = (byte)((v >> 8) & 0xFF);
+                if (IsEmptyReadonlyInitializer(items[i])) continue;
+                byte[] elemBytes = EncodeReadonlyInitializer(origin, elemType, items[i], relocations, objectOffset + i * elemSize);
+                if (elemBytes.Length != elemSize)
+                    Program.Error(origin.Source, ErrorCode.ParseError, "readonly array initializer size mismatch for element {0}", i);
+                System.Array.Copy(elemBytes, 0, bytes, i * elemSize, elemSize);
             }
             return bytes;
+        }
+
+        // Place struct fields at their layout offsets; for a union, encode only the first nonempty selected initializer.
+        byte[] EncodeReadonlyAggregateInitializer(Expr origin, CType type, Expr init, List<Expr> relocations, int objectOffset)
+        {
+            int totalSize = Math.Max(1, GetStorageSize(type));
+            byte[] bytes = new byte[totalSize];
+
+            Expr[] items;
+            if (init == null || !init.MatchAny(Tag.Sequence, out items))
+            {
+                int value = ReadonlyConstant(init);
+                if (value != 0)
+                    Program.Error(origin.Source, ErrorCode.ParseError, "aggregate readonly initializer requires braces");
+                return bytes;
+            }
+
+            AggregateInfo info = _aggregates[type.Name];
+            items = items ?? Array.Empty<Expr>();
+            if (items.Length > info.Fields.Length)
+                Program.Error(origin.Source, ErrorCode.ParseError, "too many initializers for {0}", type.Show());
+
+            if (info.Layout == AggregateLayout.Union)
+            {
+                for (int i = 0; i < items.Length && i < info.Fields.Length; i++)
+                {
+                    if (IsEmptyReadonlyInitializer(items[i])) continue;
+                    FieldInfo field = info.Fields[i];
+                    byte[] fieldBytes = EncodeReadonlyInitializer(origin, field.Type, items[i], relocations, objectOffset + field.Offset);
+                    int copy = Math.Min(fieldBytes.Length, totalSize);
+                    System.Array.Copy(fieldBytes, 0, bytes, field.Offset, copy);
+                    break;
+                }
+                return bytes;
+            }
+
+            for (int i = 0; i < items.Length && i < info.Fields.Length; i++)
+            {
+                if (IsEmptyReadonlyInitializer(items[i])) continue;
+                FieldInfo field = info.Fields[i];
+                byte[] fieldBytes = EncodeReadonlyInitializer(origin, field.Type, items[i], relocations, objectOffset + field.Offset);
+                int fieldSize = Math.Max(1, GetStorageSize(field.Type));
+                if (fieldBytes.Length != fieldSize)
+                    Program.Error(origin.Source, ErrorCode.ParseError, "readonly struct initializer size mismatch for field {0}", field.Name);
+                System.Array.Copy(fieldBytes, 0, bytes, field.Offset, fieldSize);
+            }
+            return bytes;
+        }
+
+        // Resolve only static object addresses, never the contents of a pointer variable.
+        // Symbol bases are preserved so bank placement and dead stripping see the dependency.
+        bool TryGetReadonlyPointer(Expr expr, bool addressOfObject, out AsmOperand address)
+        {
+            address = null;
+            if (expr == null) return false;
+            if (!addressOfObject && expr.Match(Tag.Cast, out CType castType, out Expr castValue))
+                return castType.IsPointer && TryGetReadonlyPointer(castValue, false, out address);
+            if (!addressOfObject && expr.Match(Tag.AddressOf, out Expr target))
+                return TryGetReadonlyPointer(target, true, out address);
+
+            if (expr.Match(Tag.Name, out string name) && TryResolveStorage(null, name, out StorageSlot symbol))
+            {
+                if (!addressOfObject && (symbol.Type == null || !symbol.Type.IsArray)) return false;
+                if (symbol.IsReadonlyData)
+                    address = new AsmOperand(name, AddressMode.Immediate);
+                else if (!symbol.IsConstant)
+                    address = new AsmOperand(symbol.Address, AddressMode.Immediate);
+                return address != null;
+            }
+
+            if (addressOfObject && expr.Match(Tag.Index, out Expr array, out Expr index) &&
+                TryGetReadonlyPointer(array, false, out AsmOperand arrayAddress))
+            {
+                CType pointerType = ReadonlyTypeOf(array);
+                if (!pointerType.IsPointer && !pointerType.IsArray) return false;
+                int offset = ReadonlyConstant(index) * GetStorageSize(pointerType.Subtype);
+                address = new AsmOperand(arrayAddress.Base, arrayAddress.Offset + offset,
+                    AddressMode.Immediate, ImmediateModifier.None);
+                return true;
+            }
+            if (addressOfObject && expr.Match(Tag.Field, out Expr owner, out string fieldName) &&
+                TryGetReadonlyPointer(owner, true, out AsmOperand ownerAddress))
+            {
+                if (!TryResolveField(owner, fieldName, null, out FieldInfo field)) return false;
+                address = new AsmOperand(ownerAddress.Base, ownerAddress.Offset + field.Offset,
+                    AddressMode.Immediate, ImmediateModifier.None);
+                return true;
+            }
+            if (!addressOfObject && (expr.Match(Tag.Add, out Expr left, out Expr right) ||
+                expr.Match(Tag.Subtract, out left, out right)))
+            {
+                bool subtract = expr.MatchTag(Tag.Subtract);
+                CType pointerType = ReadonlyTypeOf(left);
+                if (!subtract && !pointerType.IsPointer && !pointerType.IsArray)
+                {
+                    Expr swap = left; left = right; right = swap;
+                    pointerType = ReadonlyTypeOf(left);
+                }
+                if ((pointerType.IsPointer || pointerType.IsArray) &&
+                    TryGetReadonlyPointer(left, false, out AsmOperand baseAddress))
+                {
+                    int offset = ReadonlyConstant(right) * GetStorageSize(pointerType.Subtype);
+                    if (subtract) offset = -offset;
+                    address = new AsmOperand(baseAddress.Base, baseAddress.Offset + offset,
+                        AddressMode.Immediate, ImmediateModifier.None);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Keep required constant diagnostics attached to the initializer expression.
+        int ReadonlyConstant(Expr expr)
+        {
+            if (TryEvaluateConstant(expr, out int value)) return value;
+            Program.Error(expr.Source, ErrorCode.ParseError, "readonly initializer requires a constant or static object address");
+            return 0;
+        }
+
+        CType ReadonlyTypeOf(Expr expr)
+        {
+            // Preserve pointer element size across chained constant address arithmetic.
+            if (expr.Match(Tag.Add, out Expr left, out Expr right) ||
+                expr.Match(Tag.Subtract, out left, out right))
+            {
+                CType leftType = ReadonlyTypeOf(left);
+                CType rightType = ReadonlyTypeOf(right);
+                bool leftPointer = leftType.IsPointer || leftType.IsArray;
+                bool rightPointer = rightType.IsPointer || rightType.IsArray;
+                if (leftPointer && !rightPointer) return CType.MakePointer(leftType.Subtype);
+                if (expr.MatchTag(Tag.Add) && rightPointer && !leftPointer)
+                    return CType.MakePointer(rightType.Subtype);
+            }
+            return TryGetExprType(expr, null, out CType type) ? type : CType.UInt8;
+        }
+
+        int GetReadonlyArrayDimension(Expr origin, CType type)
+        {
+            return type.Tag == CTypeTag.Array ? type.Dimension : ReadonlyConstant(type.DimensionExpression);
+        }
+
+        bool IsEmptyReadonlyInitializer(Expr expr)
+        {
+            return expr == null || expr.Match(Tag.Empty);
         }
 
         // Emit readonly blocks in bank/order/name order, fixing bank-zero blocks and retaining source positions.
@@ -1269,7 +1447,14 @@ static class CodeGenerator
                 .ThenBy(x => x.Name, StringComparer.Ordinal))
             {
                 EmitPlacement(slot.RequestedBank, slot.HasFixedBank || slot.RequestedBank == 0);
-                _assembly.Add(Expr.Make(Tag.ReadonlyData, slot.Name, slot.ReadonlyBytes ?? Array.Empty<byte>()).WithSource(slot.Source));
+                var relocations = new List<Expr>();
+                Expr origin = Expr.Make(Tag.Name, slot.Name).WithSource(slot.Source);
+                slot.ReadonlyBytes = EncodeReadonlyDataInitializers(origin, slot.Type,
+                    slot.ReadonlyInitializers, relocations, 0);
+                Expr data = relocations.Count == 0
+                    ? Expr.Make(Tag.ReadonlyData, slot.Name, slot.ReadonlyBytes)
+                    : Expr.Make(Tag.ReadonlyData, slot.Name, slot.ReadonlyBytes, relocations.ToArray());
+                _assembly.Add(data.WithSource(slot.Source));
             }
         }
 

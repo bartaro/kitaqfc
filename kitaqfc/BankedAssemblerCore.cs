@@ -113,7 +113,7 @@ sealed class BankedAssemblerCore
             {
                 string name;
                 byte[] oldBytes;
-                if (unit.Nodes[i].Match(Tag.ReadonlyData, out name, out oldBytes) && name == "__kq_fds_metadata_table")
+                if (unit.Nodes[i].MatchReadonlyData(out name, out oldBytes) && name == "__kq_fds_metadata_table")
                 {
                     if (!ByteArrayEquals(oldBytes, table))
                     {
@@ -168,7 +168,7 @@ sealed class BankedAssemblerCore
             {
                 string name;
                 byte[] oldBytes;
-                if (unit.Nodes[i].Match(Tag.ReadonlyData, out name, out oldBytes) && name == "__kq_fds_overlay_function_table")
+                if (unit.Nodes[i].MatchReadonlyData(out name, out oldBytes) && name == "__kq_fds_overlay_function_table")
                 {
                     if (!ByteArrayEquals(oldBytes, next))
                     {
@@ -434,7 +434,7 @@ sealed class BankedAssemblerCore
             }
 
             byte[] ignoredBytes;
-            if (e.Match(Tag.ReadonlyData, out string rdName, out ignoredBytes))
+            if (e.MatchReadonlyData(out string rdName, out ignoredBytes))
             {
                 finalize();
                 current = createUnit(false, rdName);
@@ -577,7 +577,7 @@ sealed class BankedAssemblerCore
         if (e.Match(Tag.Align, out int align))
             return (pc + (align - 1)) & ~(align - 1);
         string ignoredName;
-        if (e.Match(Tag.ReadonlyData, out ignoredName, out byte[] bytes))
+        if (e.MatchReadonlyData(out ignoredName, out byte[] bytes))
             return pc + (bytes == null ? 0 : bytes.Length);
         if (e.Match(Tag.Word, out ignoredName))
             return pc + 2;
@@ -626,7 +626,7 @@ sealed class BankedAssemblerCore
                             pc = (pc + (align - 1)) & ~(align - 1);
                             continue;
                         }
-                        if (e.Match(Tag.ReadonlyData, out label, out byte[] bytes))
+                        if (e.MatchReadonlyData(out label, out byte[] bytes))
                         {
                             if (!string.IsNullOrEmpty(label) && !symbols.ContainsKey(label))
                             {
@@ -693,7 +693,7 @@ sealed class BankedAssemblerCore
                     continue;
                 }
                 string ignoredName;
-                if (e.Match(Tag.ReadonlyData, out ignoredName, out byte[] bytes))
+                if (e.MatchReadonlyData(out ignoredName, out byte[] bytes))
                 {
                     expanded.Add(e);
                     pc += bytes == null ? 0 : bytes.Length;
@@ -828,11 +828,33 @@ sealed class BankedAssemblerCore
                         continue;
                     }
                     string ignoredName;
-                    if (e.Match(Tag.ReadonlyData, out ignoredName, out byte[] bytes))
+                    if (e.MatchReadonlyData(out ignoredName, out byte[] bytes))
                     {
                         int dataStartPc = pc;
                         int dataSize = bytes == null ? 0 : bytes.Length;
                         WriteBytes(bank, pc, bytes ?? Array.Empty<byte>(), e.Source);
+                        // Resolve each near pointer using final CPU-window addresses. The
+                        // surrounding object remains atomic during bank packing.
+                        foreach (Expr relocation in e.ReadonlyRelocations())
+                        {
+                            if (!relocation.Match(Tag.Word, out int offset, out AsmOperand address) ||
+                                offset < 0 || offset > dataSize - 2)
+                            {
+                                Program.Error("invalid readonly word relocation");
+                                return;
+                            }
+                            int value = address.Offset;
+                            if (address.Base.HasValue)
+                            {
+                                if (!TryResolveWordValue(address.Base.Value, out int baseValue))
+                                {
+                                    Program.Error("unresolved readonly pointer: {0}", address.Base.Value);
+                                    return;
+                                }
+                                value += baseValue;
+                            }
+                            WriteWord(bank, dataStartPc + offset, value, relocation.Source);
+                        }
                         pc += dataSize;
                         if (!string.IsNullOrEmpty(ignoredName))
                         {
