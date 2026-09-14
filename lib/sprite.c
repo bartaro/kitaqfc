@@ -103,8 +103,8 @@ void sprite_flush_oam(void)
     __oam_dma();
 }
 
-// Read the maintained allocation counter. Metasprite placement also treats it
-// as a high-water mark, so mixed allocation styles may not yield a true active count.
+// Return the number of active slots, including slots activated by metasprite_draw.
+// Hidden allocated slots remain active until sprite_free releases them.
 u8 sprite_count_used(void)
 {
     return kq_sprite_used;
@@ -112,7 +112,8 @@ u8 sprite_count_used(void)
 
 // Estimate peak overlap across 240 lines from software Y/height values.
 // This does not model pixel transparency, OAM priority or every hardware overflow quirk.
-// Direct intrinsic OAM edits do not update these software coordinates. Byte bottom-edge overflow can also undercount.
+// Direct intrinsic OAM edits do not update these coordinates. OAM Y is one less than the visible top;
+// compare the positive line distance so sprites below the visible area do not wrap into it.
 u8 sprite_max_scanline_count(void)
 {
     u8 line;
@@ -126,7 +127,7 @@ u8 sprite_max_scanline_count(void)
         count = 0;
         while (i < SPRITE_MAX) {
             if (kq_sprite_active[i] != 0) {
-                if (line >= kq_sprite_y[i] && line < (u8)(kq_sprite_y[i] + kq_sprite_height)) {
+                if (line > kq_sprite_y[i] && (u8)(line - kq_sprite_y[i]) <= kq_sprite_height) {
                     count = (u8)(count + 1);
                 }
             }
@@ -144,10 +145,10 @@ u8 sprite_warn_scanline_overflow(void)
     return (u8)(sprite_max_scanline_count() > 8);
 }
 
-// Activate consecutive slots and populate their OAM/position data. Return a
-// partial part count if the range reaches SPRITE_MAX; callers must prevent
-// byte-ID wraparound and collisions with other slot allocations.
-// Partial writes remain active when the slot limit causes an early return; the final used-count update is then skipped.
+// Place consecutive parts, counting each newly activated slot once. Existing
+// active slots are overwritten without increasing the allocation count. Return
+// the number written; an invalid first slot or zero count writes nothing.
+// A partial write at the slot limit keeps both activity flags and count consistent.
 u8 metasprite_draw(u8 first_id, u8 x, u8 y, const MetaSpritePart* parts, u8 count)
 {
     u8 i;
@@ -156,13 +157,15 @@ u8 metasprite_draw(u8 first_id, u8 x, u8 y, const MetaSpritePart* parts, u8 coun
         u8 id;
         id = (u8)(first_id + i);
         if (id >= SPRITE_MAX) return i;
-        kq_sprite_active[id] = 1;
+        if (kq_sprite_active[id] == 0) {
+            kq_sprite_active[id] = 1;
+            kq_sprite_used = (u8)(kq_sprite_used + 1);
+        }
         __sprite_set(id, (u8)(x + parts[i].dx), (u8)(y + parts[i].dy), parts[i].tile, parts[i].flags);
         kq_sprite_x[id] = (u8)(x + parts[i].dx);
         kq_sprite_y[id] = (u8)(y + parts[i].dy);
         i = (u8)(i + 1);
     }
-    if ((u8)(first_id + count) > kq_sprite_used) kq_sprite_used = (u8)(first_id + count);
     return count;
 }
 

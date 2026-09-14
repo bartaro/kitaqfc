@@ -57,17 +57,17 @@ void sprite_hide(u8 id);
 void sprite_flush_oam_now(void);
 // Wait for NMI before requesting OAM DMA.
 void sprite_flush_oam(void);
-// Read the maintained allocation counter. Metasprite placement also treats it
-// as a high-water mark, so mixed allocation styles may not yield a true active count.
+// Return the number of active slots, including slots activated by metasprite_draw.
+// Hidden allocated slots remain active until sprite_free releases them.
 u8 sprite_count_used(void);
 // Flag software overlap estimates above eight sprites on one scanline.
 u8 sprite_warn_scanline_overflow(void);
 // Estimate peak overlap across 240 lines from software Y/height values.
 // This does not model pixel transparency, OAM priority or every hardware overflow quirk.
 u8 sprite_max_scanline_count(void);
-// Activate consecutive slots and populate their OAM/position data. Return a
-// partial part count if the range reaches SPRITE_MAX; callers must prevent
-// byte-ID wraparound and collisions with other slot allocations.
+// Place consecutive parts, counting each newly activated slot once. Existing
+// active slots are overwritten without increasing the allocation count. Return
+// the number written; an invalid first slot or zero count writes nothing.
 u8 metasprite_draw(u8 first_id, u8 x, u8 y, const MetaSpritePart* parts, u8 count);
 // Advance animation ticks and wrap the frame index, returning the selected tile.
 // Zero ticks-per-frame freezes advancement; null state returns zero.

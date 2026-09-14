@@ -2323,11 +2323,13 @@ static class CodeGenerator
             Program.Error("error KQ0000: --target=nes phase 5 unsupported statement tag in function {0}: {1}", ctx.Name, node.Tag);
         }
 
-        // Allocate a unique function-local slot, rejecting collisions with local or global data names.
+        // Allocate a unique function-local slot. Local variables and parameters
+        // may shadow global storage; TryResolveStorage prefers the local slot.
+        // Named compile-time constants remain reserved by the constant folder.
         // Slots use the shared local-like allocator and persist across emitted functions; optional static-frame metadata describes the allocation.
         StorageSlot DeclareLocal(FilePosition source, FunctionContext ctx, CType type, string name)
         {
-            if (ctx.Locals.ContainsKey(name) || _constants.ContainsKey(name) || _globals.ContainsKey(name) || _readonlyData.ContainsKey(name))
+            if (ctx.Locals.ContainsKey(name) || _constants.ContainsKey(name))
             {
                 Program.Error("error KQ0000: duplicate local symbol for --target=nes phase 5 in function {0}: {1}", ctx.Name, name);
                 return null;
