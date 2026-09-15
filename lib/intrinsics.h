@@ -15,9 +15,9 @@ typedef unsigned short u16;
 
 /* memory / bit / math */
 // Copy len bytes forward between readable/writable CPU ranges; overlapping copies are not memmove.
-// A compile-time zero length may omit pointer-expression evaluation, so avoid argument side effects.
+// Zero length performs no memory transfer; argument side effects are evaluated before expansion.
 void __memcpy(u8* dst, const u8* src, u16 len);
-// Fill len CPU bytes with value. A compile-time zero length may omit argument evaluation.
+// Fill len CPU bytes with value. Zero length still evaluates argument side effects.
 void __memset(u8* dst, u8 value, u16 len);
 // Forward copy with an 8-bit length, zero through 255; the dynamic helper promotes it to a word count.
 void __memcpy_small(u8* dst, const u8* src, u8 len);
