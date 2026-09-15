@@ -2,7 +2,7 @@ __location(0x2006) unsigned char PPUADDR;
 __location(0x2007) unsigned char PPUDATA;
 
 // Write a high/low PPU address pair without resetting the shared latch first.
-// The caller must prepare latch state and safe PPU timing. This legacy signature
+// The caller must prepare latch state and safe PPU timing. This signature
 // differs from runtime.c's nes_ppu_seek; do not link both implementations.
 void nes_ppu_seek(unsigned char hi, unsigned char lo)
 {
