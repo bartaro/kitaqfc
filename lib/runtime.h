@@ -1,8 +1,7 @@
 /*
  * Core NES runtime declarations.
  *
- * Note: KITAQFC's preprocessor/include story is still evolving.
- * This header is primarily reference material for repo users.
+ * Declare frame waits, direct PPU transfers, OAM DMA and the copied-payload VRAM queue.
  */
 
 // The four-byte record follows hardware OAM byte order: Y, tile, attributes, X.
@@ -40,8 +39,8 @@ void nes_oam_dma(unsigned char page);
 // Discard pending VRAM commands and clear the overflow latch; no PPU writes occur.
 void nes_vram_queue_clear(void);
 // Copy a literal payload into the queue and publish its new used length last.
-// The command format reserves bit 7 of len for fills: callers must pass len <= 127
-// and ensure queue production cannot race its NMI consumer.
+// Accept lengths 0..127; reject larger lengths and latch overflow without changing the queue.
+// The caller must ensure queue production cannot race its NMI consumer.
 unsigned char nes_vram_queue_try_write(unsigned short ppu_addr, unsigned char* src, unsigned char len);
 // Queue a four-byte fill record: address high/low, length with bit 7 set, value.
 // Reject lengths above 127 and latch overflow on any capacity/format failure.

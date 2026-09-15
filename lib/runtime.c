@@ -1,5 +1,5 @@
 /*
- * KITAQFC phase 10 NES runtime helpers.
+ * KITAQFC NES runtime helpers.
  *
  * Intent:
  * - stay within the currently supported C subset
@@ -35,8 +35,8 @@ void nes_vram_queue_clear(void)
 }
 
 // Copy a literal payload into the queue and publish its new used length last.
-// The command format reserves bit 7 of len for fills: callers must pass len <= 127
-// and ensure queue production cannot race its NMI consumer.
+// Accept lengths 0..127; reject larger lengths and latch overflow without changing the queue.
+// The caller must ensure queue production cannot race its NMI consumer.
 unsigned char nes_vram_queue_try_write(unsigned short ppu_addr, unsigned char* src, unsigned char len)
 {
     unsigned char used;
@@ -44,9 +44,16 @@ unsigned char nes_vram_queue_try_write(unsigned short ppu_addr, unsigned char* s
     unsigned char i;
     unsigned char dst_index;
 
+    // Bit 7 selects a fill record; accepting it here would misdecode a literal
+    // and lengths 253..255 would also wrap the byte-sized allocation cost.
+    if ((len & 0x80) != 0)
+    {
+        nes_vram_queue_overflow = 1;
+        return 0;
+    }
+
     used = nes_vram_queue_used;
     // Each literal record costs three header bytes plus len payload bytes.
-    // len <=127 is a caller precondition; unlike the fill path it is not validated here.
     need = (unsigned char)(len + 3);
 
     if ((unsigned char)(used + need) < used)
