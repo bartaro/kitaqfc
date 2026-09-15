@@ -419,7 +419,9 @@ sealed class BankedAssemblerCore
                 continue;
             }
 
-            if (e.Match(Tag.Comment, out string pendingComment) && current == null)
+            // An alignment prefix belongs to the following data/function unit;
+            // keeping it separate would lose the constraint when that unit spills.
+            if ((e.Match(Tag.Comment, out string pendingComment) || e.Match(Tag.Align, out int pendingAlign)) && current == null)
             {
                 pendingPrefix.Add(e);
                 continue;
@@ -561,7 +563,12 @@ sealed class BankedAssemblerCore
         int pc = GetCpuBase(bank);
         int startPc = pc;
         foreach (var e in unit?.Nodes ?? new List<Expr>())
-            pc = AdvancePcForEstimate(bank, pc, e, symbols);
+        {
+            // Reserve the worst-case pad while selecting a bank. The address map
+            // and emitter calculate the exact pad at the final CPU address.
+            if (e.Match(Tag.Align, out int alignment)) pc += alignment - 1;
+            else pc = AdvancePcForEstimate(bank, pc, e, symbols);
+        }
         return Math.Max(0, pc - startPc);
     }
 

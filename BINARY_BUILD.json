@@ -1,10 +1,10 @@
 {
-  "built_on": "2026-09-15",
+  "built_on": "2026-09-16",
   "licensor": "DAISUKE OBA",
   "configuration": "Release",
   "build_command": ".\\scripts\\build.ps1",
   "build_exit_code": 0,
-  "source_revision_before_packaging": "80f78be3410e37b3a8b7bb3334b93f4c557f7fe6",
+  "source_revision_before_packaging": "4adfb3174f3c5fa2a2473f68bb5bf87e2b3263ea",
   "source_state": "Reviewed publication working tree; source_inputs hashes identify the recorded files.",
   "source_inventory_scope": "Compiler project and build entry point.",
   "source_inputs": [
@@ -18,7 +18,7 @@
     },
     {
       "path": "kitaqfc/BankedAssemblerCore.cs",
-      "sha256": "78fc808af0dae2914dc65df2ec93ad63b122acf9a2b12eed92be650c69a04144"
+      "sha256": "5c42fa70b745bc2c8959f4cd9a7d039eb56dfd66c775225c93818f34a9b180ff"
     },
     {
       "path": "kitaqfc/BuildReports.cs",
@@ -30,9 +30,7 @@
     },
     {
       "path": "kitaqfc/CodeGenerator.cs",
-      "sha256": "f6892a5cb798d8e6f9ccddffcc5fa389ba619a28a4b6b84870a07d875eeff8a0",
-      "build_input_sha256": "8851d16d02ea1af5ec88441c68be5b504b95a08346360daa53accad430e7ff2d",
-      "packaging_normalization": "Line endings only; source text is otherwise identical."
+      "sha256": "cb16555dfe3bb7c17a4db5253a9e01fe34c040f4cb0b5ca36e4688835883e44c"
     },
     {
       "path": "kitaqfc/DebugExporter.cs",
@@ -130,26 +128,35 @@
   "binary": {
     "path": "kitaqfc.exe",
     "bytes": 662016,
-    "sha256": "cbf9de900bf52aa0ab9753f0bb1d5c85c063673fb6ebf9d69b6c5b740aa4f6b7",
+    "sha256": "f8105784c6185582b6dd3e3dde74c71d7a8ca19d30f8059929bbf0b778ef5093",
     "imported_system_dlls": [
       "mscoree.dll"
     ]
   },
   "checks": [
     {
-      "check": "Library boundary and compiler control-flow runtime checks",
-      "cases": 13,
-      "result": "all passed",
-      "documentation": "https://bartaro.github.io/kitaq-docs/fc-library.html#module-fixed"
+      "check": "Readonly data alignment and content, NROM/UxROM with both ZP allocation modes",
+      "cases": 4,
+      "result": "all passed"
     },
     {
-      "check": "Library sample RAM values and expected screen pixels",
+      "check": "MIDI NTSC 57-cycle transmit cells and receiver sample spacing, both ZP allocation modes",
+      "cases": 2,
+      "result": "all passed"
+    },
+    {
+      "check": "FC sound lessons: APU, DMC, VRC6, VRC7, FDS, MIDI; RAM, screen pixels and recorded PCM/port timing",
       "cases": 6,
       "result": "all passed"
     },
     {
-      "check": "Callback execution on consecutive video frames",
-      "cases": 1,
+      "check": "Compiler/emulator regression scripts covering memory, bits, RNG, OAM, interrupts, PPU, callbacks, physics and library lessons",
+      "scripts": 16,
+      "result": "all passed"
+    },
+    {
+      "check": "Interrupt and PPU register state cases",
+      "cases": 52,
       "result": "all passed"
     }
   ],
@@ -180,6 +187,10 @@
     {
       "path": "lib/scene.h",
       "sha256": "7fcdc7fb7f9501df2c0d8b44f6d34becbf61aabf20d1686842e2e41c04a1a074"
+    },
+    {
+      "path": "lib/intrinsics.h",
+      "sha256": "10806c3dcba879779e6ad2edb9f21cc8e15f80797768af6d10d72351e7d0bf39"
     }
   ]
 }

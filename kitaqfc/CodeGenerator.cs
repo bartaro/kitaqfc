@@ -1513,6 +1513,14 @@ static class CodeGenerator
                 Expr data = relocations.Count == 0
                     ? Expr.Make(Tag.ReadonlyData, slot.Name, slot.ReadonlyBytes)
                     : Expr.Make(Tag.ReadonlyData, slot.Name, slot.ReadonlyBytes, relocations.ToArray());
+                // Array declarators wrap the annotated element type. Keep the
+                // declaration's explicit alignment without changing element size.
+                int alignment = 0;
+                for (CType aligned = slot.Type; aligned != null;
+                     aligned = aligned.IsArray ? aligned.Subtype : null)
+                    alignment = Math.Max(alignment, aligned.ForcedAlign);
+                if (alignment > 1)
+                    _assembly.Add(Expr.Make(Tag.Align, alignment).WithSource(slot.Source));
                 _assembly.Add(data.WithSource(slot.Source));
             }
         }
@@ -7638,26 +7646,27 @@ static class CodeGenerator
 
             // Send a low start bit, eight least-significant-first data bits and a high stop bit.
             EmitHelperStart("__kq_midi_out_a");
+            bool midiScratchInZeroPage = _runtimeIntrinsicTmp0Address <= 0xFF;
             EmitAsm("STA", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("LDA", Imm(0));
-            EmitAsm("STA", Mem(CallArgBase));
-            EmitAsm("JSR", Abs("__serial_tx_bit"));
-            EmitMidiBitDelay();
-            EmitAsm("LDX", Imm(8));
-            string outLoop = NewGeneratedLabel("midi_out_loop");
-            _assembly.Add(Expr.Make(Tag.Label, outLoop));
-            EmitAsm("LSR", Mem(_runtimeIntrinsicTmp0Address));
-            EmitAsm("LDA", Imm(0));
-            EmitAsm("ADC", Imm(0));
-            EmitAsm("STA", Mem(CallArgBase));
-            EmitAsm("JSR", Abs("__serial_tx_bit"));
-            EmitMidiBitDelay();
-            EmitAsm("DEX");
-            EmitAsm("BNE", Rel(outLoop));
+            EmitAsm("STA", Mem(0x4016));
+            // Unroll so neither branch cost nor payload bits change the baud.
+            // Each data edge: 44 NOP cycles + LSR zp (5) + LDA/ADC (4) + STA (4).
+            for (int bit = 0; bit < 8; bit++)
+            {
+                for (int delay = 0; delay < (midiScratchInZeroPage ? 22 : 20); delay++) EmitAsm("NOP");
+                if (!midiScratchInZeroPage) EmitAsm("BIT", Mem(CallArgBase));
+                EmitAsm("LSR", Mem(_runtimeIntrinsicTmp0Address));
+                EmitAsm("LDA", Imm(0));
+                EmitAsm("ADC", Imm(0));
+                EmitAsm("STA", Mem(0x4016));
+            }
+            // 51 delay cycles plus LDA/STA (6) place the stop bit 57 cycles later.
+            for (int delay = 0; delay < 24; delay++) EmitAsm("NOP");
+            EmitAsm("BIT", Mem(CallArgBase));
             EmitAsm("LDA", Imm(1));
-            EmitAsm("STA", Mem(CallArgBase));
-            EmitAsm("JSR", Abs("__serial_tx_bit"));
-            EmitMidiBitDelay();
+            EmitAsm("STA", Mem(0x4016));
+            EmitMidiBitDelay(); // Hold stop high for at least one full bit cell.
             EmitAsm("RTS");
 
             EmitHelperStart("__midi_out_byte");
@@ -7665,33 +7674,29 @@ static class CodeGenerator
             EmitAsm("JSR", Abs("__kq_midi_out_a"));
             EmitAsm("RTS");
 
-            // Wait for a low start signal, sample eight bits into a shift register and return the assembled byte.
+            // Poll in nine-cycle steps, then sample near data-bit centers.
+            // IRQ/NMI masking belongs to the caller; no timeout/framing status is returned.
             EmitHelperStart("__midi_in_byte");
-            string waitStart = NewGeneratedLabel("midi_wait_start");
-            _assembly.Add(Expr.Make(Tag.Label, waitStart));
-            EmitAsm("JSR", Abs("__serial_rx_bit"));
-            EmitAsm("BNE", Rel(waitStart));
-            EmitMidiBitDelay();
             EmitAsm("LDA", Imm(0));
             EmitAsm("STA", Mem(_runtimeIntrinsicTmp0Address));
-            EmitAsm("LDX", Imm(8));
-            string inLoop = NewGeneratedLabel("midi_in_loop");
-            string inZero = NewGeneratedLabel("midi_in_zero");
-            string inNext = NewGeneratedLabel("midi_in_next");
-            _assembly.Add(Expr.Make(Tag.Label, inLoop));
-            EmitMidiBitDelay();
-            EmitAsm("JSR", Abs("__serial_rx_bit"));
-            EmitAsm("BEQ", Rel(inZero));
-            EmitAsm("SEC");
-            EmitAsm("ROR", Mem(_runtimeIntrinsicTmp0Address));
-            EmitAsm("JMP", Abs(inNext));
-            _assembly.Add(Expr.Make(Tag.Label, inZero));
-            EmitAsm("CLC");
-            EmitAsm("ROR", Mem(_runtimeIntrinsicTmp0Address));
-            _assembly.Add(Expr.Make(Tag.Label, inNext));
-            EmitAsm("DEX");
-            EmitAsm("BNE", Rel(inLoop));
-            EmitMidiBitDelay();
+            string waitStart = NewGeneratedLabel("midi_wait_start");
+            _assembly.Add(Expr.Make(Tag.Label, waitStart));
+            EmitAsm("LDA", Mem(0x4017));
+            EmitAsm("AND", Imm(0x10));
+            EmitAsm("BNE", Rel(waitStart));
+            // 81 cycles from the start-detect read to the first data read.
+            // Polling uncertainty is at most nine cycles within a 57-cycle cell.
+            for (int delay = 0; delay < 35; delay++) EmitAsm("NOP");
+            EmitAsm("BIT", Mem(CallArgBase));
+            for (int bit = 0; bit < 8; bit++)
+            {
+                EmitAsm("LDA", Mem(0x4017));
+                EmitAsm("AND", Imm(0x10));
+                EmitAsm("CMP", Imm(0x10));
+                EmitAsm("ROR", Mem(_runtimeIntrinsicTmp0Address));
+                for (int delay = 0; delay < (midiScratchInZeroPage ? 22 : 20); delay++) EmitAsm("NOP");
+                if (!midiScratchInZeroPage) EmitAsm("BIT", Mem(CallArgBase));
+            }
             EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("RTS");
 

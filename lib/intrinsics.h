@@ -282,8 +282,9 @@ void __rob_send_byte(u8 pattern);
 void __serial_tx_bit(u8 bit);
 // Read 4017 bit 4 and normalize it to 0 or 1; an external serial adapter supplies the signal.
 u8 __serial_rx_bit(void);
-// Send start-low, eight least-significant-first bits and stop-high using fixed NOP delays.
-// Instruction and interrupt overhead is additional; the emitted loop does not establish a verified MIDI baud rate.
+// Send start-low, eight least-significant-first bits and stop-high in 57-cycle
+// NTSC bit cells (about 31400 bps). Stop DMC DMA and mask IRQ/NMI during transfers;
+// PAL timing and electrical adapter compatibility are not established here.
 void __midi_out_byte(u8 byte);
 // Block for a low start signal and sample eight bits. No timeout, framing check or receive buffer is provided.
 u8 __midi_in_byte(void);
