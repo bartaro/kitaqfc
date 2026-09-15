@@ -37,7 +37,7 @@ u16 __map_index(u8 x, u8 y, u8 width);
 void __rng_seed(u16 seed);
 // Advance the shared 16-bit LFSR and return the XOR of its two bytes; zero state is reseeded to A55A.
 u8 __rng8(void);
-// Return 0 or 1 for bit at base[bit>>3], using mask 1<<(bit&7); the caller supplies enough storage.
+// Return base[bit>>3] & (1<<(bit&7)): zero or the bit mask, not a normalized Boolean.
 u8 __bit_test(u8* base, u16 bit);
 // Set the indexed bit in caller storage without changing the other seven bits in that byte.
 void __bit_set(u8* base, u16 bit);
