@@ -49,6 +49,8 @@ static class CodeGenerator
         readonly List<ZpAllocationInfo> _zpAllocations = new List<ZpAllocationInfo>();
         readonly List<StaticFrameSlotInfo> _staticFrameSlots = new List<StaticFrameSlotInfo>();
         readonly List<RamAllocationInfo> _ramAllocations = new List<RamAllocationInfo>();
+        readonly List<PendingGlobal> _pendingGlobals = new List<PendingGlobal>();
+        readonly List<Tuple<int, int>> _fixedRamRanges = new List<Tuple<int, int>>();
         readonly List<RamAccessInfo> _ramAccesses = new List<RamAccessInfo>();
         readonly List<InlineDecisionInfo> _inlineDecisions = new List<InlineDecisionInfo>();
         readonly List<LoopLoweringInfo> _loopLowerings = new List<LoopLoweringInfo>();
@@ -151,6 +153,15 @@ static class CodeGenerator
             public bool HasFixedBank = false;
             public int PlacementOrder = int.MaxValue;
             public string SectionName = null;
+        }
+
+        // Defer storage placement until every explicitly addressed RAM object is known.
+        sealed class PendingGlobal
+        {
+            public FilePosition Source;
+            public MemoryRegion Region;
+            public CType Type;
+            public string Name;
         }
 
         // Pair the enclosing loop's continue and break destinations.
@@ -407,7 +418,7 @@ static class CodeGenerator
             return fields;
         }
 
-        // Reserve runtime RAM, collect declarations and validate configured windows before selecting reachable functions.
+        // Collect declarations, reserve explicit RAM ranges, then place runtime/user storage and validate configured windows.
         // Emit entry stubs, user code, helper routines and readonly bytes in that order.
         public IReadOnlyList<Expr> Run(Expr syntaxTree)
         {
@@ -417,8 +428,12 @@ static class CodeGenerator
                 items = new[] { syntaxTree };
             }
 
-            ReserveRuntimeState();
             CollectTopLevel(items);
+            ReserveFixedRamRanges();
+            if (Program.ErrorCount > 0) return _assembly;
+            ReserveRuntimeState();
+            foreach (var global in _pendingGlobals)
+                DeclareGlobal(global.Source, global.Region, global.Type, global.Name);
             // Address-taken functions share the ordinary argument-area ABI with typed indirect calls.
             // Their addresses also keep them alive when library LTO removes unused direct-call bodies.
             foreach (string name in EnumerateFunctionValues(syntaxTree))
@@ -545,7 +560,7 @@ static class CodeGenerator
 
                 if (current.Match(Tag.Variable, out region, out type, out name, out rangeExpr) || current.Match(Tag.Variable, out region, out type, out name))
                 {
-                    DeclareGlobal(current.Source, region, type, name);
+                    _pendingGlobals.Add(new PendingGlobal { Source = current.Source, Region = region, Type = type, Name = name });
                     continue;
                 }
 
@@ -565,6 +580,47 @@ static class CodeGenerator
 
                 Program.Error("error KQ0000: --target=nes phase 6 does not support top-level tag: {0}", current.Tag);
             }
+        }
+
+        // Normalize explicit CPU-RAM declarations, including mirrors below $2000,
+        // into physical half-open ranges before allocating runtime, global or local storage.
+        // Explicit aliases may overlap each other; automatic allocations must avoid all of them.
+        void ReserveFixedRamRanges()
+        {
+            foreach (var global in _pendingGlobals)
+            {
+                if (global.Region.Tag != MemoryRegionTag.Fixed) continue;
+                int start = global.Region.FixedAddress;
+                int size = GetStorageSize(global.Type);
+                int end = Math.Min(0x2000, start + size);
+                if (start < 0 || size <= 0) continue;
+                while (start < end)
+                {
+                    int physical = start & 0x07FF;
+                    int length = Math.Min(end - start, 0x0800 - physical);
+                    _fixedRamRanges.Add(Tuple.Create(physical, physical + length));
+                    start += length;
+                }
+            }
+        }
+
+        // Find a contiguous span past every intersecting fixed object. Restart after
+        // each jump because declaration order need not match physical address order.
+        int SkipFixedRam(int address, int size)
+        {
+            bool moved;
+            do
+            {
+                moved = false;
+                foreach (var range in _fixedRamRanges)
+                {
+                    if (!RangesOverlap(address, address + size, range.Item1, range.Item2)) continue;
+                    address = range.Item2;
+                    moved = true;
+                    break;
+                }
+            } while (moved);
+            return address;
         }
 
         // Traverse references from entry/interrupt/runtime roots, profiled functions and fixed-bank functions.
@@ -856,6 +912,7 @@ static class CodeGenerator
         int ReserveInternalFastGlobal(string name, CType type, string reason)
         {
             int size = GetStorageSize(type);
+            _nextLocalZp = SkipFixedRam(_nextLocalZp, size);
             if (Program.EnableWholeProgramZpAllocator && size > 0 && _nextLocalZp + size <= LocalZpLimitExclusive)
             {
                 int address = _nextLocalZp;
@@ -879,6 +936,7 @@ static class CodeGenerator
         int ReserveInternalGlobal(string name, CType type)
         {
             int size = GetStorageSize(type);
+            _nextGlobalRam = SkipFixedRam(_nextGlobalRam, size);
             if (_nextGlobalRam + size > GlobalRamLimitExclusive)
             {
                 Program.Error("error KQ0000: --target=nes phase 6 ran out of internal RAM while reserving runtime state '{0}'.", name);
@@ -903,6 +961,7 @@ static class CodeGenerator
         int ReserveInternalGlobalBytes(string name, int size)
         {
             if (size <= 0) size = 1;
+            _nextGlobalRam = SkipFixedRam(_nextGlobalRam, size);
             if (_nextGlobalRam + size > GlobalRamLimitExclusive)
             {
                 Program.Error("error KQ0000: --target=nes phase 6 ran out of internal RAM while reserving runtime buffer '{0}'.", name);
@@ -1662,6 +1721,7 @@ static class CodeGenerator
             }
             else if (region.Tag == MemoryRegionTag.Oam)
             {
+                _nextOamRam = SkipFixedRam(_nextOamRam, size);
                 if (_nextOamRam + size > OamRamLimitExclusive)
                 {
                     Program.Error("error KQ0000: --target=nes phase 6 ran out of OAM shadow RAM while allocating global '{0}'.", name);
@@ -1672,6 +1732,7 @@ static class CodeGenerator
             }
             else
             {
+                _nextGlobalRam = SkipFixedRam(_nextGlobalRam, size);
                 if (_nextGlobalRam + size > GlobalRamLimitExclusive)
                 {
                     Program.Error("error KQ0000: --target=nes phase 6 ran out of internal RAM while allocating global '{0}'.", name);
@@ -1708,6 +1769,7 @@ static class CodeGenerator
                 Program.Error("error KQ0000: invalid ZP allocation size for '{0}'.", name);
                 return LocalZpBase;
             }
+            _nextLocalZp = SkipFixedRam(_nextLocalZp, size);
             if (Program.EnableWholeProgramZpAllocator && _nextLocalZp + size <= LocalZpLimitExclusive)
             {
                 int zpAddress = _nextLocalZp;
@@ -1732,6 +1794,7 @@ static class CodeGenerator
                 return dedicatedAddress;
             }
 
+            _nextGlobalRam = SkipFixedRam(_nextGlobalRam, size);
             if (_nextGlobalRam + size > GlobalRamLimitExclusive)
             {
                 Program.Error("error KQ0000: --target=nes phase 6 ran out of internal RAM while allocating local '{0}'.", name);
@@ -2774,6 +2837,7 @@ static class CodeGenerator
             int size = GetStorageSize(type);
             if (size <= 0) size = 1;
             string name = "__kq_sret_tmp_" + (++_structReturnTempCounter).ToString();
+            _nextGlobalRam = SkipFixedRam(_nextGlobalRam, size);
             if (_nextGlobalRam + size > GlobalRamLimitExclusive)
             {
                 Program.Error(Maybe.Just(origin.Source), ErrorCode.ParseError,

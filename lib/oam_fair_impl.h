@@ -7,7 +7,7 @@ u8 oam_fair_drawn;
 u8 oam_fair_scanned;
 // Rotate the starting pool entry by 13 modulo 64, then append active sprites
 // until the caller's draw limit or OAM byte cursor limit is reached. Coordinates
-// are centers converted by subtracting four. Include this implementation once
+// describe 8x8 centers: subtract four for X and five for raw OAM Y. Include once
 // and invoke it from the main loop with a four-byte-aligned used cursor.
 void OAM_FairDraw(void) {
     __asm {
@@ -32,10 +32,10 @@ void OAM_FairDraw(void) {
         // Reserve the final four-byte slot so advancing this byte cursor cannot wrap to zero.
         CPY #252
         BCS kq_fair_done
-        // Convert center to raw OAM position by subtraction modulo 256; no viewport clipping occurs here.
+        // Convert the 8x8 center to raw OAM coordinates; Y also needs the hardware minus-one bias.
         LDA oam_fair_y,X
         SEC
-        SBC #4
+        SBC #5
         STA oam_fair_shadow,Y
         LDA oam_fair_tile
         STA oam_fair_shadow+1,Y
