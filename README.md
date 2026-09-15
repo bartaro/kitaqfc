@@ -5,17 +5,10 @@
 | --- | --- |
 | English | [KITAQFC](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/en/fc-library.html) |
 | 日本語 | [KITAQFC](https://bartaro.github.io/kitaq-docs/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/fc-library.html) |
-| 한국어 | [KITAQFC](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/ko/fc-library.html) |
-| 简体中文 | [KITAQFC](https://bartaro.github.io/kitaq-docs/zh-CN/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html) |
-| 繁體中文 | [KITAQFC](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html) |
-| Español | [KITAQFC](https://bartaro.github.io/kitaq-docs/es/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/es/fc-library.html) |
-| Português (Brasil) | [KITAQFC](https://bartaro.github.io/kitaq-docs/pt/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/pt/fc-library.html) |
-| Français | [KITAQFC](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/fr/fc-library.html) |
-| Deutsch | [KITAQFC](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/de/fc-library.html) |
 <!-- manual-language-links:end -->
 
 
-[English](#english) | [日本語](#japanese) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Español](README.es.md) | [Português (Brasil)](README.pt-BR.md) | [Français](README.fr.md) | [Deutsch](README.de.md)
+[English](#english) | [日本語](#japanese)
 
 <a name="english"></a>
 

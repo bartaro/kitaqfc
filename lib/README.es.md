@@ -2,7 +2,7 @@
 
 [English](README.md) | [日本語](README.ja.md) | **Español**
 
-[Abrir el manual de las bibliotecas KITAQFC en español](https://bartaro.github.io/kitaq-docs/es/fc-library.html)
+Abrir el manual de las bibliotecas KITAQFC en español
 
 Las bibliotecas públicas siguen el estilo de KITAQGB: nombres breves que describen su función, sin el prefijo `kitaqfc_`.
 

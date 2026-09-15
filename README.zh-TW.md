@@ -2,7 +2,7 @@
 
 [English](README.md#english) | [日本語](README.md#japanese) | **繁體中文**
 
-**[編譯器手冊](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html)** · **[程式庫手冊](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html)**
+**編譯器手冊** · **程式庫手冊**
 
 用於開發原創 NES／Famicom／FDS 自製軟體的 C 編譯器與支援程式庫，源自 KITAQGB 與 NORCAL。
 
@@ -17,7 +17,7 @@ KITAQFC 重視 NES／紅白機的硬體特性，並以可重現的小步驟推�
 
 填寫需求後，將完整提示詞交給 AI。內容涵蓋實作、模擬器測試、SARAKURA 分析，以及修正後的重新驗證。
 
-[閱讀 HTML 手冊中的參考範例](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html#loop-prompts)
+閱讀 HTML 手冊中的參考範例
 
 <details>
 <summary>展開完整提示詞</summary>
@@ -191,7 +191,7 @@ MSBuild.exe .\kitaqfc\kitaqfc.csproj /t:Build /p:Configuration=Release
 
 ## 手冊與授權
 
-- [繁體中文編譯器手冊](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html)／[繁體中文程式庫手冊](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html)
+- 繁體中文編譯器手冊／繁體中文程式庫手冊
 - [英文手冊](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html)／[日文手冊](https://bartaro.github.io/kitaq-docs/kitaqfc.html)
 - [可供離線閱讀的手冊原始檔](https://github.com/bartaro/kitaq-docs)
 - [授權條款](LICENSE)／[日文參考譯文](LICENSE.ja)

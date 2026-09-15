@@ -2,7 +2,7 @@
 
 [English](README.md) | **Deutsch**
 
-**[Deutsches Bibliothekshandbuch öffnen](https://bartaro.github.io/kitaq-docs/de/fc-library.html)**
+**Deutsches Bibliothekshandbuch öffnen**
 
 Die öffentlichen Bibliotheksnamen folgen dem Stil von KITAQGB: kurze, funktionsbezogene Namen ohne Präfix `kitaqfc_`.
 

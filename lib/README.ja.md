@@ -1,6 +1,6 @@
 # FC/NES 標準ライブラリの構成
 
-[English](README.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [Deutsch](README.de.md)
+[English](README.md) | [日本語](README.ja.md)
 
 [日本語のKITAQFCライブラリ説明書](https://bartaro.github.io/kitaq-docs/fc-library.html)から、各関数の使い方とサンプルコードを直接参照できます。
 

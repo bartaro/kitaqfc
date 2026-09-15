@@ -2,7 +2,7 @@
 
 [English](README.md) | [日本語](README.ja.md) | **Português (Brasil)**
 
-[Abrir o manual da biblioteca KITAQFC em português](https://bartaro.github.io/kitaq-docs/pt/fc-library.html)
+Abrir o manual da biblioteca KITAQFC em português
 
 Os nomes públicos seguem o estilo da KITAQGB: são curtos, descrevem a função e não usam o prefixo `kitaqfc_`.
 

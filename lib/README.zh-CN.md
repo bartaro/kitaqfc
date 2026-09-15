@@ -2,7 +2,7 @@
 
 [English](README.md) | [日本語](README.ja.md) | **简体中文**
 
-[打开KITAQFC库简体中文手册](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html)
+打开KITAQFC库简体中文手册
 
 公开库的命名沿用KITAQGB风格：名称简短、体现功能，不加 `kitaqfc_` 前缀。
 

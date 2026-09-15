@@ -2,7 +2,7 @@
 
 [English](README.md) | [日本語](README.ja.md) | **繁體中文**
 
-[開啟 KITAQFC 程式庫繁體中文手冊](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html)
+開啟 KITAQFC 程式庫繁體中文手冊
 
 公開程式庫沿用 KITAQGB 的命名方式：名稱簡短、能表達用途，不加上 `kitaqfc_` 前綴。
 

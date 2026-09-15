@@ -2,7 +2,7 @@
 
 [English](README.md#english) | [日本語](README.md#japanese) | **Français**
 
-**[Manuel du compilateur](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html)** · **[Manuel de la bibliothèque](https://bartaro.github.io/kitaq-docs/fr/fc-library.html)**
+**Manuel du compilateur** · **Manuel de la bibliothèque**
 
 Compilateur C et bibliothèques pour créer des logiciels homebrew originaux NES/Famicom/FDS, issus de KITAQGB et de NORCAL.
 
@@ -17,7 +17,7 @@ KITAQFC privilégie un développement adapté au matériel NES/Famicom, dont les
 
 Renseignez les besoins, puis transmettez le prompt complet à votre assistant IA. Il couvre l’implémentation, les tests dans l’émulateur, l’analyse avec SARAKURA et la vérification des corrections.
 
-[Lire l’exemple pratique dans le manuel HTML](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html#loop-prompts)
+Lire l’exemple pratique dans le manuel HTML
 
 <details>
 <summary>Afficher le prompt complet</summary>
@@ -189,7 +189,7 @@ MSBuild.exe .\kitaqfc\kitaqfc.csproj /t:Build /p:Configuration=Release
 
 ## Manuels et licences
 
-- [Compilateur en français](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html) / [Bibliothèque en français](https://bartaro.github.io/kitaq-docs/fr/fc-library.html)
+- Compilateur en français / Bibliothèque en français
 - [Manuel en anglais](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html) / [Manuel en japonais](https://bartaro.github.io/kitaq-docs/kitaqfc.html)
 - [Sources du manuel pour lecture hors connexion](https://github.com/bartaro/kitaq-docs)
 - [Licence](LICENSE) / [Traduction japonaise à titre de référence](LICENSE.ja)

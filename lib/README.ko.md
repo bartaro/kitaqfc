@@ -2,7 +2,7 @@
 
 [English](README.md) | [日本語](README.ja.md) | **한국어**
 
-[KITAQFC 라이브러리 한국어 설명서](https://bartaro.github.io/kitaq-docs/ko/fc-library.html)
+KITAQFC 라이브러리 한국어 설명서
 
 공개 라이브러리 이름은 KITAQGB의 방식을 따릅니다. `kitaqfc_` 접두사 없이 기능을 나타내는 짧은 이름을 사용합니다.
 

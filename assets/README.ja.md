@@ -1,6 +1,6 @@
 # FDSマニフェスト例の素材
 
-[English](README.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [Deutsch](README.de.md)
+[English](README.md) | [日本語](README.ja.md)
 
 [日本語のKITAQFCライブラリ説明書](https://bartaro.github.io/kitaq-docs/fc-library.html)
 

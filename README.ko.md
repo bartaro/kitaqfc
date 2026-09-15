@@ -2,7 +2,7 @@
 
 [English](README.md#english) | [日本語](README.md#japanese) | **한국어**
 
-**[컴파일러 설명서](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html)** · **[라이브러리 설명서](https://bartaro.github.io/kitaq-docs/ko/fc-library.html)**
+**컴파일러 설명서** · **라이브러리 설명서**
 
 NES/Famicom/FDS용 홈브루 소프트웨어를 만드는 C 컴파일러와 지원 라이브러리입니다. KITAQGB와 NORCAL을 바탕으로 개발되었습니다.
 
@@ -17,7 +17,7 @@ KITAQFC는 NES·패미컴 하드웨어의 특성을 고려하고, 작고 재현 
 
 요구 사항을 작성한 뒤 프롬프트 전체를 AI에 전달하세요. 구현, 에뮬레이터 테스트, SARAKURA 분석, 수정 후 재검증까지 다룹니다.
 
-[HTML 설명서에서 활용 예 읽기](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html#loop-prompts)
+HTML 설명서에서 활용 예 읽기
 
 <details>
 <summary>프롬프트 전체 보기</summary>
@@ -191,7 +191,7 @@ MSBuild.exe .\kitaqfc\kitaqfc.csproj /t:Build /p:Configuration=Release
 
 ## 설명서와 라이선스
 
-- [한국어 컴파일러 설명서](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html) / [한국어 라이브러리 설명서](https://bartaro.github.io/kitaq-docs/ko/fc-library.html)
+- 한국어 컴파일러 설명서 / 한국어 라이브러리 설명서
 - [영어 설명서](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html) / [일본어 설명서](https://bartaro.github.io/kitaq-docs/kitaqfc.html)
 - [오프라인 열람용 설명서 소스](https://github.com/bartaro/kitaq-docs)
 - [라이선스](LICENSE) / [일본어 참고 번역](LICENSE.ja)
