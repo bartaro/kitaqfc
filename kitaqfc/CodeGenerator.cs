@@ -2286,6 +2286,22 @@ static class CodeGenerator
                 return;
             }
 
+            // A do-loop always executes its body once; continue evaluates the trailing condition.
+            if (node.Match(Tag.DoWhile, out body, out test))
+            {
+                string startLabel = NewGeneratedLabel("do_start");
+                string continueLabel = NewGeneratedLabel("do_continue");
+                string breakLabel = NewGeneratedLabel("do_break");
+                _assembly.Add(Expr.Make(Tag.Label, startLabel).WithSource(node.Source));
+                ctx.LoopStack.Push(new LoopLabels(continueLabel, breakLabel));
+                EmitStatement(body, ctx);
+                ctx.LoopStack.Pop();
+                _assembly.Add(Expr.Make(Tag.Label, continueLabel).WithSource(node.Source));
+                EmitBranchIfTrue(test, startLabel, ctx);
+                _assembly.Add(Expr.Make(Tag.Label, breakLabel).WithSource(node.Source));
+                return;
+            }
+
             if (node.Match(Tag.Break))
             {
                 if (ctx.LoopStack.Count == 0)
@@ -3063,6 +3079,9 @@ static class CodeGenerator
             }
             if (expr.Match(Tag.PreIncrement, out sub) || expr.Match(Tag.PostIncrement, out sub) || expr.Match(Tag.PreDecrement, out sub) || expr.Match(Tag.PostDecrement, out sub))
                 return TryGetLvalueType(sub, ctx, requireWritable: false, out type);
+            // Shift counts do not change the left operand type or its signedness.
+            if (expr.Match(Tag.ShiftLeft, out lhs, out rhs) || expr.Match(Tag.ShiftRight, out lhs, out rhs))
+                return TryGetExprType(lhs, ctx, out type);
             if (expr.Match(Tag.Add, out lhs, out rhs) || expr.Match(Tag.Subtract, out lhs, out rhs))
             {
                 CType leftType;
@@ -5127,6 +5146,20 @@ static class CodeGenerator
             EmitLoadValue(expr, ctx, 1);
         }
 
+        // Widen the byte in A according to its declared type without changing the low byte.
+        void EmitExtendByteToWord(CType type, FilePosition source)
+        {
+            EmitAsm("LDX", Imm(0));
+            if (type != null && IsSignedIntegerType(type))
+            {
+                string extended = NewGeneratedLabel("byte_sign_extended");
+                EmitAsm("CMP", Imm(0x80));
+                EmitAsm("BCC", Rel(extended));
+                EmitAsm("LDX", Imm(0xFF));
+                _assembly.Add(Expr.Make(Tag.Label, extended).WithSource(source));
+            }
+        }
+
         // Emit a scalar result in A, or A/X for a word, selecting code by expression shape.
         // Requested width is normalized to one or two bytes; aggregate values use separate copy paths.
         void EmitLoadValue(Expr expr, FunctionContext ctx, int expectedSize)
@@ -5193,7 +5226,7 @@ static class CodeGenerator
                         if (expectedSize == 2)
                         {
                             if (slot.Size == 2) EmitAsm("LDX", Mem(slot.Address + 1));
-                            else EmitAsm("LDX", Imm(0));
+                            else EmitExtendByteToWord(slot.Type, expr.Source);
                         }
                     }
                     return;
@@ -5232,12 +5265,12 @@ static class CodeGenerator
                 }
             }
 
-            // Delegate addressable scalar reads, then clear X when a byte lvalue is requested as a word.
+            // Delegate addressable scalar reads, then widen a byte lvalue using its signedness.
             if (expr.Match(Tag.Load, out lhs) || expr.Match(Tag.Index, out lhs, out rhs) || expr.Match(Tag.Field, out lhs, out name))
             {
                 EmitLoadIndirectValue(expr, ctx, expectedSize);
                 if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1)
-                    EmitAsm("LDX", Imm(0));
+                    EmitExtendByteToWord(exprType, expr.Source);
                 return;
             }
 
@@ -5245,13 +5278,17 @@ static class CodeGenerator
             {
                 if (TryEmitAggregateAssignment(expr, lhs, rhs, ctx))
                     return;
-                // Use the destination width for assignment, retaining its stored result and zero-extending byte assignments when requested.
+                // Retain the stored assignment value and widen it using the destination signedness.
                 int assignSize = GetLvalueSize(lhs, ctx, requireWritable: true);
                 if (Program.ErrorCount > 0) return;
                 EmitLoadValue(rhs, ctx, assignSize);
                 EmitStoreLoadedValueToLvalue(lhs, ctx, assignSize, preserveResult: true);
                 if (expectedSize == 2 && assignSize == 1)
-                    EmitAsm("LDX", Imm(0));
+                {
+                    CType assignedType;
+                    TryGetExprType(lhs, ctx, out assignedType);
+                    EmitExtendByteToWord(assignedType, expr.Source);
+                }
                 return;
             }
 
@@ -5294,13 +5331,13 @@ static class CodeGenerator
 
             if (expr.Match(Tag.Cast, out castType, out castSubexpr))
             {
-                // Load enough bytes for either side of the cast, then clear X for a byte cast used as a word.
+                // Evaluate the source before narrowing; a byte cast is widened according to its destination type.
                 int castSize = NormalizeScalarSize(TypeStorageSize(castType));
                 int sourceSize = NormalizeScalarSize(DetermineExprSize(castSubexpr, ctx));
                 int loadSize = Math.Max(castSize, sourceSize);
                 EmitLoadValue(castSubexpr, ctx, loadSize);
                 if (expectedSize == 2 && castSize == 1)
-                    EmitAsm("LDX", Imm(0));
+                    EmitExtendByteToWord(castType, expr.Source);
                 return;
             }
             if (expr.Match(Tag.Conditional, out condExpr, out trueExpr, out falseExpr))
@@ -5320,7 +5357,12 @@ static class CodeGenerator
             if (expr.Match(Tag.PreIncrement, out lhs))
             {
                 EmitIncDec(lhs, +1, ctx, true);
-                if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1) EmitAsm("LDX", Imm(0));
+                if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1)
+                {
+                    CType changedType;
+                    TryGetExprType(lhs, ctx, out changedType);
+                    EmitExtendByteToWord(changedType, expr.Source);
+                }
                 return;
             }
             if (expr.Match(Tag.PostIncrement, out lhs))
@@ -5346,13 +5388,23 @@ static class CodeGenerator
                 // Load the named pre-update value before emitting the separate storage increment.
                 LoadFromSlot(postIncSlot);
                 EmitIncDec(lhs, +1, ctx, false);
-                if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1) EmitAsm("LDX", Imm(0));
+                if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1)
+                {
+                    CType changedType;
+                    TryGetExprType(lhs, ctx, out changedType);
+                    EmitExtendByteToWord(changedType, expr.Source);
+                }
                 return;
             }
             if (expr.Match(Tag.PreDecrement, out lhs))
             {
                 EmitIncDec(lhs, -1, ctx, true);
-                if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1) EmitAsm("LDX", Imm(0));
+                if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1)
+                {
+                    CType changedType;
+                    TryGetExprType(lhs, ctx, out changedType);
+                    EmitExtendByteToWord(changedType, expr.Source);
+                }
                 return;
             }
             if (expr.Match(Tag.PostDecrement, out lhs))
@@ -5378,7 +5430,12 @@ static class CodeGenerator
                 // Load the named pre-update value before emitting the separate storage decrement.
                 LoadFromSlot(postDecSlot);
                 EmitIncDec(lhs, -1, ctx, false);
-                if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1) EmitAsm("LDX", Imm(0));
+                if (expectedSize == 2 && DetermineExprSize(expr, ctx) == 1)
+                {
+                    CType changedType;
+                    TryGetExprType(lhs, ctx, out changedType);
+                    EmitExtendByteToWord(changedType, expr.Source);
+                }
                 return;
             }
 
@@ -5923,10 +5980,12 @@ static class CodeGenerator
             EmitAsm("STA", Mem(hiTemp));
         }
 
-        // Emit constant-count logical shifts; right shifts retain the source width before any requested truncation.
+        // Preserve the signed left operand during right shifts, before narrowing the requested result.
         void EmitShift(Expr lhs, Expr rhs, FunctionContext ctx, int size, bool leftShift)
         {
             size = NormalizeScalarSize(size);
+            CType shiftType;
+            bool signedRight = !leftShift && TryGetExprType(lhs, ctx, out shiftType) && IsSignedIntegerType(shiftType);
             int operandSize = size;
             if (!leftShift)
                 operandSize = NormalizeScalarSize(Math.Max(size, DetermineExprSize(lhs, ctx)));
@@ -5947,7 +6006,11 @@ static class CodeGenerator
             if (operandSize == 1)
             {
                 for (int i = 0; i < shiftCount; i++)
-                    EmitAsm(leftShift ? "ASL" : "LSR");
+                {
+                    // CMP copies the sign bit into carry without changing A.
+                    if (signedRight) EmitAsm("CMP", Imm(0x80));
+                    EmitAsm(leftShift ? "ASL" : signedRight ? "ROR" : "LSR");
+                }
                 return;
             }
 
@@ -5966,7 +6029,13 @@ static class CodeGenerator
                     }
                     else
                     {
-                        EmitAsm("LSR", Mem(temps[1]));
+                        if (signedRight)
+                        {
+                            EmitAsm("LDA", Mem(temps[1]));
+                            EmitAsm("CMP", Imm(0x80));
+                            EmitAsm("ROR", Mem(temps[1]));
+                        }
+                        else EmitAsm("LSR", Mem(temps[1]));
                         EmitAsm("ROR", Mem(temps[0]));
                     }
                 }
@@ -6547,7 +6616,16 @@ static class CodeGenerator
                 return TryEvaluateOffsetof(offsetofType, offsetofPath, out value);
             }
             // This evaluator currently passes casts through; destination-width conversion is not applied here.
-            if (expr.Match(Tag.Cast, out CType _ctype, out sub)) return TryEvaluateConstant(sub, out value);
+            if (expr.Match(Tag.Cast, out CType constantCastType, out sub))
+            {
+                if (!TryEvaluateConstant(sub, out value)) return false;
+                // A folded cast must perform the same narrowing and sign interpretation as a runtime cast.
+                if (NormalizeScalarSize(TypeStorageSize(constantCastType)) == 1)
+                    value = IsSignedIntegerType(constantCastType) ? SignExtend8(value) : value & 0xFF;
+                else
+                    value = IsSignedIntegerType(constantCastType) ? SignExtend16(value) : value & 0xFFFF;
+                return true;
+            }
             if (expr.Match(Tag.LogicalNot, out sub))
             {
                 int subValue;

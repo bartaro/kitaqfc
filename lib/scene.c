@@ -1,73 +1,85 @@
-/*
- * KITAQFC phase13 frame-budgeted scene streaming helper.
- *
- * Intent:
- * - stream large nametable / attribute / palette assets across multiple frames
- * - reuse the deferred VRAM queue already flushed from __nes_nmi()
- * - keep logic simple enough for the current C subset
- */
-
 extern unsigned char nes_vram_queue_try_write(unsigned short ppu_addr, unsigned char* src, unsigned char len);
-
 #include "scene.h"
 
 static const SceneDef* kq_scene_table;
 static u8 kq_scene_count;
 static u8 kq_scene_current;
 static u8 kq_scene_changed;
+static u8 kq_scene_has_current;
 
-struct NesSceneStreamState nes_scene_stream_state;
-
-// Attach the scene table, select ID zero and mark the state changed. The FC scene
-// API currently tracks IDs only and does not invoke SceneDef callbacks.
+// Attach the caller-owned scene table and clear current-scene state without invoking callbacks.
 void scene_init(const SceneDef* scenes, u8 count)
 {
     kq_scene_table = scenes;
     kq_scene_count = count;
     kq_scene_current = 0;
-    kq_scene_changed = 1;
+    kq_scene_changed = 0;
+    kq_scene_has_current = 0;
 }
 
-// Replace the table, clamp an invalid current ID to zero and set the change flag.
+// Replace the table by resetting scene state; this does not call the old scene's exit handler.
 void scene_set_table(const SceneDef* scenes, u8 count)
 {
-    kq_scene_table = scenes;
-    kq_scene_count = count;
-    if (kq_scene_current >= kq_scene_count) kq_scene_current = 0;
-    kq_scene_changed = 1;
+    scene_init(scenes, count);
 }
 
-// Accept a different valid scene ID and latch the change flag; no callbacks run.
+// Ignore invalid IDs; otherwise exit the current scene and enter the requested one.
+// Selecting the current ID still performs exit/enter. Callbacks run synchronously.
 void scene_change(u8 scene_id)
 {
+    SceneFunc fn;
+
     if (scene_id >= kq_scene_count) return;
-    if (scene_id == kq_scene_current) return;
+
+    // Exit/enter handlers must not recursively change scenes or replace this shared table.
+    if (kq_scene_has_current != 0) {
+        fn = kq_scene_table[(__safe_index u8)kq_scene_current].exit;
+        if (fn != 0) fn();
+    }
+
     kq_scene_current = scene_id;
+    kq_scene_has_current = 1;
     kq_scene_changed = 1;
+
+    fn = kq_scene_table[(__safe_index u8)kq_scene_current].enter;
+    if (fn != 0) fn();
 }
 
-// Clear the change flag. Game-specific update callbacks must be called by the application.
-void scene_update(void)
+// Clear the change flag before calling the active scene's update handler, so a
+// transition made during that handler is visible afterward.
+void scene_update()
 {
+    SceneFunc fn;
+
+    if (kq_scene_has_current == 0) return;
     kq_scene_changed = 0;
+    fn = kq_scene_table[(__safe_index u8)kq_scene_current].update;
+    if (fn != 0) fn();
 }
 
-// Compatibility placeholder: this function performs no rendering or callback dispatch.
-void scene_draw(void)
+// Call the active scene's draw handler if one exists; no current scene is a no-op.
+void scene_draw()
 {
+    SceneFunc fn;
+
+    if (kq_scene_has_current == 0) return;
+    fn = kq_scene_table[(__safe_index u8)kq_scene_current].draw;
+    if (fn != 0) fn();
 }
 
-// Read the stored scene ID; callers must ensure a nonempty table before indexing it.
-u8 scene_get_current(void)
+// Return the stored scene ID; zero is also returned before the first transition.
+u8 scene_get_current()
 {
     return kq_scene_current;
 }
 
-// Read the change flag, which remains set until scene_update clears it.
-u8 scene_was_changed(void)
+// Read the transition flag, which is cleared at the start of an active scene update.
+u8 scene_was_changed()
 {
     return kq_scene_changed;
 }
+
+struct NesSceneStreamState nes_scene_stream_state;
 
 // Replace the single active transfer and retain its source pointer. Keep the
 // source storage and any required ROM bank readable until all bytes are queued.

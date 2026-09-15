@@ -1,10 +1,10 @@
 {
-  "built_on": "2026-09-14",
+  "built_on": "2026-09-15",
   "licensor": "DAISUKE OBA",
   "configuration": "Release",
   "build_command": ".\\scripts\\build.ps1",
   "build_exit_code": 0,
-  "source_revision_before_packaging": "dfd8ca339e5a8935aa082f9f79e38202cae6050f",
+  "source_revision_before_packaging": "80f78be3410e37b3a8b7bb3334b93f4c557f7fe6",
   "source_state": "Reviewed publication working tree; source_inputs hashes identify the recorded files.",
   "source_inventory_scope": "Compiler project and build entry point.",
   "source_inputs": [
@@ -18,7 +18,7 @@
     },
     {
       "path": "kitaqfc/BankedAssemblerCore.cs",
-      "sha256": "0700930f81f468f3e954d7865b94d9112b33104ad00c267454345673ab5da140"
+      "sha256": "78fc808af0dae2914dc65df2ec93ad63b122acf9a2b12eed92be650c69a04144"
     },
     {
       "path": "kitaqfc/BuildReports.cs",
@@ -30,7 +30,9 @@
     },
     {
       "path": "kitaqfc/CodeGenerator.cs",
-      "sha256": "77842ef4b6284ab9b84b9a537043174d549a150648c538559062f45a42f16eea"
+      "sha256": "f6892a5cb798d8e6f9ccddffcc5fa389ba619a28a4b6b84870a07d875eeff8a0",
+      "build_input_sha256": "8851d16d02ea1af5ec88441c68be5b504b95a08346360daa53accad430e7ff2d",
+      "packaging_normalization": "Line endings only; source text is otherwise identical."
     },
     {
       "path": "kitaqfc/DebugExporter.cs",
@@ -42,7 +44,7 @@
     },
     {
       "path": "kitaqfc/Expr.cs",
-      "sha256": "cd4ef209434c7942657fa236ae0bbd5d796658f79d3e0df91f7bfba8d90e4649"
+      "sha256": "db839d1a6a5a932d43ec863e8cda1af6e084177a5d19cbce32c32b1739c0f6a4"
     },
     {
       "path": "kitaqfc/FdsDiskImageBuilder.cs",
@@ -58,7 +60,7 @@
     },
     {
       "path": "kitaqfc/Lowerer.cs",
-      "sha256": "72da4219c8a43bc9995c88ac1830894f559f1e9d37402c7be0d125199e5f0633"
+      "sha256": "2b07d29d9f5fe0266a7bf715c2ad6dcb191079b2b670ae8142adaccd74279b16"
     },
     {
       "path": "kitaqfc/Maybe.cs",
@@ -86,7 +88,7 @@
     },
     {
       "path": "kitaqfc/Parser.cs",
-      "sha256": "f89810e6632a4674f6d5139025072ebb0b7d6effd77aecb30668c16c5a30dd9e"
+      "sha256": "f6f360927888504787021701afbfbbe31e3967545ebfde310c6dc6934bceff3d"
     },
     {
       "path": "kitaqfc/Program.DebugTools.cs",
@@ -98,7 +100,7 @@
     },
     {
       "path": "kitaqfc/Program.cs",
-      "sha256": "c9627a583a68332765166e1f088657817712866734e6db24724a1fc904553914"
+      "sha256": "f7a1cdbffccc4806bcd871591c3f53e16a13a3303b126f7b884dd63e6fda0b8f"
     },
     {
       "path": "kitaqfc/RomHeaderPatcher.cs",
@@ -127,28 +129,28 @@
   ],
   "binary": {
     "path": "kitaqfc.exe",
-    "bytes": 655872,
-    "sha256": "ee3c09b45a457a24db3b95b5ab73dd54b587daccfac319eb6d2fb4ce5af1f847",
+    "bytes": 662016,
+    "sha256": "cbf9de900bf52aa0ab9753f0bb1d5c85c063673fb6ebf9d69b6c5b740aa4f6b7",
     "imported_system_dlls": [
       "mscoree.dll"
     ]
   },
   "checks": [
     {
-      "check": "Entity lifecycle and typed callback runtime/pixel regressions",
-      "cases": 7,
-      "callback_assertions_per_variant": 24,
-      "variants": 4,
-      "frames_per_run": 120,
+      "check": "Library boundary and compiler control-flow runtime checks",
+      "cases": 13,
       "result": "all passed",
-      "evidence": "https://bartaro.github.io/kitaq-docs/verification/api-entity/results.json"
+      "documentation": "https://bartaro.github.io/kitaq-docs/fc-library.html#module-fixed"
     },
     {
-      "check": "Existing FC manual samples: build and bounded emulator smoke",
-      "samples": 18,
-      "frames_per_run": 120,
-      "result": "all passed",
-      "evidence": "https://bartaro.github.io/kitaq-docs/verification/api-entity/fc-regression/results.json"
+      "check": "Library sample RAM values and expected screen pixels",
+      "cases": 6,
+      "result": "all passed"
+    },
+    {
+      "check": "Callback execution on consecutive video frames",
+      "cases": 1,
+      "result": "all passed"
     }
   ],
   "scope": "Windows CLI release. Compilation and bounded emulator execution are separate checks; no blanket physical-hardware or peripheral compatibility claim.",
@@ -156,12 +158,28 @@
   "platform": "AnyCPU",
   "library_inputs": [
     {
+      "path": "lib/entity.c",
+      "sha256": "96197eca2ad3431a6d82a29e5db59205fb6ca9a4d36465d83b9f3a47f3617ef0"
+    },
+    {
       "path": "lib/entity.h",
       "sha256": "d6a48286b59970bee79a8fb3bc6952614a238d95ca37b714e3d4f52c27991453"
     },
     {
-      "path": "lib/entity.c",
-      "sha256": "96197eca2ad3431a6d82a29e5db59205fb6ca9a4d36465d83b9f3a47f3617ef0"
+      "path": "lib/system.c",
+      "sha256": "4cf453270535749e37f10a1fcc0d34032580632a359c327a62007441afa32d04"
+    },
+    {
+      "path": "lib/system.h",
+      "sha256": "9ee154cb4fe244d6920f33afb2d8eb663f36a0a7a9bd8b3de7b571ba910a5a9e"
+    },
+    {
+      "path": "lib/scene.c",
+      "sha256": "48a409e79469a2f6953cc23a135c343fd3686747446b55236d163f323d482b66"
+    },
+    {
+      "path": "lib/scene.h",
+      "sha256": "7fcdc7fb7f9501df2c0d8b44f6d34becbf61aabf20d1686842e2e41c04a1a074"
     }
   ]
 }

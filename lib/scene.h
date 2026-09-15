@@ -24,21 +24,23 @@ struct NesSceneStreamState {
 
 extern struct NesSceneStreamState nes_scene_stream_state;
 
-// Attach the scene table, select ID zero and mark the state changed. The FC scene
-// API currently tracks IDs only and does not invoke SceneDef callbacks.
+// Attach the caller-owned scene table and clear current-scene state without invoking callbacks.
 void scene_init(const SceneDef* scenes, u8 count);
-// Replace the table, clamp an invalid current ID to zero and set the change flag.
+// Replace the table by resetting scene state; this does not call the old scene's exit handler.
 void scene_set_table(const SceneDef* scenes, u8 count);
-// Accept a different valid scene ID and latch the change flag; no callbacks run.
+// Ignore invalid IDs; otherwise exit the current scene and enter the requested one.
+// Selecting the current ID still performs exit/enter. Callbacks run synchronously.
 void scene_change(u8 scene_id);
-// Clear the change flag. Game-specific update callbacks must be called by the application.
-void scene_update(void);
-// Compatibility placeholder: this function performs no rendering or callback dispatch.
-void scene_draw(void);
-// Read the stored scene ID; callers must ensure a nonempty table before indexing it.
-u8 scene_get_current(void);
-// Read the change flag, which remains set until scene_update clears it.
-u8 scene_was_changed(void);
+// Clear the change flag before calling the active scene's update handler, so a
+// transition made during that handler is visible afterward.
+void scene_update();
+// Call the active scene's draw handler if one exists; no current scene is a no-op.
+void scene_draw();
+// Return the stored scene ID; zero is also returned before the first transition.
+u8 scene_get_current();
+// Read the transition flag, which is cleared at the start of an active scene update.
+u8 scene_was_changed();
+
 
 // Replace the single active transfer and retain its source pointer. Keep the
 // source storage and any required ROM bank readable until all bytes are queued.

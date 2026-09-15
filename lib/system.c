@@ -12,16 +12,15 @@ void system_init(void)
     __nmi_enable();
 }
 
-// Wait for NMI and count the completed wait. Unlike the GB implementation, this
-// FC wrapper does not invoke the callback stored by system_set_vblank_callback.
+// Wait for NMI, increment the software counter, then invoke the registered callback synchronously.
 void system_wait_vblank(void)
 {
     __nmi_wait();
     kq_system_frame = (u16)(kq_system_frame + 1);
+    if (system_vblank_callback != 0) system_vblank_callback();
 }
 
-// Store the callback for API compatibility. No function in this implementation
-// invokes it; applications must call their per-frame work explicitly.
+// Replace the callback run by system_wait_vblank; null disables callback dispatch.
 void system_set_vblank_callback(SystemCallback callback)
 {
     system_vblank_callback = callback;

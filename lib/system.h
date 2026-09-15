@@ -4,18 +4,16 @@
 #include "core.h"
 #include "intrinsics.h"
 
-// Retained for source compatibility; this FC implementation stores but never invokes this callback.
+// A synchronous callback invoked after the software frame count is incremented.
 typedef void (*SystemCallback)(void);
 
 extern u16 kq_system_frame;
 
 // Reset the software frame counter and callback storage, then enable NMI.
 void system_init(void);
-// Wait for NMI and count the completed wait. Unlike the GB implementation, this
-// FC wrapper does not invoke the callback stored by system_set_vblank_callback.
+// Wait for NMI, count the completed wait, then invoke the registered callback.
 void system_wait_vblank(void);
-// Store the callback for API compatibility. No function in this implementation
-// invokes it; applications must call their per-frame work explicitly.
+// Replace the per-wait callback; null disables callback dispatch.
 void system_set_vblank_callback(SystemCallback callback);
 // Return the wrapping 16-bit count of completed waits through this wrapper.
 u16 system_get_frame(void);
