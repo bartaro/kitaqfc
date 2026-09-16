@@ -35,8 +35,7 @@ void nes_attr_shadow_build_from_palette_map(unsigned char* src64)
 }
 
 // Apply a palette to every two-by-two tile quadrant touched by the rectangle.
-// Width/height must be nonzero and the rectangle must stay within the nametable;
-// there is no clipping before the byte-sized endpoint arithmetic.
+// Empty or out-of-range rectangles leave the shadow unchanged.
 void nes_attr_shadow_fill_rect(unsigned char tile_x, unsigned char tile_y, unsigned char width, unsigned char height, unsigned char pal_index)
 {
     unsigned char qx0;
@@ -45,6 +44,10 @@ void nes_attr_shadow_fill_rect(unsigned char tile_x, unsigned char tile_y, unsig
     unsigned char qy1;
     unsigned char qx;
     unsigned char qy;
+
+    if (width == 0 || height == 0) return;
+    if (tile_x >= 32 || tile_y >= 30) return;
+    if (width > (unsigned char)(32 - tile_x) || height > (unsigned char)(30 - tile_y)) return;
 
     qx0 = nes_attr_rect_left(tile_x);
     qy0 = nes_attr_rect_top(tile_y);
@@ -72,13 +75,9 @@ void nes_attr_shadow_fill_rect(unsigned char tile_x, unsigned char tile_y, unsig
     }
 }
 
-// Queue shadow-byte rows using the half-tile coordinates computed below.
-// These indices are used directly as byte indices, unlike the four-tile byte
-// indexing in nes_attr_shadow_set_quad; this is not a general tile-to-attribute
-// rectangle conversion. Keep each row within the eight-byte local buffer and
-// all indices within the 64-byte shadow. Failure may leave earlier rows queued.
-// For a complete packed attribute upload, use nes_attr_queue_all. This retained rectangle routine
-// does not share the quadrant-to-byte addressing used by the shadow updater.
+// Queue every four-by-four-tile attribute byte touched by the rectangle.
+// Empty rectangles succeed; out-of-range rectangles fail before queuing.
+// A capacity failure can leave earlier rows queued.
 unsigned char nes_attr_queue_rect(unsigned short nt_base, unsigned char tile_x, unsigned char tile_y, unsigned char width, unsigned char height)
 {
     unsigned char qx0;
@@ -93,10 +92,14 @@ unsigned char nes_attr_queue_rect(unsigned short nt_base, unsigned char tile_x, 
     unsigned short ppu_addr;
     unsigned char len;
 
-    qx0 = nes_attr_rect_left(tile_x);
-    qy0 = nes_attr_rect_top(tile_y);
-    qx1 = nes_attr_rect_left((unsigned char)(tile_x + width - 1));
-    qy1 = nes_attr_rect_top((unsigned char)(tile_y + height - 1));
+    if (width == 0 || height == 0) return 1;
+    if (tile_x >= 32 || tile_y >= 30) return 0;
+    if (width > (unsigned char)(32 - tile_x) || height > (unsigned char)(30 - tile_y)) return 0;
+
+    qx0 = (unsigned char)(tile_x >> 2);
+    qy0 = (unsigned char)(tile_y >> 2);
+    qx1 = (unsigned char)((tile_x + width - 1) >> 2);
+    qy1 = (unsigned char)((tile_y + height - 1) >> 2);
 
     row = qy0;
     while (1)
