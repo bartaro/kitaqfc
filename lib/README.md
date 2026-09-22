@@ -74,15 +74,10 @@ without a `kitaqfc_` prefix.
 ## Math
 
 - `fixed.h` / `fixed.c`
-- `physics2d.h` / `physics2d.c` - byte-sized Q5.3 types and tuning constants:
-  whole-pixel position, 1/8-pixel fraction, unsigned speed, explicit direction
-  and drag settings. Game code performs integration; the header supplies no
-  physics-step routine. Keeping fields separate lets hot loops compute
-  movement without aggregate/pointer ABI traffic.
+- `physics2d.h` / `physics2d.c` - Box integration, gravity, AABB contacts, surface response and optional Q5.3 data types. Compile with `fixed.c`.
+- `physics3d.h` / `physics3d.c` - Nonrotating 3D boxes, mass-weighted bounce and impact values. Compile with `fixed.c` and `physics2d.c`.
 - `math_fast.h`
 - `math_fixed.h`
 - `math_lut.h` / `math_lut.c`
 
-KITAQGB compatibility helpers intentionally keep short functional names where
-the FC/NES hardware model can support them. Callback-style scene/entity helpers
-currently keep state but do not indirect-call user function pointers.
+Scene transitions, updates and drawing call their registered handlers synchronously. See the individual API entries for callback order and reentrancy constraints.

@@ -98,6 +98,10 @@ void __ppu_off(void);
 void __ppu_mask_set(u8 value);
 // Replace PPUCTRL, including NMI enable, pattern-table choices and address increment mode.
 void __ppu_ctrl_set(u8 value);
+// Read the software PPUCTRL/PPUMASK shadows; use the setters for coherent state.
+// Raw writes to $2000/$2001 bypass these shadows. No PPU hardware read occurs.
+u8 __ppu_ctrl_get(void);
+u8 __ppu_mask_get(void);
 // Set the PPU address through the compiler helper; address writes affect the shared scroll/address latch.
 void __ppu_addr(u16 ppu_addr);
 // Write one PPUDATA byte using the current PPU address and increment mode.
@@ -268,9 +272,9 @@ u8 __fkb_read_row_col(u8 row, u8 col);
 void __rob_flash(u8 bright);
 // Run on_frames enabled-mask waits followed by off_frames disabled-mask waits; NMI must advance.
 void __rob_pulse(u8 on_frames, u8 off_frames);
-// The intended sequence uses MSB-first 4/2 or 2/4 frame pulses.
-// The current backend reuses X in its nested pulse helper without preserving the outer bit count;
-// this entry point is not a verified eight-bit transmission routine.
+// Send eight bits MSB first: one uses 4 on/2 off waits; zero uses 2 on/4 off.
+// Requires an advancing runtime NMI counter; 48 waits in total, final PPUMASK=0.
+// This raw pattern does not add a robot command preamble or validate reception.
 void __rob_send_byte(u8 pattern);
 
 /* Expansion-port TTL serial / MIDI adapter support.

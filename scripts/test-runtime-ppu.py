@@ -26,14 +26,14 @@ add('fill-increment-32','__ppu_ctrl_set(4);nes_ppu_stream_fill(0x2140,7,3);',{},
 add('wait-nmi','nes_nmi_counter=0;__ppu_ctrl_set(0x80);nes_wait_nmi();__ppu_ctrl_set(0);result[0]=nes_nmi_counter;', {0:1})
 add('wait-nmi-wrap','nes_nmi_counter=255;__ppu_ctrl_set(0x80);nes_wait_nmi();__ppu_ctrl_set(0);result[0]=nes_nmi_counter;', {})
 add('wait-vblank-twice','nes_vblank_wait();result[0]=1;result[1]=(u8)(PPUSTATUS&0x80);nes_vblank_wait();result[2]=1;result[3]=(u8)(PPUSTATUS&0x80);result[4]=nes_nmi_counter;', {0:1,2:1})
-add('pair-seek-prepared','__ppu_read_status();nes_ppu_seek(0x23,0x80);PPUDATA=7;',{}, {0x2380:7},1,'pair')
-add('pair-seek-dirty-latch','__ppu_read_status();PPUADDR=0x21;nes_ppu_seek(0x23,0x80);PPUDATA=7;',{}, {0x2123:7},1,'pair')
+add('pair-seek-prepared','__ppu_read_status();nes_ppu_seek_bytes(0x23,0x80);PPUDATA=7;',{}, {0x2380:7},1,'pair')
+add('pair-seek-dirty-latch','__ppu_read_status();PPUADDR=0x21;nes_ppu_seek_bytes(0x23,0x80);PPUDATA=7;',{}, {0x2380:7},1,'pair')
 add('pair-write-255','__ppu_read_status();nes_ppu_write_bytes(0x20,0x40,source,255);',{}, {0x2040+i:i+1 for i in range(255)},255,'pair')
 add('pair-fill-255','__ppu_read_status();nes_ppu_fill(0x20,0x40,7,255);',{}, {0x2040+i:7 for i in range(255)},255,'pair')
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 rows=[]
 for name,body,expected,pixels,writes,variant in cases:
- folder=out/name;folder.mkdir(exist_ok=True);source=folder/'case.c';source.write_text((prefix if variant=='runtime' else prefix.replace('#include "runtime.h"\n#include "runtime.c"','#include "ppu.c"'))+'void main(){'+(init if variant=='runtime' else init.replace('nes_vram_queue_clear();',''))+body+'result[15]=165;while(1){}}',encoding='ascii')
+ folder=out/name;folder.mkdir(exist_ok=True);source=folder/'case.c';source.write_text(prefix+('#include "ppu.c"\n' if variant=='pair' else '')+'void main(){'+init+body+'result[15]=165;while(1){}}',encoding='ascii')
  rom=folder/'case.nes';cmd=[str(compiler.resolve()),str(source.resolve()),'-I',str((REPOS/'kitaqfc/lib').resolve()),'--no-cache','--no-disasm','-o',str(rom.resolve())]
  run=subprocess.run(cmd,cwd=folder,capture_output=True,timeout=60);(folder/'build.txt').write_bytes(run.stdout+run.stderr)
  row=dict(name=name,build_command=cmd,build_exit=run.returncode,source_sha256=sha(source),passed=False)

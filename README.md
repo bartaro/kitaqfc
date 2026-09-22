@@ -18,6 +18,10 @@ C compiler and support libraries for original NES/Famicom/FDS homebrew software,
 
 Public preview: APIs and behavior may change.
 
+[Bullet-pool example and API reference](https://bartaro.github.io/kitaq-docs/en/fc-library.html#module-danmaku) · [Wireframe drawing and projection](https://bartaro.github.io/kitaq-docs/en/fc-library.html#module-wire3d)
+
+[ZX0 API and visual example](https://bartaro.github.io/kitaq-docs/en/fc-library.html#module-zx0) · [Host compression tool](tools/zx0/README.md#english)
+
 ### Development philosophy
 
 KITAQFC supports development that respects the NES/Famicom hardware and can be checked in small, reproducible steps. Build the ROM, exercise it in KUROSAKI, inspect the evidence with SARAKURA, and repeat after each correction. Keep measured results separate from behavior that has not yet been tested.
@@ -220,6 +224,10 @@ The project license does not replace third-party font, dependency, logo or trade
 KITAQGBとNORCALから派生した、自作のNES・ファミコン・FDSソフトウェア向けCコンパイラと支援ライブラリです。
 
 パブリックプレビュー版です。APIや動作は変更される場合があります。
+
+[弾幕プールの使用例と各関数](https://bartaro.github.io/kitaq-docs/fc-library.html#module-danmaku) · [ワイヤーフレーム描画と投影](https://bartaro.github.io/kitaq-docs/fc-library.html#module-wire3d)
+
+[ZX0のAPIと画面付きの使用例](https://bartaro.github.io/kitaq-docs/fc-library.html#module-zx0) · [PC側の圧縮ツール](tools/zx0/README.md#日本語)
 
 ### 開発方針
 

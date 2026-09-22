@@ -1180,6 +1180,12 @@ sealed class BankedAssemblerCore
     byte[] LoadChrRom()
     {
         string path = Program.NesChrRomPath ?? "";
+        // A zero CHR-ROM count requests writable 8 KiB CHR RAM in iNES.
+        if (Program.NesChrRam)
+        {
+            _chrRomSize = 0;
+            return new byte[0];
+        }
         if (_profile.RequiresChrRam)
         {
             if (!string.IsNullOrWhiteSpace(path))

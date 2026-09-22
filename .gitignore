@@ -27,3 +27,6 @@
 **/obj/
 !/kitaqfc.exe
 /integration_test/reports/
+
+# MIT-licensed asset compression tool.
+!/kitaqfc-zx0.exe

@@ -29,6 +29,7 @@
 #include "collision.h"
 #include "fixed.h"
 #include "physics2d.h"
+#include "physics3d.h"
 #include "bank.h"
 #include "asset.h"
 #include "debug.h"

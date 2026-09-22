@@ -270,6 +270,8 @@ static class CodeGenerator
             Add("__ppu_off", CType.Void);
             Add("__ppu_mask_set", CType.Void, 1);
             Add("__ppu_ctrl_set", CType.Void, 1);
+            Add("__ppu_ctrl_get", CType.UInt8);
+            Add("__ppu_mask_get", CType.UInt8);
             Add("__ppu_addr", CType.Void, 2);
             Add("__ppu_data", CType.Void, 1);
             Add("__ppu_read_status", CType.UInt8);
@@ -2310,11 +2312,18 @@ static class CodeGenerator
                 return;
             }
 
+            if (node.Match(Tag.Switch, out test, out Expr[] cases, out Expr defaultBody))
+            {
+                EmitSwitch(node.Source, test, cases, defaultBody, ctx);
+                return;
+            }
+            if (node.Match(Tag.Fallthrough)) return;
+
             if (node.Match(Tag.Break))
             {
                 if (ctx.LoopStack.Count == 0)
                 {
-                    Program.Error("error KQ0000: 'break' used outside of a loop in function {0}.", ctx.Name);
+                    Program.Error("error KQ0000: 'break' used outside of a loop or switch in function {0}.", ctx.Name);
                     return;
                 }
                 EmitAsm("JMP", Abs(ctx.LoopStack.Peek().BreakLabel));
@@ -2323,12 +2332,14 @@ static class CodeGenerator
 
             if (node.Match(Tag.Continue))
             {
-                if (ctx.LoopStack.Count == 0)
+                // Switches own break targets but never intercept a loop's continue.
+                LoopLabels loop = ctx.LoopStack.FirstOrDefault(item => item.ContinueLabel != null);
+                if (loop == null)
                 {
                     Program.Error("error KQ0000: 'continue' used outside of a loop in function {0}.", ctx.Name);
                     return;
                 }
-                EmitAsm("JMP", Abs(ctx.LoopStack.Peek().ContinueLabel));
+                EmitAsm("JMP", Abs(loop.ContinueLabel));
                 return;
             }
 
@@ -3104,6 +3115,13 @@ static class CodeGenerator
                     type = rightType;
                     return true;
                 }
+                // Keep the lowerer's signed promotion through nested sums and
+                // differences, so a following divide/compare/shift sees s16.
+                if (IsSignedIntegerType(leftType) || IsSignedIntegerType(rightType))
+                {
+                    type = CType.Int16;
+                    return true;
+                }
                 type = NormalizeScalarSize(Math.Max(DetermineExprSize(lhs, ctx), DetermineExprSize(rhs, ctx))) >= 2 ? CType.UInt16 : CType.UInt8;
                 return true;
             }
@@ -3127,6 +3145,18 @@ static class CodeGenerator
             Expr falseExpr;
             if (expr.Match(Tag.Conditional, out condExpr, out trueExpr, out falseExpr))
             {
+                // An array arm decays to a pointer. Preserve its element type
+                // for indexing and pointer arithmetic after the selection.
+                CType trueType, falseType;
+                TryGetExprType(trueExpr, ctx, out trueType);
+                TryGetExprType(falseExpr, ctx, out falseType);
+                if (trueType != null && trueType.IsArray) trueType = CType.MakePointer(trueType.Subtype);
+                if (falseType != null && falseType.IsArray) falseType = CType.MakePointer(falseType.Subtype);
+                if ((trueType != null && trueType.IsPointer) || (falseType != null && falseType.IsPointer))
+                {
+                    type = (trueType != null && trueType.IsPointer) ? trueType : falseType;
+                    return true;
+                }
                 int size = NormalizeScalarSize(Math.Max(DetermineExprSize(trueExpr, ctx), DetermineExprSize(falseExpr, ctx)));
                 type = size >= 2 ? CType.UInt16 : CType.UInt8;
                 return true;
@@ -4492,6 +4522,13 @@ static class CodeGenerator
                 case "__ppu_ctrl_set":
                     if (!Need(1)) return true;
                     Store1(args[0], _runtimePpuCtrlShadowAddress); EmitAsm("STA", Mem(0x2000)); return true;
+                // Read software state: the corresponding hardware registers are write-only.
+                case "__ppu_ctrl_get":
+                    if (!Need(0)) return true;
+                    EmitAsm("LDA", Mem(_runtimePpuCtrlShadowAddress)); return true;
+                case "__ppu_mask_get":
+                    if (!Need(0)) return true;
+                    EmitAsm("LDA", Mem(_runtimePpuMaskShadowAddress)); return true;
                 // Direct PPU address/data access does not wait for a safe rendering interval here.
                 case "__ppu_addr":
                     if (!Need(1)) return true;
@@ -5072,6 +5109,100 @@ static class CodeGenerator
             return true;
         }
 
+        // Dispatch a byte selector once, preserving source-order fallthrough and
+        // the nearest enclosing break/continue scopes, including empty switches.
+        void EmitSwitch(FilePosition source, Expr test, Expr[] cases, Expr defaultBody, FunctionContext ctx)
+        {
+            string end = NewGeneratedLabel("switch_end");
+            string fallback = NewGeneratedLabel("switch_default");
+            var labels = new List<string>();
+            var bodies = new List<Expr>();
+            var values = new HashSet<int>();
+            int[] saved = AcquireTemps(1);
+            try
+            {
+                EmitLoadA(test, ctx);
+                EmitAsm("STA", Mem(saved[0]));
+                foreach (Expr item in cases)
+                {
+                    if (!item.Match(Tag.Case, out Expr valueExpr, out Expr body) ||
+                        !TryEvaluateConstant(valueExpr, out int value) || value < 0 || value > 255)
+                    {
+                        Program.Error(Maybe.Just(item.Source), ErrorCode.ParseError, "switch case must be a constant in 0..255");
+                        continue;
+                    }
+                    if (!values.Add(value))
+                    {
+                        Program.Error(Maybe.Just(item.Source), ErrorCode.ParseError, "duplicate switch case: {0}", value);
+                        continue;
+                    }
+                    string label = NewGeneratedLabel("switch_case");
+                    string next = NewGeneratedLabel("switch_test");
+                    labels.Add(label); bodies.Add(body);
+                    EmitAsm("LDA", Mem(saved[0]));
+                    EmitAsm("CMP", Imm(value));
+                    EmitAsm("BNE", Rel(next));
+                    EmitAsm("JMP", Abs(label));
+                    _assembly.Add(Expr.Make(Tag.Label, next).WithSource(source));
+                }
+                EmitAsm("JMP", Abs(fallback));
+            }
+            finally { ReleaseTemps(saved); }
+            ctx.LoopStack.Push(new LoopLabels(null, end));
+            try
+            {
+                for (int i = 0; i < labels.Count; i++)
+                {
+                    _assembly.Add(Expr.Make(Tag.Label, labels[i]).WithSource(source));
+                    EmitStatement(bodies[i], ctx);
+                }
+                _assembly.Add(Expr.Make(Tag.Label, fallback).WithSource(source));
+                EmitStatement(defaultBody, ctx);
+            }
+            finally { ctx.LoopStack.Pop(); }
+            _assembly.Add(Expr.Make(Tag.Label, end).WithSource(source));
+        }
+
+        // Evaluate an lvalue address once. Keep old/new values separately so
+        // postfix word and pointer updates return the value before the write.
+        void EmitLvalueIncDec(Expr target, int delta, FunctionContext ctx, bool post, int expectedSize)
+        {
+            if (!TryGetLvalueType(target, ctx, true, out CType type)) return;
+            int size = GetStorageSize(type);
+            if (size != 1 && size != 2)
+            {
+                Program.Error(Maybe.Just(target.Source), ErrorCode.ParseError, "increment/decrement requires a byte, word or pointer lvalue");
+                return;
+            }
+            int step = type.IsPointer ? GetPointerElementStride(type) : 1;
+            int[] t = AcquireTemps(6);
+            try
+            {
+                if (!EmitAddressIntoPair(target, ctx, t[0], t[1], out int ignored)) return;
+                EmitAsm("LDY", Imm(0));
+                EmitAsm("LDA", IndY(t[0]));
+                EmitAsm("STA", Mem(t[2])); EmitAsm("STA", Mem(t[4]));
+                if (size == 2) { EmitAsm("INY"); EmitAsm("LDA", IndY(t[0])); }
+                else EmitAsm("LDA", Imm(0));
+                EmitAsm("STA", Mem(t[3])); EmitAsm("STA", Mem(t[5]));
+                if (delta > 0) EmitAddConstantToPair(t[4], t[5], step);
+                else EmitSubConstantFromPair(t[4], t[5], step);
+                EmitAsm("LDY", Imm(0)); EmitAsm("LDA", Mem(t[4])); EmitAsm("STA", IndY(t[0]));
+                if (size == 2) { EmitAsm("INY"); EmitAsm("LDA", Mem(t[5])); EmitAsm("STA", IndY(t[0])); }
+                if (expectedSize != 0)
+                {
+                    int index = post ? 2 : 4;
+                    EmitAsm("LDA", Mem(t[index]));
+                    if (expectedSize == 2)
+                    {
+                        if (size == 2) EmitAsm("LDX", Mem(t[index + 1]));
+                        else EmitExtendByteToWord(type, target.Source);
+                    }
+                }
+            }
+            finally { ReleaseTemps(t); }
+        }
+
         // Update named one- or two-byte storage, scaling pointer steps by the complete pointee size.
         // The sign of delta selects increment versus decrement; the optional result is the updated value.
         void EmitIncDec(Expr target, int delta, FunctionContext ctx, bool wantValue)
@@ -5079,7 +5210,7 @@ static class CodeGenerator
             string name;
             if (!target.Match(Tag.Name, out name))
             {
-                Program.Error("error KQ0000: --target=nes phase 5 increment/decrement currently supports only simple names.");
+                EmitLvalueIncDec(target, delta, ctx, false, wantValue ? DetermineExprSize(target, ctx) : 0);
                 return;
             }
             StorageSlot slot;
@@ -5192,6 +5323,16 @@ static class CodeGenerator
             Expr trueExpr;
             Expr falseExpr;
             CType exprType;
+
+            // Resolve sizeof in the current function scope, preserving local
+            // array extents. Its operand is inspected for type and never executed.
+            if (expr.Match(Tag.Sizeof, out Expr sizeOperand) && TryGetExprType(sizeOperand, ctx, out CType sizeType))
+            {
+                int bytes = GetStorageSize(sizeType);
+                EmitAsm("LDA", Imm(bytes & 0xFF));
+                if (expectedSize == 2) EmitAsm("LDX", Imm((bytes >> 8) & 0xFF));
+                return;
+            }
 
             if (TryEvaluateConstant(expr, out constValue))
             {
@@ -5362,6 +5503,17 @@ static class CodeGenerator
                 return;
             }
 
+            // Complex lvalues need a saved address; postfix words also need a
+            // saved old value because their arithmetic overwrites A/X.
+            if ((expr.Match(Tag.PreIncrement, out lhs) || expr.Match(Tag.PostIncrement, out lhs) ||
+                 expr.Match(Tag.PreDecrement, out lhs) || expr.Match(Tag.PostDecrement, out lhs)) &&
+                (!lhs.MatchTag(Tag.Name) || ((expr.Tag == Tag.PostIncrement || expr.Tag == Tag.PostDecrement) && DetermineExprSize(lhs, ctx) == 2)))
+            {
+                bool post = expr.Tag == Tag.PostIncrement || expr.Tag == Tag.PostDecrement;
+                int delta = expr.Tag == Tag.PreIncrement || expr.Tag == Tag.PostIncrement ? 1 : -1;
+                EmitLvalueIncDec(lhs, delta, ctx, post, expectedSize);
+                return;
+            }
             if (expr.Match(Tag.PreIncrement, out lhs))
             {
                 EmitIncDec(lhs, +1, ctx, true);
@@ -7586,15 +7738,19 @@ static class CodeGenerator
             // Choose a four/two or two/four frame pulse pattern for each current high bit.
             EmitHelperStart("__rob_send_byte");
             EmitAsm("LDA", Mem(CallArgBase));
-            EmitAsm("STA", Mem(_runtimeIntrinsicTmp0Address));
             EmitAsm("LDX", Imm(8));
             string bitLoop = NewGeneratedLabel("rob_bit_loop");
             string bitZero = NewGeneratedLabel("rob_bit_zero");
             string bitNext = NewGeneratedLabel("rob_bit_next");
             _assembly.Add(Expr.Make(Tag.Label, bitLoop));
-            EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address));
-            EmitAsm("AND", Imm(0x80));
-            EmitAsm("BEQ", Rel(bitZero));
+            // Preserve the remaining payload and outer count on the CPU stack.
+            // Pulse consumes X; its NMI wait also uses the shared scratch byte.
+            // ASL selects the next MSB in carry, which TXA/PHA leave unchanged.
+            EmitAsm("ASL");
+            EmitAsm("PHA");
+            EmitAsm("TXA");
+            EmitAsm("PHA");
+            EmitAsm("BCC", Rel(bitZero));
             EmitAsm("LDA", Imm(4));
             EmitAsm("STA", Mem(CallArgBase));
             EmitAsm("LDA", Imm(2));
@@ -7608,7 +7764,9 @@ static class CodeGenerator
             EmitAsm("STA", Mem(CallArgBase + 1));
             EmitAsm("JSR", Abs("__rob_pulse"));
             _assembly.Add(Expr.Make(Tag.Label, bitNext));
-            EmitAsm("ASL", Mem(_runtimeIntrinsicTmp0Address));
+            EmitAsm("PLA");
+            EmitAsm("TAX");
+            EmitAsm("PLA");
             EmitAsm("DEX");
             EmitAsm("BNE", Rel(bitLoop));
             EmitAsm("RTS");

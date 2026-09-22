@@ -41,6 +41,7 @@ static partial class Program
     public static CompilationTargetInfo TargetInfo { get; private set; } = CompilationTargetInfo.Nes;
     public static bool IsNesTarget => TargetInfo.Kind == CompilationTargetKind.Nes;
     public static string NesChrRomPath { get; private set; } = "";
+    public static bool NesChrRam { get; private set; } = false;
     public static NesCartridgeOptions NesCartridge { get; private set; } = new NesCartridgeOptions();
     // FDS packaging combines optional input metadata with output-container and overlay settings below.
     public static FdsDiskMetadata FdsMetadata { get; private set; } = FdsDiskMetadata.Empty;
@@ -415,6 +416,10 @@ static partial class Program
                 string err;
                 if (!CompilationTargetInfo.TryParse(ValueAfterEquals(arg), out parsedTarget, out err)) Error(err);
                 else TargetInfo = parsedTarget;
+            }
+            else if (arg == "--nes-chr-ram")
+            {
+                NesChrRam = true;
             }
             else if (arg.StartsWith("--nes-chr="))
             {
@@ -1083,7 +1088,7 @@ else if (arg == "-Zcheck")
         // Help and an empty invocation take the usage path before attempting a build.
         if (help)
         {
-            Console.Error.WriteLine("usage: kitaqfc first.c second.c ... [--target=nes] [--mapper=nrom|uxrom|cnrom|axrom|mmc1|mmc3|mmc5|vrc6|vrc7|fme7|fds] [--board=auto|generic|surom512] [--mirroring=horizontal|vertical|four-screen] [--battery|--no-battery] [--nes-chr=path/to/chr.bin] [--kurosaki-metadata[=<file>]] [-o out.nes]");
+            Console.Error.WriteLine("usage: kitaqfc first.c second.c ... [--target=nes] [--mapper=nrom|uxrom|cnrom|axrom|mmc1|mmc3|mmc5|vrc6|vrc7|fme7|fds] [--board=auto|generic|surom512] [--mirroring=horizontal|vertical|four-screen] [--battery|--no-battery] [--nes-chr=path/to/chr.bin | --nes-chr-ram] [--kurosaki-metadata[=<file>]] [-o out.nes]");
             Console.Error.WriteLine("NES RAM placement: [--no-whole-program-zp] [--nes-local-ram=START:LENGTH] [--nes-temp-ram=START:LENGTH]");
             Console.Error.WriteLine("subcommands: kitaqfc test | attrviz | src2asm | symfind | romdiff | kqhelp | template | fixhint | irsum | conventions | snippet | devserver | recipe");
             Exit(1);
@@ -1092,6 +1097,11 @@ else if (arg == "-Zcheck")
         // Check mapper/board compatibility after all individual cartridge options have been applied.
         if (!NesCartridge.ValidateCombination(out string cartridgeError))
             Error(cartridgeError);
+        // Writable patterns require an explicit choice; do not silently discard supplied artwork.
+        if (NesChrRam && !string.IsNullOrWhiteSpace(NesChrRomPath))
+            Error("error: --nes-chr-ram cannot be combined with --nes-chr or --chr-rom.");
+        if (NesChrRam && NesMapperProfile.MapperKind == NesMapperKind.Cnrom)
+            Error("error: --nes-chr-ram is not supported by the CNROM profile.");
 
         if (sourceFilenames.Count == 0)
         {
@@ -2159,7 +2169,7 @@ else if (arg == "-Zcheck")
             string line = lines[pos.Line] ?? "";
             // Avoid huge output for long lines.
             const int MaxPreview = 200;
-            string shown = (line.Length > MaxPreview) ? line.Substring(0, MaxPreview) + "…" : line;
+            string shown = (line.Length > MaxPreview) ? line.Substring(0, MaxPreview) + "窶ｦ" : line;
 
             Console.Error.WriteLine("  " + shown);
 
@@ -2590,6 +2600,7 @@ else if (arg == "-Zcheck")
             sb.AppendLine("target_ext=" + TargetInfo.DefaultOutputExtension);
             sb.AppendLine("nes_mapper=" + NesMapperProfile.CliName);
             sb.AppendLine("nes_board=" + NesMapperProfile.BoardCliName);
+            sb.AppendLine("nes_chr_ram=" + NesChrRam);
             sb.AppendLine("fds_meta=" + (FdsMetadataPath ?? ""));
             sb.AppendLine("output_container=" + OutputContainerFormat);
             sb.AppendLine("fds_sidecar=" + EmitFdsSidecar);
@@ -3049,7 +3060,7 @@ else if (arg == "-Zcheck")
         sb.Append("\"header\":\"").Append(JsonEscape(NesMapperProfile.HeaderKind)).Append("\",");
         sb.Append("\"prg_rom_bytes\":").Append(asm.PrgRomSizeBytes >= 0 ? asm.PrgRomSizeBytes : (NesMapperProfile.IsSurom512 ? 0x80000 : Math.Max(0, asm.RomSizeBytes - 16))).Append(",");
         sb.Append("\"chr_rom_bytes\":").Append(asm.ChrRomSizeBytes >= 0 ? asm.ChrRomSizeBytes : (NesMapperProfile.IsSurom512 ? 0 : -1)).Append(",");
-        sb.Append("\"chr_ram_bytes\":").Append(NesMapperProfile.ChrRamBytes).Append(",");
+        sb.Append("\"chr_ram_bytes\":").Append(NesChrRam ? 0x2000 : NesMapperProfile.ChrRamBytes).Append(",");
         sb.Append("\"prg_ram_bytes\":").Append(NesMapperProfile.PrgRamBytes).Append(",");
         sb.Append("\"battery\":").Append(NesCartridge.BatteryBacked ? "true" : "false").Append(",");
         sb.Append("\"prg_mode\":3,\"chr_mode\":0},");

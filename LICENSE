@@ -45,3 +45,22 @@ screenshots or analysis inputs and outputs.
 These notices identify font rights separately from the project code.
 They do not replace third-party licenses or add restrictions to code
 covered by the MIT License above.
+
+------------------------------------------------------------------------
+ZX0 format acknowledgment (not an additional license condition)
+------------------------------------------------------------------------
+
+The ZX0 format and original compression algorithm were designed by
+Einar Saukas. We acknowledge his contribution to compression for 8-bit
+computers.
+ZX0 project: https://github.com/einar-saukas/ZX0
+
+KITAQ implementation: Copyright (c) 2026 DAISUKE OBA.
+The ZX0-compatible compressor and decompressor have been independently
+reimplemented for KITAQFC and are covered by the MIT License above.
+They do not incorporate source code from the official ZX0 implementation
+or from other ZX0-compatible implementations.
+
+This acknowledgment credits the format designer. It does not change the
+license of any upstream implementation, imply endorsement, or add further
+conditions to the MIT-licensed KITAQ implementation.
