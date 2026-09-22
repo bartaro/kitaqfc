@@ -805,7 +805,8 @@ static class CodeGenerator
             bool userFixedBank = placement != null && placement.HasFixedBank;
             bool forceCommonBank = string.Equals(functionName, "__nes_reset", StringComparison.Ordinal) ||
                 string.Equals(functionName, "__nes_nmi", StringComparison.Ordinal) ||
-                string.Equals(functionName, "__nes_irq", StringComparison.Ordinal);
+                string.Equals(functionName, "__nes_irq", StringComparison.Ordinal) ||
+                string.Equals(functionName, "__nes_audio_vblank_tick", StringComparison.Ordinal);
 
             bank = ResolveFunctionBankOverride(functionName, bank);
             if (!userFixedBank && Program.EnableMapperAwareBankPlacement)
@@ -1948,6 +1949,10 @@ static class CodeGenerator
                 int[] queueScratch = { CallArgBase, CallArgBase + 1, CallArgBase + 2,
                     _runtimeIntrinsicTmp0Address, _runtimeIntrinsicTmp1Address, _runtimeIntrinsicTmp2Address };
                 foreach (int address in queueScratch) { EmitAsm("LDA", Mem(address)); EmitAsm("PHA"); }
+                // The optional library hook preserves its own registers and uses no
+                // compiler scratch. It consumes only RAM records and fixed ROM tables.
+                if (_functions.ContainsKey("__nes_audio_vblank_tick"))
+                    EmitAsm("JSR", Abs("__nes_audio_vblank_tick"));
                 EmitAsm("JSR", Abs("__vramq_exec"));
                 EmitAsm("INC", Mem(_runtimeNmiCounterAddress));
                 foreach (int address in queueScratch.Reverse()) { EmitAsm("PLA"); EmitAsm("STA", Mem(address)); }
@@ -1996,6 +2001,10 @@ static class CodeGenerator
                 var ctx = new FunctionContext(emittedName, currentBank, returnMnemonic, retType);
                 _currentFunctionName = emittedName;
                 _currentFunctionBank = currentBank;
+                // Custom NMI handlers receive the same once-per-NMI audio hook.
+                // The hook preserves the interrupted register state before user code.
+                if (emittedName == "__nes_nmi" && _functions.ContainsKey("__nes_audio_vblank_tick"))
+                    EmitAsm("JSR", Abs("__nes_audio_vblank_tick"));
                 EmitFunctionPrologue(item.Source, fields ?? Array.Empty<FieldInfo>(), ctx);
                 EmitStatement(body, ctx);
                 EmitAsm(returnMnemonic);

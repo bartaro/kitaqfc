@@ -35,6 +35,7 @@
 #include "debug.h"
 #include "chain.h"
 #include "audio.h"
+#include "audio_vblank.h"
 #include "fds_sound.h"
 #include "vrc6_sound.h"
 #include "vrc7_sound.h"

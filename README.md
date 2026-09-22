@@ -22,6 +22,8 @@ Public preview: APIs and behavior may change.
 
 [ZX0 API and visual example](https://bartaro.github.io/kitaq-docs/en/fc-library.html#module-zx0) · [Host compression tool](tools/zx0/README.md#english)
 
+`audio_vblank` plays four-channel music from a RAM queue during NMI. Link `lib/audio_vblank.c`, initialize it, start a song and refill from the foreground. Records use `delay, CH1, CH2, CH3, CH4`; the compiler connects the music tick to NMI. [API, complete example and captured audio](https://bartaro.github.io/kitaq-docs/en/fc-library.html#module-audio_vblank)
+
 ### Development philosophy
 
 KITAQFC supports development that respects the NES/Famicom hardware and can be checked in small, reproducible steps. Build the ROM, exercise it in KUROSAKI, inspect the evidence with SARAKURA, and repeat after each correction. Keep measured results separate from behavior that has not yet been tested.
@@ -228,6 +230,8 @@ KITAQGBとNORCALから派生した、自作のNES・ファミコン・FDSソフ�
 [弾幕プールの使用例と各関数](https://bartaro.github.io/kitaq-docs/fc-library.html#module-danmaku) · [ワイヤーフレーム描画と投影](https://bartaro.github.io/kitaq-docs/fc-library.html#module-wire3d)
 
 [ZX0のAPIと画面付きの使用例](https://bartaro.github.io/kitaq-docs/fc-library.html#module-zx0) · [PC側の圧縮ツール](tools/zx0/README.md#日本語)
+
+`audio_vblank`は、RAMキューからNMI中に4音源の音楽を再生します。`lib/audio_vblank.c`をビルドに加え、初期化・曲の開始後に前景処理から補充します。レコード順は`待機時間, CH1, CH2, CH3, CH4`で、コンパイラが音楽処理をNMIへ接続します。[各API・サンプル・確認した音声](https://bartaro.github.io/kitaq-docs/fc-library.html#module-audio_vblank)
 
 ### 開発方針
 
