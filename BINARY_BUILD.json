@@ -1,12 +1,12 @@
 {
-  "built_on": "2026-09-22",
+  "built_on": "2026-09-23",
   "licensor": "DAISUKE OBA",
   "configuration": "Release",
   "build_exit_code": 0,
   "build_method": "Roslyn C# compiler from .NET SDK 8.0.302; project Compile and Reference items; /target:exe /optimize+ /define:TRACE /main:Program; .NET Framework reference assemblies.",
   "developer_build_command": ".\\scripts\\build.ps1",
-  "source_revision_before_packaging": "0fd7343681b2a60cd9edde3e9598a4b0f2e0244b",
-  "source_state": "Publication working tree; exact source inputs listed below. Changes are not committed yet.",
+  "source_revision_before_packaging": "97f6ee0efe41a2d6d8489ba8ddb0b05fbe09ae29",
+  "source_state": "Exact compiler source inputs are identified by the SHA-256 values below.",
   "source_inputs": [
     {
       "path": "kitaqfc/AsmInfo.cs",
@@ -18,7 +18,7 @@
     },
     {
       "path": "kitaqfc/BankedAssemblerCore.cs",
-      "sha256": "e2e4b24541e2ab47405ccf572d2b0b0295a390a8d4949be55e7423d3bd1045e0"
+      "sha256": "f68388fb5e089c2a3fd8ce1d561a4e0ac2c57987e0b9caac8da18a550a466cf8"
     },
     {
       "path": "kitaqfc/DebugExporter.cs",
@@ -124,11 +124,18 @@
   "artifacts": [
     {
       "path": "kitaqfc.exe",
-      "sha256": "a17b9072d580280d999cf37b6689400e7e99d67c1b7016291b899f624f5da855",
+      "sha256": "88fc4c95c3d2d053d950434831ee8c1c4b424003c4baac914ecf68d60da6c65a",
       "bytes": 668160
     }
   ],
   "target_framework": ".NET Framework 4.8",
   "platform": "AnyCPU",
-  "scope": "Windows CLI compiler. Source and binary hashes describe this build; test coverage is reported separately. No physical-hardware compatibility claim."
+  "scope": "Windows CLI compiler. Source and binary hashes describe this build; test coverage is reported separately. No physical-hardware compatibility claim.",
+  "validation": {
+    "fds_placement_cases": 16,
+    "bank_callback_cases": 18,
+    "fds_query_execution_cases": 12,
+    "result": "passed",
+    "scope": "Native FDS packaging and BIOS-free query execution; no BIOS file-transfer or hardware claim."
+  }
 }

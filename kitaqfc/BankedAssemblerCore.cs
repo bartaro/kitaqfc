@@ -531,7 +531,8 @@ sealed class BankedAssemblerCore
         }
 
         int maxSwitchable = Math.Max(1, units.Where(x => x.ActualBank > 0).Select(x => x.ActualBank).DefaultIfEmpty(1).Max());
-        if (!_profile.SupportsPrgBanking && maxSwitchable > 1)
+        // Native FDS overlays are disk-loaded RAM banks, not mapper PRG switches.
+        if (!_profile.SupportsPrgBanking && !UsesFdsPrgRamLayout && maxSwitchable > 1)
         {
             Program.Error("error KQ0000: mapper '{0}' does not support banked PRG code beyond common bank 0 and switchable bank 1.", _profile.CliName);
             return stable;
