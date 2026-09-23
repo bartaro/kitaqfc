@@ -13,10 +13,10 @@ def disk_files(path):
     for side_number in range(raw[4]):
         side=raw[16+65500*side_number:16+65500*(side_number+1)]
         assert side[0]==1 and side[56]==2;offset=58
-        for _ in range(side[57]):
+        for ordinal in range(side[57]):
             assert side[offset]==3;h=side[offset:offset+16];size=int.from_bytes(h[13:15],'little')
             assert side[offset+16]==4 and offset+17+size<=len(side)
-            files.append(dict(id=h[2],address=int.from_bytes(h[11:13],'little'),type=h[15],boot=h[2]<=side[25],side=side_number,data=side[offset+17:offset+17+size]))
+            files.append(dict(ordinal=ordinal,number=h[1],name=bytes(h[3:11]),id=h[2],address=int.from_bytes(h[11:13],'little'),type=h[15],boot=h[2]<=side[25],side=side_number,data=side[offset+17:offset+17+size]))
             offset+=17+size
     return files
 

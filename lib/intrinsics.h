@@ -353,11 +353,16 @@ u8 __fds_error(void);
 void __fds_wait_ready(void);
 // Alias the same disk-presence wait as __fds_wait_ready; the call can block indefinitely.
 void __fds_wait_insert(void);
-// Call BIOS LoadFiles for id and return its error byte (zero on success).
-// The disk header determines the load address; the current helper does not use dst.
+// Native FDS32: load a non-boot file at its disk-header address, then memmove
+// PRG bytes to dst. Null dst keeps the native destination (also for PPU files).
+// Both CPU spans must fit $0200-$07FF or $6000-$DFFF and be owned by the caller.
+// Return 0, a BIOS error, $40 for a missing transfer, or $FF for invalid input.
+// Call from common code with disk-I/O interrupt/display prerequisites satisfied.
 u8 __fds_load_file(u8 id, u8* dst);
-// Call BIOS WriteFile with a RAM source and byte length, returning its error byte.
-// The generated PRG descriptor uses id as file number and the fixed name KQFCFILE.
+// Overwrite the final non-boot PRG slot on its side, preserving its ID/name/load
+// address. len must equal its packaged size; src must be a valid CPU RAM span.
+// The resolved physical ordinal selects the slot, independently of file ID.
+// Return 0, a BIOS error, or $FF before any write for an invalid slot/span/size.
 u8 __fds_save_file(u8 id, const u8* src, u16 len);
 // Load disk file id through BIOS, return its error byte and mark bank residency FF (unknown).
 u8 __fds_load_overlay(u8 id);

@@ -40,6 +40,7 @@ sealed class BankedAssemblerCore
     readonly string _branchLabelPrefix = "__kq_bank_asm_" + global::System.Guid.NewGuid().ToString("N");
     readonly NesCartridgeProfile _profile = Program.NesMapperProfile;
 
+    int _branchCounter; // Unique across every relaxation pass.
     int _switchableBankCount = 1;
     int _chrRomSize = 0x2000;
     byte[] _resetTail = new byte[0];
@@ -124,6 +125,14 @@ sealed class BankedAssemblerCore
         var overlayMeta = BuildFdsAutoOverlayMetadataRecords();
         if (Program.ErrorCount > 0) return false;
         byte[] table = (Program.FdsMetadata ?? FdsDiskMetadata.Empty).BuildRuntimeTable(overlayMeta);
+        // Reserve exactly one record per resolved file; final payload lengths
+        // are patched after encoding, including trimmed automatic overlays.
+        var plannedOverlays = overlayMeta.Select(f => new FdsAutoOverlayFile {
+            Id = f.Id, Side = f.Side, Number = f.FileNumber, Name = f.Name,
+            LoadAddress = f.LoadAddress, FileType = f.FileType, Boot = f.Boot,
+            Data = new byte[f.Size] }).ToList();
+        byte[] ioTable = FdsDiskImageBuilder.BuildRuntimeIoTable(new byte[0x8000], new byte[0x2000],
+            Program.FdsMetadata, Program.FdsLicenseBypassEnabled, true, plannedOverlays);
         bool changed = false;
 
         foreach (var unit in units ?? new List<PlacedUnit>())
@@ -135,6 +144,7 @@ sealed class BankedAssemblerCore
                 if (unit.Nodes[i].MatchReadonlyData(out name, out oldBytes))
                 {
                     byte[] replacement = name == "__kq_fds_metadata_table" ? table :
+                        name == "__kq_fds_file_io_table" ? ioTable :
                         name == "__kq_fds_boot_bank_file_id" ? new byte[] { (byte)GetFdsBootBankFileId() } : null;
                     if (replacement != null && !ByteArrayEquals(oldBytes, replacement))
                     {
@@ -349,14 +359,23 @@ sealed class BankedAssemblerCore
             return outputFilename;
         }
 
+        var autoOverlayFiles = BuildFdsAutoOverlayDiskFiles();
+        if (Program.ErrorCount > 0) return outputFilename;
+        int ioAddress;
+        if (UsesFdsPrgRamLayout && _symbols.TryGetValue("__kq_fds_file_io_table", out ioAddress))
+        {
+            byte[] ioTable = FdsDiskImageBuilder.BuildRuntimeIoTable(prg, chr, Program.FdsMetadata,
+                Program.FdsLicenseBypassEnabled, true, autoOverlayFiles);
+            if (Program.ErrorCount > 0) return outputFilename;
+            Buffer.BlockCopy(ioTable, 0, _commonBankImage, ioAddress - FdsCommonCpuBase, ioTable.Length);
+            prg = BuildPrgRom();
+        }
+
         byte[] header = BuildHeader(prg.Length, chr.Length);
         byte[] rom = new byte[HeaderSize + prg.Length + chr.Length];
         Buffer.BlockCopy(header, 0, rom, 0, HeaderSize);
         Buffer.BlockCopy(prg, 0, rom, HeaderSize, prg.Length);
         Buffer.BlockCopy(chr, 0, rom, HeaderSize + prg.Length, chr.Length);
-
-        var autoOverlayFiles = BuildFdsAutoOverlayDiskFiles();
-        if (Program.ErrorCount > 0) return outputFilename;
 
         if (fdsPrimary)
         {
@@ -690,11 +709,10 @@ sealed class BankedAssemblerCore
     }
 
     // Rewrite out-of-range conditional branches within each placed unit using the current address map.
-    // The generated-label counter is local to this invocation.
+    // Keep generated labels unique across passes as earlier expansions move later branches.
     bool ExpandLongBranches(List<PlacedUnit> units, IReadOnlyDictionary<string, int> symbols)
     {
         bool changed = false;
-        int branchCounter = 0;
 
         foreach (var unit in units ?? new List<PlacedUnit>())
         {
@@ -736,7 +754,7 @@ sealed class BankedAssemblerCore
                 }
                 if (e.Match(Tag.Asm, out string mnemonic, out AsmOperand operand))
                 {
-                    if (TryExpandLongBranch(e, mnemonic, operand, symbols, pc, expanded, ref branchCounter))
+                    if (TryExpandLongBranch(e, mnemonic, operand, symbols, pc, expanded, ref _branchCounter))
                     {
                         unitChanged = true;
                         changed = true;

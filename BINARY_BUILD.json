@@ -5,7 +5,7 @@
   "build_exit_code": 0,
   "build_method": "Roslyn C# compiler from .NET SDK 8.0.302; project Compile and Reference items; /target:exe /optimize+ /define:TRACE /main:Program; .NET Framework reference assemblies.",
   "developer_build_command": ".\\scripts\\build.ps1",
-  "source_revision_before_packaging": "56822c62dfbe21b3d20f2d80f1017de6ddec4fa3",
+  "source_revision_before_packaging": "6d57306841cf8bbfdeae6e1db659176afc8d6bad",
   "source_state": "Exact compiler source inputs are identified by the SHA-256 values below.",
   "source_inputs": [
     {
@@ -18,7 +18,7 @@
     },
     {
       "path": "kitaqfc/BankedAssemblerCore.cs",
-      "sha256": "b7b8b954d01bac04ed44ca9a83a66baacd17d16883c8363982cdaa31c7753972"
+      "sha256": "9981000cc27a2762bb857ef3c297abbf51b67c366d8f3b19e814835e0165f031"
     },
     {
       "path": "kitaqfc/DebugExporter.cs",
@@ -90,7 +90,7 @@
     },
     {
       "path": "kitaqfc/FdsDiskImageBuilder.cs",
-      "sha256": "731ca2a12bc7a5c1257698cb021a1bbb3d071619402c6e4a80408dc366fa4339"
+      "sha256": "046efa75c08b17891ea61d659f8af51b90039cf2ab6b0e01325c23f13362dba7"
     },
     {
       "path": "kitaqfc/RomHeaderPatcher.cs",
@@ -102,7 +102,7 @@
     },
     {
       "path": "kitaqfc/CodeGenerator.cs",
-      "sha256": "3c35b99bdc691a6fb23f5b7d2ee06e6a4ea300969dfe2c8e5e213c1cc5d75847"
+      "sha256": "c33ebe954344db0fc7ee281e9c153069b91c7ab1423dfb7bae04b824920bd8cb"
     },
     {
       "path": "kitaqfc/TargetBackend.cs",
@@ -124,8 +124,8 @@
   "artifacts": [
     {
       "path": "kitaqfc.exe",
-      "sha256": "e1c3d65e6a93d5c052d116f292f1ac94958128c9cdc9166d4587a7db366cc2e6",
-      "bytes": 672768
+      "sha256": "1ae9b79c1ed29c83e5d060e76192200e24570986d61226332c3e7b4c529f17b3",
+      "bytes": 680960
     }
   ],
   "target_framework": ".NET Framework 4.8",
@@ -141,6 +141,11 @@
     "audio_vblank_state_variants": 4,
     "audio_vblank_nmi_pcm_variants": 3,
     "result": "passed",
-    "scope": "Keyboard row/column selection and delays from executed port traces; input mask unit tests redirect reads to RAM fixtures. Unmodified sample captures use the no-peripheral KUROSAKI baseline. No physical peripheral, real BIOS or hardware compatibility claim."
+    "scope": "Original FDS LoadFiles/WriteFile ABI fixtures: destination copies, overlapping buffers, fixed-size last-slot saves, physical ordinals, side selection and errors. Existing overlay, callback, peripheral, query and VBlank PCM regressions passed. Real BIOS and physical disk behavior remain unverified.",
+    "fds_file_io_abi_cases": 40,
+    "fds_file_io_sample_variants": 2,
+    "fds_boot_file_cases": 18,
+    "fds_farcall_argument_cases": 40,
+    "bank_callback_cases": 18
   }
 }

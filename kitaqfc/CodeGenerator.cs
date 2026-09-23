@@ -903,7 +903,7 @@ static class CodeGenerator
             _runtimeVramqBufferAddress = ReserveInternalGlobalBytes("__kq_vramq_buf", VramqCapacity);
             _runtimeAxromMirrorShadowAddress = ReserveInternalFastGlobal("__kq_axrom_mirror_shadow", CType.UInt8, "AxROM mirror shadow hot state");
             _runtimeFdsLoadListAddress = ReserveInternalGlobalBytes("__kq_fds_load_list", 2);
-            _runtimeFdsFileHeaderAddress = ReserveInternalGlobalBytes("__kq_fds_file_header", FdsFileHeaderSize);
+            _runtimeFdsFileHeaderAddress = ReserveInternalGlobalBytes("__kq_fds_file_header", FdsFileHeaderSize + (Program.NesMapperProfile.HasFds ? 32 : 0));
             _runtimeFdsResidentBankAddress = ReserveInternalFastGlobal("__kq_fds_resident_bank", CType.UInt8, "FDS overlay resident bank hot state");
             _runtimeRngLoAddress = ReserveInternalFastGlobal("__kq_rng_lo", CType.UInt8, "RNG state hot byte");
             _runtimeRngHiAddress = ReserveInternalFastGlobal("__kq_rng_hi", CType.UInt8, "RNG state hot byte");
@@ -9049,6 +9049,8 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.ReadonlyData, "__kq_fds_overlay_function_table", new byte[] { 0 }));
             _assembly.Add(Expr.Make(Tag.ReadonlyData, "__kq_fds_boot_bank_file_id", new byte[] { 0xFF }));
 
+            _assembly.Add(Expr.Make(Tag.ReadonlyData, "__kq_fds_file_io_table", new byte[] { 0xFF }));
+
             // Wait for the disk-inserted status bit to clear; this loop checks presence and has no timeout.
             EmitHelperStart("__fds_wait_ready");
             string loop = NewGeneratedLabel("fds_wait_ready_loop");
@@ -9058,22 +9060,222 @@ static class CodeGenerator
             EmitAsm("BNE", Rel(loop));
             EmitAsm("RTS");
 
-            // Build a one-file load list and supply inline wildcard-ID/list pointers to the BIOS LoadFiles entry.
+            EmitHelperStart("__kq_fds_find_io");
+            // Copy the resolved record to reserved RAM before a BIOS call can clobber zero page.
+            EmitAsm("LDA", ImmLo("__kq_fds_file_io_table"));
+            EmitAsm("STA", Mem(CallArgBase + 8));
+            EmitAsm("LDA", ImmHi("__kq_fds_file_io_table"));
+            EmitAsm("STA", Mem(CallArgBase + 9));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_find"));
+            EmitAsm("LDY", Imm(0));
+            EmitAsm("LDA", IndY(CallArgBase + 8));
+            EmitAsm("CMP", Imm(0xFF));
+            EmitAsm("BEQ", Rel("__kq_fio_invalid"));
+            EmitAsm("CMP", Mem(CallArgBase + 0));
+            EmitAsm("BEQ", Rel("__kq_fio_found"));
+            EmitAsm("CLC");
+            EmitAsm("LDA", Mem(CallArgBase + 8));
+            EmitAsm("ADC", Imm(32));
+            EmitAsm("STA", Mem(CallArgBase + 8));
+            EmitAsm("BCC", Rel("__kq_fio_find"));
+            EmitAsm("INC", Mem(CallArgBase + 9));
+            EmitAsm("JMP", Abs("__kq_fio_find"));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_found"));
+            EmitAsm("LDA", IndY(CallArgBase + 8));
+            EmitAsm("STA", new AsmOperand(_runtimeFdsFileHeaderAddress + 17, AddressMode.AbsoluteY));
+            EmitAsm("INY");
+            EmitAsm("CPY", Imm(32));
+            EmitAsm("BNE", Rel("__kq_fio_found"));
+            EmitAsm("LDA", Imm(0));
+            EmitAsm("RTS");
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_invalid"));
+            EmitAsm("LDA", Imm(0xFF));
+            EmitAsm("RTS");
+            EmitHelperStart("__kq_fds_check_span");
+            // Accept one contiguous span inside $0200-$07FF or $6000-$DFFF; callers own its storage.
+            EmitAsm("LDA", Mem(CallArgBase + 9));
+            EmitAsm("CMP", Imm(2));
+            EmitAsm("BCC", Rel("__kq_fio_span_bad"));
+            EmitAsm("CMP", Imm(8));
+            EmitAsm("BCC", Rel("__kq_fio_span_low"));
+            EmitAsm("CMP", Imm(0x60));
+            EmitAsm("BCC", Rel("__kq_fio_span_bad"));
+            EmitAsm("CMP", Imm(0xE0));
+            EmitAsm("BCS", Rel("__kq_fio_span_bad"));
+            EmitAsm("LDX", Imm(0xE0));
+            EmitAsm("JMP", Abs("__kq_fio_span_end"));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_span_low"));
+            EmitAsm("LDX", Imm(8));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_span_end"));
+            EmitAsm("STX", Mem(CallArgBase + 12));
+            EmitAsm("CLC");
+            EmitAsm("LDA", Mem(CallArgBase + 8));
+            EmitAsm("ADC", Mem(CallArgBase + 10));
+            EmitAsm("STA", Mem(CallArgBase + 13));
+            EmitAsm("LDA", Mem(CallArgBase + 9));
+            EmitAsm("ADC", Mem(CallArgBase + 11));
+            EmitAsm("BCS", Rel("__kq_fio_span_bad"));
+            EmitAsm("CMP", Mem(CallArgBase + 12));
+            EmitAsm("BCC", Rel("__kq_fio_span_ok"));
+            EmitAsm("BNE", Rel("__kq_fio_span_bad"));
+            EmitAsm("LDA", Mem(CallArgBase + 13));
+            EmitAsm("BNE", Rel("__kq_fio_span_bad"));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_span_ok"));
+            EmitAsm("LDA", Imm(0));
+            EmitAsm("RTS");
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_span_bad"));
+            EmitAsm("LDA", Imm(0xFF));
+            EmitAsm("RTS");
+
             EmitHelperStart("__fds_load_file");
-            EmitAsm("LDA", Mem(CallArgBase));
+            // Load at the on-disk staging address, then memmove PRG data to non-null dst.
+            EmitAsm("JSR", Abs("__kq_fds_find_io"));
+            EmitAsm("CMP", Imm(0));
+            EmitAsm("BNE", Rel("__kq_fio_load_invalid"));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 19));
+            EmitAsm("BMI", Rel("__kq_fio_load_invalid"));
+            EmitAsm("LDA", Mem(CallArgBase + 1));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 14));
+            EmitAsm("LDA", Mem(CallArgBase + 2));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 15));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 23));
+            EmitAsm("STA", Mem(CallArgBase + 10));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 24));
+            EmitAsm("STA", Mem(CallArgBase + 11));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 20));
+            EmitAsm("BNE", Rel("__kq_fio_load_ppu"));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 21));
+            EmitAsm("STA", Mem(CallArgBase + 8));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 22));
+            EmitAsm("STA", Mem(CallArgBase + 9));
+            EmitAsm("JSR", Abs("__kq_fds_check_span"));
+            EmitAsm("CMP", Imm(0));
+            EmitAsm("BNE", Rel("__kq_fio_load_invalid"));
+            EmitAsm("JMP", Abs("__kq_fio_load_dst"));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_load_ppu"));
+            // CHR/nametable files have no CPU buffer; null dst selects their native PPU destination.
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 14));
+            EmitAsm("ORA", Mem(_runtimeFdsFileHeaderAddress + 15));
+            EmitAsm("BNE", Rel("__kq_fio_load_invalid"));
+            EmitAsm("JMP", Abs("__kq_fio_load_bios"));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_load_dst"));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 14));
+            EmitAsm("ORA", Mem(_runtimeFdsFileHeaderAddress + 15));
+            EmitAsm("BEQ", Rel("__kq_fio_load_bios"));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 14));
+            EmitAsm("STA", Mem(CallArgBase + 8));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 15));
+            EmitAsm("STA", Mem(CallArgBase + 9));
+            EmitAsm("JSR", Abs("__kq_fds_check_span"));
+            EmitAsm("CMP", Imm(0));
+            EmitAsm("BNE", Rel("__kq_fio_load_invalid"));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_load_bios"));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 17));
             EmitAsm("STA", Mem(_runtimeFdsLoadListAddress));
             EmitAsm("LDA", Imm(0xFF));
             EmitAsm("STA", Mem(_runtimeFdsLoadListAddress + 1));
-            EmitAsm("JSR", Mem(0xE1F8)); // FDS BIOS LoadFiles; A=error, Y=count.
-            _assembly.Add(Expr.Make(Tag.Word, "__kq_fds_disk_id_wildcard"));
+            EmitAsm("JSR", Mem(0xE1F8));
+            _assembly.Add(Expr.Make(Tag.Word, string.Format("${0:X4}", _runtimeFdsFileHeaderAddress + 33)));
             _assembly.Add(Expr.Make(Tag.Word, string.Format("${0:X4}", _runtimeFdsLoadListAddress)));
-            // A raw file load can replace any part of the switchable window.
-            // Only the bank-aware wrapper may establish a known resident bank.
             EmitAsm("TAX");
             EmitAsm("LDA", Imm(0xFF));
             EmitAsm("STA", Mem(_runtimeFdsResidentBankAddress));
             EmitAsm("STA", Mem(_runtimeCurrentBankAddress));
             EmitAsm("TXA");
+            EmitAsm("BNE", Rel("__kq_fio_load_return"));
+            EmitAsm("CPY", Imm(1));
+            EmitAsm("BEQ", Rel("__kq_fio_load_count_ok"));
+            EmitAsm("LDA", Imm(0x40));
+            EmitAsm("RTS");
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_load_count_ok"));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 14));
+            EmitAsm("ORA", Mem(_runtimeFdsFileHeaderAddress + 15));
+            EmitAsm("BEQ", Rel("__kq_fio_load_ok"));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 21));
+            EmitAsm("STA", Mem(CallArgBase + 0));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 14));
+            EmitAsm("STA", Mem(CallArgBase + 2));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 23));
+            EmitAsm("STA", Mem(CallArgBase + 4));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 22));
+            EmitAsm("STA", Mem(CallArgBase + 1));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 15));
+            EmitAsm("STA", Mem(CallArgBase + 3));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 24));
+            EmitAsm("STA", Mem(CallArgBase + 5));
+            EmitAsm("LDA", Mem(CallArgBase + 4));
+            EmitAsm("ORA", Mem(CallArgBase + 5));
+            EmitAsm("BEQ", Rel("__kq_fio_load_ok"));
+            // Copy backwards when destination starts above source, including overlapping buffers.
+            EmitAsm("LDA", Mem(CallArgBase + 3));
+            EmitAsm("CMP", Mem(CallArgBase + 1));
+            EmitAsm("BCC", Rel("__kq_fio_forward"));
+            EmitAsm("BNE", Rel("__kq_fio_back_setup"));
+            EmitAsm("LDA", Mem(CallArgBase + 2));
+            EmitAsm("CMP", Mem(CallArgBase + 0));
+            EmitAsm("BCC", Rel("__kq_fio_forward"));
+            EmitAsm("BEQ", Rel("__kq_fio_load_ok"));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_back_setup"));
+            EmitAsm("CLC");
+            EmitAsm("LDA", Mem(CallArgBase + 0));
+            EmitAsm("ADC", Mem(CallArgBase + 4));
+            EmitAsm("STA", Mem(CallArgBase + 0));
+            EmitAsm("LDA", Mem(CallArgBase + 1));
+            EmitAsm("ADC", Mem(CallArgBase + 5));
+            EmitAsm("STA", Mem(CallArgBase + 1));
+            EmitAsm("CLC");
+            EmitAsm("LDA", Mem(CallArgBase + 2));
+            EmitAsm("ADC", Mem(CallArgBase + 4));
+            EmitAsm("STA", Mem(CallArgBase + 2));
+            EmitAsm("LDA", Mem(CallArgBase + 3));
+            EmitAsm("ADC", Mem(CallArgBase + 5));
+            EmitAsm("STA", Mem(CallArgBase + 3));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_backward"));
+            EmitAsm("LDA", Mem(CallArgBase + 0));
+            EmitAsm("BNE", Rel("__kq_fio_back_dec0"));
+            EmitAsm("DEC", Mem(CallArgBase + 1));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_back_dec0"));
+            EmitAsm("DEC", Mem(CallArgBase + 0));
+            EmitAsm("LDA", Mem(CallArgBase + 2));
+            EmitAsm("BNE", Rel("__kq_fio_back_dec2"));
+            EmitAsm("DEC", Mem(CallArgBase + 3));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_back_dec2"));
+            EmitAsm("DEC", Mem(CallArgBase + 2));
+            EmitAsm("LDY", Imm(0));
+            EmitAsm("LDA", IndY(CallArgBase));
+            EmitAsm("STA", IndY(CallArgBase + 2));
+            EmitAsm("JSR", Abs("__kq_fds_copy_count"));
+            EmitAsm("BNE", Rel("__kq_fio_backward"));
+            EmitAsm("JMP", Abs("__kq_fio_load_ok"));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_forward"));
+            EmitAsm("LDY", Imm(0));
+            EmitAsm("LDA", IndY(CallArgBase));
+            EmitAsm("STA", IndY(CallArgBase + 2));
+            EmitAsm("INC", Mem(CallArgBase + 0));
+            EmitAsm("BNE", Rel("__kq_fio_forward_inc0"));
+            EmitAsm("INC", Mem(CallArgBase + 1));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_forward_inc0"));
+            EmitAsm("INC", Mem(CallArgBase + 2));
+            EmitAsm("BNE", Rel("__kq_fio_forward_inc2"));
+            EmitAsm("INC", Mem(CallArgBase + 3));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_forward_inc2"));
+            EmitAsm("JSR", Abs("__kq_fds_copy_count"));
+            EmitAsm("BNE", Rel("__kq_fio_forward"));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_load_ok"));
+            EmitAsm("LDA", Imm(0));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_load_return"));
+            EmitAsm("RTS");
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_load_invalid"));
+            EmitAsm("LDA", Imm(0xFF));
+            EmitAsm("RTS");
+            EmitHelperStart("__kq_fds_copy_count");
+            EmitAsm("LDA", Mem(CallArgBase + 4));
+            EmitAsm("BNE", Rel("__kq_fio_count_low"));
+            EmitAsm("DEC", Mem(CallArgBase + 5));
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_count_low"));
+            EmitAsm("DEC", Mem(CallArgBase + 4));
+            EmitAsm("LDA", Mem(CallArgBase + 4));
+            EmitAsm("ORA", Mem(CallArgBase + 5));
             EmitAsm("RTS");
 
             // Use the same BIOS loading convention for an overlay file identifier.
@@ -9190,29 +9392,72 @@ static class CodeGenerator
             EmitHelperStart("__fds_file_size");
             EmitFdsMetadataSearch(foundReturnsSize: true);
 
-            // Construct a RAM-source WriteFile header and invoke the BIOS with inline descriptor pointers.
             EmitHelperStart("__fds_save_file");
-            // Build a minimal BIOS WriteFile header in RAM.
-            // args: id, src, len. File number uses id; file name is "KQFCFILE"; load/source addr = src.
-            EmitAsm("LDA", Mem(CallArgBase)); EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 0));
-            byte[] nameBytes = System.Text.Encoding.ASCII.GetBytes("KQFCFILE");
-            for (int i = 0; i < 8; i++)
-            {
-                EmitAsm("LDA", Imm(nameBytes[i]));
-                EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 1 + i));
-            }
-            EmitAsm("LDA", Mem(CallArgBase + 1)); EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 9));  // load addr lo
-            EmitAsm("LDA", Mem(CallArgBase + 2)); EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 10)); // load addr hi
-            EmitAsm("LDA", Mem(CallArgBase + 3)); EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 11)); // size lo
-            EmitAsm("LDA", Mem(CallArgBase + 4)); EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 12)); // size hi
-            EmitAsm("LDA", Imm(0)); EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 13)); // file type PRG
-            EmitAsm("LDA", Mem(CallArgBase + 1)); EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 14)); // source addr lo
-            EmitAsm("LDA", Mem(CallArgBase + 2)); EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 15)); // source addr hi
-            EmitAsm("LDA", Imm(0)); EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 16)); // source address type: RAM
-            EmitAsm("LDA", Mem(CallArgBase)); // sequential file number; expected to match id in KITAQFC simple-save convention.
-            EmitAsm("JSR", Mem(0xE239)); // FDS BIOS WriteFile
-            _assembly.Add(Expr.Make(Tag.Word, "__kq_fds_disk_id_wildcard"));
+            // Only a non-boot, final, fixed-size PRG slot can be overwritten without hiding later files.
+            EmitAsm("JSR", Abs("__kq_fds_find_io"));
+            EmitAsm("CMP", Imm(0));
+            EmitAsm("BNE", Rel("__kq_fio_save_invalid"));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 19));
+            EmitAsm("AND", Imm(0xC0));
+            EmitAsm("CMP", Imm(0x40));
+            EmitAsm("BNE", Rel("__kq_fio_save_invalid"));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 20));
+            EmitAsm("BNE", Rel("__kq_fio_save_invalid"));
+            EmitAsm("LDA", Mem(CallArgBase + 3));
+            EmitAsm("CMP", Mem(_runtimeFdsFileHeaderAddress + 23));
+            EmitAsm("BNE", Rel("__kq_fio_save_invalid"));
+            EmitAsm("STA", Mem(CallArgBase + 10));
+            EmitAsm("LDA", Mem(CallArgBase + 1));
+            EmitAsm("STA", Mem(CallArgBase + 8));
+            EmitAsm("LDA", Mem(CallArgBase + 4));
+            EmitAsm("CMP", Mem(_runtimeFdsFileHeaderAddress + 24));
+            EmitAsm("BNE", Rel("__kq_fio_save_invalid"));
+            EmitAsm("STA", Mem(CallArgBase + 11));
+            EmitAsm("LDA", Mem(CallArgBase + 2));
+            EmitAsm("STA", Mem(CallArgBase + 9));
+            EmitAsm("JSR", Abs("__kq_fds_check_span"));
+            EmitAsm("CMP", Imm(0));
+            EmitAsm("BNE", Rel("__kq_fio_save_invalid"));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 17));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 0));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 25));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 1));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 26));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 2));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 27));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 3));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 28));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 4));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 29));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 5));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 30));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 6));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 31));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 7));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 32));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 8));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 21));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 9));
+            EmitAsm("LDA", Mem(CallArgBase + 3));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 11));
+            EmitAsm("LDA", Mem(CallArgBase + 1));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 14));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 22));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 10));
+            EmitAsm("LDA", Mem(CallArgBase + 4));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 12));
+            EmitAsm("LDA", Mem(CallArgBase + 2));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 15));
+            EmitAsm("LDA", Imm(0));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 13));
+            EmitAsm("STA", Mem(_runtimeFdsFileHeaderAddress + 16));
+            EmitAsm("LDA", Mem(_runtimeFdsFileHeaderAddress + 18));
+            EmitAsm("JSR", Mem(0xE239));
+            _assembly.Add(Expr.Make(Tag.Word, string.Format("${0:X4}", _runtimeFdsFileHeaderAddress + 33)));
             _assembly.Add(Expr.Make(Tag.Word, string.Format("${0:X4}", _runtimeFdsFileHeaderAddress)));
+            EmitAsm("RTS");
+            _assembly.Add(Expr.Make(Tag.Label, "__kq_fio_save_invalid"));
+            EmitAsm("LDA", Imm(0xFF));
             EmitAsm("RTS");
 
             // Enable wave-RAM writes, copy 64 source bytes, then clear the wave-write control register.

@@ -114,6 +114,43 @@ sealed class FdsDiskImageBuilder
         return result;
     }
 
+    // Describe the same resolved files used by the image writer. Each 32-byte
+    // record contains ID, physical ordinal, flags, type, load/size, name and
+    // a side-specific BIOS Disk ID. Header file numbers are not BIOS ordinals.
+    public static byte[] BuildRuntimeIoTable(byte[] prg, byte[] chr, FdsDiskMetadata metadata,
+        bool licenseBypass, bool nativeLayout, IReadOnlyList<FdsAutoOverlayFile> overlays)
+    {
+        var warnings = new List<string>();
+        var files = BuildDiskFiles(BuildFdsPrgBootImage(prg, nativeLayout, warnings),
+            NormalizeChr(chr), metadata, warnings,
+            nativeLayout ? FdsPrgRamLoadBase : LegacyPrgRamLoadBase, overlays);
+        if (licenseBypass) AddLicenseBypassBootFiles(files, warnings);
+        AssignFileNumbers(files);
+        var bytes = new List<byte>();
+        foreach (var group in files.GroupBy(f => f.Side).OrderBy(g => g.Key))
+        {
+            var ordered = group.OrderBy(f => f.Number).ThenBy(f => f.Id).ToList();
+            for (int ordinal = 0; ordinal < ordered.Count; ordinal++)
+            {
+                var f = ordered[ordinal];
+                var header = BuildFileHeaderBlock(f);
+                byte[] record = new byte[32];
+                record[0] = (byte)f.Id;
+                record[1] = (byte)ordinal;
+                record[2] = (byte)((f.Boot ? 0x80 : 0) | (ordinal == ordered.Count - 1 ? 0x40 : 0));
+                record[3] = header[15];
+                Buffer.BlockCopy(header, 11, record, 4, 4);
+                Buffer.BlockCopy(header, 3, record, 8, 8);
+                for (int i = 16; i < 26; i++) record[i] = 0xFF;
+                record[22] = (byte)(f.Side & 1);
+                record[23] = (byte)(f.Side / 2);
+                bytes.AddRange(record);
+            }
+        }
+        bytes.Add(0xFF);
+        return bytes.ToArray();
+    }
+
     // Construct a 0xFF-padded PRG boot file for native $6000-$DFFF or legacy $8000-$DFFF placement.
     // The legacy path combines the first bank, lower common-bank bytes and relocated vectors, warning about omitted BIOS-region data.
     static byte[] BuildFdsPrgBootImage(byte[] prgRom, bool fdsPrgRamLayout, List<string> warnings)
