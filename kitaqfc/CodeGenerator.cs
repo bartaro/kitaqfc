@@ -431,6 +431,7 @@ static class CodeGenerator
             }
 
             CollectTopLevel(items);
+            ProtectNearReadonlyData(items);
             ReserveFixedRamRanges();
             if (Program.ErrorCount > 0) return _assembly;
             ReserveRuntimeState();
@@ -1195,6 +1196,98 @@ static class CodeGenerator
             };
             _readonlyData[name] = slot;
             _orderedReadonlyData.Add(slot);
+        }
+
+        // Match GB near-ROM semantics: ordinary C pointers and indexed reads must
+        // stay visible from every caller. Explicit fixed-bank declarations and calls
+        // pairing a bare symbol with __bankof(symbol) retain manual bank placement.
+        void ProtectNearReadonlyData(Expr[] items)
+        {
+            var names = new HashSet<string>(_readonlyData.Keys, StringComparer.Ordinal);
+            var nearNames = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var item in items) ScanReadonlyDataUsage(item, names, nearNames);
+            foreach (var name in nearNames)
+            {
+                var slot = _readonlyData[name];
+                if (slot.HasFixedBank) continue;
+                slot.RequestedBank = 0;
+                slot.HasFixedBank = true;
+            }
+        }
+
+        // Use syntax to distinguish near references from __bankof queries and paired far-call arguments.
+        // This is a placement heuristic, not whole-program pointer-flow analysis.
+        void ScanReadonlyDataUsage(Expr expr, HashSet<string> readonlyNames, HashSet<string> nearReadonlyDataNames)
+        {
+            if (expr == null || readonlyNames == null || readonlyNames.Count == 0) return;
+
+            if (expr.MatchAny(Tag.Call, out Expr callTarget, out Expr[] callArgs))
+            {
+                string callName = null;
+                callTarget?.Match(Tag.Name, out callName);
+
+                if (callName == "__bankof")
+                {
+                    // Explicit far-ROM use: the symbol is being handled together with its bank.
+                    return;
+                }
+
+                // A bare readonly argument paired with __bankof of that exact symbol in the same call is treated as explicit far use.
+                var bankofSiblingNames = new HashSet<string>(StringComparer.Ordinal);
+                if (callArgs != null)
+                {
+                    foreach (var arg in callArgs)
+                    {
+                        if (arg == null) continue;
+                        if (arg.MatchAny(Tag.Call, out Expr bankTarget, out Expr[] bankArgs) &&
+                            bankTarget.Match(Tag.Name, out string bankFuncName) &&
+                            bankFuncName == "__bankof" &&
+                            bankArgs != null &&
+                            bankArgs.Length == 1 &&
+                            bankArgs[0].Match(Tag.Name, out string bankSymName) &&
+                            readonlyNames.Contains(bankSymName))
+                        {
+                            bankofSiblingNames.Add(bankSymName);
+                        }
+                    }
+                }
+
+                ScanReadonlyDataUsage(callTarget, readonlyNames, nearReadonlyDataNames);
+                if (callArgs != null)
+                {
+                    foreach (var arg in callArgs)
+                    {
+                        if (arg == null) continue;
+                        if (arg.Match(Tag.Name, out string argName) &&
+                            readonlyNames.Contains(argName) &&
+                            bankofSiblingNames.Contains(argName))
+                        {
+                            continue;
+                        }
+                        ScanReadonlyDataUsage(arg, readonlyNames, nearReadonlyDataNames);
+                    }
+                }
+                return;
+            }
+
+            if (expr.Match(Tag.Name, out string name) && readonlyNames.Contains(name))
+            {
+                nearReadonlyDataNames.Add(name);
+                return;
+            }
+
+            foreach (object arg in expr.GetArgs().Skip(1))
+            {
+                if (arg is Expr child)
+                {
+                    ScanReadonlyDataUsage(child, readonlyNames, nearReadonlyDataNames);
+                }
+                else if (arg is Expr[] children)
+                {
+                    foreach (Expr childExpr in children)
+                        ScanReadonlyDataUsage(childExpr, readonlyNames, nearReadonlyDataNames);
+                }
+            }
         }
 
         // Honor an explicit fixed bank before data overrides; otherwise place pooled string symbols in common bank zero.

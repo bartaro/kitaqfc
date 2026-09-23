@@ -5,7 +5,7 @@
   "build_exit_code": 0,
   "build_method": "Roslyn C# compiler from .NET SDK 8.0.302; project Compile and Reference items; /target:exe /optimize+ /define:TRACE /main:Program; .NET Framework reference assemblies.",
   "developer_build_command": ".\\scripts\\build.ps1",
-  "source_revision_before_packaging": "6d57306841cf8bbfdeae6e1db659176afc8d6bad",
+  "source_revision_before_packaging": "11b89e14e8d790d85a71ba70b53c527d2cfc7046",
   "source_state": "Exact compiler source inputs are identified by the SHA-256 values below.",
   "source_inputs": [
     {
@@ -102,7 +102,7 @@
     },
     {
       "path": "kitaqfc/CodeGenerator.cs",
-      "sha256": "c33ebe954344db0fc7ee281e9c153069b91c7ab1423dfb7bae04b824920bd8cb"
+      "sha256": "becd033a1bae5d83039c2cf908ed8ff3de8090b94a575e17c77a79899a4743ef"
     },
     {
       "path": "kitaqfc/TargetBackend.cs",
@@ -124,8 +124,8 @@
   "artifacts": [
     {
       "path": "kitaqfc.exe",
-      "sha256": "1ae9b79c1ed29c83e5d060e76192200e24570986d61226332c3e7b4c529f17b3",
-      "bytes": 680960
+      "sha256": "fca416ffae1ca02cc7c6e3102c6b54ff50959f7d80942a8ee10c4b642c97593e",
+      "bytes": 681984
     }
   ],
   "target_framework": ".NET Framework 4.8",

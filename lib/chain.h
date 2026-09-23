@@ -32,7 +32,6 @@ u8 chain_get_segment(const Chain* chain, u8 index, ChainPoint* out);
 // Return the number of stored points, or zero for a null chain.
 u8 chain_get_count(const Chain* chain);
 
-#endif
 
 // Articulated body: one current pose per joint, including the head at index 0.
 // Caller-owned byte arrays keep the inner loop compact on both GB and FC.
@@ -65,3 +64,5 @@ void chain_body_step(ChainBody* body, u8 head_x, u8 head_y, u8 heading);
 u8 chain_body_grow(ChainBody* body);
 // Remove all joints while retaining caller-owned storage and playfield settings.
 void chain_body_clear(ChainBody* body);
+
+#endif

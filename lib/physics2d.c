@@ -3,21 +3,186 @@
 
 
 // Scale by a signed Q8 coefficient in -256..256, truncating the magnitude
-// before restoring the sign. Splitting the product prevents intermediate overflow;
-// coefficients outside this interval are not supported.
-s16 kq2d_scale_q8(s16 value, s16 coefficient)
-{
-    u16 magnitude;
-    u16 factor;
-    u16 scaled;
-    u8 negative;
-    negative = (u8)((value < 0) != (coefficient < 0));
-    magnitude = value < 0 ? (u16)(0 - (u16)value) : (u16)value;
-    factor = coefficient < 0 ? (u16)(0 - coefficient) : (u16)coefficient;
-    // Split the magnitude before multiplying: each product fits unsigned 16 bits.
-    scaled = (u16)((magnitude >> 8) * factor + (((magnitude & 255) * factor) >> 8));
-    if (negative != 0) return (s16)(0 - scaled);
-    return (s16)scaled;
+// before restoring the sign. Eight unrolled shift/add stages keep the product
+// in range; zero and +/-256 use exact shortcuts. Other coefficients are unsupported.
+s16 kq2d_scale_q8(s16 value,s16 coefficient) {
+    u16 magnitude;u16 product;u8 factor;u8 negative;
+    __asm {
+        LDA value
+        ORA value+1
+        BEQ kqfc_scale_zero
+        LDA coefficient
+        BNE kqfc_scale_fraction
+        LDA coefficient+1
+        BEQ kqfc_scale_zero
+        BMI kqfc_scale_negate_value
+        LDA value
+        LDX value+1
+        RTS
+kqfc_scale_negate_value:
+        SEC
+        LDA #0
+        SBC value
+        STA product
+        LDA #0
+        SBC value+1
+        TAX
+        LDA product
+        RTS
+kqfc_scale_zero:
+        LDA #0
+        LDX #0
+        RTS
+kqfc_scale_fraction:
+        LDA value+1
+        EOR coefficient+1
+        AND #128
+        STA negative
+        LDA value
+        STA magnitude
+        LDA value+1
+        STA magnitude+1
+        BPL kqfc_scale_value_positive
+        SEC
+        LDA #0
+        SBC magnitude
+        STA magnitude
+        LDA #0
+        SBC magnitude+1
+        STA magnitude+1
+kqfc_scale_value_positive:
+        LDA coefficient
+        STA factor
+        LDA coefficient+1
+        BPL kqfc_scale_factor_positive
+        SEC
+        LDA #0
+        SBC factor
+        STA factor
+kqfc_scale_factor_positive:
+        LDA #0
+        STA product
+        STA product+1
+        // Process coefficient bit 0; carry is the product's seventeenth bit.
+        LSR factor
+        BCC kqfc_scale_shift_0
+        CLC
+        LDA product
+        ADC magnitude
+        STA product
+        LDA product+1
+        ADC magnitude+1
+        STA product+1
+kqfc_scale_shift_0:
+        ROR product+1
+        ROR product
+        // Process coefficient bit 1; carry is the product's seventeenth bit.
+        LSR factor
+        BCC kqfc_scale_shift_1
+        CLC
+        LDA product
+        ADC magnitude
+        STA product
+        LDA product+1
+        ADC magnitude+1
+        STA product+1
+kqfc_scale_shift_1:
+        ROR product+1
+        ROR product
+        // Process coefficient bit 2; carry is the product's seventeenth bit.
+        LSR factor
+        BCC kqfc_scale_shift_2
+        CLC
+        LDA product
+        ADC magnitude
+        STA product
+        LDA product+1
+        ADC magnitude+1
+        STA product+1
+kqfc_scale_shift_2:
+        ROR product+1
+        ROR product
+        // Process coefficient bit 3; carry is the product's seventeenth bit.
+        LSR factor
+        BCC kqfc_scale_shift_3
+        CLC
+        LDA product
+        ADC magnitude
+        STA product
+        LDA product+1
+        ADC magnitude+1
+        STA product+1
+kqfc_scale_shift_3:
+        ROR product+1
+        ROR product
+        // Process coefficient bit 4; carry is the product's seventeenth bit.
+        LSR factor
+        BCC kqfc_scale_shift_4
+        CLC
+        LDA product
+        ADC magnitude
+        STA product
+        LDA product+1
+        ADC magnitude+1
+        STA product+1
+kqfc_scale_shift_4:
+        ROR product+1
+        ROR product
+        // Process coefficient bit 5; carry is the product's seventeenth bit.
+        LSR factor
+        BCC kqfc_scale_shift_5
+        CLC
+        LDA product
+        ADC magnitude
+        STA product
+        LDA product+1
+        ADC magnitude+1
+        STA product+1
+kqfc_scale_shift_5:
+        ROR product+1
+        ROR product
+        // Process coefficient bit 6; carry is the product's seventeenth bit.
+        LSR factor
+        BCC kqfc_scale_shift_6
+        CLC
+        LDA product
+        ADC magnitude
+        STA product
+        LDA product+1
+        ADC magnitude+1
+        STA product+1
+kqfc_scale_shift_6:
+        ROR product+1
+        ROR product
+        // Process coefficient bit 7; carry is the product's seventeenth bit.
+        LSR factor
+        BCC kqfc_scale_shift_7
+        CLC
+        LDA product
+        ADC magnitude
+        STA product
+        LDA product+1
+        ADC magnitude+1
+        STA product+1
+kqfc_scale_shift_7:
+        ROR product+1
+        ROR product
+        LDA negative
+        BEQ kqfc_scale_positive
+        SEC
+        LDA #0
+        SBC product
+        STA product
+        LDA #0
+        SBC product+1
+        TAX
+        LDA product
+        RTS
+kqfc_scale_positive:
+        LDA product
+        LDX product+1
+        RTS
+    }
 }
 
 // Fractional long division avoids overflowing numerator * 256 on a 16-bit arithmetic target.

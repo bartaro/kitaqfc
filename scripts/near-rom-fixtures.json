@@ -1,0 +1,31 @@
+[
+  {
+    "name": "near-rom-index",
+    "source": "__location(0x0600) u16 result[16];\nu8 __farpeek8(u8 bank,const void* p);\n#pragma bank 3\n__prg_rom u8 bytes[]={7,42,99};\n__prg_rom u16 words[]={0x1234,0xBEEF};\n#pragma fixed_bank 2\nu16 probe(u8 i){return words[i];}\n#pragma fixed_bank 0\nvoid main(){u8 i;i=1;result[0]=bytes[i];result[1]=probe(i);result[2]=__bankof(bytes);result[3]=__bankof(words);result[4]=0xA55A;while(1){}}\n",
+    "expected": [
+      42,
+      48879,
+      0,
+      0,
+      42330
+    ]
+  },
+  {
+    "name": "near-rom-pointer",
+    "source": "__location(0x0600) u16 result[16];\nu8 __farpeek8(u8 bank,const void* p);\n#pragma bank 3\n__prg_rom u8 bytes[]={7,42,99};\n__prg_rom u16 words[]={0x1234,0xBEEF};\n#pragma fixed_bank 2\nu8 probe(const u8* p){return p[2];}\n#pragma fixed_bank 0\nvoid main(){result[0]=probe(bytes);result[1]=__bankof(bytes);result[2]=0xA55A;while(1){}}\n",
+    "expected": [
+      99,
+      0,
+      42330
+    ]
+  },
+  {
+    "name": "far-rom-paired",
+    "source": "__location(0x0600) u16 result[16];\nu8 __farpeek8(u8 bank,const void* p);\n#pragma bank 3\n__prg_rom u8 data[]={77};\n#pragma fixed_bank 0\nvoid main(){result[0]=__farpeek8(__bankof(data),data);result[1]=__bankof(data);result[2]=0xA55A;while(1){}}\n",
+    "expected": [
+      77,
+      3,
+      42330
+    ]
+  }
+]
