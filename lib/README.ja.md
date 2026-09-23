@@ -42,6 +42,7 @@
 ## 音と周辺機器
 
 - `audio.h` / `audio.c`
+- `audio_vblank.h` / `audio_vblank.c` — 7レコードのBGMキュー、一時停止・再開、独立した7レコードのSFXバッファ、1回だけ減衰するノイズ音色を備えたNMI音楽ドライバーです。[各APIと録音付きサンプル](https://bartaro.github.io/kitaq-docs/fc-library.html#module-audio_vblank)
 - `fds_sound.h`
 - `vrc6_sound.h` / `vrc6_sound.c`
 - `vrc7_sound.h` / `vrc7_sound.c`

@@ -49,6 +49,7 @@ without a `kitaqfc_` prefix.
 ## Audio and devices
 
 - `audio.h` / `audio.c`
+- `audio_vblank.h` / `audio_vblank.c` — NMI music with a seven-record BGM queue, pause/resume, a separate seven-record SFX buffer and one-shot noise envelopes. [API and recorded examples](https://bartaro.github.io/kitaq-docs/en/fc-library.html#module-audio_vblank)
 - `fds_sound.h`
 - `vrc6_sound.h` / `vrc6_sound.c`
 - `vrc7_sound.h` / `vrc7_sound.c`

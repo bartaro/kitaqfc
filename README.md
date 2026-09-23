@@ -22,7 +22,7 @@ Public preview: APIs and behavior may change.
 
 [ZX0 API and visual example](https://bartaro.github.io/kitaq-docs/en/fc-library.html#module-zx0) · [Host compression tool](tools/zx0/README.md#english)
 
-`audio_vblank` plays four-channel music from a RAM queue during NMI. Link `lib/audio_vblank.c`, initialize it, start a song and refill from the foreground. Records use `delay, CH1, CH2, CH3, CH4`; the compiler connects the music tick to NMI. [API, complete example and captured audio](https://bartaro.github.io/kitaq-docs/en/fc-library.html#module-audio_vblank)
+`audio_vblank` plays four-channel music from a RAM queue during NMI. Link `lib/audio_vblank.c`, initialize it, start a song and refill from the foreground. Records use `delay, CH1, CH2, CH3, CH4`; the compiler connects the music tick to NMI. Pause/resume preserves both music and effect timelines. A bounded SFX stream can temporarily own selected channels, and noise supports a one-shot decay envelope. [API, complete example and captured audio](https://bartaro.github.io/kitaq-docs/en/fc-library.html#module-audio_vblank)
 
 ### Development philosophy
 
@@ -231,7 +231,7 @@ KITAQGBとNORCALから派生した、自作のNES・ファミコン・FDSソフ�
 
 [ZX0のAPIと画面付きの使用例](https://bartaro.github.io/kitaq-docs/fc-library.html#module-zx0) · [PC側の圧縮ツール](tools/zx0/README.md#日本語)
 
-`audio_vblank`は、RAMキューからNMI中に4音源の音楽を再生します。`lib/audio_vblank.c`をビルドに加え、初期化・曲の開始後に前景処理から補充します。レコード順は`待機時間, CH1, CH2, CH3, CH4`で、コンパイラが音楽処理をNMIへ接続します。[各API・サンプル・確認した音声](https://bartaro.github.io/kitaq-docs/fc-library.html#module-audio_vblank)
+`audio_vblank`は、RAMキューからNMI中に4音源の音楽を再生します。`lib/audio_vblank.c`をビルドに加え、初期化・曲の開始後に前景処理から補充します。レコード順は`待機時間, CH1, CH2, CH3, CH4`で、コンパイラが音楽処理をNMIへ接続します。BGMとSFXの位置を保った一時停止・再開、音源を一時的に占有するSFX、1回だけ減衰するノイズ音色も利用できます。[各API・サンプル・確認した音声](https://bartaro.github.io/kitaq-docs/fc-library.html#module-audio_vblank)
 
 ### 開発方針
 

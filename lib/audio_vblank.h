@@ -8,6 +8,7 @@
 // Delay 1..255 holds the new state for that many NMI ticks. Delay 0 ends playback.
 // Tonal notes 0..71 are C2..B7, tuned for NTSC. Noise 0..15 selects a long-mode
 // period; 16..31 selects short mode. HOLD preserves a channel; STOP silences it.
+#define NES_AUDIO_NOISE_ENVELOPE 128
 #define NES_AUDIO_HOLD 255
 #define NES_AUDIO_STOP 254
 #define NES_AUDIO_RECORD_BYTES 5
@@ -36,15 +37,35 @@ u8 nes_audio_vblank_set_music(const u8* records,u16 count,u8 loop);
 u8 nes_audio_vblank_refill(void);
 // Set the stream, prefill the queue and start. Return 0 for invalid setup/data.
 u8 nes_audio_vblank_play_music(const u8* records,u16 count,u8 loop);
-// Return 1 while the consumer is enabled, including a recoverable queue underrun.
+// Return 1 while the BGM consumer is enabled, including a recoverable queue underrun.
 u8 nes_audio_vblank_is_playing(void);
 // Saturating count of starvation episodes, cleared by init; END is not starvation.
 u8 nes_audio_vblank_underruns(void);
 // Configure the next note: pulse bits 7..6 select duty and 3..0 select volume;
-// noise uses volume 3..0; triangle uses zero for silent, nonzero for full level.
+// noise uses volume 3..0, or NES_AUDIO_NOISE_ENVELOPE | decay_period (0..15)
+// for a one-shot hardware envelope (larger periods decay more slowly). The
+// next noise note starts at volume 15; its length permits a full decay.
+// Triangle uses zero for silent, nonzero for full level.
 // Return 0 for channel >=4. Hardware has no triangle volume control.
 u8 nes_audio_vblank_set_timbre(u8 channel,u8 control);
-// Compiler NMI hook: linked automatically once per NMI. Do not call manually.
+// Any nonzero argument freezes both timelines and mutes immediately. Zero
+// resumes from the stored delays and restores held notes on the next NMI.
+// BGM is_playing remains enabled during pause. Refill may still fill the queue.
+void nes_audio_vblank_pause(u8 on);
+// Copy 1..7 timed records. Bits 0..3 select channels temporarily owned by SFX.
+// BGM continues underneath and its current notes return when the effect ends.
+// Return 1 after copying; 0 for null, invalid count/data or an empty low mask.
+// Ignore mask bits 4..7. All fields are validated, even unselected channels.
+// Delay zero is not accepted for SFX. Invalid input preserves the current SFX.
+// Replacement restarts the effect; the first HOLD starts from a stopped note.
+// The source need only stay mapped/readable until this foreground call returns.
+u8 nes_audio_vblank_play_sfx(const u8* records,u8 count,u8 mask);
+// Release effect ownership at the next NMI, restoring current BGM notes.
+// This does not stop or restart the BGM and does not write the APU immediately.
+void nes_audio_vblank_stop_sfx(void);
+// NMI hook: invoke exactly once per NMI. With a custom handler or a compiler
+// without automatic audio-hook linking, call it there. Never call from main
+// or call it again if the compiler already inserts the hook.
 // Saves A/X/Y, uses no compiler scratch bytes and reads only RAM/fixed ROM.
 void __nes_audio_vblank_tick(void);
 #endif
