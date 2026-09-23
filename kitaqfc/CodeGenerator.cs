@@ -7710,17 +7710,25 @@ static class CodeGenerator
             EmitAsm("LDA", Imm(0x05));
             EmitAsm("STA", Mem(0x4016));
             EmitKeyboardDelayShort();
-            EmitAsm("LDA", Mem(CallArgBase));
-            EmitAsm("CLC");
-            EmitAsm("ADC", Imm(1));
-            EmitAsm("TAX");
+            // Establish row zero, then generate one high-to-low column edge
+            // per requested advance. Repeated writes of 04 do not clock the counter.
+            EmitAsm("LDA", Imm(0x04));
+            EmitAsm("STA", Mem(0x4016));
+            EmitKeyboardDelayLong();
+            EmitAsm("LDX", Mem(CallArgBase));
+            string selectedRow = NewGeneratedLabel("fkb_selected_row");
+            EmitAsm("BEQ", Rel(selectedRow));
             string adv = NewGeneratedLabel("fkb_adv_row");
             _assembly.Add(Expr.Make(Tag.Label, adv));
+            EmitAsm("LDA", Imm(0x06));
+            EmitAsm("STA", Mem(0x4016));
+            EmitKeyboardDelayLong();
             EmitAsm("LDA", Imm(0x04));
             EmitAsm("STA", Mem(0x4016));
             EmitKeyboardDelayLong();
             EmitAsm("DEX");
             EmitAsm("BNE", Rel(adv));
+            _assembly.Add(Expr.Make(Tag.Label, selectedRow));
             EmitAsm("LDA", Mem(CallArgBase + 1));
             EmitAsm("AND", Imm(1));
             string readNow = NewGeneratedLabel("fkb_read_now");

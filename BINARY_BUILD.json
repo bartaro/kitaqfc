@@ -5,7 +5,7 @@
   "build_exit_code": 0,
   "build_method": "Roslyn C# compiler from .NET SDK 8.0.302; project Compile and Reference items; /target:exe /optimize+ /define:TRACE /main:Program; .NET Framework reference assemblies.",
   "developer_build_command": ".\\scripts\\build.ps1",
-  "source_revision_before_packaging": "333561767ccc224dadd27f3a12c8e3448fa870b0",
+  "source_revision_before_packaging": "56822c62dfbe21b3d20f2d80f1017de6ddec4fa3",
   "source_state": "Exact compiler source inputs are identified by the SHA-256 values below.",
   "source_inputs": [
     {
@@ -102,7 +102,7 @@
     },
     {
       "path": "kitaqfc/CodeGenerator.cs",
-      "sha256": "bf11a4e729f1122d33307348db9ff898e9f50945a37ec1fd786cb0ee3c05c4c0"
+      "sha256": "3c35b99bdc691a6fb23f5b7d2ee06e6a4ea300969dfe2c8e5e213c1cc5d75847"
     },
     {
       "path": "kitaqfc/TargetBackend.cs",
@@ -124,7 +124,7 @@
   "artifacts": [
     {
       "path": "kitaqfc.exe",
-      "sha256": "4b519f90e61be4bec4f76b814e472ea111aa8f664adedd33bbb4779ae35e101f",
+      "sha256": "e1c3d65e6a93d5c052d116f292f1ac94958128c9cdc9166d4587a7db366cc2e6",
       "bytes": 672768
     }
   ],
@@ -132,16 +132,15 @@
   "platform": "AnyCPU",
   "scope": "Windows CLI compiler. Source and binary hashes describe this build; test coverage is reported separately. No physical-hardware compatibility claim.",
   "validation": {
-    "fds_placement_cases": 16,
-    "fds_boot_packaging_cases": 18,
-    "fds_farcall_argument_cases": 40,
+    "keyboard_port_trace_variants": 4,
+    "peripheral_mask_unit_variants": 8,
+    "peripheral_sample_variants": 6,
     "fds_overlay_call_cases": 56,
-    "bank_callback_cases": 18,
-    "fds_load_example_cases": 10,
-    "result": "passed",
-    "scope": "Original LoadFiles ABI fixture checks CPU calls, memory transfer and restoration; no real BIOS, disk timing, CRC, or hardware compatibility claim.",
     "fds_query_execution_cases": 12,
+    "fds_load_example_cases": 10,
     "audio_vblank_state_variants": 4,
-    "audio_vblank_nmi_pcm_variants": 3
+    "audio_vblank_nmi_pcm_variants": 3,
+    "result": "passed",
+    "scope": "Keyboard row/column selection and delays from executed port traces; input mask unit tests redirect reads to RAM fixtures. Unmodified sample captures use the no-peripheral KUROSAKI baseline. No physical peripheral, real BIOS or hardware compatibility claim."
   }
 }
