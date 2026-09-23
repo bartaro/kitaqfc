@@ -4,10 +4,11 @@
     "FDS native layout keeps bank 1 at $6000-$9FFF and bank 0 common at $A000-$DFFF in the boot PRG.",
     "#pragma bank 2+ is automatically exported as non-boot PRG overlay files when --fds-auto-overlay is enabled.",
     "Manual overlay/data files can still be added here with boot:false and source/path. Avoid ids used by auto overlays; default auto id for bank 2 is 32.",
-    "Phase30 adds FDS overlay farcall thunks, a resident-bank guard, and a generated overlay function table."
+    "The separate $6000 boot file restores bank 1 after overlay calls without replacing common code or interrupt vectors."
   ],
   "files": [
-    { "id": 1,  "name": "KQFPRG",  "size": 32768, "load": "0x6000", "type": 0, "boot": true },
+    { "id": 1,  "name": "KQFPRG",  "size": 16384, "load": "0x6000", "type": 0, "boot": true },
+    { "id": 3,  "name": "KQFCOMM", "size": 16384, "load": "0xA000", "type": 0, "boot": true },
     { "id": 2,  "name": "KQFCHR",  "size": 8192,  "load": "0x0000", "type": 1, "boot": true },
     { "id": 16, "name": "MAPDATA", "source": "assets/map_overlay.bin", "load": "0x7000", "type": 0, "overlay": true, "boot": false },
     { "id": 17, "name": "SAVE",    "size": 256, "load": "0x7000", "type": 0, "overlay": false, "boot": false }
@@ -21,7 +22,7 @@
     "load": "0x6000",
     "size": 16384,
     "boot": false,
-    "phase30_runtime": {
+    "runtime": {
       "farcall": "__fds_overlay_farcall(bank, func)",
       "resident_bank": "__fds_current_bank()",
       "guard": "__fds_require_bank(bank)",

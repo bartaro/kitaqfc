@@ -359,22 +359,25 @@ u8 __fds_load_file(u8 id, u8* dst);
 // Call BIOS WriteFile with a RAM source and byte length, returning its error byte.
 // The generated PRG descriptor uses id as file number and the fixed name KQFCFILE.
 u8 __fds_save_file(u8 id, const u8* src, u16 len);
-// Load the disk file id through BIOS and return its error byte; this alone does not update bank residency.
+// Load disk file id through BIOS, return its error byte and mark bank residency FF (unknown).
 u8 __fds_load_overlay(u8 id);
-// Map bank >=2 to overlay-start-id+(bank-2), load it and update residency on success.
-// Return FF for bank 0 or 1; an enabled residency guard may skip an already-resident load.
+// Load logical bank 1 from its separate boot file, or bank 2+ from overlay-start-id+(bank-2).
+// Return zero on success, FF for invalid/unavailable mappings, or the BIOS error.
+// A failed BIOS transfer marks residency FF (unknown); a matching valid guard can skip loading.
 u8 __fds_load_bank(u8 bank);
 // Return zero when the software residency record matches, otherwise call __fds_load_bank.
 u8 __fds_require_bank(u8 bank);
-// Return the software resident-bank byte; it is not a checksum of overlay memory.
+// Return the software resident-bank byte, or FF after a failed bank transfer.
+// This is not a checksum of overlay memory.
 u8 __fds_current_bank(void);
-// Compare bank with the software resident-bank byte and return 0 or 1.
+// Compare a valid bank with the software resident-bank byte; FF (unknown) never matches.
 u8 __fds_is_bank_resident(u8 bank);
-// Read the emitted overlay-function table count; the current helper emits an initial zero entry.
+// Return the linker-generated overlay-function count; zero if the table is disabled.
 u8 __fds_overlay_function_count(void);
-// Use a direct call with a function name as the second argument; arbitrary numeric pointers are rejected.
+// Evaluate bank once and call the named zero-argument function using its linked bank.
+// Restore the caller window before returning; restoration failure stops in common code.
 u8 __fds_overlay_farcall(u8 bank, u16 func);
-// Alternate direct-call spelling for FDS overlay calls; supply a function symbol, not a runtime pointer.
+// Same named, zero-argument dispatch as __fds_overlay_farcall; evaluate bank once.
 u8 __fds_farcall(u8 bank, u16 func);
 // Query the compiled --fds-meta/--fds-manifest table, not the inserted disk; return 0 or 1.
 u8 __fds_file_exists(u8 id);

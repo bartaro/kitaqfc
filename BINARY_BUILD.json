@@ -5,7 +5,7 @@
   "build_exit_code": 0,
   "build_method": "Roslyn C# compiler from .NET SDK 8.0.302; project Compile and Reference items; /target:exe /optimize+ /define:TRACE /main:Program; .NET Framework reference assemblies.",
   "developer_build_command": ".\\scripts\\build.ps1",
-  "source_revision_before_packaging": "97f6ee0efe41a2d6d8489ba8ddb0b05fbe09ae29",
+  "source_revision_before_packaging": "333561767ccc224dadd27f3a12c8e3448fa870b0",
   "source_state": "Exact compiler source inputs are identified by the SHA-256 values below.",
   "source_inputs": [
     {
@@ -18,7 +18,7 @@
     },
     {
       "path": "kitaqfc/BankedAssemblerCore.cs",
-      "sha256": "f68388fb5e089c2a3fd8ce1d561a4e0ac2c57987e0b9caac8da18a550a466cf8"
+      "sha256": "b7b8b954d01bac04ed44ca9a83a66baacd17d16883c8363982cdaa31c7753972"
     },
     {
       "path": "kitaqfc/DebugExporter.cs",
@@ -90,7 +90,7 @@
     },
     {
       "path": "kitaqfc/FdsDiskImageBuilder.cs",
-      "sha256": "45473c8b21a31eb00bda1dcf2cf95fb707ceec3e525f1b1c22e2a1b995ef365a"
+      "sha256": "731ca2a12bc7a5c1257698cb021a1bbb3d071619402c6e4a80408dc366fa4339"
     },
     {
       "path": "kitaqfc/RomHeaderPatcher.cs",
@@ -102,7 +102,7 @@
     },
     {
       "path": "kitaqfc/CodeGenerator.cs",
-      "sha256": "3875db429f9ef69771496a7d920a3921acd1dd734da305219f1e24f11a37fcf4"
+      "sha256": "bf11a4e729f1122d33307348db9ff898e9f50945a37ec1fd786cb0ee3c05c4c0"
     },
     {
       "path": "kitaqfc/TargetBackend.cs",
@@ -124,8 +124,8 @@
   "artifacts": [
     {
       "path": "kitaqfc.exe",
-      "sha256": "88fc4c95c3d2d053d950434831ee8c1c4b424003c4baac914ecf68d60da6c65a",
-      "bytes": 668160
+      "sha256": "4b519f90e61be4bec4f76b814e472ea111aa8f664adedd33bbb4779ae35e101f",
+      "bytes": 672768
     }
   ],
   "target_framework": ".NET Framework 4.8",
@@ -133,9 +133,15 @@
   "scope": "Windows CLI compiler. Source and binary hashes describe this build; test coverage is reported separately. No physical-hardware compatibility claim.",
   "validation": {
     "fds_placement_cases": 16,
+    "fds_boot_packaging_cases": 18,
+    "fds_farcall_argument_cases": 40,
+    "fds_overlay_call_cases": 56,
     "bank_callback_cases": 18,
-    "fds_query_execution_cases": 12,
+    "fds_load_example_cases": 10,
     "result": "passed",
-    "scope": "Native FDS packaging and BIOS-free query execution; no BIOS file-transfer or hardware claim."
+    "scope": "Original LoadFiles ABI fixture checks CPU calls, memory transfer and restoration; no real BIOS, disk timing, CRC, or hardware compatibility claim.",
+    "fds_query_execution_cases": 12,
+    "audio_vblank_state_variants": 4,
+    "audio_vblank_nmi_pcm_variants": 3
   }
 }

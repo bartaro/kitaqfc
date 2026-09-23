@@ -1934,7 +1934,16 @@ static class CodeGenerator
                     EmitAsm("JSR", Abs("__kq_prg_set_bank_a"));
                 }
                 if (_functions.ContainsKey("main"))
-                    EmitResolvedCall("main", 0, FilePosition.Unknown, expectedReturnSize: 0);
+                {
+                    // BIOS boot has already installed bank 1. Enter it directly,
+                    // including builds that disable the later residency guard.
+                    if (Program.NesMapperProfile.HasFds && GetFunctionBank("main") == 1)
+                    {
+                        EmitAsm("JSR", Abs("main"));
+                        RecordCallEdge("main", 1, "direct_boot", viaThunk: false, viaFarcall: false);
+                    }
+                    else EmitResolvedCall("main", 0, FilePosition.Unknown, expectedReturnSize: 0);
+                }
                 EmitAsm("JMP", Abs("__kq_hang"));
             }
 
@@ -2131,15 +2140,26 @@ static class CodeGenerator
         }
 
         // Load the target overlay when needed, call it, and request restoration of the previous resident bank.
-        // Initial load failure returns its status; the later restore call's status is not checked here.
+        // Initial load failure returns status; restoration failure traps in common code.
         void EmitFdsOverlayThunkBody(BankThunkInfo info)
         {
             string loaded = NewGeneratedLabel("fds_ovl_loaded");
             string restoreDone = NewGeneratedLabel("fds_ovl_restore_done");
             string loadFailed = NewGeneratedLabel("fds_ovl_load_failed");
+            string restored = NewGeneratedLabel("fds_ovl_restored");
+            string failedLoadRestored = NewGeneratedLabel("fds_ovl_failed_load_restored");
+            FieldInfo[] parameters;
+            _functionParameters.TryGetValue(info.TargetName, out parameters);
+            int argumentBytes = (parameters ?? Array.Empty<FieldInfo>()).Sum(p => GetStorageSize(p.Type));
 
             EmitAsm("LDA", Mem(_runtimeFdsResidentBankAddress));
             EmitAsm("PHA");
+            for (int i = 0; i < argumentBytes; i++)
+            {
+                EmitAsm("LDA", Mem(CallArgBase + i));
+                EmitAsm("PHA");
+            }
+            EmitAsm("LDA", Mem(_runtimeFdsResidentBankAddress));
             if (Program.FdsOverlayResidencyGuardEnabled)
             {
                 EmitAsm("CMP", Imm(info.TargetBank));
@@ -2151,6 +2171,16 @@ static class CodeGenerator
             EmitAsm("CMP", Imm(0));
             EmitAsm("BNE", Rel(loadFailed));
             _assembly.Add(Expr.Make(Tag.Label, loaded));
+            for (int i = argumentBytes - 1; i >= 0; i--)
+            {
+                EmitAsm("PLA");
+                EmitAsm("STA", Mem(CallArgBase + i));
+            }
+            if (IsFunctionFastCall(info.TargetName))
+            {
+                if (argumentBytes > 0) EmitAsm("LDA", Mem(CallArgBase));
+                if (argumentBytes > 1) EmitAsm("LDX", Mem(CallArgBase + 1));
+            }
             EmitAsm("JSR", Abs(info.TargetName));
             if (info.ReturnSize > 0)
             {
@@ -2168,6 +2198,13 @@ static class CodeGenerator
             EmitAsm("LDA", Mem(_runtimeIntrinsicTmp1Address));
             EmitAsm("STA", Mem(CallArgBase));
             EmitAsm("JSR", Abs("__fds_load_bank"));
+            EmitAsm("CMP", Imm(0));
+            EmitAsm("BEQ", Rel(restored));
+            // Never return to a caller whose overlay could not be restored.
+            // Keep the BIOS status for debugging and stop in resident common code.
+            EmitAsm("STA", Mem(_runtimeMapperFaultAddress));
+            EmitAsm("JMP", Abs("__kq_hang"));
+            _assembly.Add(Expr.Make(Tag.Label, restored));
             _assembly.Add(Expr.Make(Tag.Label, restoreDone));
             if (info.ReturnSize > 0)
             {
@@ -2179,8 +2216,20 @@ static class CodeGenerator
 
             _assembly.Add(Expr.Make(Tag.Label, loadFailed));
             EmitAsm("STA", Mem(_runtimeIntrinsicTmp0Address));
+            for (int i = 0; i < argumentBytes; i++) EmitAsm("PLA");
             EmitAsm("PLA");
+            EmitAsm("STA", Mem(CallArgBase));
             EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address));
+            EmitAsm("PHA");
+            // Restore even after an initial load error: the BIOS can report an
+            // error after copying some data into the caller's code window.
+            EmitAsm("JSR", Abs("__fds_load_bank"));
+            EmitAsm("CMP", Imm(0));
+            EmitAsm("BEQ", Rel(failedLoadRestored));
+            EmitAsm("STA", Mem(_runtimeMapperFaultAddress));
+            EmitAsm("JMP", Abs("__kq_hang"));
+            _assembly.Add(Expr.Make(Tag.Label, failedLoadRestored));
+            EmitAsm("PLA");
             if (info.ReturnSize > 1)
                 EmitAsm("LDX", Imm(0));
             EmitAsm("RTS");
@@ -3950,9 +3999,23 @@ static class CodeGenerator
                     Program.Error("error KQFC2514: {0} requires --mapper=fds with --fds-layout=fds32.", funcName);
                     return;
                 }
+                // Like ordinary __farcall, this entry supplies no callback arguments.
+                // Validate before emitting code so a data symbol cannot become a JSR target.
+                if (!_functionParameters.TryGetValue(targetName, out FieldInfo[] fdsParameters))
+                {
+                    Program.Error("error KQFC2610: {0} requires a declared function name; use an ordinary typed call for a function pointer.", funcName);
+                    return;
+                }
+                if (fdsParameters.Length != 0)
+                {
+                    Program.Error("error KQFC2610: {0} requires a callback with no parameters.", funcName);
+                    return;
+                }
+                // Evaluate the bank expression exactly once, even for a safe direct call.
+                // The named target's linked placement determines the dispatched bank.
+                EmitLoadValue(farArgs[0], ctx, 1);
                 int callerBank = ctx == null ? 0 : ctx.Bank;
                 int calleeBank = GetFunctionBank(targetName);
-                // Choose an overlay thunk from the target function metadata rather than evaluating the first FDS argument.
                 if (ShouldUseFdsOverlayThunk(callerBank, calleeBank))
                 {
                     string directFdsThunkName = EnsureFdsOverlayThunk(targetName, calleeBank);
@@ -3960,7 +4023,7 @@ static class CodeGenerator
                     RecordCallEdge(targetName, calleeBank, "fds_overlay_thunk", viaThunk: true, viaFarcall: true);
                     return;
                 }
-                if (calleeBank < 2 || calleeBank == callerBank)
+                if (calleeBank == 0 || calleeBank == callerBank)
                 {
                     EmitAsm("JSR", Abs(targetName));
                     RecordCallEdge(targetName, calleeBank, "direct", viaThunk: false, viaFarcall: true);
@@ -7219,13 +7282,13 @@ static class CodeGenerator
                 viaFarcall: false);
         }
 
-        // Require enabled FDS overlay support and a different overlay bank before choosing an overlay thunk.
+        // Use a common-code thunk for a different switchable FDS window, including boot bank 1.
         bool ShouldUseFdsOverlayThunk(int callerBank, int calleeBank)
         {
             return Program.NesMapperProfile.HasFds &&
                 Program.FdsPrgRamLayoutEnabled &&
                 Program.FdsOverlayFarcallEnabled &&
-                calleeBank >= 2 &&
+                calleeBank >= 1 &&
                 calleeBank != callerBank;
         }
 
@@ -8976,6 +9039,7 @@ static class CodeGenerator
             _assembly.Add(Expr.Make(Tag.ReadonlyData, "__kq_fds_disk_id_wildcard", new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }));
             _assembly.Add(Expr.Make(Tag.ReadonlyData, "__kq_fds_metadata_table", (Program.FdsMetadata ?? FdsDiskMetadata.Empty).BuildRuntimeTable()));
             _assembly.Add(Expr.Make(Tag.ReadonlyData, "__kq_fds_overlay_function_table", new byte[] { 0 }));
+            _assembly.Add(Expr.Make(Tag.ReadonlyData, "__kq_fds_boot_bank_file_id", new byte[] { 0xFF }));
 
             // Wait for the disk-inserted status bit to clear; this loop checks presence and has no timeout.
             EmitHelperStart("__fds_wait_ready");
@@ -8995,6 +9059,13 @@ static class CodeGenerator
             EmitAsm("JSR", Mem(0xE1F8)); // FDS BIOS LoadFiles; A=error, Y=count.
             _assembly.Add(Expr.Make(Tag.Word, "__kq_fds_disk_id_wildcard"));
             _assembly.Add(Expr.Make(Tag.Word, string.Format("${0:X4}", _runtimeFdsLoadListAddress)));
+            // A raw file load can replace any part of the switchable window.
+            // Only the bank-aware wrapper may establish a known resident bank.
+            EmitAsm("TAX");
+            EmitAsm("LDA", Imm(0xFF));
+            EmitAsm("STA", Mem(_runtimeFdsResidentBankAddress));
+            EmitAsm("STA", Mem(_runtimeCurrentBankAddress));
+            EmitAsm("TXA");
             EmitAsm("RTS");
 
             // Use the same BIOS loading convention for an overlay file identifier.
@@ -9006,20 +9077,29 @@ static class CodeGenerator
             EmitAsm("JSR", Mem(0xE1F8));
             _assembly.Add(Expr.Make(Tag.Word, "__kq_fds_disk_id_wildcard"));
             _assembly.Add(Expr.Make(Tag.Word, string.Format("${0:X4}", _runtimeFdsLoadListAddress)));
+            // A raw file load can replace any part of the switchable window.
+            // Only the bank-aware wrapper may establish a known resident bank.
+            EmitAsm("TAX");
+            EmitAsm("LDA", Imm(0xFF));
+            EmitAsm("STA", Mem(_runtimeFdsResidentBankAddress));
+            EmitAsm("STA", Mem(_runtimeCurrentBankAddress));
+            EmitAsm("TXA");
             EmitAsm("RTS");
 
-            // Translate logical banks starting at two to overlay file IDs, optionally reusing the recorded resident bank.
+            // Restore bank 1 from its separate boot file; map banks 2+ to overlay
+            // IDs. Keep the requested bank on the CPU stack across the BIOS call.
             EmitHelperStart("__fds_load_bank");
-            string fdsLoadBankOk = NewGeneratedLabel("fds_load_bank_ok");
             string fdsLoadBankLoad = NewGeneratedLabel("fds_load_bank_load");
+            string fdsLoadBankOverlay = NewGeneratedLabel("fds_load_bank_overlay");
+            string fdsLoadBankCall = NewGeneratedLabel("fds_load_bank_call");
             string fdsLoadBankDone = NewGeneratedLabel("fds_load_bank_done");
+            string fdsLoadBankPopInvalid = NewGeneratedLabel("fds_load_bank_pop_invalid");
+            string fdsLoadBankInvalid = NewGeneratedLabel("fds_load_bank_invalid");
             EmitAsm("LDA", Mem(CallArgBase));
-            EmitAsm("CMP", Imm(2));
-            EmitAsm("BCS", Rel(fdsLoadBankOk));
-            EmitAsm("LDA", Imm(0xFF));
-            EmitAsm("RTS");
-            _assembly.Add(Expr.Make(Tag.Label, fdsLoadBankOk));
-            EmitAsm("STA", Mem(_runtimeIntrinsicTmp1Address));
+            EmitAsm("CMP", Imm(1));
+            EmitAsm("BCC", Rel(fdsLoadBankInvalid));
+            EmitAsm("CMP", Imm(0xFF));
+            EmitAsm("BEQ", Rel(fdsLoadBankInvalid));
             if (Program.FdsOverlayResidencyGuardEnabled)
             {
                 EmitAsm("CMP", Mem(_runtimeFdsResidentBankAddress));
@@ -9028,28 +9108,48 @@ static class CodeGenerator
                 EmitAsm("RTS");
                 _assembly.Add(Expr.Make(Tag.Label, fdsLoadBankLoad));
             }
-            EmitAsm("LDA", Mem(_runtimeIntrinsicTmp1Address));
+            EmitAsm("PHA");
+            EmitAsm("CMP", Imm(1));
+            EmitAsm("BNE", Rel(fdsLoadBankOverlay));
+            EmitAsm("LDA", Abs("__kq_fds_boot_bank_file_id"));
+            EmitAsm("CMP", Imm(0xFF));
+            EmitAsm("BEQ", Rel(fdsLoadBankPopInvalid));
+            EmitAsm("JMP", Abs(fdsLoadBankCall));
+            _assembly.Add(Expr.Make(Tag.Label, fdsLoadBankOverlay));
             EmitAsm("SEC");
             EmitAsm("SBC", Imm(2));
             EmitAsm("CLC");
             EmitAsm("ADC", Imm(Program.FdsOverlayStartId & 0xFF));
+            EmitAsm("BCS", Rel(fdsLoadBankPopInvalid));
+            EmitAsm("CMP", Imm(0xFF));
+            EmitAsm("BEQ", Rel(fdsLoadBankPopInvalid));
+            _assembly.Add(Expr.Make(Tag.Label, fdsLoadBankCall));
             EmitAsm("STA", Mem(CallArgBase));
             EmitAsm("JSR", Abs("__fds_load_overlay"));
-            EmitAsm("STA", Mem(_runtimeIntrinsicTmp0Address));
-            EmitAsm("CMP", Imm(0));
-            EmitAsm("BNE", Rel(fdsLoadBankDone));
-            EmitAsm("LDA", Mem(_runtimeIntrinsicTmp1Address));
-            // Update both bank shadows only after the BIOS load reports success.
+            EmitAsm("TAX");
+            EmitAsm("PLA");
+            EmitAsm("CPX", Imm(0));
+            EmitAsm("BEQ", Rel(fdsLoadBankDone));
+            // A failed BIOS transfer may have overwritten part of the window.
+            // Mark it unknown so a subsequent restore cannot be skipped by the guard.
+            EmitAsm("LDA", Imm(0xFF));
+            _assembly.Add(Expr.Make(Tag.Label, fdsLoadBankDone));
             EmitAsm("STA", Mem(_runtimeFdsResidentBankAddress));
             EmitAsm("STA", Mem(_runtimeCurrentBankAddress));
-            _assembly.Add(Expr.Make(Tag.Label, fdsLoadBankDone));
-            EmitAsm("LDA", Mem(_runtimeIntrinsicTmp0Address));
+            EmitAsm("TXA");
+            EmitAsm("RTS");
+            _assembly.Add(Expr.Make(Tag.Label, fdsLoadBankPopInvalid));
+            EmitAsm("PLA");
+            _assembly.Add(Expr.Make(Tag.Label, fdsLoadBankInvalid));
+            EmitAsm("LDA", Imm(0xFF));
             EmitAsm("RTS");
 
             // Return success for the recorded resident bank, otherwise dispatch a bank load.
             EmitHelperStart("__fds_require_bank");
             string fdsRequireLoad = NewGeneratedLabel("fds_require_load");
             EmitAsm("LDA", Mem(CallArgBase));
+            EmitAsm("CMP", Imm(0xFF));
+            EmitAsm("BEQ", Rel(fdsRequireLoad));
             EmitAsm("CMP", Mem(_runtimeFdsResidentBankAddress));
             EmitAsm("BNE", Rel(fdsRequireLoad));
             EmitAsm("LDA", Imm(0));
@@ -9061,9 +9161,13 @@ static class CodeGenerator
             // Compare the requested bank with the software residency record and return zero or one.
             EmitHelperStart("__fds_is_bank_resident");
             string fdsResidentYes = NewGeneratedLabel("fds_resident_yes");
+            string fdsResidentNo = NewGeneratedLabel("fds_resident_no");
             EmitAsm("LDA", Mem(CallArgBase));
+            EmitAsm("CMP", Imm(0xFF));
+            EmitAsm("BEQ", Rel(fdsResidentNo));
             EmitAsm("CMP", Mem(_runtimeFdsResidentBankAddress));
             EmitAsm("BEQ", Rel(fdsResidentYes));
+            _assembly.Add(Expr.Make(Tag.Label, fdsResidentNo));
             EmitAsm("LDA", Imm(0));
             EmitAsm("RTS");
             _assembly.Add(Expr.Make(Tag.Label, fdsResidentYes));

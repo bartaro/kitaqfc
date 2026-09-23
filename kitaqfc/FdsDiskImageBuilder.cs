@@ -192,8 +192,19 @@ sealed class FdsDiskImageBuilder
         var metaFiles = (metadata == null ? null : metadata.Files) ?? new List<FdsDiskFileMetadata>();
         if (metaFiles.Count == 0)
         {
-            files.Add(new DiskFile { Side = 0, Number = 0, Id = 0, Name = "KQFPRG", LoadAddress = autoPrgLoadBase, FileType = 0, Boot = true, Data = autoPrg });
-            files.Add(new DiskFile { Side = 0, Number = 1, Id = 1, Name = "KQFCHR", LoadAddress = 0x0000, FileType = 1, Boot = true, Data = autoChr });
+            if (autoPrgLoadBase == FdsPrgRamLoadBase && autoPrg.Length == FdsPrgRamBootSize)
+            {
+                // Separate the switchable window from common code. File 0 can
+                // then restore bank 1 after an overlay call without rewriting vectors.
+                files.Add(new DiskFile { Side = 0, Number = 0, Id = 0, Name = "KQFPRG", LoadAddress = 0x6000, FileType = 0, Boot = true, Data = autoPrg.Take(NesBankSize).ToArray() });
+                files.Add(new DiskFile { Side = 0, Number = 1, Id = 1, Name = "KQFCOMM", LoadAddress = 0xA000, FileType = 0, Boot = true, Data = autoPrg.Skip(NesBankSize).ToArray() });
+                files.Add(new DiskFile { Side = 0, Number = 2, Id = 2, Name = "KQFCHR", LoadAddress = 0x0000, FileType = 1, Boot = true, Data = autoChr });
+            }
+            else
+            {
+                files.Add(new DiskFile { Side = 0, Number = 0, Id = 0, Name = "KQFPRG", LoadAddress = autoPrgLoadBase, FileType = 0, Boot = true, Data = autoPrg });
+                files.Add(new DiskFile { Side = 0, Number = 1, Id = 1, Name = "KQFCHR", LoadAddress = 0x0000, FileType = 1, Boot = true, Data = autoChr });
+            }
         }
         else
         {
@@ -238,6 +249,13 @@ sealed class FdsDiskImageBuilder
             warnings.Add("FDS auto overlay export enabled: " + autoOverlayFiles.Count + " PRG bank overlay file(s) were added for bank 2+.");
 
         ValidateNoDuplicateFileIds(files);
+        // A disk side stores one boot-ID threshold, not per-file boot flags.
+        foreach (var side in files.GroupBy(f => f.Side))
+        {
+            int bootMax = side.Where(f => f.Boot).Select(f => f.Id).DefaultIfEmpty(-1).Max();
+            if (side.Any(f => !f.Boot && f.Id <= bootMax))
+                Program.Error("error KQFC2518: FDS non-boot file IDs must exceed every boot-file ID on the same side.");
+        }
         return files;
     }
 
@@ -256,17 +274,26 @@ sealed class FdsDiskImageBuilder
     }
 
     // Append a side-zero boot write that enables PPU NMI and an 8 KiB non-boot delay payload.
-    // Choose unused ids above the side-zero maximum; byte-range validation is not performed in this helper.
+    // Keep the boot trigger below every non-boot file and validate its byte-sized ID.
     static void AddLicenseBypassBootFiles(List<DiskFile> files, List<string> warnings)
     {
         if (files == null) return;
         var side0 = files.Where(f => f.Side == 0).ToList();
-        int nextId = side0.Select(f => f.Id).DefaultIfEmpty(-1).Max() + 1;
-        while (files.Any(f => f.Id == nextId)) nextId++;
-        int triggerId = nextId;
-        nextId++;
-        while (files.Any(f => f.Id == nextId)) nextId++;
-        int stallId = nextId;
+        // Boot eligibility is an ID threshold. Putting the trigger above an
+        // overlay ID would silently turn that overlay into a boot file.
+        int triggerId = side0.Where(f => f.Boot).Select(f => f.Id).DefaultIfEmpty(-1).Max() + 1;
+        if (triggerId > 254 || files.Any(f => f.Id == triggerId))
+        {
+            Program.Error("error KQFC2517: FDS approval-screen trigger needs a free ID immediately above the boot-file IDs. Move non-boot IDs higher or use --fds-no-license-bypass.");
+            return;
+        }
+        int stallId = triggerId + 1;
+        while (stallId <= 254 && files.Any(f => f.Id == stallId)) stallId++;
+        if (stallId > 254)
+        {
+            Program.Error("error KQFC2517: no free FDS file ID remains for the approval-screen delay file.");
+            return;
+        }
 
         files.Add(new DiskFile
         {

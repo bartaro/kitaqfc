@@ -69,7 +69,15 @@ sealed class BankedAssemblerCore
             return list;
         }
 
-        var used = new HashSet<int>((Program.FdsMetadata == null ? FdsDiskMetadata.Empty : Program.FdsMetadata).Files.Select(f => f.Id));
+        if (GetFdsBootBankFileId() == 0xFF)
+        {
+            Program.Error("error KQFC2516: FDS overlays require a boot PRG file at $6000 with size 16384 so bank 1 can be restored without replacing common code. Split the manifest boot PRG into $6000/$A000 files of 16384 bytes each.");
+            return list;
+        }
+        var used = new HashSet<int>((Program.FdsMetadata ?? FdsDiskMetadata.Empty).Files.Select(f => f.Id));
+        // Native default boot files are bank 1, common code and CHR (IDs 0, 1, 2).
+        if (!(Program.FdsMetadata ?? FdsDiskMetadata.Empty).HasFiles)
+            used.UnionWith(new[] { 0, 1, 2 });
         for (int bank = 2; bank <= _switchableBankCount; bank++)
         {
             int id = firstId + (bank - 2);
@@ -98,6 +106,17 @@ sealed class BankedAssemblerCore
         return list;
     }
 
+    // Find a disk file that restores only the switchable boot window, leaving
+    // common code and the active NMI/IRQ vectors intact during the BIOS load.
+    int GetFdsBootBankFileId()
+    {
+        var metadata = Program.FdsMetadata ?? FdsDiskMetadata.Empty;
+        if (!metadata.HasFiles) return 0;
+        var file = metadata.Files.FirstOrDefault(f => f.Boot && f.FileType == 0 &&
+            f.LoadAddress == FdsSwitchableCpuBase && f.Size == BankSize);
+        return file == null ? 0xFF : file.Id;
+    }
+
     // Replace existing runtime-table data nodes with user metadata plus generated overlays; report whether the bytes changed.
     bool ApplyFdsRuntimeMetadataTable(List<PlacedUnit> units)
     {
@@ -113,11 +132,13 @@ sealed class BankedAssemblerCore
             {
                 string name;
                 byte[] oldBytes;
-                if (unit.Nodes[i].MatchReadonlyData(out name, out oldBytes) && name == "__kq_fds_metadata_table")
+                if (unit.Nodes[i].MatchReadonlyData(out name, out oldBytes))
                 {
-                    if (!ByteArrayEquals(oldBytes, table))
+                    byte[] replacement = name == "__kq_fds_metadata_table" ? table :
+                        name == "__kq_fds_boot_bank_file_id" ? new byte[] { (byte)GetFdsBootBankFileId() } : null;
+                    if (replacement != null && !ByteArrayEquals(oldBytes, replacement))
                     {
-                        unit.Nodes[i] = Expr.Make(Tag.ReadonlyData, name, table).WithSource(unit.Nodes[i].Source);
+                        unit.Nodes[i] = Expr.Make(Tag.ReadonlyData, name, replacement).WithSource(unit.Nodes[i].Source);
                         changed = true;
                     }
                 }
