@@ -24,7 +24,10 @@ add('address-reset','address_port=0x21;__ppu_addr(0x2380);__ppu_data(7);',vram={
 add('address-mask','__ppu_addr(0xA040);__ppu_data(5);',vram={0x2040:5},writes=1)
 add('data-increment-1','__ppu_addr(0x2040);__ppu_data(7);__ppu_data(8);__ppu_data(9);',vram={0x2040:7,0x2041:8,0x2042:9},writes=3)
 add('data-increment-32','__ppu_ctrl_set(4);__ppu_addr(0x2040);__ppu_data(7);__ppu_data(8);__ppu_data(9);',vram={0x2040:7,0x2060:8,0x2080:9},writes=3)
-add('status-flag-and-latch','address_port=0x21;result[0]=__ppu_read_status();while((result[0]&128)==0)result[0]=__ppu_read_status();result[1]=__ppu_read_status();address_port=0x23;address_port=0x80;data_port=7;',vram={0x2380:7},writes=1,result={0:128})
+# PPUSTATUS bits 0..4 come from the I/O latch. A write of 0x21 leaves
+# low bits 1, so VBlank returns 0x81 and its clearing read returns 0x01.
+# Then drive another low-bit pattern and verify it independently of VBlank.
+add('status-flag-and-latch','address_port=0x21;result[0]=__ppu_read_status();while((result[0]&128)==0)result[0]=__ppu_read_status();result[1]=__ppu_read_status();address_port=0x3F;result[2]=__ppu_read_status();address_port=0x23;address_port=0x80;data_port=7;',vram={0x2380:7},writes=1,result={0:0x81,1:0x01,2:0x1F})
 add('latch-reset','address_port=0x21;__scroll_latch_reset();address_port=0x23;address_port=0x80;data_port=7;',vram={0x2380:7},writes=1)
 add('scroll-pair','address_port=0x21;__scroll_set(19,27);',{'scroll_x':19,'scroll_y':27,'fine_x':3,'scroll_writes':2})
 add('scroll-x-preserves-y','__scroll_set(19,27);scroll_port=100;scroll_port=101;__scroll_x_set(255);',{'scroll_x':255,'scroll_y':27,'fine_x':7,'scroll_writes':6})
