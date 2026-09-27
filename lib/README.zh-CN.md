@@ -2,7 +2,7 @@
 
 [English](README.md) | [日本語](README.ja.md) | **简体中文**
 
-打开KITAQFC库简体中文手册
+[打开KITAQFC库简体中文手册](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html)
 
 公开库的命名沿用KITAQGB风格：名称简短、体现功能，不加 `kitaqfc_` 前缀。
 
@@ -42,6 +42,7 @@
 ## 音频与外设
 
 - `audio.h` / `audio.c`
+- `audio_vblank.h` / `audio_vblank.c` - NMI 音乐驱动，提供七条记录的 BGM 队列、暂停／继续、独立的七条记录 SFX 缓冲区和单次噪声包络。
 - `fds_sound.h`
 - `vrc6_sound.h` / `vrc6_sound.c`
 - `vrc7_sound.h` / `vrc7_sound.c`
@@ -67,9 +68,10 @@
 ## 数值计算
 
 - `fixed.h` / `fixed.c`
-- `physics2d.h` / `physics2d.c` - 字节大小的Q5.3类型及调节常量，分别保存整数像素位置、1/8像素的小数部分、无符号速率、方向和阻力。位置与速度随时间的更新由游戏代码计算；头文件不提供推进物理模拟的函数。分开保存这些字段，可避免高频移动循环通过ABI传递聚合类型或指针的开销。
+- `physics2d.h` / `physics2d.c` - 矩形物体积分、重力、AABB 接触、表面响应，以及可选的 Q5.3 数据类型。与 `fixed.c` 一起编译。
+- `physics3d.h` / `physics3d.c` - 不旋转的三维箱体、质量加权反弹和碰撞强度值。与 `fixed.c` 和 `physics2d.c` 一起编译。
 - `math_fast.h`
 - `math_fixed.h`
 - `math_lut.h` / `math_lut.c`
 
-在FC/NES硬件能够支持的范围内，KITAQGB兼容函数保留简短的功能名称。当前采用回调形式的场景与实体功能只保存状态，不会间接调用用户的函数指针。
+在FC/NES硬件能够支持的范围内，KITAQGB兼容函数保留简短的功能名称。场景切换、更新与绘制会同步调用已注册的处理函数。回调顺序及重入限制请参阅各 API 条目。

@@ -1,5 +1,7 @@
 # FC/NES standard library layout
 
+[简体中文](README.zh-CN.md) · [简体中文 HTML](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html)
+
 <!-- manual-language-links:start -->
 | Language / 言語 | HTML |
 | --- | --- |

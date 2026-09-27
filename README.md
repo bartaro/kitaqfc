@@ -5,10 +5,11 @@
 | --- | --- |
 | English | [KITAQFC](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/en/fc-library.html) |
 | 日本語 | [KITAQFC](https://bartaro.github.io/kitaq-docs/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/fc-library.html) |
+| 简体中文 | [KITAQFC](https://bartaro.github.io/kitaq-docs/zh-CN/kitaqfc.html) · [KITAQFC 库](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html) |
 <!-- manual-language-links:end -->
 
 
-[English](#english) | [日本語](#japanese)
+[English](#english) | [日本語](#japanese) | [简体中文](README.zh-CN.md)
 
 <a name="english"></a>
 
