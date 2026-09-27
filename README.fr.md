@@ -1,12 +1,26 @@
 # KITAQFC
 
-[English](README.md#english) | [日本語](README.md#japanese) | **Français**
+<!-- readme-language-links:start -->
+[English](README.md#english) | [日本語](README.md#japanese) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | **Français** | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
 
-**Manuel du compilateur** · **Manuel de la bibliothèque**
+[Manuel du compilateur](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html) · [Manuel de la bibliothèque](https://bartaro.github.io/kitaq-docs/fr/fc-library.html)
 
 Compilateur C et bibliothèques pour créer des logiciels homebrew originaux NES/Famicom/FDS, issus de KITAQGB et de NORCAL.
 
 Version publique préliminaire : les API et leur comportement peuvent évoluer.
+
+
+
+
+<!-- current-features:start -->
+[Exemple de réserve de projectiles et référence API](https://bartaro.github.io/kitaq-docs/fr/fc-library.html#module-danmaku) · [Tracé filaire et projection](https://bartaro.github.io/kitaq-docs/fr/fc-library.html#module-wire3d)
+
+Pour compresser les tuiles et les cartes, consultez la [référence ZX0 et son exemple visuel](https://bartaro.github.io/kitaq-docs/fr/fc-library.html#module-zx0), ainsi que l’[outil de compression sur ordinateur](tools/zx0/README.fr.md).
+
+`audio_vblank` lit une file en RAM pendant la NMI pour jouer de la musique sur quatre canaux. Ajoutez `lib/audio_vblank.c` à la compilation, initialisez la bibliothèque, lancez un morceau et réapprovisionnez la file depuis la boucle principale. Les enregistrements suivent l’ordre `delay, CH1, CH2, CH3, CH4` ; le compilateur raccorde la mise à jour musicale à la NMI. La pause et la reprise conservent la progression de la musique et des effets. Un flux d’effets de longueur limitée peut prendre temporairement la main sur les canaux choisis. Le canal de bruit accepte une enveloppe de décroissance à déclenchement unique. [API, exemple complet et enregistrement audio](https://bartaro.github.io/kitaq-docs/fr/fc-library.html#module-audio_vblank)
+<!-- current-features:end -->
+
 
 ## Principes de développement
 
@@ -17,7 +31,7 @@ KITAQFC privilégie un développement adapté au matériel NES/Famicom, dont les
 
 Renseignez les besoins, puis transmettez le prompt complet à votre assistant IA. Il couvre l’implémentation, les tests dans l’émulateur, l’analyse avec SARAKURA et la vérification des corrections.
 
-Lire l’exemple pratique dans le manuel HTML
+[Lire l’exemple pratique dans le manuel HTML](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html#loop-prompts)
 
 <details>
 <summary>Afficher le prompt complet</summary>
@@ -58,7 +72,7 @@ Répétez ce cycle jusqu’à satisfaire les critères d’acceptation : précis
 
 - Envisagez NROM pour un petit jeu, puis MMC3 ou un autre mapper si la taille ou les changements de banque le nécessitent. Vérifiez les fonctions de la carte avec `inspect-rom`, `mapper-info`, `audit-board` et leur implémentation ; le nom du mapper ne garantit pas leur prise en charge.
 - Prévoyez les tailles PRG/CHR, CHR-ROM ou CHR-RAM, mirroring, banques fixes, vecteurs d’interruption et RAM de sauvegarde. Après optimisation ou modification des banques, comparez l’en-tête à la disposition réelle. `--nes-local-ram` utilise la RAM interne du CPU `$0000–$07FF` ; évitez tout chevauchement avec page zéro, pile, tampons OAM et zones du runtime ou des bibliothèques.
-- Utilisez le dialecte C de KITAQFC, les bibliothèques FC et `void main(void)`. Ne présumez pas la compatibilité des API GB. Certains en-têtes ne contiennent que des déclarations : repérez les implémentations et incluez les fichiers `.c` nécessaires.
+- Utilisez le dialecte C de KITAQFC, les bibliothèques FC et `void main(void)`. Ne présumez pas la compatibilité des API GB. Certains éléments des en-têtes ne sont que des déclarations : repérez les implémentations et incluez les fichiers `.c` nécessaires.
 - Tenez compte des registres PPU, de NMI, d’OAM DMA, du nombre de sprites par ligne, du défilement, du mirroring, des tables d’attributs et d’APU/DMC. L’espace libre de la file n’est pas la capacité de VRAM du PPU ; dimensionnez le travail de chaque NMI.
 - Convertissez la police originale `ascii.c` au format CHR FC, puis vérifiez CHR, palettes, tables de noms et attributs. Pour FDS, vérifiez séparément accès disque, sauvegarde et exigences de BIOS, sans supposer les mêmes conditions de démarrage qu’une cartouche.
 
@@ -153,16 +167,16 @@ Si l’environnement ou les permissions empêchent un contrôle obligatoire, ind
 ## Organisation du dépôt
 
 ```text
-kitaqfc/                  # Racine du dépôt
-├─ kitaqfc/               # Sources nécessaires à la compilation du compilateur
+kitaqfc/  # Racine du dépôt
+├─ kitaqfc/  # Sources du compilateur
 │  ├─ *.cs
 │  ├─ app.config
 │  └─ kitaqfc.csproj
-├─ kitaqfc.exe            # Compilateur prêt à l'emploi, en mode Release
-├─ kitaqfc.exe.config     # Configuration du runtime .NET Framework
-├─ lib/                   # Bibliothèques C
-├─ examples/              # Programmes pédagogiques et police originale
-├─ scripts/build.ps1      # Reconstruction de l'exécutable Release
+├─ kitaqfc.exe  # Compilateur Release prêt à l’emploi
+├─ kitaqfc.exe.config  # Configuration du runtime .NET Framework
+├─ lib/  # Bibliothèques C
+├─ examples/  # Exemples pédagogiques et police originale
+├─ scripts/build.ps1  # Reconstruire l’exécutable Release
 ├─ LICENSE
 └─ LICENSE.ja
 ```
@@ -189,7 +203,7 @@ MSBuild.exe .\kitaqfc\kitaqfc.csproj /t:Build /p:Configuration=Release
 
 ## Manuels et licences
 
-- Compilateur en français / Bibliothèque en français
+- [Manuel du compilateur](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html) · [Manuel de la bibliothèque](https://bartaro.github.io/kitaq-docs/fr/fc-library.html)
 - [Manuel en anglais](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html) / [Manuel en japonais](https://bartaro.github.io/kitaq-docs/kitaqfc.html)
 - [Sources du manuel pour lecture hors connexion](https://github.com/bartaro/kitaq-docs)
 - [Licence](LICENSE) / [Traduction japonaise à titre de référence](LICENSE.ja)

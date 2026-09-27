@@ -1,8 +1,10 @@
 # Aufbau der FC-/NES-Standardbibliothek
 
-[English](README.md) | **Deutsch**
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | **Deutsch**
+<!-- readme-language-links:end -->
 
-**Deutsches Bibliothekshandbuch öffnen**
+**[KITAQFC · HTML-Handbuch](https://bartaro.github.io/kitaq-docs/de/fc-library.html)**
 
 Die öffentlichen Bibliotheksnamen folgen dem Stil von KITAQGB: kurze, funktionsbezogene Namen ohne Präfix `kitaqfc_`.
 
@@ -42,6 +44,7 @@ Die öffentlichen Bibliotheksnamen folgen dem Stil von KITAQGB: kurze, funktions
 ## Audio und Geräte
 
 - `audio.h` / `audio.c`
+- `audio_vblank.h` / `audio_vblank.c` — NMI-Musik mit einer BGM-Warteschlange für sieben Datensätze, Pause und Fortsetzung, einem separaten SFX-Puffer für sieben Datensätze und einmal ausgelösten Rauschhüllkurven. [HTML-Handbuch](https://bartaro.github.io/kitaq-docs/de/fc-library.html#module-audio_vblank)
 - `fds_sound.h`
 - `vrc6_sound.h` / `vrc6_sound.c`
 - `vrc7_sound.h` / `vrc7_sound.c`
@@ -67,9 +70,10 @@ Die öffentlichen Bibliotheksnamen folgen dem Stil von KITAQGB: kurze, funktions
 ## Mathematik
 
 - `fixed.h` / `fixed.c`
-- `physics2d.h` / `physics2d.c`: bytegroße Q5.3-Typen und Einstellkonstanten für ganzzahlige Pixelpositionen, Achtelpixel-Anteile, vorzeichenlose Geschwindigkeit, separate Richtung und Bremswirkung. Die Bewegungsintegration übernimmt der Spielcode; der Header enthält keine Physik-Schrittfunktion. Die getrennten Felder erlauben Berechnungen in zeitkritischen Schleifen ohne zusätzlichen ABI-Aufwand für Strukturen und Zeiger.
+- `physics2d.h` / `physics2d.c` — Integration rechteckiger Körper, Schwerkraft, AABB-Kontakte, Oberflächenreaktion und optionale Q5.3-Datentypen. Zusammen mit `fixed.c` kompilieren.
+- `physics3d.h` / `physics3d.c` — Nicht rotierende 3D-Boxen, massengewichteter Rückprall und Aufprallwerte. Zusammen mit `fixed.c` und `physics2d.c` kompilieren.
 - `math_fast.h`
 - `math_fixed.h`
 - `math_lut.h` / `math_lut.c`
 
-KITAQGB-Kompatibilitätsfunktionen behalten ihre kurzen Namen, soweit das FC-/NES-Hardwaremodell die jeweilige Funktion zulässt. Die callbackartigen Szenen- und Objektfunktionen speichern derzeit Zustände, rufen aber keine benutzerdefinierten Funktionszeiger indirekt auf.
+Szenenwechsel, Aktualisierung und Darstellung rufen ihre registrierten Handler synchron auf. Die einzelnen API-Einträge erläutern die Callback-Reihenfolge und die Grenzen der Wiedereintrittsfähigkeit.

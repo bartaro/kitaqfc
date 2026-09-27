@@ -1,12 +1,26 @@
 # KITAQFC
 
-[English](README.md#english) | [日本語](README.md#japanese) | **한국어**
+<!-- readme-language-links:start -->
+[English](README.md#english) | [日本語](README.md#japanese) | **한국어** | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
 
-**컴파일러 설명서** · **라이브러리 설명서**
+[컴파일러 설명서](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html) · [라이브러리 설명서](https://bartaro.github.io/kitaq-docs/ko/fc-library.html)
 
 NES/Famicom/FDS용 홈브루 소프트웨어를 만드는 C 컴파일러와 지원 라이브러리입니다. KITAQGB와 NORCAL을 바탕으로 개발되었습니다.
 
 공개 미리 보기 버전으로, API와 동작이 변경될 수 있습니다.
+
+
+
+
+<!-- current-features:start -->
+[탄환 풀 예제와 API](https://bartaro.github.io/kitaq-docs/ko/fc-library.html#module-danmaku) · [와이어프레임 그리기와 투영](https://bartaro.github.io/kitaq-docs/ko/fc-library.html#module-wire3d)
+
+타일과 맵 자료를 압축하려면 [ZX0 API와 화면 예제](https://bartaro.github.io/kitaq-docs/ko/fc-library.html#module-zx0) 및 [PC용 압축 도구](tools/zx0/README.ko.md)를 참고하세요.
+
+`audio_vblank`는 NMI에서 RAM 큐를 읽어 4채널 음악을 재생합니다. `lib/audio_vblank.c`를 빌드에 포함하고 초기화한 뒤 곡을 시작하세요. 큐는 메인 루프에서 보충합니다. 레코드 순서는 `delay, CH1, CH2, CH3, CH4`이며, 컴파일러가 음악 갱신 처리를 NMI에 연결합니다. 일시 정지와 재개는 음악과 효과음 양쪽의 재생 진행 상태를 유지합니다. 길이가 제한된 효과음 스트림은 선택한 채널을 일시적으로 사용할 수 있으며, 노이즈 채널은 한 번 재생하면서 음량이 줄어드는 엔벌로프를 지원합니다. [API·완전한 예제·녹음 결과](https://bartaro.github.io/kitaq-docs/ko/fc-library.html#module-audio_vblank)
+<!-- current-features:end -->
+
 
 ## 개발 방향
 
@@ -17,7 +31,7 @@ KITAQFC는 NES·패미컴 하드웨어의 특성을 고려하고, 작고 재현 
 
 요구 사항을 작성한 뒤 프롬프트 전체를 AI에 전달하세요. 구현, 에뮬레이터 테스트, SARAKURA 분석, 수정 후 재검증까지 다룹니다.
 
-HTML 설명서에서 활용 예 읽기
+[HTML 설명서에서 참고 예제 읽기](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html#loop-prompts)
 
 <details>
 <summary>프롬프트 전체 보기</summary>
@@ -155,16 +169,16 @@ if ($LASTEXITCODE -ne 0) { throw 'Inspect the analysis report and fix the cause.
 컴파일러 소스, 프로젝트 파일, 빌드 설정은 이름이 같은 하위 폴더 `kitaqfc/`에 있습니다. 빌드된 Release 실행 파일과 런타임 설정은 저장소 최상위 폴더에 있습니다. `lib/`에는 C 라이브러리, `examples/`에는 입문 예제와 직접 제작한 글꼴이 들어 있습니다.
 
 ```text
-kitaqfc/                  # Repository root
-├─ kitaqfc/               # Compiler build sources
+kitaqfc/  # 저장소 최상위 폴더
+├─ kitaqfc/  # 컴파일러 빌드 소스
 │  ├─ *.cs
 │  ├─ app.config
 │  └─ kitaqfc.csproj
-├─ kitaqfc.exe            # Prebuilt Release compiler
-├─ kitaqfc.exe.config     # .NET Framework runtime configuration
-├─ lib/                # C support libraries
-├─ examples/           # Tutorial programs and original font
-├─ scripts/build.ps1   # Rebuild the Release executable
+├─ kitaqfc.exe  # 빌드된 Release 컴파일러
+├─ kitaqfc.exe.config  # .NET Framework 런타임 설정
+├─ lib/  # C 지원 라이브러리
+├─ examples/  # 입문 예제와 원본 글꼴
+├─ scripts/build.ps1  # Release 실행 파일 다시 빌드
 ├─ LICENSE
 └─ LICENSE.ja
 ```
@@ -191,7 +205,7 @@ MSBuild.exe .\kitaqfc\kitaqfc.csproj /t:Build /p:Configuration=Release
 
 ## 설명서와 라이선스
 
-- 한국어 컴파일러 설명서 / 한국어 라이브러리 설명서
+- [컴파일러 설명서](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html) · [라이브러리 설명서](https://bartaro.github.io/kitaq-docs/ko/fc-library.html)
 - [영어 설명서](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html) / [일본어 설명서](https://bartaro.github.io/kitaq-docs/kitaqfc.html)
 - [오프라인 열람용 설명서 소스](https://github.com/bartaro/kitaq-docs)
 - [라이선스](LICENSE) / [일본어 참고 번역](LICENSE.ja)

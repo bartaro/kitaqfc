@@ -1,8 +1,10 @@
 # Organización de las bibliotecas estándar FC/NES
 
-[English](README.md) | [日本語](README.ja.md) | **Español**
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | **Español** | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
 
-Abrir el manual de las bibliotecas KITAQFC en español
+**[KITAQFC · Manual HTML](https://bartaro.github.io/kitaq-docs/es/fc-library.html)**
 
 Las bibliotecas públicas siguen el estilo de KITAQGB: nombres breves que describen su función, sin el prefijo `kitaqfc_`.
 
@@ -42,6 +44,7 @@ Las bibliotecas públicas siguen el estilo de KITAQGB: nombres breves que descri
 ## Audio y periféricos
 
 - `audio.h` / `audio.c`
+- `audio_vblank.h` / `audio_vblank.c` — Música durante NMI con una cola BGM de siete registros, pausa y reanudación, un búfer SFX independiente de siete registros y envolventes de ruido de un solo disparo. [Manual HTML](https://bartaro.github.io/kitaq-docs/es/fc-library.html#module-audio_vblank)
 - `fds_sound.h`
 - `vrc6_sound.h` / `vrc6_sound.c`
 - `vrc7_sound.h` / `vrc7_sound.c`
@@ -67,7 +70,10 @@ Las bibliotecas públicas siguen el estilo de KITAQGB: nombres breves que descri
 ## Cálculo numérico
 
 - `fixed.h` / `fixed.c`
-- `physics2d.h` / `physics2d.c`: tipos Q5.3 de un byte y constantes de ajuste. La posición entera en píxeles, la fracción de 1/8 de píxel, la rapidez sin signo, la dirección y el arrastre se guardan por separado. El juego calcula las actualizaciones de posición y velocidad; la cabecera no proporciona funciones para avanzar la simulación física. Esta separación evita pasar agregados o punteros mediante la ABI en los bucles de movimiento más frecuentes.
+- `physics2d.h` / `physics2d.c` — Integración de cuerpos rectangulares, gravedad, contactos AABB, respuesta de superficies y tipos Q5.3 opcionales. Compila con `fixed.c`.
+- `physics3d.h` / `physics3d.c` — Cajas 3D sin rotación, rebote ponderado por la masa y valores de intensidad del impacto. Compila con `fixed.c` y `physics2d.c`.
 - `math_fast.h`
 - `math_fixed.h`
 - `math_lut.h` / `math_lut.c`
+
+Las transiciones de escena, las actualizaciones y el dibujo llaman de forma síncrona a los manejadores registrados. Consulta cada API para conocer el orden de los callbacks y las restricciones de reentrada.

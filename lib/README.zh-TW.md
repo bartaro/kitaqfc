@@ -1,8 +1,10 @@
 # FC／NES 標準程式庫結構
 
-[English](README.md) | [日本語](README.ja.md) | **繁體中文**
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | **繁體中文** | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
 
-開啟 KITAQFC 程式庫繁體中文手冊
+**[KITAQFC · HTML 手冊](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html)**
 
 公開程式庫沿用 KITAQGB 的命名方式：名稱簡短、能表達用途，不加上 `kitaqfc_` 前綴。
 
@@ -42,6 +44,7 @@
 ## 音訊與周邊裝置
 
 - `audio.h` / `audio.c`
+- `audio_vblank.h` / `audio_vblank.c` — NMI 音樂驅動程式，提供七筆紀錄的 BGM 佇列、暫停／繼續、獨立的七筆紀錄 SFX 緩衝區，以及單次觸發的雜訊衰減包絡。 [HTML 手冊](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html#module-audio_vblank)
 - `fds_sound.h`
 - `vrc6_sound.h` / `vrc6_sound.c`
 - `vrc7_sound.h` / `vrc7_sound.c`
@@ -67,7 +70,10 @@
 ## 數值運算
 
 - `fixed.h` / `fixed.c`
-- `physics2d.h` / `physics2d.c` — 提供位元組大小的 Q5.3 型別與調整常數，分別儲存整數像素位置、1/8 像素的小數部分、無號速率、方向及阻力。位置與速度的逐步更新由遊戲程式計算，標頭檔沒有提供推進物理模擬的函式。分開保存這些欄位，可讓頻繁執行的移動迴圈避免透過 ABI 傳遞聚合型別或指標的成本。
+- `physics2d.h` / `physics2d.c` — 提供矩形剛體積分、重力、AABB 接觸、表面反應，以及可選用的 Q5.3 資料型別。請搭配 `fixed.c` 編譯。
+- `physics3d.h` / `physics3d.c` — 提供不旋轉的三維箱體、依質量分配的反彈反應及碰撞強度值。請搭配 `fixed.c` 與 `physics2d.c` 編譯。
 - `math_fast.h`
 - `math_fixed.h`
 - `math_lut.h` / `math_lut.c`
+
+場景切換、更新與繪製會同步呼叫已註冊的處理函式。回呼順序與重入限制請參閱各 API 項目。

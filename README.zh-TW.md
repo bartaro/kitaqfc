@@ -1,12 +1,26 @@
 # KITAQFC
 
-[English](README.md#english) | [日本語](README.md#japanese) | **繁體中文**
+<!-- readme-language-links:start -->
+[English](README.md#english) | [日本語](README.md#japanese) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | **繁體中文** | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
 
-**編譯器手冊** · **程式庫手冊**
+[編譯器手冊](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html) · [程式庫手冊](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html)
 
 用於開發原創 NES／Famicom／FDS 自製軟體的 C 編譯器與支援程式庫，源自 KITAQGB 與 NORCAL。
 
 本專案目前為公開預覽版，API 與行為仍可能調整。
+
+
+
+
+<!-- current-features:start -->
+[彈幕物件池範例與 API](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html#module-danmaku) · [線框繪製與投影](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html#module-wire3d)
+
+如需壓縮圖塊與地圖素材，請參閱 [ZX0 API 與畫面範例](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html#module-zx0)及[電腦端壓縮工具](tools/zx0/README.zh-TW.md)。
+
+`audio_vblank` 在 NMI 中讀取 RAM 佇列，播放四聲道音樂。請將 `lib/audio_vblank.c` 納入建置，完成初始化後開始播放，並在主迴圈補充佇列。每筆資料的順序為 `delay, CH1, CH2, CH3, CH4`，編譯器會將音樂更新處理接入 NMI。暫停與繼續播放會保留音樂、音效各自的播放進度。長度受限的音效串流可暫時占用指定聲道；雜訊聲道也支援單次衰減包絡。[API、完整範例與錄音結果](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html#module-audio_vblank)
+<!-- current-features:end -->
+
 
 ## 開發理念
 
@@ -17,7 +31,7 @@ KITAQFC 重視 NES／紅白機的硬體特性，並以可重現的小步驟推�
 
 填寫需求後，將完整提示詞交給 AI。內容涵蓋實作、模擬器測試、SARAKURA 分析，以及修正後的重新驗證。
 
-閱讀 HTML 手冊中的參考範例
+[閱讀 HTML 手冊中的參考範例](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html#loop-prompts)
 
 <details>
 <summary>展開完整提示詞</summary>
@@ -155,16 +169,16 @@ if ($LASTEXITCODE -ne 0) { throw 'Inspect the analysis report and fix the cause.
 同名子目錄 `kitaqfc/` 集中存放編譯器原始碼、專案檔與建置設定。已建置的 Release 執行檔及其執行階段設定檔位於根目錄。`lib/` 為 C 程式庫，`examples/` 則提供入門程式與原創字型。
 
 ```text
-kitaqfc/                  # Repository root
-├─ kitaqfc/               # Compiler build sources
+kitaqfc/  # 儲存庫根目錄
+├─ kitaqfc/  # 編譯器建置原始碼
 │  ├─ *.cs
 │  ├─ app.config
 │  └─ kitaqfc.csproj
-├─ kitaqfc.exe            # Prebuilt Release compiler
-├─ kitaqfc.exe.config     # .NET Framework runtime configuration
-├─ lib/                # C support libraries
-├─ examples/           # Tutorial programs and original font
-├─ scripts/build.ps1   # Rebuild the Release executable
+├─ kitaqfc.exe  # 預先建置的 Release 編譯器
+├─ kitaqfc.exe.config  # .NET Framework 執行階段設定
+├─ lib/  # C 支援程式庫
+├─ examples/  # 入門範例與原創字型
+├─ scripts/build.ps1  # 重新建置 Release 執行檔
 ├─ LICENSE
 └─ LICENSE.ja
 ```
@@ -191,7 +205,7 @@ MSBuild.exe .\kitaqfc\kitaqfc.csproj /t:Build /p:Configuration=Release
 
 ## 手冊與授權
 
-- 繁體中文編譯器手冊／繁體中文程式庫手冊
+- [編譯器手冊](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html) · [程式庫手冊](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html)
 - [英文手冊](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html)／[日文手冊](https://bartaro.github.io/kitaq-docs/kitaqfc.html)
 - [可供離線閱讀的手冊原始檔](https://github.com/bartaro/kitaq-docs)
 - [授權條款](LICENSE)／[日文參考譯文](LICENSE.ja)

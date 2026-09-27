@@ -1,8 +1,10 @@
 # Organisation de la bibliothèque standard FC/NES
 
-[English](README.md) | **Français**
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | **Français** | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
 
-**Ouvrir le manuel de la bibliothèque KITAQFC**
+**[KITAQFC · Manuel HTML](https://bartaro.github.io/kitaq-docs/fr/fc-library.html)**
 
 Les noms publics suivent volontairement le style KITAQGB : ils sont courts, décrivent leur fonction et ne portent pas de préfixe `kitaqfc_`.
 
@@ -42,6 +44,7 @@ Les noms publics suivent volontairement le style KITAQGB : ils sont courts, déc
 ## Audio et périphériques
 
 - `audio.h` / `audio.c`
+- `audio_vblank.h` / `audio_vblank.c` — Pilote musical NMI avec une file BGM de sept enregistrements, pause et reprise, un tampon SFX distinct de sept enregistrements et des enveloppes de bruit à déclenchement unique. [Manuel HTML](https://bartaro.github.io/kitaq-docs/fr/fc-library.html#module-audio_vblank)
 - `fds_sound.h`
 - `vrc6_sound.h` / `vrc6_sound.c`
 - `vrc7_sound.h` / `vrc7_sound.c`
@@ -67,9 +70,10 @@ Les noms publics suivent volontairement le style KITAQGB : ils sont courts, déc
 ## Mathématiques
 
 - `fixed.h` / `fixed.c`
-- `physics2d.h` / `physics2d.c` : types sur un octet et constantes Q5.3 pour les déplacements 2D, avec position entière, fraction de 1/8 de pixel, vitesse non signée, direction explicite et réglages de freinage. Le code du jeu effectue l'intégration ; l'en-tête ne fournit pas de fonction de simulation. Conserver ces valeurs séparément permet d'effectuer les calculs dans les boucles critiques sans passer des structures ou des pointeurs par l'ABI.
+- `physics2d.h` / `physics2d.c` — Intégration de corps rectangulaires, gravité, contacts AABB, réponse des surfaces et types Q5.3 facultatifs. Compiler avec `fixed.c`.
+- `physics3d.h` / `physics3d.c` — Boîtes 3D sans rotation, rebond pondéré par les masses et valeurs d’intensité des chocs. Compiler avec `fixed.c` et `physics2d.c`.
 - `math_fast.h`
 - `math_fixed.h`
 - `math_lut.h` / `math_lut.c`
 
-Les fonctions de compatibilité KITAQGB conservent des noms courts lorsque le modèle matériel FC/NES le permet. Les fonctions de scène et d'entité fondées sur des rappels conservent actuellement l'état, mais n'effectuent pas d'appels indirects des pointeurs de fonction de l'utilisateur.
+Les transitions de scène, les mises à jour et le dessin appellent leurs gestionnaires enregistrés de façon synchrone. Consultez chaque API pour l’ordre des rappels et les restrictions de réentrance.

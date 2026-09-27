@@ -1,8 +1,10 @@
 # FC/NES 표준 라이브러리 구성
 
-[English](README.md) | [日本語](README.ja.md) | **한국어**
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | **한국어** | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
 
-KITAQFC 라이브러리 한국어 설명서
+**[KITAQFC · HTML 설명서](https://bartaro.github.io/kitaq-docs/ko/fc-library.html)**
 
 공개 라이브러리 이름은 KITAQGB의 방식을 따릅니다. `kitaqfc_` 접두사 없이 기능을 나타내는 짧은 이름을 사용합니다.
 
@@ -42,6 +44,7 @@ KITAQFC 라이브러리 한국어 설명서
 ## 오디오와 주변기기
 
 - `audio.h` / `audio.c`
+- `audio_vblank.h` / `audio_vblank.c` — NMI 음악 드라이버입니다. 7레코드 BGM 큐, 일시정지·재개, 별도의 7레코드 SFX 버퍼, 단발성 노이즈 감쇠 엔벌로프를 제공합니다. [HTML 설명서](https://bartaro.github.io/kitaq-docs/ko/fc-library.html#module-audio_vblank)
 - `fds_sound.h`
 - `vrc6_sound.h` / `vrc6_sound.c`
 - `vrc7_sound.h` / `vrc7_sound.c`
@@ -67,9 +70,10 @@ KITAQFC 라이브러리 한국어 설명서
 ## 수치 계산
 
 - `fixed.h` / `fixed.c`
-- `physics2d.h` / `physics2d.c` - 바이트 크기의 Q5.3 자료형과 조정 상수입니다. 정수 픽셀 위치, 1/8픽셀 단위의 소수부, 부호 없는 속력, 방향, 저항을 따로 저장합니다. 시간 경과에 따른 위치·속도 계산은 게임 코드에서 수행하며, 헤더가 물리 시뮬레이션 갱신 함수를 제공하지는 않습니다. 필드를 분리하면 자주 실행하는 이동 루프에서 구조체나 포인터를 ABI를 통해 전달하는 부담을 줄일 수 있습니다.
+- `physics2d.h` / `physics2d.c` — 사각형 바디 적분, 중력, AABB 접촉, 표면 반응, 선택적으로 사용할 수 있는 Q5.3 자료형을 제공합니다. `fixed.c`와 함께 컴파일하세요.
+- `physics3d.h` / `physics3d.c` — 회전하지 않는 3D 상자, 질량을 고려한 반발, 충돌 강도 값을 제공합니다. `fixed.c` 및 `physics2d.c`와 함께 컴파일하세요.
 - `math_fast.h`
 - `math_fixed.h`
 - `math_lut.h` / `math_lut.c`
 
-KITAQGB 호환 함수는 FC/NES 하드웨어에서 지원할 수 있는 범위에서 짧은 기능 이름을 유지합니다. 콜백 형식의 장면·엔티티 함수는 현재 상태를 저장하기만 하며, 사용자의 함수 포인터를 간접 호출하지 않습니다.
+장면 전환, 갱신, 그리기는 등록한 처리 함수를 동기적으로 호출합니다. 콜백 순서와 재진입 제한은 각 API 항목을 참고하세요.

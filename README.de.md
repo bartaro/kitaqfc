@@ -1,12 +1,26 @@
 # KITAQFC
 
-[English](README.md#english) | [日本語](README.md#japanese) | **Deutsch**
+<!-- readme-language-links:start -->
+[English](README.md#english) | [日本語](README.md#japanese) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | **Deutsch**
+<!-- readme-language-links:end -->
 
-**Compiler-Handbuch** · **Bibliothekshandbuch**
+[Compiler-Handbuch](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html) · [Bibliothekshandbuch](https://bartaro.github.io/kitaq-docs/de/fc-library.html)
 
 C-Compiler und Hilfsbibliotheken für selbst entwickelte NES-/Famicom-/FDS-Software. KITAQFC ist aus KITAQGB und NORCAL hervorgegangen.
 
 Öffentliche Vorabversion: APIs und Verhalten können sich noch ändern.
+
+
+
+
+<!-- current-features:start -->
+[Projektilpool: Beispiel und API](https://bartaro.github.io/kitaq-docs/de/fc-library.html#module-danmaku) · [Drahtgitter zeichnen und projizieren](https://bartaro.github.io/kitaq-docs/de/fc-library.html#module-wire3d)
+
+Zum Komprimieren von Tiles und Karten dienen die [ZX0-API mit Bildbeispiel](https://bartaro.github.io/kitaq-docs/de/fc-library.html#module-zx0) und das [Kompressionswerkzeug für den Entwicklungsrechner](tools/zx0/README.de.md).
+
+`audio_vblank` spielt vierkanalige Musik ab und liest dazu während der NMI eine RAM-Warteschlange. Binden Sie `lib/audio_vblank.c` ein, initialisieren Sie die Bibliothek, starten Sie ein Stück und füllen Sie die Warteschlange in der Hauptschleife nach. Die Datensätze haben die Reihenfolge `delay, CH1, CH2, CH3, CH4`; der Compiler bindet die Musikaktualisierung in die NMI ein. Pause und Fortsetzen erhalten den Wiedergabefortschritt von Musik und Effekten. Ein Effektstrom mit begrenzter Länge kann ausgewählte Kanäle vorübergehend übernehmen. Der Rauschkanal unterstützt eine einmalig ausgelöste Abklinghüllkurve. [API, vollständiges Beispiel und Audioaufnahme](https://bartaro.github.io/kitaq-docs/de/fc-library.html#module-audio_vblank)
+<!-- current-features:end -->
+
 
 ## Entwicklungsgrundsätze
 
@@ -17,7 +31,7 @@ KITAQFC unterstützt eine Entwicklung, die die Eigenschaften der NES-/Famicom-Ha
 
 Tragen Sie die Anforderungen ein und geben Sie den vollständigen Prompt an Ihre KI weiter. Er umfasst die Implementierung, Emulator-Tests, die Analyse mit SARAKURA und die erneute Prüfung nach Korrekturen.
 
-Das Praxisbeispiel im HTML-Handbuch lesen
+[Referenzbeispiel im HTML-Handbuch lesen](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html#loop-prompts)
 
 <details>
 <summary>Vollständigen Prompt anzeigen</summary>
@@ -155,16 +169,16 @@ Verhindern Umgebung oder Berechtigungen eine Pflichtprüfung, nennen Sie die gen
 Der gleichnamige Unterordner `kitaqfc/` enthält die Compilerquellen, die Projektdatei und die Build-Konfiguration. Die fertige Release-Version liegt zusammen mit ihrer Laufzeitkonfiguration im Stammverzeichnis. `lib/` enthält die C-Bibliotheken, `examples/` die Lernprogramme und die Originalschrift.
 
 ```text
-kitaqfc/                  # Repository root
-├─ kitaqfc/               # Compiler build sources
+kitaqfc/  # Stammverzeichnis des Repositorys
+├─ kitaqfc/  # Compilerquellen
 │  ├─ *.cs
 │  ├─ app.config
 │  └─ kitaqfc.csproj
-├─ kitaqfc.exe            # Prebuilt Release compiler
-├─ kitaqfc.exe.config     # .NET Framework runtime configuration
-├─ lib/                # C support libraries
-├─ examples/           # Tutorial programs and original font
-├─ scripts/build.ps1   # Rebuild the Release executable
+├─ kitaqfc.exe  # Fertiger Release-Compiler
+├─ kitaqfc.exe.config  # Laufzeitkonfiguration für .NET Framework
+├─ lib/  # C-Bibliotheken
+├─ examples/  # Lernbeispiele und Originalschrift
+├─ scripts/build.ps1  # Release-Programm neu bauen
 ├─ LICENSE
 └─ LICENSE.ja
 ```
@@ -191,7 +205,7 @@ MSBuild.exe .\kitaqfc\kitaqfc.csproj /t:Build /p:Configuration=Release
 
 ## Handbücher und Lizenzen
 
-- Deutsches Compiler-Handbuch / Deutsches Bibliothekshandbuch
+- [Compiler-Handbuch](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html) · [Bibliothekshandbuch](https://bartaro.github.io/kitaq-docs/de/fc-library.html)
 - [Japanisches Handbuch](https://bartaro.github.io/kitaq-docs/kitaqfc.html) / [Englisches Handbuch](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html)
 - [Handbuchquellen zum Offline-Lesen](https://github.com/bartaro/kitaq-docs)
 - [Lizenz](LICENSE) / [Japanische Übersetzung zur Orientierung](LICENSE.ja)
