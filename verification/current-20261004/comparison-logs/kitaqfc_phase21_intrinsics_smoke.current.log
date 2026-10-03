@@ -1,0 +1,6 @@
+<unknown> (line 1, column 1) warning KQ2421: __palette_bg_load performs direct PPU/VRAM work outside __nes_nmi(); prefer __vramq_* or wrap the write in a rendering-off section.
+<unknown> (line 1, column 1) warning KQ2421: __nametable_put_nt performs direct PPU/VRAM work outside __nes_nmi(); prefer __vramq_* or wrap the write in a rendering-off section.
+<unknown> (line 1, column 1) warning KQ2421: __nametable_rect_nt performs direct PPU/VRAM work outside __nes_nmi(); prefer __vramq_* or wrap the write in a rendering-off section.
+<unknown> (line 1, column 1) warning KQ2421: __attr_set_nt performs direct PPU/VRAM work outside __nes_nmi(); prefer __vramq_* or wrap the write in a rendering-off section.
+<unknown> (line 1, column 1) warning KQ2421: __ppu_on performs direct PPU/VRAM work outside __nes_nmi(); prefer __vramq_* or wrap the write in a rendering-off section.
+<unknown> (line 1, column 1) warning KQ2421: __oam_dma should normally run during NMI/vblank; doing OAM DMA in mainline code can cause visible stalls.

@@ -1,0 +1,4 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase3_smoke.c (line 25, column 18) warning KQ2418: implicit narrowing in assignment: uint16 -> uint8; cast explicitly to silence
+          x = x + 1;
+                   ^
+  hint: If narrowing is intentional, add an explicit cast.

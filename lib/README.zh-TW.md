@@ -1,8 +1,19 @@
 # FC／NES 標準程式庫結構
 
 <!-- readme-language-links:start -->
-[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | **繁體中文** | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | **繁體中文** | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
 <!-- readme-language-links:end -->
+
+<!-- fc-current-20261004:zh-TW:start -->
+### 目前編譯器與程式庫的發行配置 — 2026年10月4日
+
+fc.h 包含 physics3d 和 audio_vblank 的宣告，所需實作檔案仍須另外連結。entity_update_all 和 entity_draw_all 依 ID 遞增順序將使用中的槽位傳給回呼。請將回呼放在共用 bank 0，或在呼叫期間保持對應 PRG bank 的映射。使用 ZX0 時須明確引入 zx0.h。audio_vblank 的紀錄順序為 delay, CH1, CH2, CH3, CH4。
+
+使用29個輸入比較目前C#建置與先前發行版。接受的15個輸入產生完全相同的ROM位元組，另外14個輸入產生相同的拒絕診斷。另外將兩個ROM各在KUROSAKI執行4影格，分別檢查實體配置、回呼、槽位重用，以及有號運算、KQBody3D 配置和音訊佇列常數。報告列出18位元組RAM的預期值與實際值。這些檢查未涵蓋音訊播放或全部API；先前的回歸測試結果在 BINARY_BUILD.json 中分開標示。
+
+[原始碼範例與執行驗證紀錄](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:zh-TW:end -->
+
 
 **[KITAQFC · HTML 手冊](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html)**
 

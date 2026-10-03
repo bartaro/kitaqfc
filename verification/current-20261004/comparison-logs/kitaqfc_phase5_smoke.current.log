@@ -1,0 +1,22 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase5_smoke.c (line 39, column 16) warning KQ2410: array index 'i' has type uint8 which is not __safe_index; consider '__safe_index' or cast explicitly to silence
+      return p[i];
+                 ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase5_smoke.c (line 44, column 9) warning KQ2410: array index 'i' has type uint8 which is not __safe_index; consider '__safe_index' or cast explicitly to silence
+      p[i] = v;
+          ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase5_smoke.c (line 2, column 42) warning KQ2417: unused global variable 'PPUMASK'
+  __location(0x2001) unsigned char PPUMASK;
+                                           ^
+  hint: The symbol is unused. Remove it or add a real use-site.
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase5_smoke.c (line 15, column 2) warning KQ2417: unused function 'read_status_ptr'
+  }
+   ^
+  hint: The symbol is unused. Remove it or add a real use-site.
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase5_smoke.c (line 40, column 2) warning KQ2417: unused function 'read_index'
+  }
+   ^
+  hint: The symbol is unused. Remove it or add a real use-site.
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase5_smoke.c (line 45, column 2) warning KQ2417: unused function 'write_index'
+  }
+   ^
+  hint: The symbol is unused. Remove it or add a real use-site.

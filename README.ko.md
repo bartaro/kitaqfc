@@ -1,7 +1,7 @@
 # KITAQFC
 
 <!-- readme-language-links:start -->
-[English](README.md#english) | [日本語](README.md#japanese) | **한국어** | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+[English](README.md#english) | [日本語](README.md#japanese) | **한국어** | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
 <!-- readme-language-links:end -->
 
 [컴파일러 설명서](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html) · [라이브러리 설명서](https://bartaro.github.io/kitaq-docs/ko/fc-library.html)
@@ -26,6 +26,22 @@ NES/Famicom/FDS용 홈브루 소프트웨어를 만드는 C 컴파일러와 지�
 
 KITAQFC는 NES·패미컴 하드웨어의 특성을 고려하고, 작고 재현 가능한 단위로 확인하며 개발하는 것을 지향합니다. ROM을 빌드한 뒤 KUROSAKI에서 실행하고 SARAKURA로 실행 결과를 분석하며, 수정할 때마다 다시 검증합니다. 실제로 측정한 결과와 아직 테스트하지 않은 동작은 구분해서 기록합니다.
 
+
+
+<!-- fc-current-20261004:ko:start -->
+### 현재 컴파일러와 라이브러리 배포 구성 — 2026년 10월 4일
+
+kitaqfc.exe와 lib는 같은 체크아웃에서 가져온 조합을 사용하세요. 상위 디렉터리에서 아래 Release 빌드 스크립트를 실행하면 프로젝트 설정에 따라 실행 파일이 저장소 루트로 복사됩니다. BINARY_BUILD.json에는 컴파일러 소스와 실행 파일의 해시 및 해당 빌드의 검증 결과가 기록됩니다. 긴 진단 행은 200자와 생략 기호로 제한됩니다.
+
+현재 C# 빌드와 이전 배포판을 29개 입력으로 비교했습니다. 허용된 입력 15개의 ROM 바이트가 일치했으며 나머지 입력 14개에 대한 거부 진단도 일치했습니다. 추가 ROM 두 개를 KUROSAKI에서 각각 4프레임 실행하여 엔티티 할당, 콜백, 슬롯 재사용과 부호 있는 연산, KQBody3D 배치, 오디오 큐 상수를 확인했습니다. 보고서에는 예상 RAM 18바이트와 실제 값이 기록되어 있습니다. 오디오 재생이나 모든 API를 검증한 것은 아니며 이전 회귀 시험 결과는 BINARY_BUILD.json에서 구분합니다.
+
+```powershell
+.\kitaqfc\scripts\build.ps1
+.\kitaqfc\kitaqfc.exe --help
+```
+
+[소스 예제와 실행 검증 기록](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:ko:end -->
 <!-- development-prompt:ko:start -->
 ## 게임 개발 프롬프트
 

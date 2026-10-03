@@ -1,7 +1,7 @@
 # KITAQFC
 
 <!-- readme-language-links:start -->
-[English](README.md#english) | [日本語](README.md#japanese) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | **Deutsch**
+[English](README.md#english) | [日本語](README.md#japanese) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | **Deutsch** | [Português (Brasil)](README.pt-BR.md)
 <!-- readme-language-links:end -->
 
 [Compiler-Handbuch](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html) · [Bibliothekshandbuch](https://bartaro.github.io/kitaq-docs/de/fc-library.html)
@@ -26,6 +26,22 @@ Zum Komprimieren von Tiles und Karten dienen die [ZX0-API mit Bildbeispiel](http
 
 KITAQFC unterstützt eine Entwicklung, die die Eigenschaften der NES-/Famicom-Hardware berücksichtigt und sich in kleinen, reproduzierbaren Schritten überprüfen lässt. Erstellen Sie das ROM, führen Sie es in KUROSAKI aus, analysieren Sie die Ergebnisse mit SARAKURA und wiederholen Sie die Tests nach jeder Korrektur. Halten Sie gemessene Ergebnisse und noch nicht getestetes Verhalten getrennt fest.
 
+
+
+<!-- fc-current-20261004:de:start -->
+### Aktuelle Compiler- und Bibliotheksausgabe — 4. Oktober 2026
+
+Verwenden Sie kitaqfc.exe und lib aus demselben Checkout. Starten Sie im übergeordneten Verzeichnis das unten angegebene Release-Skript; das Projekt kopiert die EXE in das Stammverzeichnis des Repositorys. BINARY_BUILD.json enthält die Hashes der Compilerquellen und der EXE sowie die Prüfungen dieses Builds. Lange Diagnosezeilen werden auf 200 Zeichen mit Auslassungszeichen begrenzt.
+
+Der aktuelle C#-Build wurde mit der vorherigen Ausgabe anhand von 29 Eingaben verglichen. Fünfzehn akzeptierte Eingaben erzeugten identische ROM-Bytes; die übrigen vierzehn Eingaben erzeugten identische Ablehnungsdiagnosen. Zwei weitere ROMs liefen je vier Frames in KUROSAKI: Entitätsvergabe, Callbacks und Wiederverwendung von Plätzen; vorzeichenbehaftete Berechnungen, KQBody3D-Layout und Audiowarteschlangenkonstanten. Der Bericht enthält 18 erwartete und beobachtete RAM-Bytes. Audiowiedergabe und sämtliche APIs werden damit nicht geprüft; frühere Regressionen sind in BINARY_BUILD.json gesondert gekennzeichnet.
+
+```powershell
+.\kitaqfc\scripts\build.ps1
+.\kitaqfc\kitaqfc.exe --help
+```
+
+[Quellbeispiele und Ausführungsnachweise](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:de:end -->
 <!-- development-prompt:de:start -->
 ## Prompt zur Spieleentwicklung
 

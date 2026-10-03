@@ -1,5 +1,16 @@
 # Organização da biblioteca padrão FC/NES
 
+<!-- fc-current-20261004:pt:start -->
+### Distribuição atual do compilador e das bibliotecas — 4 de outubro de 2026
+
+fc.h inclui as declarações de physics3d e audio_vblank. Vincule separadamente os arquivos de implementação necessários. entity_update_all e entity_draw_all chamam o callback para as posições ativas em ordem crescente de ID. Coloque o callback no banco comum 0 ou mantenha seu banco PRG mapeado durante as chamadas. Inclua zx0.h explicitamente para usar ZX0. A ordem dos registros audio_vblank é delay, CH1, CH2, CH3, CH4.
+
+A compilação C# atual foi comparada com a distribuição anterior usando 29 entradas. Quinze entradas aceitas produziram os mesmos bytes ROM; as outras quatorze produziram os mesmos diagnósticos de rejeição. Duas ROMs adicionais foram executadas por quatro quadros no KUROSAKI: alocação de entidades, callbacks e reutilização de posições; aritmética com sinal, disposição de KQBody3D e constantes da fila de áudio. O relatório registra 18 bytes RAM esperados e observados. Esses testes não verificam a reprodução de áudio nem todas as APIs; as regressões anteriores são identificadas separadamente em BINARY_BUILD.json.
+
+[Exemplos de código-fonte e evidências de execução](https://bartaro.github.io/kitaq-docs/pt/fc-library.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:pt:end -->
+
+
 [English](README.md) | [日本語](README.ja.md) | **Português (Brasil)**
 
 Abrir o manual da biblioteca KITAQFC em português

@@ -1,0 +1,5 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc-public-update\long_line_error.c (line 1, column 259) error KQ1000: expected an expression
+  void main(void) {                                                                                                                                                                                       …
+                                                                                                                                                                                                           ^
+  hint: Check the previous line for missing brackets, commas, or semicolons.
+  tokens: LBRACE missing EQUAL [SEMICOLON] RBRACE EOF

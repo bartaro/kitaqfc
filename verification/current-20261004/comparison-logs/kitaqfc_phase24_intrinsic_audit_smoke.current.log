@@ -1,0 +1,4 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase24_intrinsic_audit_smoke.c (line 29, column 31) warning KQ2418: implicit narrowing in compound assignment: uint16 -> uint8; cast explicitly to silence
+      r ^= __farpeek8(1, 0x8000);
+                                ^
+  hint: If narrowing is intentional, add an explicit cast.

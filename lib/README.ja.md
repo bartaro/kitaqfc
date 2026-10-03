@@ -3,8 +3,19 @@
 [简体中文](README.zh-CN.md) · [简体中文 HTML](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html)
 
 <!-- readme-language-links:start -->
-[English](README.md) | **日本語** | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+[English](README.md) | **日本語** | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
 <!-- readme-language-links:end -->
+
+<!-- fc-current-20261004:ja:start -->
+### コンパイラとライブラリの現行配布構成 — 2026年10月4日
+
+fc.h は physics3d と audio_vblank の宣言を含みます。必要な実装ファイルは別途リンクしてください。entity_update_all と entity_draw_all は、使用中のスロットを ID の昇順でコールバックへ渡します。コールバックは共通バンク0に配置するか、呼び出し中は該当 PRG バンクを維持してください。ZX0 を使う場合は zx0.h を明示的にインクルードします。audio_vblank のレコード順は delay, CH1, CH2, CH3, CH4 です。
+
+現行C#ビルドと以前の配布版を29入力で比較しました。受理した15入力の生成ROMはバイト単位で一致し、受理しなかった14入力のエラー診断も一致しました。さらに2本のROMをKUROSAKIで4フレーム実行し、一方でエンティティの割り当て、コールバック、スロット再利用を、他方で符号付き演算、KQBody3D の配置、オーディオキュー定数を確認しました。検証記録にはRAMの期待値18バイトと実際の値を収録しています。この検証は音声再生や全APIを対象としておらず、以前の回帰試験結果は BINARY_BUILD.json で区別しています。
+
+[ソース例と実行検証記録](https://bartaro.github.io/kitaq-docs/fc-library.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:ja:end -->
+
 
 [日本語のKITAQFCライブラリ説明書](https://bartaro.github.io/kitaq-docs/fc-library.html)から、各関数の使い方とサンプルコードを直接参照できます。
 

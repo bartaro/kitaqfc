@@ -1,0 +1,12 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase32_nes_optimization_8pack_smoke.c (line 8, column 18) warning KQ2418: implicit narrowing in return in 'add1': uint16 -> uint8; cast explicitly to silence
+      return v + 1;
+                   ^
+  hint: If narrowing is intentional, add an explicit cast.
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase32_nes_optimization_8pack_smoke.c (line 12, column 18) warning KQ2418: implicit narrowing in return in 'pair_sum': uint16 -> uint8; cast explicitly to silence
+      return a + b;
+                   ^
+  hint: If narrowing is intentional, add an explicit cast.
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase32_nes_optimization_8pack_smoke.c (line 23, column 42) warning KQ2418: implicit narrowing in assignment: uint16 -> uint8; cast explicitly to silence
+          frame_counter = frame_counter + 1;
+                                           ^
+  hint: If narrowing is intentional, add an explicit cast.

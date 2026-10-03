@@ -1,0 +1,713 @@
+{
+  "date": "2026-10-04",
+  "compiler_sha256": "7d5bfc2572edf2997858594e3afd71bf0e06d4650940287160cc2ce68fc0c576",
+  "previous_compiler_sha256": "fca416ffae1ca02cc7c6e3102c6b54ff50959f7d80942a8ee10c4b642c97593e",
+  "emulator_sha256": "972a5c29a9681616e612f91028bb8cca4daf5c2ce0f03e6718fc2160cb38b60d",
+  "rom_comparisons": [
+    {
+      "source": "fc_assembly.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "91969be11565e128217b2acb47343b9200e9c3b3ca10fd45c7503ebb1209f6ad"
+    },
+    {
+      "source": "fc_strings_banks.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "4cbcc808b64c866638623d8968ba78ed8d10771db3b9f575769fc79c49c5bbc1"
+    },
+    {
+      "source": "fc_types_layout.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "0527b6dbc4809050be8c707df0e201289880334870df07159da2a40cb60ecfe1"
+    },
+    {
+      "source": "kitaqfc_phase10_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase11_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase12_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase13_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase14_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase15_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase20_intrinsics_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase21_intrinsics_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "cbe262873d56e08ba2bb10632d2f2614b457d320a96115391370808db999c778"
+    },
+    {
+      "source": "kitaqfc_phase22_fds_metadata_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase23_input_midi_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "70ddd6613dc76c64356fa769bb16cfb66d44f06f930895e7a9f0c338d8dbefb0"
+    },
+    {
+      "source": "kitaqfc_phase24_intrinsic_audit_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "2e9c7eed1c637fa0011893a73eafe35391e1f67f6deb976aff1dc58dc0cb298a"
+    },
+    {
+      "source": "kitaqfc_phase25_public_symbol_intrinsics_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "1f5fef1a9d8def0b3514d96ab080064091ebb6ede1d78e7aa2df91de4136305f"
+    },
+    {
+      "source": "kitaqfc_phase26_library_reorg_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "7de28cc6dfbd7de0998caa051c1c48f1f57d90fc485bee280727d7c712388e17"
+    },
+    {
+      "source": "kitaqfc_phase29_fds_overlay_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase30_fds_overlay_farcall_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase31_nes_dsl_kurosaki_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "39bde549d8a2bdf3c2e5030155e74667e68d2160355bbb81dabcedc8456ed5a5"
+    },
+    {
+      "source": "kitaqfc_phase32_nes_optimization_8pack_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "62cb5727822a05d8fa69aac944cf3a8646e17c7ae2110627631ddbac0333359f"
+    },
+    {
+      "source": "kitaqfc_phase33_audio_drivers_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase3_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "5e57fb74e82a0f5bbbbf005e26f452d3fb3bc0f06283c62eca65e35d38eaa2c7"
+    },
+    {
+      "source": "kitaqfc_phase4_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "ea8f91cd88bd29e3f472cb80321eab35b070fa3dd719d52b39b3d2725dbefa1e"
+    },
+    {
+      "source": "kitaqfc_phase5_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "5177894d4ad73a6d149452f5a052e0ad20f03a46587e42ef9b748f1a9bbf0ed2"
+    },
+    {
+      "source": "kitaqfc_phase6_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "fb49b5a009fb4ce0226e596a45e539dc38e46df0f7170f552017407b001f0262"
+    },
+    {
+      "source": "kitaqfc_phase7_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase8_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_phase9_smoke.c",
+      "exit_codes": [
+        1,
+        1
+      ],
+      "result": "matched_rejection",
+      "passed": true
+    },
+    {
+      "source": "kitaqfc_struct_complex_smoke.c",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "result": "identical_rom",
+      "passed": true,
+      "rom_sha256": "0a94cd2ec52e9e1a1613b58b395adf512b08cc8d2ba6f58b9f787158d3f2b5f1"
+    }
+  ],
+  "runtime": [
+    {
+      "case": "library_dispatch",
+      "mapper": "mmc3",
+      "frames": 4,
+      "cpu_stopped": false,
+      "ram_address": "0700",
+      "expected": [
+        0,
+        1,
+        1,
+        4,
+        2,
+        4,
+        1,
+        0,
+        255,
+        13,
+        165
+      ],
+      "actual": [
+        0,
+        1,
+        1,
+        4,
+        2,
+        4,
+        1,
+        0,
+        255,
+        13,
+        165
+      ],
+      "rom_sha256": "d02ea8f02a4bb023cd6c2ec5735bd95c17a84d5f5854d059b8b066fe787c6634",
+      "snapshot_sha256": "64028036d2fcad39dddfbeedd2131fd713171e9ebcd3b21c74ce597c7555b9c7",
+      "passed": true
+    },
+    {
+      "case": "library_basics",
+      "mapper": "nrom",
+      "frames": 4,
+      "cpu_stopped": false,
+      "ram_address": "0700",
+      "expected": [
+        254,
+        36,
+        7,
+        5,
+        255,
+        254,
+        165
+      ],
+      "actual": [
+        254,
+        36,
+        7,
+        5,
+        255,
+        254,
+        165
+      ],
+      "rom_sha256": "0dba95d937be65617a528c5ad6aabbd5bf39e25c4be9bacc5e7ba18c064cc829",
+      "snapshot_sha256": "1cf7c60c5a3a0d6c8f72fe7459ae6aae468fff753850b489f9a47955b6f6da54",
+      "passed": true
+    }
+  ],
+  "diagnostic_preview": {
+    "passed": true,
+    "ellipsis": "\u2026"
+  },
+  "scope": "C# distribution update. Generated ROM equality for accepted sources; matching diagnostic rejection for rejected sources; two bounded KUROSAKI execution cases. Does not repeat the prior full regression suite.",
+  "library_inputs": [
+    {
+      "path": "lib/actor.c",
+      "sha256": "0bbf6de9d2f18fab750e8533a91680ef487ed1d9f8105670b371f525e2e2ad35"
+    },
+    {
+      "path": "lib/actor.h",
+      "sha256": "a37307ae64db16932e6a0f8a536d8cea4271234df750574416ea5b250ed09e5b"
+    },
+    {
+      "path": "lib/asset.c",
+      "sha256": "450c37d18f79ae3011d652d99842e9b3cc6314b8a486bf099c02279bf71364b1"
+    },
+    {
+      "path": "lib/asset.h",
+      "sha256": "75aaf32ed8b6fbfd921299511e9cb4d04abb1a2f0d68ab779f22f44a90c1157d"
+    },
+    {
+      "path": "lib/attribute.c",
+      "sha256": "9e93cead95f7721e28d64d06e686ad734b7b30ce70cfb6e2aacecf5a8f8cdcea"
+    },
+    {
+      "path": "lib/attribute.h",
+      "sha256": "e9f182dff684c3d30c4b0de1f802748ced136a6c8dcb5ffb48e2ada3329b4c3c"
+    },
+    {
+      "path": "lib/audio.c",
+      "sha256": "e2c3c044f48a48ff18d1256fd58f87ded84dd8c237a7ee5771f7dc178b2a5f50"
+    },
+    {
+      "path": "lib/audio.h",
+      "sha256": "c8a4325eaaf7b6df3894adffb09d4ff72e9cf3a795b05467f3d7de09fe8f9069"
+    },
+    {
+      "path": "lib/audio_vblank.c",
+      "sha256": "2c1a645e9eb640c73d6d40d93a6d59b68ecddc3cea02d97f9b5dc015a15078ab"
+    },
+    {
+      "path": "lib/audio_vblank.h",
+      "sha256": "14ab99a1202127cf6b723da1f76682602f0c597be4da880174a714d13b2594cb"
+    },
+    {
+      "path": "lib/bank.c",
+      "sha256": "e39ed2dcb897ed75b0a65224fe08a1d89682c8a0feac7db0fd44e177a09ef543"
+    },
+    {
+      "path": "lib/bank.h",
+      "sha256": "b05809ad64e8618da2428767e199d20dd535970a5fcee44f4380a1f55fa85610"
+    },
+    {
+      "path": "lib/chain.c",
+      "sha256": "e19f54805c022fd372fa717a5e0962051c649a8da25ce350efb29d8b5d134fc4"
+    },
+    {
+      "path": "lib/chain.h",
+      "sha256": "92d06e42a79674b6fa298796ad04544e3a853d7463f31a6c8de4aef30c6fe3f4"
+    },
+    {
+      "path": "lib/collision.c",
+      "sha256": "91bc90eb98e0150249c3f36182fde1f2090bd144f44ff5ac3a94cb5b3f824a46"
+    },
+    {
+      "path": "lib/collision.h",
+      "sha256": "854c328196c4f156dc8647cd05f1323b297f84c6e9df987bd4e18e943811d191"
+    },
+    {
+      "path": "lib/core.h",
+      "sha256": "eef72d04bb6f0e29d7be915f26814b9880fb34f70d1898dfe22cb6109df153ae"
+    },
+    {
+      "path": "lib/danmaku.c",
+      "sha256": "a658be5ba9a5b58f029121a0d4cb27b41ce588a3dd8b6ef0e2f5bb5358955c28"
+    },
+    {
+      "path": "lib/danmaku.h",
+      "sha256": "b75523c5158133f6ba57e6102dbb68f715c645006d86266974c42c27cce5b97b"
+    },
+    {
+      "path": "lib/debug.c",
+      "sha256": "112a2dd4adb921170bde8155a7180b2bd7f40c1487a2e3b66e43da465965d768"
+    },
+    {
+      "path": "lib/debug.h",
+      "sha256": "4dc54b6a7a3d5bc96b247b74cb3e4ef8915674b2d035e03415ea3d3b850d402e"
+    },
+    {
+      "path": "lib/entity.c",
+      "sha256": "96197eca2ad3431a6d82a29e5db59205fb6ca9a4d36465d83b9f3a47f3617ef0"
+    },
+    {
+      "path": "lib/entity.h",
+      "sha256": "d6a48286b59970bee79a8fb3bc6952614a238d95ca37b714e3d4f52c27991453"
+    },
+    {
+      "path": "lib/fc.h",
+      "sha256": "697d338735cc83db0ee14e3533241ce30cb5c4afd93fed40fd84c4ac7cfb57c4"
+    },
+    {
+      "path": "lib/fds.h",
+      "sha256": "8d6331eb5f4962be23bf923d10ecff11ed36e1152a11e39cc69ac9d802a2b039"
+    },
+    {
+      "path": "lib/fds_file.h",
+      "sha256": "050907da5481a0c8b82e52fbcf586b6f7f85362f88e4914d1abaf3f8df3df617"
+    },
+    {
+      "path": "lib/fds_overlay.h",
+      "sha256": "d986504dce3a158c4926d5b5aeeba4c1277b74c221cd185700da3d135977105f"
+    },
+    {
+      "path": "lib/fds_save.h",
+      "sha256": "cafc0faf9ef6567a463e3a4ab426fd279ba63c2e38918b545e32b218070a1275"
+    },
+    {
+      "path": "lib/fds_sound.h",
+      "sha256": "543e7862b250684bfa69eaeed94f4b2f000044bf083a848506ae588ddf0e45e2"
+    },
+    {
+      "path": "lib/fixed.c",
+      "sha256": "20acc9e76899329af56881bf4d4af0a880830ed33f8b2dc07c2a3b39a6d7f051"
+    },
+    {
+      "path": "lib/fixed.h",
+      "sha256": "81941d1e9f20b6e65466f4fc2892193bfc22fbed93a0334381ee56c414d38bbc"
+    },
+    {
+      "path": "lib/input.c",
+      "sha256": "4a6dbcaca09cc953303126ab66bc5fc46fe53a6c5cd17fbc289bf025f37478a4"
+    },
+    {
+      "path": "lib/input.h",
+      "sha256": "5b2d7be9cbb0bcc6e494c3744722ebb81c36f145c394b961f570856373a96453"
+    },
+    {
+      "path": "lib/input_repeat.c",
+      "sha256": "1b121687f1f279ff49245f64037dba8c39527d752c975e67f58fea85c8b80e2b"
+    },
+    {
+      "path": "lib/input_repeat.h",
+      "sha256": "5a490490a3d440dc5adf08d8e772d4fc175be04bca8dd7dac36c1d56d2ee3545"
+    },
+    {
+      "path": "lib/intrinsics.h",
+      "sha256": "8027dcccbad8226568419a332dfd27147b1be72ae7f3ed8c688c6f8276464512"
+    },
+    {
+      "path": "lib/keyboard.h",
+      "sha256": "efd757a3e3373c43872f945e7238324dc3e59865ce42df2dbd073a6da10cfbad"
+    },
+    {
+      "path": "lib/mapper.h",
+      "sha256": "ca9a487ae9172f917da33f50eefc4dd758c1dcf6e1e24614f18127bf28a22ab2"
+    },
+    {
+      "path": "lib/math_fast.h",
+      "sha256": "a0d08a224b2a1fa8f766d193fe6a0fbf6153a80c90ecf039f3708f1739302635"
+    },
+    {
+      "path": "lib/math_fixed.h",
+      "sha256": "712b7ee30c66a64af339e8ca62950d01cab160d0a63ba04f2f39b151ac1bc21e"
+    },
+    {
+      "path": "lib/math_lut.c",
+      "sha256": "f8390e120b91504b747ebd27a194586764eb90756edcfa355e71834904772fdf"
+    },
+    {
+      "path": "lib/math_lut.h",
+      "sha256": "fac60ecee18eab42af7b5e2c4b2430faa10ab46f1a25900d943f4e28a764e12a"
+    },
+    {
+      "path": "lib/metasprite.c",
+      "sha256": "428975bbf489d655597537c7541c4abb877f82d2628e473bb624513231612317"
+    },
+    {
+      "path": "lib/metasprite.h",
+      "sha256": "c708de4226e36af17a09add2effb802a0ae2fc9391c62c014ebeb8a98e183ac1"
+    },
+    {
+      "path": "lib/mic.h",
+      "sha256": "e919ce312d8b3395ed164ee374b6051d82d8397c9d7d6f7afa6736d51bfba372"
+    },
+    {
+      "path": "lib/midi.h",
+      "sha256": "7c0d2416fa5102b9a99ad97d10a4e6cc9318417251971ef8a9bd098c220a8e29"
+    },
+    {
+      "path": "lib/nametable_asset.c",
+      "sha256": "d750ccd73b4c20851f258abd2c2d963f58d6b0f57379a4b6c2b9c408e84dea04"
+    },
+    {
+      "path": "lib/nametable_asset.h",
+      "sha256": "9813dde648edc491afb7823a35bf25eaa1d2491ef95fedb3258d246670fbfd25"
+    },
+    {
+      "path": "lib/nes_game.h",
+      "sha256": "1e533e7ee1fb6abfc3fb5042572b15da3151aceb2507ba7628efb4df9c7f0811"
+    },
+    {
+      "path": "lib/oam.h",
+      "sha256": "41c37671470e0e23fb8365fc5672d87bf67c727b9859e6ddbe0e13ffc5ae6410"
+    },
+    {
+      "path": "lib/oam_fair.h",
+      "sha256": "d396b13057d5d576f0659418e3b88144349f8e6210d5545c50d6403f36582c8b"
+    },
+    {
+      "path": "lib/oam_fair_impl.h",
+      "sha256": "c9011272eb973801b9476644fa13548e25704003d58ab0692d48f6a1c0186f49"
+    },
+    {
+      "path": "lib/pad.c",
+      "sha256": "87a0801547496cc09105bb04afba56df9518ffe7e70273d822ad55ea380b8b54"
+    },
+    {
+      "path": "lib/pad.h",
+      "sha256": "abe15900e4cd41e82c65c4aec04c42d079aebce3fa2845a6e01fdb6002164b96"
+    },
+    {
+      "path": "lib/palette.c",
+      "sha256": "9b10a26f55e6b86f5c6f4083986c400724cfc02a34342621936c3d6006d38341"
+    },
+    {
+      "path": "lib/palette.h",
+      "sha256": "55902ab5ae4054a961f48653748180444eaa902cd6e3a92f90f0501ad63c43b2"
+    },
+    {
+      "path": "lib/physics2d.c",
+      "sha256": "743bf663b525e5c3166e87f2e9dabc0888c8df92b58fe788e82421d33c81fe13"
+    },
+    {
+      "path": "lib/physics2d.h",
+      "sha256": "8b3292eb3274a7702722339ff80362ef2d7ed95b42d85cf229106872361b52df"
+    },
+    {
+      "path": "lib/physics3d.c",
+      "sha256": "845214a967b09b5ac433ff913287e345fe2acb7252db02c4a4e47fab83f82c20"
+    },
+    {
+      "path": "lib/physics3d.h",
+      "sha256": "7e207d58e5dcb87a059ec4b1487030b6b7e25a4f853ac2afc4bfcf18064b58ab"
+    },
+    {
+      "path": "lib/ppu.c",
+      "sha256": "1b1c79eb8c29950f4be5a531b8835ffd3e85ecfaa91871ed8b6117aaa88d88d1"
+    },
+    {
+      "path": "lib/ppu.h",
+      "sha256": "acdf977858899f584ab15cb2303c50489d903bde4f86ae8b7161b5a0005acbe1"
+    },
+    {
+      "path": "lib/ppu_direct.h",
+      "sha256": "998963bbeb8eb5a6c2cfa69934b4de244ee5ee146b0b831d843d4f2d1acd13e8"
+    },
+    {
+      "path": "lib/rob.h",
+      "sha256": "6022c7515f55c522429c72caa964fe1ca08ec5971f989c8b3397f00623ea4224"
+    },
+    {
+      "path": "lib/runtime.c",
+      "sha256": "132f7c664c2d4a91ba0aa3f4227943daadc9442868f6f557e39821facd755d08"
+    },
+    {
+      "path": "lib/runtime.h",
+      "sha256": "32bffa18e0b1c95874894727bd0170e87c629b6a5acc967ecd857d3b282453a2"
+    },
+    {
+      "path": "lib/scene.c",
+      "sha256": "48a409e79469a2f6953cc23a135c343fd3686747446b55236d163f323d482b66"
+    },
+    {
+      "path": "lib/scene.h",
+      "sha256": "7fcdc7fb7f9501df2c0d8b44f6d34becbf61aabf20d1686842e2e41c04a1a074"
+    },
+    {
+      "path": "lib/scroll.c",
+      "sha256": "d7d4802a02c9b854c60563e0258a301e2313cff57053c358d3e7347b2ce91ec1"
+    },
+    {
+      "path": "lib/scroll.h",
+      "sha256": "f3097df4b926290d62fc209e8df7ec6b30518813765945f9143f0f75c0136462"
+    },
+    {
+      "path": "lib/sprite.c",
+      "sha256": "fe3bdd0d28c34e9b81175f5a8ab7b67ae692cf7aa1ab17b4e20fa9e471d914d5"
+    },
+    {
+      "path": "lib/sprite.h",
+      "sha256": "8ad792320d59b59d9bc1ac9d9d5cb558960724a1820a8ef634b2f2f8b18e220e"
+    },
+    {
+      "path": "lib/system.c",
+      "sha256": "4cf453270535749e37f10a1fcc0d34032580632a359c327a62007441afa32d04"
+    },
+    {
+      "path": "lib/system.h",
+      "sha256": "9ee154cb4fe244d6920f33afb2d8eb663f36a0a7a9bd8b3de7b571ba910a5a9e"
+    },
+    {
+      "path": "lib/tilemap.c",
+      "sha256": "d5203c48d8cb2a717201b7c1231c72c6f3d3594c6605e3516a079699a2fa5d40"
+    },
+    {
+      "path": "lib/tilemap.h",
+      "sha256": "600327336ab17375269fbb33cb13a3b62bc7adf42a417233651a0a8dbdd4eac6"
+    },
+    {
+      "path": "lib/vram.c",
+      "sha256": "b9cdc48b34084ee3a2a6c8aa6d9e4eb584114f4730e362a0dcd79cd20cbea9c9"
+    },
+    {
+      "path": "lib/vram.h",
+      "sha256": "462e3e35e9b6db0ae6a873d3dbc721c7f2e924a533c92e9737b6446458c159c4"
+    },
+    {
+      "path": "lib/vram_queue.h",
+      "sha256": "eb3a23544328201d21ae3891454bc50923d9ae970541a7dd9a52f2ec9220728f"
+    },
+    {
+      "path": "lib/vrc6_sound.c",
+      "sha256": "0d4fe0769513a3a1b0a56235386fc87eb36f9941994bd97de4cb92ecc35ca28b"
+    },
+    {
+      "path": "lib/vrc6_sound.h",
+      "sha256": "5ae9c5adc9a0cc3c7d3cd04c5164e09af06d67517160bc2cec3ea9349a2902fa"
+    },
+    {
+      "path": "lib/vrc7_sound.c",
+      "sha256": "98e97d5502c094dd71113cf5718b43a241264f928d09d214b49ffe5c1b01860c"
+    },
+    {
+      "path": "lib/vrc7_sound.h",
+      "sha256": "9fa178459985cf17a05cfdaa02a35871fa3f52fa7650fdae9ddc3c1a5f6bba4e"
+    },
+    {
+      "path": "lib/wire3d.c",
+      "sha256": "22002ecdeb0e3659579142d102617992fa21cc2e20528cc6516da6fe1583b77f"
+    },
+    {
+      "path": "lib/wire3d.h",
+      "sha256": "ba067668b6fa461b1b17bbf9f1717d7fa2e3ac4f30211d02d022451a3ae3b119"
+    },
+    {
+      "path": "lib/wire3d_tables.h",
+      "sha256": "7aaa2403d34fa11bd34e28efd0d157e4322c36e6f24eefe112105f8193f46a2f"
+    },
+    {
+      "path": "lib/zapper.h",
+      "sha256": "1d27ebd125d36cab308b4c331a4ee95d15daa652e2b070ea4e5ba5bc860b3ab5"
+    },
+    {
+      "path": "lib/zx0.c",
+      "sha256": "da956c77f44d9884fbdb31c9b27bb976506ed540d07919941fc70ca0bbb276e8"
+    },
+    {
+      "path": "lib/zx0.h",
+      "sha256": "50887e6043b3150469deebac8b3f331aabf5852ddb5d9efff0b4611e8b6f94c8"
+    }
+  ]
+}

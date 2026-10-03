@@ -1,8 +1,19 @@
 # FC/NES 표준 라이브러리 구성
 
 <!-- readme-language-links:start -->
-[English](README.md) | [日本語](README.ja.md) | **한국어** | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+[English](README.md) | [日本語](README.ja.md) | **한국어** | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
 <!-- readme-language-links:end -->
+
+<!-- fc-current-20261004:ko:start -->
+### 현재 컴파일러와 라이브러리 배포 구성 — 2026년 10월 4일
+
+fc.h에는 physics3d와 audio_vblank의 선언이 포함됩니다. 필요한 구현 파일은 별도로 링크하세요. entity_update_all과 entity_draw_all은 활성 슬롯을 ID 오름차순으로 콜백에 전달합니다. 콜백을 공통 뱅크 0에 배치하거나 호출하는 동안 해당 PRG 뱅크를 유지하세요. ZX0 사용 시 zx0.h를 명시적으로 포함하세요. audio_vblank 레코드 순서는 delay, CH1, CH2, CH3, CH4입니다.
+
+현재 C# 빌드와 이전 배포판을 29개 입력으로 비교했습니다. 허용된 입력 15개의 ROM 바이트가 일치했으며 나머지 입력 14개에 대한 거부 진단도 일치했습니다. 추가 ROM 두 개를 KUROSAKI에서 각각 4프레임 실행하여 엔티티 할당, 콜백, 슬롯 재사용과 부호 있는 연산, KQBody3D 배치, 오디오 큐 상수를 확인했습니다. 보고서에는 예상 RAM 18바이트와 실제 값이 기록되어 있습니다. 오디오 재생이나 모든 API를 검증한 것은 아니며 이전 회귀 시험 결과는 BINARY_BUILD.json에서 구분합니다.
+
+[소스 예제와 실행 검증 기록](https://bartaro.github.io/kitaq-docs/ko/fc-library.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:ko:end -->
+
 
 **[KITAQFC · HTML 설명서](https://bartaro.github.io/kitaq-docs/ko/fc-library.html)**
 

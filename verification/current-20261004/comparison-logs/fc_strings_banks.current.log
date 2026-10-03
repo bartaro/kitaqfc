@@ -1,0 +1,8 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\fc_strings_banks.c (line 2, column 40) warning KQ2417: unused function 'first'
+  void first(void) {const u8* s;s="ABC";}
+                                         ^
+  hint: The symbol is unused. Remove it or add a real use-site.
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\fc_strings_banks.c (line 4, column 41) warning KQ2417: unused function 'second'
+  void second(void) {const u8* s;s="ABC";}
+                                          ^
+  hint: The symbol is unused. Remove it or add a real use-site.

@@ -2169,7 +2169,7 @@ else if (arg == "-Zcheck")
             string line = lines[pos.Line] ?? "";
             // Avoid huge output for long lines.
             const int MaxPreview = 200;
-            string shown = (line.Length > MaxPreview) ? line.Substring(0, MaxPreview) + "窶ｦ" : line;
+            string shown = (line.Length > MaxPreview) ? line.Substring(0, MaxPreview) + "…" : line;
 
             Console.Error.WriteLine("  " + shown);
 

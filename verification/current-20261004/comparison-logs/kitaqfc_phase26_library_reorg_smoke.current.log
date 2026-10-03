@@ -1,0 +1,4 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase26_library_reorg_smoke.c (line 22, column 2) warning KQ2417: unused function 'phase26_probe'
+  }
+   ^
+  hint: The symbol is unused. Remove it or add a real use-site.

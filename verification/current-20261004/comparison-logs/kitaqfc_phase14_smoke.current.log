@@ -1,0 +1,12 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase14_smoke.c (line 7, column 29) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_vblank_wait(void);
+                              ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase14_smoke.c (line 8, column 37) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_nametable_apply_now(unsigned short nt_base, unsigned char* nam960, unsigned char* attr64);
+                                      ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase14_smoke.c (line 9, column 34) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_ppu_stream_write(unsigned short ppu_addr, unsigned char* src, unsigned short len);
+                                   ^
+<unknown> (line 1, column 1) warning KQ2413: argument 1 to 'nes_ppu_stream_write': discards 'const' qualifier from pointee type
+<unknown> (line 1, column 1) warning KQ2413: argument 1 to 'nes_nametable_apply_now': discards 'const' qualifier from pointee type
+error KQ0000: error KQ0000: unknown symbol in expression for --target=nes: demo_png_palette32

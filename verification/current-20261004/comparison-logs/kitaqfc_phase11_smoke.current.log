@@ -1,0 +1,58 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 28, column 22) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void __memset(unsigned char* dst, unsigned char value, unsigned short len);
+                       ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 29, column 26) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_wait_nmi(void);
+                           ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 30, column 29) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_vblank_wait(void);
+                              ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 31, column 25) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_oam_dma(unsigned char page);
+                          ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 32, column 26) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_pad_poll(void);
+                           ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 33, column 35) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_pad_repeat_config(unsigned char delay, unsigned char interval);
+                                    ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 34, column 33) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_pad_repeat_step(void);
+                                  ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 35, column 37) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern unsigned char nes_pad_repeat(unsigned char mask);
+                                      ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 36, column 38) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_scroll_set_base_ctrl(unsigned char ctrl);
+                                       ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 37, column 38) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_camera_follow_center(unsigned short target_x, unsigned short target_y, unsigned char center_x, unsigned char center_y);
+                                       ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 38, column 30) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_scroll_apply(void);
+                               ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 39, column 33) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_ppu_stream_fill(unsigned short ppu_addr, unsigned char value, unsigned short len);
+                                  ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 40, column 35) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_palette_apply_now(unsigned char* src32);
+                                    ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 41, column 33) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_actor_set_world(struct NesActor* actor, unsigned short x, unsigned short y);
+                                  ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 42, column 37) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_actor_update_screen(struct NesActor* actor, unsigned short camera_x, unsigned short camera_y);
+                                      ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 43, column 48) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern unsigned char nes_actor_draw_metasprite(struct NesActor* actor, unsigned char oam_index, unsigned char* metasprite);
+                                                 ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 44, column 50) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern unsigned char nes_tilemap_world_box_solid(struct NesTilemap* map, unsigned short world_x, unsigned short world_y, unsigned char width, unsigned char height);
+                                                   ^
+<unknown> (line 1, column 1) warning KQ2413: argument 0 to 'nes_palette_apply_now': discards 'const' qualifier from pointee type
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase11_smoke.c (line 142, column 24) warning KQ2413: assignment: discards 'const' qualifier from pointee type
+      world_map.tiles = demo_collision;
+                         ^
+<unknown> (line 1, column 1) warning KQ2413: argument 2 to 'nes_actor_draw_metasprite': discards 'const' qualifier from pointee type
+error KQ0000: error KQ0000: --target=nes phase 5 unsupported expression tag in function ppu_bootstrap: $sizeof
+error KQ0000: error KQ0000: unknown symbol in expression for --target=nes: nes_oam_shadow

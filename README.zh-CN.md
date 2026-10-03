@@ -1,7 +1,7 @@
 # KITAQFC
 
 <!-- readme-language-links:start -->
-[English](README.md#english) | [日本語](README.md#japanese) | [한국어](README.ko.md) | **简体中文** | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+[English](README.md#english) | [日本語](README.md#japanese) | [한국어](README.ko.md) | **简体中文** | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
 <!-- readme-language-links:end -->
 
 [编译器手册](https://bartaro.github.io/kitaq-docs/zh-CN/kitaqfc.html) · [库手册](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html)
@@ -14,6 +14,22 @@
 
 KITAQFC 注重结合 NES／红白机的硬件特性，以可复现的小步骤推进开发和验证。构建 ROM 后，在 KUROSAKI 中运行，用 SARAKURA 分析运行结果，并在每次修正后重新验证。记录时应区分实测结果与尚未测试的行为。
 
+
+
+<!-- fc-current-20261004:zh-CN:start -->
+### 当前编译器与库的发布配置 — 2026年10月4日
+
+请使用同一检出版本中的 kitaqfc.exe 和 lib。在父目录运行下面的 Release 构建脚本后，项目设置会将可执行文件复制到仓库根目录。BINARY_BUILD.json 记录编译器源文件、可执行文件的哈希及该构建的验证结果。过长的诊断行只显示200个字符和省略号。
+
+使用29个输入比较了当前C#构建和先前发布版。接受的15个输入生成完全相同的ROM字节，另外14个输入产生相同的拒绝诊断。另将两个ROM各在KUROSAKI中运行4帧，分别检查实体分配、回调、槽位复用，以及有符号运算、KQBody3D 布局和音频队列常量。报告列出18字节RAM的预期值和实际值。这些检查不涉及音频播放或全部API；先前的回归测试结果在 BINARY_BUILD.json 中单独标注。
+
+```powershell
+.\kitaqfc\scripts\build.ps1
+.\kitaqfc\kitaqfc.exe --help
+```
+
+[源代码示例与运行验证记录](https://bartaro.github.io/kitaq-docs/zh-CN/kitaqfc.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:zh-CN:end -->
 <!-- development-prompt:zh-CN:start -->
 ## 游戏开发提示词
 

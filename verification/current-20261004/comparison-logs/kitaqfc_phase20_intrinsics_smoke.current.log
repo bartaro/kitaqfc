@@ -1,0 +1,20 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase20_intrinsics_smoke.c (line 29, column 11) error KQ1000: expected an expression
+      for (;;) {
+            ^
+  hint: Check the previous line for missing brackets, commas, or semicolons.
+  tokens: SEMICOLON for LPAREN [SEMICOLON] SEMICOLON RPAREN LBRACE
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase20_intrinsics_smoke.c (line 29, column 12) error KQ1000: expected an expression
+      for (;;) {
+             ^
+  hint: Check the previous line for missing brackets, commas, or semicolons.
+  tokens: for LPAREN SEMICOLON [SEMICOLON] RPAREN LBRACE __nmi_wait
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase20_intrinsics_smoke.c (line 29, column 13) error KQ1000: expected an expression
+      for (;;) {
+              ^
+  hint: Check the previous line for missing brackets, commas, or semicolons.
+  tokens: LPAREN SEMICOLON SEMICOLON [RPAREN] LBRACE __nmi_wait LPAREN
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase20_intrinsics_smoke.c (line 32, column 2) error KQ1002: expected a type
+  }
+   ^
+  hint: A type is required here. Add a valid type specifier such as u8/u16/s8/s16/struct/enum.
+  tokens: RPAREN SEMICOLON RBRACE [RBRACE] EOF

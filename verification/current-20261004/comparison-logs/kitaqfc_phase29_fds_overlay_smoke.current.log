@@ -1,0 +1,5 @@
+<unknown> (line 1, column 1) warning KQ2423: __fds_overlay_farcall is FDS-only but current mapper is mmc3.
+error KQ0000: error KQFC2514: __fds_overlay_farcall requires --mapper=fds with --fds-layout=fds32.
+error KQ0000: error KQFC2420: __fds_file_exists requires --mapper=fds / mapper20; current mapper is mmc3.
+error KQ0000: error KQFC2420: __fds_file_size requires --mapper=fds / mapper20; current mapper is mmc3.
+error KQ0000: error KQFC2420: __fds_current_bank requires --mapper=fds / mapper20; current mapper is mmc3.

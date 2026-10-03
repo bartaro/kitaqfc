@@ -12,6 +12,22 @@ Versão de prévia pública: as APIs e o comportamento podem mudar.
 
 A KITAQFC favorece um desenvolvimento que respeite as características do hardware do NES/Famicom e permita verificar cada avanço em etapas pequenas e reproduzíveis. Compile a ROM, execute-a no KUROSAKI, analise os resultados com o SARAKURA e repita os testes após cada correção. Registre separadamente os resultados medidos e os comportamentos que ainda não foram testados.
 
+
+
+<!-- fc-current-20261004:pt:start -->
+### Distribuição atual do compilador e das bibliotecas — 4 de outubro de 2026
+
+Use kitaqfc.exe e lib da mesma cópia do repositório. No diretório pai, execute o script Release abaixo; o projeto copia o executável para a raiz do repositório. BINARY_BUILD.json registra os hashes dos fontes e do executável, além das verificações dessa compilação. Linhas longas de diagnóstico são limitadas a 200 caracteres seguidos de reticências.
+
+A compilação C# atual foi comparada com a distribuição anterior usando 29 entradas. Quinze entradas aceitas produziram os mesmos bytes ROM; as outras quatorze produziram os mesmos diagnósticos de rejeição. Duas ROMs adicionais foram executadas por quatro quadros no KUROSAKI: alocação de entidades, callbacks e reutilização de posições; aritmética com sinal, disposição de KQBody3D e constantes da fila de áudio. O relatório registra 18 bytes RAM esperados e observados. Esses testes não verificam a reprodução de áudio nem todas as APIs; as regressões anteriores são identificadas separadamente em BINARY_BUILD.json.
+
+```powershell
+.\kitaqfc\scripts\build.ps1
+.\kitaqfc\kitaqfc.exe --help
+```
+
+[Exemplos de código-fonte e evidências de execução](https://bartaro.github.io/kitaq-docs/pt/kitaqfc.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:pt:end -->
 <!-- development-prompt:pt:start -->
 ## Prompt para desenvolver um jogo
 

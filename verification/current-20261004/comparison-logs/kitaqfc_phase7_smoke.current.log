@@ -1,0 +1,20 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase7_smoke.c (line 9, column 29) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_vblank_wait(void);
+                              ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase7_smoke.c (line 10, column 34) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_ppu_stream_write(unsigned short ppu_addr, unsigned char* src, unsigned short len);
+                                   ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase7_smoke.c (line 11, column 22) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void __memset(unsigned char* dst, unsigned char value, unsigned short len);
+                       ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase7_smoke.c (line 12, column 25) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_oam_dma(unsigned char page);
+                          ^
+<unknown> (line 1, column 1) warning KQ2413: argument 1 to 'nes_ppu_stream_write': discards 'const' qualifier from pointee type
+<unknown> (line 1, column 1) warning KQ2413: argument 1 to 'nes_ppu_stream_write': discards 'const' qualifier from pointee type
+error KQ0000: error KQ0000: --target=nes phase 5 unsupported expression tag in function main: $sizeof
+error KQ0000: error KQ0000: unknown symbol in expression for --target=nes: nes_oam_shadow
+error KQ0000: error KQ0000: --target=nes phase 6 expected a pointer/array base in index expression.
+error KQ0000: error KQ0000: --target=nes phase 6 expected a pointer/array base in index expression.
+error KQ0000: error KQ0000: --target=nes phase 6 expected a pointer/array base in index expression.
+error KQ0000: error KQ0000: --target=nes phase 6 expected a pointer/array base in index expression.

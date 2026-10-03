@@ -1,0 +1,22 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase15_smoke.c (line 9, column 29) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_vblank_wait(void);
+                              ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase15_smoke.c (line 10, column 34) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_ppu_stream_write(unsigned short ppu_addr, unsigned char* src, unsigned short len);
+                                   ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase15_smoke.c (line 11, column 37) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_nametable_apply_now(unsigned short nt_base, unsigned char* nam960, unsigned char* attr64);
+                                      ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase15_smoke.c (line 12, column 42) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern unsigned char nes_attr_queue_rect(unsigned short nt_base, unsigned char tile_x, unsigned char tile_y, unsigned char width, unsigned char height);
+                                           ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase15_smoke.c (line 13, column 39) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_attr_shadow_fill_rect(unsigned char tile_x, unsigned char tile_y, unsigned char width, unsigned char height, unsigned char pal_index);
+                                        ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase15_smoke.c (line 14, column 47) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern unsigned char nes_vram_queue_try_write(unsigned short ppu_addr, unsigned char* src, unsigned char len);
+                                                ^
+<unknown> (line 1, column 1) warning KQ2413: argument 1 to 'nes_ppu_stream_write': discards 'const' qualifier from pointee type
+<unknown> (line 1, column 1) warning KQ2413: argument 1 to 'nes_nametable_apply_now': discards 'const' qualifier from pointee type
+<unknown> (line 1, column 1) warning KQ2413: argument 1 to 'nes_vram_queue_try_write': discards 'const' qualifier from pointee type
+error KQ0000: error KQ0000: unknown symbol in expression for --target=nes: demo_png_palette32

@@ -1,0 +1,12 @@
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase12_smoke.c (line 13, column 29) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_vblank_wait(void);
+                              ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase12_smoke.c (line 14, column 35) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_palette_apply_now(unsigned char* src32);
+                                    ^
+C:\Users\daisu\Documents\Codex\2026-10-03\c-kitaqgb-project-kitaqgb\work\fc_port\tests\frontend\kitaqfc_phase12_smoke.c (line 15, column 37) warning KQ0000: warning: 'extern' on function declarations has no effect
+  extern void nes_nametable_apply_now(unsigned short nt_base, unsigned char* nam960, unsigned char* attr64);
+                                      ^
+<unknown> (line 1, column 1) warning KQ2413: argument 0 to 'nes_palette_apply_now': discards 'const' qualifier from pointee type
+<unknown> (line 1, column 1) warning KQ2413: argument 1 to 'nes_nametable_apply_now': discards 'const' qualifier from pointee type
+error KQ0000: error KQ0000: unknown symbol in expression for --target=nes: demo_palette32

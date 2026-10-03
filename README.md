@@ -11,11 +11,12 @@
 | Français | [KITAQFC](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/fr/fc-library.html) |
 | Español | [KITAQFC](https://bartaro.github.io/kitaq-docs/es/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/es/fc-library.html) |
 | Deutsch | [KITAQFC](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/de/fc-library.html) |
+| Português (Brasil) | [KITAQFC](https://bartaro.github.io/kitaq-docs/pt/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/pt/fc-library.html) |
 <!-- manual-language-links:end -->
 
 
 <!-- readme-language-links:start -->
-**English** | [日本語](README.md#japanese) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+**English** | [日本語](README.md#japanese) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
 <!-- readme-language-links:end -->
 
 <a name="english"></a>
@@ -36,6 +37,22 @@ Public preview: APIs and behavior may change.
 
 KITAQFC supports development that respects the NES/Famicom hardware and can be checked in small, reproducible steps. Build the ROM, exercise it in KUROSAKI, inspect the evidence with SARAKURA, and repeat after each correction. Keep measured results separate from behavior that has not yet been tested.
 
+
+
+<!-- fc-current-20261004:en:start -->
+### Current compiler and library distribution — 4 October 2026
+
+Use kitaqfc.exe and lib from the same checkout. From the parent directory, run the Release build script below; the project copies the executable to the repository root. BINARY_BUILD.json records the compiler source hashes, executable hash and checks for that build. Long diagnostic lines are limited to 200 characters followed by an ellipsis.
+
+The current C# build was compared with the previous distribution using 29 inputs. Fifteen accepted inputs produced identical ROM bytes; the other fourteen inputs produced matching rejection diagnostics. Two additional ROMs ran for four frames in KUROSAKI: one checked entity allocation, callback dispatch and slot reuse; the other checked signed arithmetic, the KQBody3D layout and audio queue constants. The report records 18 expected RAM bytes and the actual values. These cases do not test audio playback or every library API; prior regression results are identified separately in BINARY_BUILD.json.
+
+```powershell
+.\kitaqfc\scripts\build.ps1
+.\kitaqfc\kitaqfc.exe --help
+```
+
+[Source fixtures and execution evidence](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:en:end -->
 <!-- development-prompt:en:start -->
 ### Game development prompt
 
@@ -245,6 +262,22 @@ KITAQGBとNORCALから派生した、自作のNES・ファミコン・FDSソフ�
 
 KITAQFCは、NES・ファミコンのハードウェア特性を踏まえ、小さく再現可能な単位で確認しながら開発を進めることを重視します。ROMをビルドし、KUROSAKIで動かし、SARAKURAで実行結果を解析して、修正後に再検証します。実測した結果と、まだ検証していない動作を区別して記録します。
 
+
+
+<!-- fc-current-20261004:ja:start -->
+### コンパイラとライブラリの現行配布構成 — 2026年10月4日
+
+kitaqfc.exe と lib は同じチェックアウトの組み合わせを使ってください。親ディレクトリから下記の Release ビルドスクリプトを実行すると、プロジェクト設定により EXE がリポジトリ直下へコピーされます。BINARY_BUILD.json にコンパイラのソース、EXE のハッシュ、そのビルドの検証結果を記録しています。長い診断行の表示は200文字と省略記号に制限されます。
+
+現行C#ビルドと以前の配布版を29入力で比較しました。受理した15入力の生成ROMはバイト単位で一致し、受理しなかった14入力のエラー診断も一致しました。さらに2本のROMをKUROSAKIで4フレーム実行し、一方でエンティティの割り当て、コールバック、スロット再利用を、他方で符号付き演算、KQBody3D の配置、オーディオキュー定数を確認しました。検証記録にはRAMの期待値18バイトと実際の値を収録しています。この検証は音声再生や全APIを対象としておらず、以前の回帰試験結果は BINARY_BUILD.json で区別しています。
+
+```powershell
+.\kitaqfc\scripts\build.ps1
+.\kitaqfc\kitaqfc.exe --help
+```
+
+[ソース例と実行検証記録](https://bartaro.github.io/kitaq-docs/kitaqfc.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:ja:end -->
 <!-- development-prompt:ja:start -->
 ### ゲーム開発プロンプト
 

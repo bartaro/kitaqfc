@@ -1,0 +1,3 @@
+error KQ0000: error KQFC2420: __fds_overlay_function_count requires --mapper=fds / mapper20; current mapper is mmc3.
+error KQ0000: error KQFC2420: __fds_is_bank_resident requires --mapper=fds / mapper20; current mapper is mmc3.
+error KQ0000: error KQFC2420: __fds_require_bank requires --mapper=fds / mapper20; current mapper is mmc3.

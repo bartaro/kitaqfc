@@ -1,8 +1,19 @@
 # FC/NES标准库结构
 
 <!-- readme-language-links:start -->
-[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | **简体中文** | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | **简体中文** | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
 <!-- readme-language-links:end -->
+
+<!-- fc-current-20261004:zh-CN:start -->
+### 当前编译器与库的发布配置 — 2026年10月4日
+
+fc.h 包含 physics3d 和 audio_vblank 的声明，所需实现文件仍须单独链接。entity_update_all 和 entity_draw_all 按 ID 升序将活动槽位传给回调。请将回调放在公共库区0，或在调用期间保持相应 PRG 库区的映射。使用 ZX0 时须显式包含 zx0.h。audio_vblank 的记录顺序为 delay, CH1, CH2, CH3, CH4。
+
+使用29个输入比较了当前C#构建和先前发布版。接受的15个输入生成完全相同的ROM字节，另外14个输入产生相同的拒绝诊断。另将两个ROM各在KUROSAKI中运行4帧，分别检查实体分配、回调、槽位复用，以及有符号运算、KQBody3D 布局和音频队列常量。报告列出18字节RAM的预期值和实际值。这些检查不涉及音频播放或全部API；先前的回归测试结果在 BINARY_BUILD.json 中单独标注。
+
+[源代码示例与运行验证记录](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:zh-CN:end -->
+
 
 [打开KITAQFC库简体中文手册](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html)
 

@@ -1,8 +1,19 @@
 # Organisation de la bibliothèque standard FC/NES
 
 <!-- readme-language-links:start -->
-[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | **Français** | [Español](README.es.md) | [Deutsch](README.de.md)
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | **Français** | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
 <!-- readme-language-links:end -->
+
+<!-- fc-current-20261004:fr:start -->
+### Distribution actuelle du compilateur et des bibliothèques — 4 octobre 2026
+
+fc.h inclut les déclarations de physics3d et audio_vblank. Ajoutez séparément les fichiers d'implémentation nécessaires. entity_update_all et entity_draw_all appellent le rappel pour les emplacements actifs par ID croissant. Placez ce rappel dans la banque commune 0 ou gardez sa banque PRG sélectionnée pendant les appels. Incluez explicitement zx0.h pour ZX0. L'ordre des enregistrements audio_vblank est delay, CH1, CH2, CH3, CH4.
+
+La compilation C# actuelle a été comparée à la distribution précédente sur 29 entrées. Quinze entrées acceptées ont produit les mêmes octets ROM ; les quatorze autres entrées ont produit les mêmes diagnostics de rejet. Deux ROM supplémentaires ont tourné pendant quatre images dans KUROSAKI : allocation d'entités, rappels et réutilisation des emplacements ; calcul signé, disposition de KQBody3D et constantes de la file audio. Le rapport donne 18 octets RAM attendus et observés. Ces essais ne couvrent ni la lecture audio ni toutes les API ; les anciennes régressions sont distinguées dans BINARY_BUILD.json.
+
+[Exemples source et preuves d'exécution](https://bartaro.github.io/kitaq-docs/fr/fc-library.html#fc-current-20261004-heading)
+<!-- fc-current-20261004:fr:end -->
+
 
 **[KITAQFC · Manuel HTML](https://bartaro.github.io/kitaq-docs/fr/fc-library.html)**
 
