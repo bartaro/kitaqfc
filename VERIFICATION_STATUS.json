@@ -323,5 +323,46 @@
     },
     "unicode_casefold_version": "13.0.0",
     "post_build_changes": "Dependency license texts and correction of the Unicode version in a generated table comment; executable table data unchanged."
+  },
+  "public_native_ci": {
+    "passed": true,
+    "source_commit": "f9c6644ba798939b71f412713e2ba70de6d3e904",
+    "workflows": {
+      "fc": {
+        "repository": "kitaqfc",
+        "id": 37174288844,
+        "kind": "fc",
+        "url": "https://github.com/bartaro/kitaqfc/actions/runs/37174288844",
+        "head": "f9c6644ba798939b71f412713e2ba70de6d3e904",
+        "passed": true,
+        "jobs": [
+          {
+            "id": 111353556750,
+            "name": "minimum-rust",
+            "conclusion": "success"
+          },
+          {
+            "id": 111353556825,
+            "name": "native (macos-latest)",
+            "conclusion": "success"
+          },
+          {
+            "id": 111353556854,
+            "name": "native (macos-15-intel)",
+            "conclusion": "success"
+          },
+          {
+            "id": 111353556863,
+            "name": "native (ubuntu-latest)",
+            "conclusion": "success"
+          },
+          {
+            "id": 111353556958,
+            "name": "native (windows-latest)",
+            "conclusion": "success"
+          }
+        ]
+      }
+    }
   }
 }
