@@ -1,7 +1,7 @@
 name: KITAQFC native compiler tests
 on:
   push:
-    paths: ['Cargo.*', 'src/**', 'tests/**', 'lib/**', 'tools/**', '.github/workflows/ci.yml']
+    paths: ['.gitattributes', 'Cargo.*', 'src/**', 'tests/**', 'lib/**', 'tools/**', '.github/workflows/ci.yml']
   pull_request:
   workflow_dispatch:
 permissions:
