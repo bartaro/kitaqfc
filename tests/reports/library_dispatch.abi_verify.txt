@@ -1,0 +1,7 @@
+# KITAQGB ABI verification report
+abi_mode=legacy
+functions=10
+calls=10
+issues=0
+
+PASS

@@ -1,0 +1,88 @@
+name: KITAQFC native compiler tests
+on:
+  push:
+    paths: ['Cargo.*', 'src/**', 'tests/**', 'lib/**', 'tools/**', '.github/workflows/ci.yml']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: kitaqfc-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native:
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rust toolchain
+        run: |
+          rustup toolchain install 1.93.1 --profile minimal
+          rustup default 1.93.1
+          rustc --version --verbose
+      - name: Native compiler and ROM parity tests
+        run: cargo test --locked --tests
+      - name: Build native executable
+        run: cargo build --locked --release
+      - name: CLI smoke on Unix
+        if: runner.os != 'Windows'
+        run: |
+          ./target/release/kitaqfc --version
+          ./target/release/kitaqfc assemble-ir tests/assembly/nrom.json --mapper=nrom -o smoke.nes
+          python3 -c "from pathlib import Path; assert Path('smoke.nes').read_bytes()==Path('tests/assembly/nrom.nes').read_bytes()"
+          ./target/release/kitaqfc tests/values/nested_calls.c --mapper=nrom -o native-c.nes
+          python3 -c "from pathlib import Path; assert Path('native-c.nes').read_bytes()==Path('tests/values/nested_calls.nes').read_bytes()"
+      - name: CLI smoke on Windows
+        if: runner.os == 'Windows'
+        run: |
+          ./target/release/kitaqfc.exe --version
+          ./target/release/kitaqfc.exe assemble-ir tests/assembly/nrom.json --mapper=nrom -o smoke.nes
+          python -c "from pathlib import Path; assert Path('smoke.nes').read_bytes()==Path('tests/assembly/nrom.nes').read_bytes()"
+          ./target/release/kitaqfc.exe tests/values/nested_calls.c --mapper=nrom -o native-c.nes
+          python -c "from pathlib import Path; assert Path('native-c.nes').read_bytes()==Path('tests/values/nested_calls.nes').read_bytes()"
+      - name: Release helper execution on Unix
+        if: runner.os != 'Windows'
+        run: python3 tools/auxiliary_smoke.py --kind fc --bin-dir target/release --receipt auxiliary-platform.json
+      - name: Release helper execution on Windows
+        if: runner.os == 'Windows'
+        run: python tools/auxiliary_smoke.py --kind fc --bin-dir target/release --receipt auxiliary-platform.json
+      - name: Save native checkpoint executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: kitaqfc-${{ runner.os }}-${{ runner.arch }}
+          retention-days: 7
+          path: |
+            target/release/kitaqfc
+            target/release/kitaqfc.exe
+            target/release/kitaqfc-zx0
+            target/release/kitaqfc-zx0.exe
+            target/release/kitaqfc-asset-pack
+            target/release/kitaqfc-asset-pack.exe
+            target/release/kitaqfc-png-index-build
+            target/release/kitaqfc-png-index-build.exe
+            target/release/kitaqfc-asset-pipeline
+            target/release/kitaqfc-asset-pipeline.exe
+            target/release/kitaqfc-rights-name-guard
+            target/release/kitaqfc-rights-name-guard.exe
+            auxiliary-platform.json
+            VERIFICATION_STATUS.json
+            lib/
+      - name: Remove build intermediates
+        if: always()
+        run: cargo clean
+  minimum-rust:
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install declared minimum Rust
+        run: rustup toolchain install 1.85.0 --profile minimal
+      - name: Verify minimum Rust
+        run: cargo +1.85.0 test --locked --tests
+      - name: Remove build intermediates
+        if: always()
+        run: cargo clean

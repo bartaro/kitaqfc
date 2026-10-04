@@ -1,0 +1,7 @@
+# KITAQGB farcall suggestion report
+# caller -> callee, count, caller_bank, callee_bank, current_kind, recommendation
+main -> make_vec2, 3, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+main -> bump_vec2, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+main -> consume_vec2, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+main -> make_big, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+main -> make_rect, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent

@@ -1,0 +1,42 @@
+[
+  {
+    "case": "interrupt_bank_write",
+    "expected_error_code": "KQFC2606",
+    "reference_rejected": true,
+    "native_rejected": true,
+    "passed": true
+  },
+  {
+    "case": "reachable_bank_write",
+    "expected_error_code": "KQFC2606",
+    "reference_rejected": true,
+    "native_rejected": true,
+    "passed": true
+  },
+  {
+    "case": "interrupt_switch_bank",
+    "expected_error_code": "KQFC2607",
+    "reference_rejected": true,
+    "native_rejected": true,
+    "passed": true
+  },
+  {
+    "case": "interrupt_raw_call",
+    "expected_error_code": "KQFC2607",
+    "reference_rejected": true,
+    "native_rejected": true,
+    "passed": true
+  },
+  {
+    "case": "common_interrupt",
+    "expected_error_code": null,
+    "passed": true,
+    "rom_sha256": "85a279a8ee7717b5cb06dd9f88a37bbbcfa1556dee74ac75901f1eba11161b26"
+  },
+  {
+    "case": "unreachable_writer",
+    "expected_error_code": null,
+    "passed": true,
+    "rom_sha256": "ff462abadeba022aebd619fe3934fd286c607880d96f6afe3411d55122eb7516"
+  }
+]

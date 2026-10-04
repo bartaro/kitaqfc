@@ -1,0 +1,1043 @@
+{
+  "schema": "kitaqfc-nes-build-metadata-v2",
+  "producer": "KITAQFC",
+  "target": "nes",
+  "output": "$OUTPUT",
+  "mapper": "nrom",
+  "board": "generic",
+  "cartridge": {
+    "mapper_number": 0,
+    "mapper": "nrom",
+    "board": "generic",
+    "header": "ines1",
+    "prg_rom_bytes": 32768,
+    "chr_rom_bytes": 8192,
+    "chr_ram_bytes": 0,
+    "prg_ram_bytes": 8192,
+    "battery": false,
+    "prg_mode": 3,
+    "chr_mode": 0
+  },
+  "optimizations": {
+    "whole_program_zp": false,
+    "fastcall_v2": false,
+    "static_frame": false,
+    "small_inline": false,
+    "loop_lowering": false,
+    "lto_lite": true,
+    "profile_feedback": false,
+    "mapper_aware_placement": false
+  },
+  "ram_access_contract": {
+    "schema": "kitaqfc-ram-access-v1",
+    "allocator_complete": true,
+    "implicit_stack": {
+      "start": 256,
+      "end_exclusive": 512,
+      "conservative": true
+    },
+    "configured_local_window": null,
+    "compiler_temp_window": {
+      "start": 208,
+      "end_exclusive": 256,
+      "custom": false
+    },
+    "allocations": [
+      {
+        "id": "allocation_0001",
+        "kind": "abi_call_args",
+        "address": 192,
+        "size": 16,
+        "end_exclusive": 208,
+        "region": "cpu_ram_zero_page",
+        "conservative": true
+      },
+      {
+        "id": "allocation_0002",
+        "kind": "compiler_temp_pool",
+        "address": 208,
+        "size": 48,
+        "end_exclusive": 256,
+        "region": "cpu_ram_zero_page",
+        "conservative": true
+      },
+      {
+        "id": "allocation_0003",
+        "kind": "runtime",
+        "address": 768,
+        "size": 1,
+        "end_exclusive": 769,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0004",
+        "kind": "runtime",
+        "address": 769,
+        "size": 1,
+        "end_exclusive": 770,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0005",
+        "kind": "runtime",
+        "address": 770,
+        "size": 1,
+        "end_exclusive": 771,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0006",
+        "kind": "runtime",
+        "address": 771,
+        "size": 1,
+        "end_exclusive": 772,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0007",
+        "kind": "runtime",
+        "address": 772,
+        "size": 1,
+        "end_exclusive": 773,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0008",
+        "kind": "runtime",
+        "address": 773,
+        "size": 1,
+        "end_exclusive": 774,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0009",
+        "kind": "runtime",
+        "address": 774,
+        "size": 1,
+        "end_exclusive": 775,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0010",
+        "kind": "runtime",
+        "address": 775,
+        "size": 1,
+        "end_exclusive": 776,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0011",
+        "kind": "runtime",
+        "address": 776,
+        "size": 1,
+        "end_exclusive": 777,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0012",
+        "kind": "runtime",
+        "address": 777,
+        "size": 1,
+        "end_exclusive": 778,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0013",
+        "kind": "runtime",
+        "address": 778,
+        "size": 1,
+        "end_exclusive": 779,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0014",
+        "kind": "runtime",
+        "address": 779,
+        "size": 1,
+        "end_exclusive": 780,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0015",
+        "kind": "runtime",
+        "address": 780,
+        "size": 1,
+        "end_exclusive": 781,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0016",
+        "kind": "runtime",
+        "address": 781,
+        "size": 1,
+        "end_exclusive": 782,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0017",
+        "kind": "runtime",
+        "address": 782,
+        "size": 1,
+        "end_exclusive": 783,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0018",
+        "kind": "runtime",
+        "address": 783,
+        "size": 1,
+        "end_exclusive": 784,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0019",
+        "kind": "runtime",
+        "address": 784,
+        "size": 1,
+        "end_exclusive": 785,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0020",
+        "kind": "runtime",
+        "address": 785,
+        "size": 1,
+        "end_exclusive": 786,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0021",
+        "kind": "runtime",
+        "address": 786,
+        "size": 1,
+        "end_exclusive": 787,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0022",
+        "kind": "runtime",
+        "address": 787,
+        "size": 1,
+        "end_exclusive": 788,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0023",
+        "kind": "runtime_buffer",
+        "address": 788,
+        "size": 128,
+        "end_exclusive": 916,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0024",
+        "kind": "runtime",
+        "address": 916,
+        "size": 1,
+        "end_exclusive": 917,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0025",
+        "kind": "runtime_buffer",
+        "address": 917,
+        "size": 2,
+        "end_exclusive": 919,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0026",
+        "kind": "runtime_buffer",
+        "address": 919,
+        "size": 17,
+        "end_exclusive": 936,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0027",
+        "kind": "runtime",
+        "address": 936,
+        "size": 1,
+        "end_exclusive": 937,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0028",
+        "kind": "runtime",
+        "address": 937,
+        "size": 1,
+        "end_exclusive": 938,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0029",
+        "kind": "runtime",
+        "address": 938,
+        "size": 1,
+        "end_exclusive": 939,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0030",
+        "kind": "runtime",
+        "address": 939,
+        "size": 1,
+        "end_exclusive": 940,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0031",
+        "kind": "runtime",
+        "address": 940,
+        "size": 1,
+        "end_exclusive": 941,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0032",
+        "kind": "global_fixed",
+        "address": 1792,
+        "size": 1,
+        "end_exclusive": 1793,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0033",
+        "kind": "global_fixed",
+        "address": 1793,
+        "size": 1,
+        "end_exclusive": 1794,
+        "region": "cpu_ram",
+        "conservative": false
+      }
+    ],
+    "function_accesses": [
+      {
+        "id": "access_0001",
+        "function": "main",
+        "bank": 1,
+        "operation": "write",
+        "address": 1792,
+        "span": 1,
+        "end_exclusive": 1793,
+        "region": "cpu_ram",
+        "dynamic_target": false
+      }
+    ]
+  },
+  "fds": {
+    "enabled": false,
+    "layout": "fds32",
+    "auto_overlay": true,
+    "overlay_farcall": true
+  },
+  "functions": [
+    {
+      "name": "inc",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": false,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "main",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": false,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "unused",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": false,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    }
+  ],
+  "calls": [
+    {
+      "caller": "<none>",
+      "caller_bank": 0,
+      "callee": "main",
+      "callee_bank": 1,
+      "kind": "direct",
+      "via_thunk": false,
+      "via_farcall": false,
+      "count": 1
+    },
+    {
+      "caller": "main",
+      "caller_bank": 1,
+      "callee": "inc",
+      "callee_bank": 1,
+      "kind": "raw_asm_direct",
+      "via_thunk": false,
+      "via_farcall": false,
+      "count": 1
+    }
+  ],
+  "optimization_events": {
+    "zp_allocations": 0,
+    "static_frame_slots": 0,
+    "ram_allocations": 33,
+    "ram_accesses": 1,
+    "inline_decisions": 0,
+    "loop_lowerings": 0,
+    "lto_removed_functions": 1,
+    "bank_placements": 0
+  },
+  "nes_actions": [],
+  "function_sizes": [
+    {
+      "name": "__kq_reset_stub",
+      "bank": 0,
+      "cpu_address": 49152,
+      "size": 16
+    },
+    {
+      "name": "__kq_nmi_default",
+      "bank": 0,
+      "cpu_address": 49168,
+      "size": 59
+    },
+    {
+      "name": "__kq_irq_default",
+      "bank": 0,
+      "cpu_address": 49227,
+      "size": 1
+    },
+    {
+      "name": "__kq_hang",
+      "bank": 0,
+      "cpu_address": 49228,
+      "size": 3
+    },
+    {
+      "name": "__kq_prg_set_bank_a",
+      "bank": 0,
+      "cpu_address": 49231,
+      "size": 10
+    },
+    {
+      "name": "__nmi_wait",
+      "bank": 0,
+      "cpu_address": 49241,
+      "size": 15
+    },
+    {
+      "name": "__memcpy_small",
+      "bank": 0,
+      "cpu_address": 49256,
+      "size": 7
+    },
+    {
+      "name": "__memcpy",
+      "bank": 0,
+      "cpu_address": 49263,
+      "size": 39
+    },
+    {
+      "name": "__memset_small",
+      "bank": 0,
+      "cpu_address": 49302,
+      "size": 7
+    },
+    {
+      "name": "__memset",
+      "bank": 0,
+      "cpu_address": 49309,
+      "size": 33
+    },
+    {
+      "name": "__bit_test",
+      "bank": 0,
+      "cpu_address": 49342,
+      "size": 63
+    },
+    {
+      "name": "__bit_set",
+      "bank": 0,
+      "cpu_address": 49405,
+      "size": 65
+    },
+    {
+      "name": "__bit_clear",
+      "bank": 0,
+      "cpu_address": 49470,
+      "size": 75
+    },
+    {
+      "name": "__bit_toggle",
+      "bank": 0,
+      "cpu_address": 49545,
+      "size": 65
+    },
+    {
+      "name": "__mul16x8",
+      "bank": 0,
+      "cpu_address": 49610,
+      "size": 45
+    },
+    {
+      "name": "__mul8x8_hi",
+      "bank": 0,
+      "cpu_address": 49655,
+      "size": 19
+    },
+    {
+      "name": "__smul16x8",
+      "bank": 0,
+      "cpu_address": 49674,
+      "size": 101
+    },
+    {
+      "name": "__mac16",
+      "bank": 0,
+      "cpu_address": 49775,
+      "size": 37
+    },
+    {
+      "name": "__smac16",
+      "bank": 0,
+      "cpu_address": 49812,
+      "size": 37
+    },
+    {
+      "name": "__dot2_q8_8",
+      "bank": 0,
+      "cpu_address": 49849,
+      "size": 52
+    },
+    {
+      "name": "__dot3_q8_8",
+      "bank": 0,
+      "cpu_address": 49901,
+      "size": 89
+    },
+    {
+      "name": "__sdot2_q8_8",
+      "bank": 0,
+      "cpu_address": 49990,
+      "size": 52
+    },
+    {
+      "name": "__sdot3_q8_8",
+      "bank": 0,
+      "cpu_address": 50042,
+      "size": 89
+    },
+    {
+      "name": "__smul16x8_q1_7",
+      "bank": 0,
+      "cpu_address": 50131,
+      "size": 3
+    },
+    {
+      "name": "__smac16_q1_7",
+      "bank": 0,
+      "cpu_address": 50134,
+      "size": 3
+    },
+    {
+      "name": "__sdot2_q1_7",
+      "bank": 0,
+      "cpu_address": 50137,
+      "size": 3
+    },
+    {
+      "name": "__sdot3_q1_7",
+      "bank": 0,
+      "cpu_address": 50140,
+      "size": 3
+    },
+    {
+      "name": "__xy_in_rect",
+      "bank": 0,
+      "cpu_address": 50143,
+      "size": 30
+    },
+    {
+      "name": "__manhattan",
+      "bank": 0,
+      "cpu_address": 50173,
+      "size": 32
+    },
+    {
+      "name": "__map_index",
+      "bank": 0,
+      "cpu_address": 50205,
+      "size": 41
+    },
+    {
+      "name": "__rng_seed",
+      "bank": 0,
+      "cpu_address": 50246,
+      "size": 11
+    },
+    {
+      "name": "__rng8",
+      "bank": 0,
+      "cpu_address": 50257,
+      "size": 52
+    },
+    {
+      "name": "__farpeek8",
+      "bank": 0,
+      "cpu_address": 50309,
+      "size": 24
+    },
+    {
+      "name": "__farpeek16",
+      "bank": 0,
+      "cpu_address": 50333,
+      "size": 33
+    },
+    {
+      "name": "__far_memcpy",
+      "bank": 0,
+      "cpu_address": 50366,
+      "size": 52
+    },
+    {
+      "name": "__vramq_put",
+      "bank": 0,
+      "cpu_address": 50418,
+      "size": 41
+    },
+    {
+      "name": "__vramq_fill",
+      "bank": 0,
+      "cpu_address": 50459,
+      "size": 47
+    },
+    {
+      "name": "__vramq_copy",
+      "bank": 0,
+      "cpu_address": 50506,
+      "size": 53
+    },
+    {
+      "name": "__vramq_exec",
+      "bank": 0,
+      "cpu_address": 50559,
+      "size": 219
+    },
+    {
+      "name": "__fds_wait_ready",
+      "bank": 0,
+      "cpu_address": 50792,
+      "size": 8
+    },
+    {
+      "name": "__kq_fds_find_io",
+      "bank": 0,
+      "cpu_address": 50800,
+      "size": 50
+    },
+    {
+      "name": "__kq_fds_check_span",
+      "bank": 0,
+      "cpu_address": 50850,
+      "size": 56
+    },
+    {
+      "name": "__fds_load_file",
+      "bank": 0,
+      "cpu_address": 50906,
+      "size": 296
+    },
+    {
+      "name": "__kq_fds_copy_count",
+      "bank": 0,
+      "cpu_address": 51202,
+      "size": 13
+    },
+    {
+      "name": "__fds_load_overlay",
+      "bank": 0,
+      "cpu_address": 51215,
+      "size": 28
+    },
+    {
+      "name": "__fds_load_bank",
+      "bank": 0,
+      "cpu_address": 51243,
+      "size": 70
+    },
+    {
+      "name": "__fds_require_bank",
+      "bank": 0,
+      "cpu_address": 51313,
+      "size": 18
+    },
+    {
+      "name": "__fds_is_bank_resident",
+      "bank": 0,
+      "cpu_address": 51331,
+      "size": 17
+    },
+    {
+      "name": "__fds_file_exists",
+      "bank": 0,
+      "cpu_address": 51348,
+      "size": 26
+    },
+    {
+      "name": "__fds_file_size",
+      "bank": 0,
+      "cpu_address": 51374,
+      "size": 41
+    },
+    {
+      "name": "__fds_save_file",
+      "bank": 0,
+      "cpu_address": 51415,
+      "size": 174
+    },
+    {
+      "name": "__fds_wave_load",
+      "bank": 0,
+      "cpu_address": 51589,
+      "size": 23
+    },
+    {
+      "name": "__fds_mod_load",
+      "bank": 0,
+      "cpu_address": 51612,
+      "size": 13
+    },
+    {
+      "name": "__fds_freq_set",
+      "bank": 0,
+      "cpu_address": 51625,
+      "size": 13
+    },
+    {
+      "name": "__fds_env_set",
+      "bank": 0,
+      "cpu_address": 51638,
+      "size": 16
+    },
+    {
+      "name": "__pad_read1",
+      "bank": 0,
+      "cpu_address": 51654,
+      "size": 46
+    },
+    {
+      "name": "__pad_read2",
+      "bank": 0,
+      "cpu_address": 51700,
+      "size": 46
+    },
+    {
+      "name": "__pad_read1_d1",
+      "bank": 0,
+      "cpu_address": 51746,
+      "size": 46
+    },
+    {
+      "name": "__pad_read2_d1",
+      "bank": 0,
+      "cpu_address": 51792,
+      "size": 46
+    },
+    {
+      "name": "__pad_read1_safe",
+      "bank": 0,
+      "cpu_address": 51838,
+      "size": 15
+    },
+    {
+      "name": "__pad_read2_safe",
+      "bank": 0,
+      "cpu_address": 51853,
+      "size": 15
+    },
+    {
+      "name": "__mic_read2p",
+      "bank": 0,
+      "cpu_address": 51868,
+      "size": 15
+    },
+    {
+      "name": "__zapper_trigger1",
+      "bank": 0,
+      "cpu_address": 51883,
+      "size": 15
+    },
+    {
+      "name": "__zapper_trigger2",
+      "bank": 0,
+      "cpu_address": 51898,
+      "size": 15
+    },
+    {
+      "name": "__zapper_light1",
+      "bank": 0,
+      "cpu_address": 51913,
+      "size": 15
+    },
+    {
+      "name": "__zapper_light2",
+      "bank": 0,
+      "cpu_address": 51928,
+      "size": 15
+    },
+    {
+      "name": "__fkb_scan",
+      "bank": 0,
+      "cpu_address": 51943,
+      "size": 100
+    },
+    {
+      "name": "__fkb_read_row_col",
+      "bank": 0,
+      "cpu_address": 52043,
+      "size": 161
+    },
+    {
+      "name": "__fkb_detect",
+      "bank": 0,
+      "cpu_address": 52204,
+      "size": 33
+    },
+    {
+      "name": "__rob_flash",
+      "bank": 0,
+      "cpu_address": 52237,
+      "size": 28
+    },
+    {
+      "name": "__rob_pulse",
+      "bank": 0,
+      "cpu_address": 52265,
+      "size": 33
+    },
+    {
+      "name": "__rob_send_byte",
+      "bank": 0,
+      "cpu_address": 52298,
+      "size": 42
+    },
+    {
+      "name": "__serial_tx_bit",
+      "bank": 0,
+      "cpu_address": 52340,
+      "size": 8
+    },
+    {
+      "name": "__serial_rx_bit",
+      "bank": 0,
+      "cpu_address": 52348,
+      "size": 15
+    },
+    {
+      "name": "__kq_midi_out_a",
+      "bank": 0,
+      "cpu_address": 52363,
+      "size": 325
+    },
+    {
+      "name": "__midi_out_byte",
+      "bank": 0,
+      "cpu_address": 52688,
+      "size": 6
+    },
+    {
+      "name": "__midi_in_byte",
+      "bank": 0,
+      "cpu_address": 52694,
+      "size": 309
+    },
+    {
+      "name": "__midi_note_on",
+      "bank": 0,
+      "cpu_address": 53003,
+      "size": 20
+    },
+    {
+      "name": "__midi_note_off",
+      "bank": 0,
+      "cpu_address": 53023,
+      "size": 20
+    },
+    {
+      "name": "__midi_control_change",
+      "bank": 0,
+      "cpu_address": 53043,
+      "size": 20
+    },
+    {
+      "name": "__midi_program_change",
+      "bank": 0,
+      "cpu_address": 53063,
+      "size": 15
+    },
+    {
+      "name": "__oam_clear",
+      "bank": 0,
+      "cpu_address": 53078,
+      "size": 14
+    },
+    {
+      "name": "__vram_write",
+      "bank": 0,
+      "cpu_address": 53092,
+      "size": 28
+    },
+    {
+      "name": "__vram_fill",
+      "bank": 0,
+      "cpu_address": 53120,
+      "size": 26
+    },
+    {
+      "name": "__nametable_put",
+      "bank": 0,
+      "cpu_address": 53146,
+      "size": 78
+    },
+    {
+      "name": "__nametable_put_nt",
+      "bank": 0,
+      "cpu_address": 53224,
+      "size": 91
+    },
+    {
+      "name": "__nametable_rect",
+      "bank": 0,
+      "cpu_address": 53315,
+      "size": 117
+    },
+    {
+      "name": "__nametable_rect_nt",
+      "bank": 0,
+      "cpu_address": 53432,
+      "size": 130
+    },
+    {
+      "name": "__attr_set",
+      "bank": 0,
+      "cpu_address": 53562,
+      "size": 44
+    },
+    {
+      "name": "__attr_set_nt",
+      "bank": 0,
+      "cpu_address": 53606,
+      "size": 57
+    },
+    {
+      "name": "__sprite_set",
+      "bank": 0,
+      "cpu_address": 53663,
+      "size": 26
+    },
+    {
+      "name": "__sprite_move",
+      "bank": 0,
+      "cpu_address": 53689,
+      "size": 16
+    },
+    {
+      "name": "__sprite_tile",
+      "bank": 0,
+      "cpu_address": 53705,
+      "size": 11
+    },
+    {
+      "name": "__sprite_attr",
+      "bank": 0,
+      "cpu_address": 53716,
+      "size": 11
+    },
+    {
+      "name": "__sprite_hide",
+      "bank": 0,
+      "cpu_address": 53727,
+      "size": 11
+    },
+    {
+      "name": "__metasprite_draw",
+      "bank": 0,
+      "cpu_address": 53738,
+      "size": 80
+    },
+    {
+      "name": "__palette_bg_load",
+      "bank": 0,
+      "cpu_address": 53818,
+      "size": 26
+    },
+    {
+      "name": "__palette_sp_load",
+      "bank": 0,
+      "cpu_address": 53844,
+      "size": 26
+    },
+    {
+      "name": "__sprite0_wait_hit",
+      "bank": 0,
+      "cpu_address": 53870,
+      "size": 15
+    },
+    {
+      "name": "__split_scroll_sprite0",
+      "bank": 0,
+      "cpu_address": 53885,
+      "size": 17
+    },
+    {
+      "name": "inc",
+      "bank": 1,
+      "cpu_address": 32768,
+      "size": 4
+    },
+    {
+      "name": "main",
+      "bank": 1,
+      "cpu_address": 32772,
+      "size": 10
+    }
+  ]
+}

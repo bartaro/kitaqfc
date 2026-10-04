@@ -9,20 +9,16 @@ extern unsigned short nes_attr_base_from_nt(unsigned short nt_base);
 extern unsigned char nes_vram_queue_try_write(unsigned short ppu_addr, unsigned char* src, unsigned char len);
 extern void nes_attr_shadow_set_quad(unsigned char tile_x, unsigned char tile_y, unsigned char pal_index);
 
-// Convert a tile X coordinate to a two-tile quadrant X coordinate.
 static unsigned char nes_attr_rect_left(unsigned char tile_x)
 {
     return (unsigned char)(tile_x >> 1);
 }
 
-// Convert a tile Y coordinate to a two-tile quadrant Y coordinate.
 static unsigned char nes_attr_rect_top(unsigned char tile_y)
 {
     return (unsigned char)(tile_y >> 1);
 }
 
-// Copy 64 already-packed attribute bytes into shadow storage. This does not
-// convert one palette ID per tile into NES attribute bitfields.
 void nes_attr_shadow_build_from_palette_map(unsigned char* src64)
 {
     unsigned char i;
@@ -34,8 +30,6 @@ void nes_attr_shadow_build_from_palette_map(unsigned char* src64)
     }
 }
 
-// Apply a palette to every two-by-two tile quadrant touched by the rectangle.
-// Empty or out-of-range rectangles leave the shadow unchanged.
 void nes_attr_shadow_fill_rect(unsigned char tile_x, unsigned char tile_y, unsigned char width, unsigned char height, unsigned char pal_index)
 {
     unsigned char qx0;
@@ -75,9 +69,6 @@ void nes_attr_shadow_fill_rect(unsigned char tile_x, unsigned char tile_y, unsig
     }
 }
 
-// Queue every four-by-four-tile attribute byte touched by the rectangle.
-// Empty rectangles succeed; out-of-range rectangles fail before queuing.
-// A capacity failure can leave earlier rows queued.
 unsigned char nes_attr_queue_rect(unsigned short nt_base, unsigned char tile_x, unsigned char tile_y, unsigned char width, unsigned char height)
 {
     unsigned char qx0;
@@ -86,8 +77,6 @@ unsigned char nes_attr_queue_rect(unsigned short nt_base, unsigned char tile_x, 
     unsigned char qy1;
     unsigned char row;
     unsigned char col;
-    // The runtime queue copies these local bytes before return; they are not retained pointers.
-    // Caller coordinates must keep each computed row length within eight bytes.
     unsigned char line[8];
     unsigned short ppu_addr;
     unsigned char len;

@@ -1,0 +1,470 @@
+[
+  {
+    "case": "boot",
+    "sources": [
+      "tests/codegen/boot.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "surom",
+    "sources": [
+      "tests/codegen/boot.c"
+    ],
+    "mapper": "surom512",
+    "flags": [],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "option_20",
+    "sources": [
+      "tests/values/bank_args.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "option_41",
+    "sources": [
+      "tests/values/nested_calls.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "option_42",
+    "sources": [
+      "tests/values/loop.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "option_43",
+    "sources": [
+      "tests/values/switch_continue.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "option_44",
+    "sources": [
+      "tests/values/callback_word.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "option_45",
+    "sources": [
+      "tests/values/bank_fast_args.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "-O2"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "option_46",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "-O2"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "option_48",
+    "sources": [
+      "tests/values/../options/lto_unused.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "library_dispatch",
+    "sources": [
+      "tests/library/library_dispatch.c",
+      "lib/entity.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "skyjar_dx",
+    "sources": [
+      "tests/games/skyjar_dx/main.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2",
+      "--mirroring=vertical",
+      "--nes-chr=$PORT/tests/games/skyjar_dx/assets/skyjar.chr"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "mip_courier",
+    "sources": [
+      "tests/games/mip_courier/main.c",
+      "tests/games/mip_courier/game.c",
+      "tests/games/mip_courier/render.c",
+      "tests/games/mip_courier/physics_stage.c",
+      "tests/games/mip_courier/audio.c",
+      "tests/games/mip_courier/hardware.c",
+      "tests/games/mip_courier/assets.c",
+      "tests/games/mip_courier/../../../lib/physics2d.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "-O2",
+      "--mirroring=vertical",
+      "--nes-chr=$PORT/tests/games/mip_courier/assets/mip_courier.chr"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "case": "fds_no_farcall",
+    "sources": [
+      "tests/fds_arguments/fds_args_0.c"
+    ],
+    "mapper": "fds",
+    "flags": [
+      "--fds-no-overlay-farcall"
+    ],
+    "reports": [
+      {
+        "report": "--func-size-report",
+        "passed": true
+      },
+      {
+        "report": "--hotspot-report",
+        "passed": true
+      },
+      {
+        "report": "--cross-bank-report",
+        "passed": true
+      },
+      {
+        "report": "--farcall-suggest",
+        "passed": true
+      },
+      {
+        "report": "--abi-verify",
+        "passed": true
+      }
+    ],
+    "passed": true
+  }
+]

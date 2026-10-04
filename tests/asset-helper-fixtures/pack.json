@@ -1,0 +1,71 @@
+{
+  "chr_out": "actual/packed.chr",
+  "c_out": "actual/packed.c",
+  "h_out": "actual/packed.h",
+  "report_out": "actual/report.json",
+  "chr": [
+    {
+      "input": "bg.chr",
+      "tile_offset": 0
+    },
+    {
+      "input": "spr.chr",
+      "tile_offset": 128
+    }
+  ],
+  "palettes": [
+    {
+      "name": "colors",
+      "input": "palette.pal"
+    }
+  ],
+  "nametables": [
+    {
+      "name": "screen",
+      "input": "screen.nam"
+    }
+  ],
+  "attributes": [
+    {
+      "name": "attrs",
+      "input": "attrs.atr"
+    }
+  ],
+  "metasprites": [
+    {
+      "name": "inline",
+      "data": [
+        [
+          0,
+          0,
+          128,
+          0
+        ],
+        [
+          8,
+          8,
+          129,
+          2
+        ]
+      ]
+    },
+    {
+      "name": "animation",
+      "frames": [
+        [
+          [
+            0,
+            0,
+            129,
+            1
+          ]
+        ],
+        []
+      ]
+    },
+    {
+      "name": "from_json",
+      "input": "frames.json"
+    }
+  ]
+}

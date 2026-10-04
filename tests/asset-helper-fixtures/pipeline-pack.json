@@ -1,0 +1,40 @@
+{
+  "chr_out": "actual/pipeline.chr",
+  "c_out": "actual/pipeline.c",
+  "h_out": "actual/pipeline.h",
+  "report_out": "actual/pipeline-report.json",
+  "chr": [
+    {
+      "input": "actual/bg.chr",
+      "tile_offset": 0
+    },
+    {
+      "input": "actual/sprite.chr",
+      "tile_offset": 128
+    }
+  ],
+  "palettes": [
+    {
+      "name": "bg_pal",
+      "input": "actual/bg.pal"
+    }
+  ],
+  "nametables": [
+    {
+      "name": "bg_nam",
+      "input": "actual/bg.nam"
+    }
+  ],
+  "attributes": [
+    {
+      "name": "bg_atr",
+      "input": "actual/bg.atr"
+    }
+  ],
+  "metasprites": [
+    {
+      "name": "player",
+      "input": "actual/sprite.metasprite.json"
+    }
+  ]
+}

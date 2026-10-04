@@ -1,0 +1,1242 @@
+{
+  "schema": "kitaqfc-nes-build-metadata-v2",
+  "producer": "KITAQFC",
+  "target": "nes",
+  "output": "output_0001.nes",
+  "mapper": "mmc1",
+  "board": "surom512",
+  "cartridge": {
+    "mapper_number": 1,
+    "mapper": "mmc1",
+    "board": "surom512",
+    "header": "ines1",
+    "prg_rom_bytes": 524288,
+    "chr_rom_bytes": 0,
+    "chr_ram_bytes": 8192,
+    "prg_ram_bytes": 8192,
+    "battery": true,
+    "prg_mode": 3,
+    "chr_mode": 0
+  },
+  "bank_layout": {
+    "kind": "surom_outer256_fixed_top16",
+    "logical_common_bank": 0,
+    "logical_switchable_min": 1,
+    "logical_switchable_max": 30,
+    "common_physical_banks": [
+      15,
+      31
+    ],
+    "common_replica_equal": true,
+    "common_replica_sha256": "7ba6a7a8ec6a1f0359299e8b396b8a7dd666857e056adddf19c967a80a6097e9",
+    "mappings": [
+      {
+        "logical_bank": 1,
+        "physical_bank": 0,
+        "outer_256k": 0,
+        "inner_16k": 0,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 2,
+        "physical_bank": 1,
+        "outer_256k": 0,
+        "inner_16k": 1,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 3,
+        "physical_bank": 2,
+        "outer_256k": 0,
+        "inner_16k": 2,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 4,
+        "physical_bank": 3,
+        "outer_256k": 0,
+        "inner_16k": 3,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 5,
+        "physical_bank": 4,
+        "outer_256k": 0,
+        "inner_16k": 4,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 6,
+        "physical_bank": 5,
+        "outer_256k": 0,
+        "inner_16k": 5,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 7,
+        "physical_bank": 6,
+        "outer_256k": 0,
+        "inner_16k": 6,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 8,
+        "physical_bank": 7,
+        "outer_256k": 0,
+        "inner_16k": 7,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 9,
+        "physical_bank": 8,
+        "outer_256k": 0,
+        "inner_16k": 8,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 10,
+        "physical_bank": 9,
+        "outer_256k": 0,
+        "inner_16k": 9,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 11,
+        "physical_bank": 10,
+        "outer_256k": 0,
+        "inner_16k": 10,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 12,
+        "physical_bank": 11,
+        "outer_256k": 0,
+        "inner_16k": 11,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 13,
+        "physical_bank": 12,
+        "outer_256k": 0,
+        "inner_16k": 12,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 14,
+        "physical_bank": 13,
+        "outer_256k": 0,
+        "inner_16k": 13,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 15,
+        "physical_bank": 14,
+        "outer_256k": 0,
+        "inner_16k": 14,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 16,
+        "physical_bank": 16,
+        "outer_256k": 1,
+        "inner_16k": 0,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 17,
+        "physical_bank": 17,
+        "outer_256k": 1,
+        "inner_16k": 1,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 18,
+        "physical_bank": 18,
+        "outer_256k": 1,
+        "inner_16k": 2,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 19,
+        "physical_bank": 19,
+        "outer_256k": 1,
+        "inner_16k": 3,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 20,
+        "physical_bank": 20,
+        "outer_256k": 1,
+        "inner_16k": 4,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 21,
+        "physical_bank": 21,
+        "outer_256k": 1,
+        "inner_16k": 5,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 22,
+        "physical_bank": 22,
+        "outer_256k": 1,
+        "inner_16k": 6,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 23,
+        "physical_bank": 23,
+        "outer_256k": 1,
+        "inner_16k": 7,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 24,
+        "physical_bank": 24,
+        "outer_256k": 1,
+        "inner_16k": 8,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 25,
+        "physical_bank": 25,
+        "outer_256k": 1,
+        "inner_16k": 9,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 26,
+        "physical_bank": 26,
+        "outer_256k": 1,
+        "inner_16k": 10,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 27,
+        "physical_bank": 27,
+        "outer_256k": 1,
+        "inner_16k": 11,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 28,
+        "physical_bank": 28,
+        "outer_256k": 1,
+        "inner_16k": 12,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 29,
+        "physical_bank": 29,
+        "outer_256k": 1,
+        "inner_16k": 13,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 30,
+        "physical_bank": 30,
+        "outer_256k": 1,
+        "inner_16k": 14,
+        "is_common_replica": false
+      },
+      {
+        "logical_bank": 0,
+        "physical_bank": 15,
+        "outer_256k": 0,
+        "inner_16k": 15,
+        "is_common_replica": true
+      },
+      {
+        "logical_bank": 0,
+        "physical_bank": 31,
+        "outer_256k": 1,
+        "inner_16k": 15,
+        "is_common_replica": true
+      }
+    ]
+  },
+  "reset": {
+    "tail_reserve_bytes": 64,
+    "replication": "every_physical_32k_high_bank"
+  },
+  "redaction": {
+    "source_paths_redacted": true,
+    "project_labels_redacted": true,
+    "identifiers_redacted": true
+  },
+  "optimizations": {
+    "whole_program_zp": false,
+    "fastcall_v2": false,
+    "static_frame": false,
+    "small_inline": false,
+    "loop_lowering": false,
+    "lto_lite": false,
+    "profile_feedback": false,
+    "mapper_aware_placement": false
+  },
+  "ram_access_contract": {
+    "schema": "kitaqfc-ram-access-v1",
+    "allocator_complete": true,
+    "implicit_stack": {
+      "start": 256,
+      "end_exclusive": 512,
+      "conservative": true
+    },
+    "configured_local_window": null,
+    "compiler_temp_window": {
+      "start": 208,
+      "end_exclusive": 256,
+      "custom": false
+    },
+    "allocations": [
+      {
+        "id": "allocation_0001",
+        "kind": "abi_call_args",
+        "address": 192,
+        "size": 16,
+        "end_exclusive": 208,
+        "region": "cpu_ram_zero_page",
+        "conservative": true
+      },
+      {
+        "id": "allocation_0002",
+        "kind": "compiler_temp_pool",
+        "address": 208,
+        "size": 48,
+        "end_exclusive": 256,
+        "region": "cpu_ram_zero_page",
+        "conservative": true
+      },
+      {
+        "id": "allocation_0003",
+        "kind": "runtime",
+        "address": 768,
+        "size": 1,
+        "end_exclusive": 769,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0004",
+        "kind": "runtime",
+        "address": 769,
+        "size": 1,
+        "end_exclusive": 770,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0005",
+        "kind": "runtime",
+        "address": 770,
+        "size": 1,
+        "end_exclusive": 771,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0006",
+        "kind": "runtime",
+        "address": 771,
+        "size": 1,
+        "end_exclusive": 772,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0007",
+        "kind": "runtime",
+        "address": 772,
+        "size": 1,
+        "end_exclusive": 773,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0008",
+        "kind": "runtime",
+        "address": 773,
+        "size": 1,
+        "end_exclusive": 774,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0009",
+        "kind": "runtime",
+        "address": 774,
+        "size": 1,
+        "end_exclusive": 775,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0010",
+        "kind": "runtime",
+        "address": 775,
+        "size": 1,
+        "end_exclusive": 776,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0011",
+        "kind": "runtime",
+        "address": 776,
+        "size": 1,
+        "end_exclusive": 777,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0012",
+        "kind": "runtime",
+        "address": 777,
+        "size": 1,
+        "end_exclusive": 778,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0013",
+        "kind": "runtime",
+        "address": 778,
+        "size": 1,
+        "end_exclusive": 779,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0014",
+        "kind": "runtime",
+        "address": 779,
+        "size": 1,
+        "end_exclusive": 780,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0015",
+        "kind": "runtime",
+        "address": 780,
+        "size": 1,
+        "end_exclusive": 781,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0016",
+        "kind": "runtime",
+        "address": 781,
+        "size": 1,
+        "end_exclusive": 782,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0017",
+        "kind": "runtime",
+        "address": 782,
+        "size": 1,
+        "end_exclusive": 783,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0018",
+        "kind": "runtime",
+        "address": 783,
+        "size": 1,
+        "end_exclusive": 784,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0019",
+        "kind": "runtime",
+        "address": 784,
+        "size": 1,
+        "end_exclusive": 785,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0020",
+        "kind": "runtime",
+        "address": 785,
+        "size": 1,
+        "end_exclusive": 786,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0021",
+        "kind": "runtime",
+        "address": 786,
+        "size": 1,
+        "end_exclusive": 787,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0022",
+        "kind": "runtime",
+        "address": 787,
+        "size": 1,
+        "end_exclusive": 788,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0023",
+        "kind": "runtime_buffer",
+        "address": 788,
+        "size": 128,
+        "end_exclusive": 916,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0024",
+        "kind": "runtime",
+        "address": 916,
+        "size": 1,
+        "end_exclusive": 917,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0025",
+        "kind": "runtime_buffer",
+        "address": 917,
+        "size": 2,
+        "end_exclusive": 919,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0026",
+        "kind": "runtime_buffer",
+        "address": 919,
+        "size": 17,
+        "end_exclusive": 936,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0027",
+        "kind": "runtime",
+        "address": 936,
+        "size": 1,
+        "end_exclusive": 937,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0028",
+        "kind": "runtime",
+        "address": 937,
+        "size": 1,
+        "end_exclusive": 938,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0029",
+        "kind": "runtime",
+        "address": 938,
+        "size": 1,
+        "end_exclusive": 939,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0030",
+        "kind": "runtime",
+        "address": 939,
+        "size": 1,
+        "end_exclusive": 940,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0031",
+        "kind": "runtime",
+        "address": 940,
+        "size": 1,
+        "end_exclusive": 941,
+        "region": "cpu_ram",
+        "conservative": false
+      }
+    ],
+    "function_accesses": [
+      {
+        "id": "access_0001",
+        "function": "function_0001",
+        "bank": 1,
+        "operation": "write",
+        "address": 1792,
+        "span": 1,
+        "end_exclusive": 1793,
+        "region": "cpu_ram",
+        "dynamic_target": false
+      }
+    ]
+  },
+  "fds": {
+    "enabled": false,
+    "layout": "fds32",
+    "auto_overlay": true,
+    "overlay_farcall": true
+  },
+  "functions": [
+    {
+      "name": "function_0001",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": false,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    }
+  ],
+  "calls": [
+    {
+      "caller": "function_0002",
+      "caller_bank": 0,
+      "callee": "function_0001",
+      "callee_bank": 1,
+      "kind": "bank_thunk",
+      "via_thunk": true,
+      "via_farcall": false,
+      "count": 1
+    }
+  ],
+  "optimization_events": {
+    "zp_allocations": 0,
+    "static_frame_slots": 0,
+    "ram_allocations": 31,
+    "ram_accesses": 1,
+    "inline_decisions": 0,
+    "loop_lowerings": 0,
+    "lto_removed_functions": 0,
+    "bank_placements": 0
+  },
+  "nes_actions": [],
+  "function_sizes": [
+    {
+      "name": "function_0003",
+      "bank": 0,
+      "cpu_address": 49152,
+      "size": 32
+    },
+    {
+      "name": "function_0004",
+      "bank": 0,
+      "cpu_address": 49184,
+      "size": 59
+    },
+    {
+      "name": "function_0005",
+      "bank": 0,
+      "cpu_address": 49243,
+      "size": 1
+    },
+    {
+      "name": "function_0006",
+      "bank": 0,
+      "cpu_address": 49244,
+      "size": 3
+    },
+    {
+      "name": "function_0007",
+      "bank": 0,
+      "cpu_address": 49247,
+      "size": 95
+    },
+    {
+      "name": "function_0008",
+      "bank": 0,
+      "cpu_address": 49342,
+      "size": 17
+    },
+    {
+      "name": "function_0009",
+      "bank": 0,
+      "cpu_address": 49359,
+      "size": 15
+    },
+    {
+      "name": "function_0010",
+      "bank": 0,
+      "cpu_address": 49374,
+      "size": 7
+    },
+    {
+      "name": "function_0011",
+      "bank": 0,
+      "cpu_address": 49381,
+      "size": 39
+    },
+    {
+      "name": "function_0012",
+      "bank": 0,
+      "cpu_address": 49420,
+      "size": 7
+    },
+    {
+      "name": "function_0013",
+      "bank": 0,
+      "cpu_address": 49427,
+      "size": 33
+    },
+    {
+      "name": "function_0014",
+      "bank": 0,
+      "cpu_address": 49460,
+      "size": 63
+    },
+    {
+      "name": "function_0015",
+      "bank": 0,
+      "cpu_address": 49523,
+      "size": 65
+    },
+    {
+      "name": "function_0016",
+      "bank": 0,
+      "cpu_address": 49588,
+      "size": 75
+    },
+    {
+      "name": "function_0017",
+      "bank": 0,
+      "cpu_address": 49663,
+      "size": 65
+    },
+    {
+      "name": "function_0018",
+      "bank": 0,
+      "cpu_address": 49728,
+      "size": 45
+    },
+    {
+      "name": "function_0019",
+      "bank": 0,
+      "cpu_address": 49773,
+      "size": 19
+    },
+    {
+      "name": "function_0020",
+      "bank": 0,
+      "cpu_address": 49792,
+      "size": 101
+    },
+    {
+      "name": "function_0021",
+      "bank": 0,
+      "cpu_address": 49893,
+      "size": 37
+    },
+    {
+      "name": "function_0022",
+      "bank": 0,
+      "cpu_address": 49930,
+      "size": 37
+    },
+    {
+      "name": "function_0023",
+      "bank": 0,
+      "cpu_address": 49967,
+      "size": 52
+    },
+    {
+      "name": "function_0024",
+      "bank": 0,
+      "cpu_address": 50019,
+      "size": 89
+    },
+    {
+      "name": "function_0025",
+      "bank": 0,
+      "cpu_address": 50108,
+      "size": 52
+    },
+    {
+      "name": "function_0026",
+      "bank": 0,
+      "cpu_address": 50160,
+      "size": 89
+    },
+    {
+      "name": "function_0027",
+      "bank": 0,
+      "cpu_address": 50249,
+      "size": 3
+    },
+    {
+      "name": "function_0028",
+      "bank": 0,
+      "cpu_address": 50252,
+      "size": 3
+    },
+    {
+      "name": "function_0029",
+      "bank": 0,
+      "cpu_address": 50255,
+      "size": 3
+    },
+    {
+      "name": "function_0030",
+      "bank": 0,
+      "cpu_address": 50258,
+      "size": 3
+    },
+    {
+      "name": "function_0031",
+      "bank": 0,
+      "cpu_address": 50261,
+      "size": 30
+    },
+    {
+      "name": "function_0032",
+      "bank": 0,
+      "cpu_address": 50291,
+      "size": 32
+    },
+    {
+      "name": "function_0033",
+      "bank": 0,
+      "cpu_address": 50323,
+      "size": 41
+    },
+    {
+      "name": "function_0034",
+      "bank": 0,
+      "cpu_address": 50364,
+      "size": 11
+    },
+    {
+      "name": "function_0035",
+      "bank": 0,
+      "cpu_address": 50375,
+      "size": 52
+    },
+    {
+      "name": "function_0036",
+      "bank": 0,
+      "cpu_address": 50427,
+      "size": 24
+    },
+    {
+      "name": "function_0037",
+      "bank": 0,
+      "cpu_address": 50451,
+      "size": 33
+    },
+    {
+      "name": "function_0038",
+      "bank": 0,
+      "cpu_address": 50484,
+      "size": 52
+    },
+    {
+      "name": "function_0039",
+      "bank": 0,
+      "cpu_address": 50536,
+      "size": 41
+    },
+    {
+      "name": "function_0040",
+      "bank": 0,
+      "cpu_address": 50577,
+      "size": 47
+    },
+    {
+      "name": "function_0041",
+      "bank": 0,
+      "cpu_address": 50624,
+      "size": 53
+    },
+    {
+      "name": "function_0042",
+      "bank": 0,
+      "cpu_address": 50677,
+      "size": 219
+    },
+    {
+      "name": "function_0043",
+      "bank": 0,
+      "cpu_address": 50910,
+      "size": 8
+    },
+    {
+      "name": "function_0044",
+      "bank": 0,
+      "cpu_address": 50918,
+      "size": 50
+    },
+    {
+      "name": "function_0045",
+      "bank": 0,
+      "cpu_address": 50968,
+      "size": 56
+    },
+    {
+      "name": "function_0046",
+      "bank": 0,
+      "cpu_address": 51024,
+      "size": 296
+    },
+    {
+      "name": "function_0047",
+      "bank": 0,
+      "cpu_address": 51320,
+      "size": 13
+    },
+    {
+      "name": "function_0048",
+      "bank": 0,
+      "cpu_address": 51333,
+      "size": 28
+    },
+    {
+      "name": "function_0049",
+      "bank": 0,
+      "cpu_address": 51361,
+      "size": 70
+    },
+    {
+      "name": "function_0050",
+      "bank": 0,
+      "cpu_address": 51431,
+      "size": 18
+    },
+    {
+      "name": "function_0051",
+      "bank": 0,
+      "cpu_address": 51449,
+      "size": 17
+    },
+    {
+      "name": "function_0052",
+      "bank": 0,
+      "cpu_address": 51466,
+      "size": 26
+    },
+    {
+      "name": "function_0053",
+      "bank": 0,
+      "cpu_address": 51492,
+      "size": 41
+    },
+    {
+      "name": "function_0054",
+      "bank": 0,
+      "cpu_address": 51533,
+      "size": 174
+    },
+    {
+      "name": "function_0055",
+      "bank": 0,
+      "cpu_address": 51707,
+      "size": 23
+    },
+    {
+      "name": "function_0056",
+      "bank": 0,
+      "cpu_address": 51730,
+      "size": 13
+    },
+    {
+      "name": "function_0057",
+      "bank": 0,
+      "cpu_address": 51743,
+      "size": 13
+    },
+    {
+      "name": "function_0058",
+      "bank": 0,
+      "cpu_address": 51756,
+      "size": 16
+    },
+    {
+      "name": "function_0059",
+      "bank": 0,
+      "cpu_address": 51772,
+      "size": 46
+    },
+    {
+      "name": "function_0060",
+      "bank": 0,
+      "cpu_address": 51818,
+      "size": 46
+    },
+    {
+      "name": "function_0061",
+      "bank": 0,
+      "cpu_address": 51864,
+      "size": 46
+    },
+    {
+      "name": "function_0062",
+      "bank": 0,
+      "cpu_address": 51910,
+      "size": 46
+    },
+    {
+      "name": "function_0063",
+      "bank": 0,
+      "cpu_address": 51956,
+      "size": 15
+    },
+    {
+      "name": "function_0064",
+      "bank": 0,
+      "cpu_address": 51971,
+      "size": 15
+    },
+    {
+      "name": "function_0065",
+      "bank": 0,
+      "cpu_address": 51986,
+      "size": 15
+    },
+    {
+      "name": "function_0066",
+      "bank": 0,
+      "cpu_address": 52001,
+      "size": 15
+    },
+    {
+      "name": "function_0067",
+      "bank": 0,
+      "cpu_address": 52016,
+      "size": 15
+    },
+    {
+      "name": "function_0068",
+      "bank": 0,
+      "cpu_address": 52031,
+      "size": 15
+    },
+    {
+      "name": "function_0069",
+      "bank": 0,
+      "cpu_address": 52046,
+      "size": 15
+    },
+    {
+      "name": "function_0070",
+      "bank": 0,
+      "cpu_address": 52061,
+      "size": 100
+    },
+    {
+      "name": "function_0071",
+      "bank": 0,
+      "cpu_address": 52161,
+      "size": 161
+    },
+    {
+      "name": "function_0072",
+      "bank": 0,
+      "cpu_address": 52322,
+      "size": 33
+    },
+    {
+      "name": "function_0073",
+      "bank": 0,
+      "cpu_address": 52355,
+      "size": 28
+    },
+    {
+      "name": "function_0074",
+      "bank": 0,
+      "cpu_address": 52383,
+      "size": 33
+    },
+    {
+      "name": "function_0075",
+      "bank": 0,
+      "cpu_address": 52416,
+      "size": 42
+    },
+    {
+      "name": "function_0076",
+      "bank": 0,
+      "cpu_address": 52458,
+      "size": 8
+    },
+    {
+      "name": "function_0077",
+      "bank": 0,
+      "cpu_address": 52466,
+      "size": 15
+    },
+    {
+      "name": "function_0078",
+      "bank": 0,
+      "cpu_address": 52481,
+      "size": 325
+    },
+    {
+      "name": "function_0079",
+      "bank": 0,
+      "cpu_address": 52806,
+      "size": 6
+    },
+    {
+      "name": "function_0080",
+      "bank": 0,
+      "cpu_address": 52812,
+      "size": 309
+    },
+    {
+      "name": "function_0081",
+      "bank": 0,
+      "cpu_address": 53121,
+      "size": 20
+    },
+    {
+      "name": "function_0082",
+      "bank": 0,
+      "cpu_address": 53141,
+      "size": 20
+    },
+    {
+      "name": "function_0083",
+      "bank": 0,
+      "cpu_address": 53161,
+      "size": 20
+    },
+    {
+      "name": "function_0084",
+      "bank": 0,
+      "cpu_address": 53181,
+      "size": 15
+    },
+    {
+      "name": "function_0085",
+      "bank": 0,
+      "cpu_address": 53196,
+      "size": 14
+    },
+    {
+      "name": "function_0086",
+      "bank": 0,
+      "cpu_address": 53210,
+      "size": 28
+    },
+    {
+      "name": "function_0087",
+      "bank": 0,
+      "cpu_address": 53238,
+      "size": 26
+    },
+    {
+      "name": "function_0088",
+      "bank": 0,
+      "cpu_address": 53264,
+      "size": 78
+    },
+    {
+      "name": "function_0089",
+      "bank": 0,
+      "cpu_address": 53342,
+      "size": 91
+    },
+    {
+      "name": "function_0090",
+      "bank": 0,
+      "cpu_address": 53433,
+      "size": 117
+    },
+    {
+      "name": "function_0091",
+      "bank": 0,
+      "cpu_address": 53550,
+      "size": 130
+    },
+    {
+      "name": "function_0092",
+      "bank": 0,
+      "cpu_address": 53680,
+      "size": 44
+    },
+    {
+      "name": "function_0093",
+      "bank": 0,
+      "cpu_address": 53724,
+      "size": 57
+    },
+    {
+      "name": "function_0094",
+      "bank": 0,
+      "cpu_address": 53781,
+      "size": 26
+    },
+    {
+      "name": "function_0095",
+      "bank": 0,
+      "cpu_address": 53807,
+      "size": 16
+    },
+    {
+      "name": "function_0096",
+      "bank": 0,
+      "cpu_address": 53823,
+      "size": 11
+    },
+    {
+      "name": "function_0097",
+      "bank": 0,
+      "cpu_address": 53834,
+      "size": 11
+    },
+    {
+      "name": "function_0098",
+      "bank": 0,
+      "cpu_address": 53845,
+      "size": 11
+    },
+    {
+      "name": "function_0099",
+      "bank": 0,
+      "cpu_address": 53856,
+      "size": 80
+    },
+    {
+      "name": "function_0100",
+      "bank": 0,
+      "cpu_address": 53936,
+      "size": 26
+    },
+    {
+      "name": "function_0101",
+      "bank": 0,
+      "cpu_address": 53962,
+      "size": 26
+    },
+    {
+      "name": "function_0102",
+      "bank": 0,
+      "cpu_address": 53988,
+      "size": 15
+    },
+    {
+      "name": "function_0103",
+      "bank": 0,
+      "cpu_address": 54003,
+      "size": 17
+    },
+    {
+      "name": "function_0001",
+      "bank": 1,
+      "cpu_address": 32768,
+      "size": 9
+    }
+  ]
+}

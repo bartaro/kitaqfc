@@ -1,8 +1,6 @@
 # FC/NES标准库结构
 
-<!-- readme-language-links:start -->
-[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | **简体中文** | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
-<!-- readme-language-links:end -->
+
 
 <!-- fc-current-20261004:zh-CN:start -->
 ### 当前编译器与库的发布配置 — 2026年10月4日
@@ -88,3 +86,33 @@ fc.h 包含 physics3d 和 audio_vblank 的声明，所需实现文件仍须单�
 - `math_lut.h` / `math_lut.c`
 
 在FC/NES硬件能够支持的范围内，KITAQGB兼容函数保留简短的功能名称。场景切换、更新与绘制会同步调用已注册的处理函数。回调顺序及重入限制请参阅各 API 条目。
+
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
+
+<!-- manual-language-links:start -->
+| Language / 言語 | HTML |
+| --- | --- |
+| English | [fc-library](https://bartaro.github.io/kitaq-docs/en/fc-library.html) |
+| 日本語 | [fc-library](https://bartaro.github.io/kitaq-docs/fc-library.html) |
+| 한국어 | [fc-library](https://bartaro.github.io/kitaq-docs/ko/fc-library.html) |
+| 简体中文 | [fc-library](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html) |
+| 繁體中文 | [fc-library](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html) |
+| Français | [fc-library](https://bartaro.github.io/kitaq-docs/fr/fc-library.html) |
+| Español | [fc-library](https://bartaro.github.io/kitaq-docs/es/fc-library.html) |
+| Deutsch | [fc-library](https://bartaro.github.io/kitaq-docs/de/fc-library.html) |
+<!-- manual-language-links:end -->
+
+<!-- rust-native-20261004:start -->
+## 使用原生编译器调用库
+
+lib/ 包含编入游戏机 ROM 的 C 头文件和源文件。PC 编译器和辅助工具使用 Rust；游戏源码、目标平台库和 API 仍使用 C。提供的 SOURCE_MANIFEST.json 和 LIBRARY_MERGE.json 记录库源码的选择。
+
+Windows、Linux、macOS ARM 和 macOS Intel 的原生构建及运行验证均成功。KITAQGB 在每个环境通过 48 项测试和 395 项辅助工具检查；KITAQFC 通过 55 项测试和 401 项检查，也验证了 Rust 1.85。PUBLIC_DISTRIBUTION.json 记录已放置程序的哈希及验证来源。公开 GitHub Actions 会独立构建和验证这些源码。
+
+保存的参考输出用于检查 ROM 字节、诊断和辅助工具格式。以前的 C# 模拟器验证保留为对应原始源码指纹的历史记录，并不自动证明全部 Rust API、真实硬件或完整的 FDS BIOS 游戏启动。原始 PNG 转换脚本无法取得，因此依据规格重新实现，不能声称与原脚本字节一致。
+
+[Rust 原生编译器与辅助工具](../tools/README.zh-CN.md)
+
+<!-- rust-native-20261004:end -->

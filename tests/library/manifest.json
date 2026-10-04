@@ -1,0 +1,70 @@
+[
+  {
+    "case": "library_dispatch",
+    "mapper": "mmc3",
+    "linked": [
+      "entity.c"
+    ],
+    "expected_ram_0700": [
+      0,
+      1,
+      1,
+      4,
+      2,
+      4,
+      1,
+      0,
+      255,
+      13,
+      165
+    ],
+    "actual_ram_0700": [
+      0,
+      1,
+      1,
+      4,
+      2,
+      4,
+      1,
+      0,
+      255,
+      13,
+      165
+    ],
+    "rom_sha256": "d02ea8f02a4bb023cd6c2ec5735bd95c17a84d5f5854d059b8b066fe787c6634",
+    "rom_equal": true,
+    "snapshot_sha256": "64028036d2fcad39dddfbeedd2131fd713171e9ebcd3b21c74ce597c7555b9c7",
+    "frames": 4,
+    "cpu_stopped": false,
+    "passed": true
+  },
+  {
+    "case": "library_basics",
+    "mapper": "nrom",
+    "linked": [],
+    "expected_ram_0700": [
+      254,
+      36,
+      7,
+      5,
+      255,
+      254,
+      165
+    ],
+    "actual_ram_0700": [
+      254,
+      36,
+      7,
+      5,
+      255,
+      254,
+      165
+    ],
+    "rom_sha256": "0dba95d937be65617a528c5ad6aabbd5bf39e25c4be9bacc5e7ba18c064cc829",
+    "rom_equal": true,
+    "snapshot_sha256": "1cf7c60c5a3a0d6c8f72fe7459ae6aae468fff753850b489f9a47955b6f6da54",
+    "frames": 4,
+    "cpu_stopped": false,
+    "passed": true
+  }
+]

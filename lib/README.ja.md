@@ -2,9 +2,7 @@
 
 [简体中文](README.zh-CN.md) · [简体中文 HTML](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html)
 
-<!-- readme-language-links:start -->
-[English](README.md) | **日本語** | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
-<!-- readme-language-links:end -->
+
 
 <!-- fc-current-20261004:ja:start -->
 ### コンパイラとライブラリの現行配布構成 — 2026年10月4日
@@ -90,3 +88,33 @@ fc.h は physics3d と audio_vblank の宣言を含みます。必要な実装�
 - `math_lut.h` / `math_lut.c`
 
 シーンの切り替え・更新・描画は、登録したコールバックを同期的に呼びます。呼び出し順と再入制約は各APIの説明を確認してください。
+
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
+
+<!-- manual-language-links:start -->
+| Language / 言語 | HTML |
+| --- | --- |
+| English | [fc-library](https://bartaro.github.io/kitaq-docs/en/fc-library.html) |
+| 日本語 | [fc-library](https://bartaro.github.io/kitaq-docs/fc-library.html) |
+| 한국어 | [fc-library](https://bartaro.github.io/kitaq-docs/ko/fc-library.html) |
+| 简体中文 | [fc-library](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html) |
+| 繁體中文 | [fc-library](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html) |
+| Français | [fc-library](https://bartaro.github.io/kitaq-docs/fr/fc-library.html) |
+| Español | [fc-library](https://bartaro.github.io/kitaq-docs/es/fc-library.html) |
+| Deutsch | [fc-library](https://bartaro.github.io/kitaq-docs/de/fc-library.html) |
+<!-- manual-language-links:end -->
+
+<!-- rust-native-20261004:start -->
+## Rust製コンパイラでのライブラリ利用
+
+lib/はゲーム機のROMに組み込むCヘッダーとCソースです。PC用コンパイラと補助ツールはRust製で、ゲームのソース、対象機のライブラリとAPIはCのまま使用します。収録するSOURCE_MANIFEST.jsonとLIBRARY_MERGE.jsonにはライブラリの選択元を記録しています。
+
+Windows・Linux・macOS ARM・macOS Intelでネイティブビルドと実行検証が成功しています。KITAQGBは各環境48件のテストと395件の補助ツール検証、KITAQFCは55件と401件が成功しました。Rust 1.85でも確認済みです。PUBLIC_DISTRIBUTION.jsonに配置済みバイナリのハッシュと検証の出典を記録しています。公開GitHub Actionsでもこのソースを独立してビルド・検証します。
+
+保存済みの比較データでROMのバイト列、診断と補助ツールの形式を検証しています。以前のC#版によるエミュレータ検証は、そのソース指紋に対応する過去の記録として残しています。これだけでRust版の全API、実機動作、FDSのBIOS経由のゲーム起動を保証するものではありません。元のPNG変換スクリプトは入手できないため仕様から再実装し、元スクリプトとのバイト一致は確認できません。
+
+[Rust製コンパイラと補助ツール](../tools/README.ja.md)
+
+<!-- rust-native-20261004:end -->

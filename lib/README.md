@@ -2,23 +2,9 @@
 
 [简体中文](README.zh-CN.md) · [简体中文 HTML](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html)
 
-<!-- manual-language-links:start -->
-| Language / 言語 | HTML |
-| --- | --- |
-| English | [KITAQFC Library](https://bartaro.github.io/kitaq-docs/en/fc-library.html) |
-| 日本語 | [KITAQFC Library](https://bartaro.github.io/kitaq-docs/fc-library.html) |
-| 한국어 | [KITAQFC Library](https://bartaro.github.io/kitaq-docs/ko/fc-library.html) |
-| 简体中文 | [KITAQFC Library](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html) |
-| 繁體中文 | [KITAQFC Library](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html) |
-| Français | [KITAQFC Library](https://bartaro.github.io/kitaq-docs/fr/fc-library.html) |
-| Español | [KITAQFC Library](https://bartaro.github.io/kitaq-docs/es/fc-library.html) |
-| Deutsch | [KITAQFC Library](https://bartaro.github.io/kitaq-docs/de/fc-library.html) |
-| Português (Brasil) | [KITAQFC Library](https://bartaro.github.io/kitaq-docs/pt/fc-library.html) |
-<!-- manual-language-links:end -->
 
-<!-- readme-language-links:start -->
-**English** | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
-<!-- readme-language-links:end -->
+
+
 
 <!-- fc-current-20261004:en:start -->
 ### Current compiler and library distribution — 4 October 2026
@@ -104,3 +90,33 @@ without a `kitaqfc_` prefix.
 - `math_lut.h` / `math_lut.c`
 
 Scene transitions, updates and drawing call their registered handlers synchronously. See the individual API entries for callback order and reentrancy constraints.
+
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
+
+<!-- manual-language-links:start -->
+| Language / 言語 | HTML |
+| --- | --- |
+| English | [fc-library](https://bartaro.github.io/kitaq-docs/en/fc-library.html) |
+| 日本語 | [fc-library](https://bartaro.github.io/kitaq-docs/fc-library.html) |
+| 한국어 | [fc-library](https://bartaro.github.io/kitaq-docs/ko/fc-library.html) |
+| 简体中文 | [fc-library](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html) |
+| 繁體中文 | [fc-library](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html) |
+| Français | [fc-library](https://bartaro.github.io/kitaq-docs/fr/fc-library.html) |
+| Español | [fc-library](https://bartaro.github.io/kitaq-docs/es/fc-library.html) |
+| Deutsch | [fc-library](https://bartaro.github.io/kitaq-docs/de/fc-library.html) |
+<!-- manual-language-links:end -->
+
+<!-- rust-native-20261004:start -->
+## Library use with the native compiler
+
+lib/ contains C headers and sources compiled into the console ROM. The desktop compiler and helper tools are Rust; game sources, target libraries and their APIs remain C. SOURCE_MANIFEST.json and LIBRARY_MERGE.json record the selected library sources where provided.
+
+Native builds and executable checks passed on Windows, Linux, macOS ARM and macOS Intel. KITAQGB passed 48 tests and 395 helper checks per platform; KITAQFC passed 55 tests and 401 helper checks. Rust 1.85 was also tested. PUBLIC_DISTRIBUTION.json records the installed binary hashes and validation provenance. The public GitHub Actions workflows rebuild and test this source independently.
+
+Frozen reference outputs test ROM bytes, diagnostics and helper formats. Earlier C# emulator evidence remains historical evidence with its original source fingerprints. It does not automatically prove every Rust API, real hardware or complete FDS BIOS/game startup. The unavailable original PNG conversion script was reconstructed from its specification; byte parity with that missing script cannot be claimed.
+
+[Native Rust compiler and helper tools](../tools/README.en.md)
+
+<!-- rust-native-20261004:end -->

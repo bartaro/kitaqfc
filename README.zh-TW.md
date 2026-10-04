@@ -1,8 +1,60 @@
 # KITAQFC
 
 <!-- readme-language-links:start -->
-[English](README.md#english) | [日本語](README.md#japanese) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | **繁體中文** | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
 <!-- readme-language-links:end -->
+
+<!-- manual-language-links:start -->
+| Language / 言語 | HTML |
+| --- | --- |
+| English | [kitaqfc](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html) |
+| 日本語 | [kitaqfc](https://bartaro.github.io/kitaq-docs/kitaqfc.html) |
+| 한국어 | [kitaqfc](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html) |
+| 简体中文 | [kitaqfc](https://bartaro.github.io/kitaq-docs/zh-CN/kitaqfc.html) |
+| 繁體中文 | [kitaqfc](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html) |
+| Français | [kitaqfc](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html) |
+| Español | [kitaqfc](https://bartaro.github.io/kitaq-docs/es/kitaqfc.html) |
+| Deutsch | [kitaqfc](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html) |
+<!-- manual-language-links:end -->
+
+<!-- rust-native-20261004:start -->
+## Rust 原生編譯器與輔助工具
+
+使用 Rust 1.85 或更新版本，可為 Windows、Linux、macOS ARM 和 macOS Intel 建置編譯器及所有輔助工具。原生程式執行不需要 .NET，素材處理工具也不需要 Python 或 Pillow。
+
+```sh
+cargo test --locked --tests
+cargo build --locked --release
+```
+
+Windows 程式位於儲存庫根目錄；Linux 和 macOS 程式位於下表所列的 bin/ 平台資料夾。請保留 lib/ 和授權聲明。在 Linux/macOS 下載後執行 chmod +x，並將資料夾加入 PATH，或使用完整路徑執行。
+
+| OS | kitaqfc |
+| --- | --- |
+| Windows x64 | `./kitaqfc.exe` |
+| Linux x64 | `bin/Linux-X64/kitaqfc` |
+| macOS ARM64 | `bin/macOS-ARM64/kitaqfc` |
+| macOS Intel | `bin/macOS-X64/kitaqfc` |
+
+```powershell
+.\scripts\build.ps1
+.\kitaqfc.exe --help
+```
+
+```sh
+sh scripts/build.sh
+```
+
+
+Windows、Linux、macOS ARM 和 macOS Intel 的原生建置及執行驗證均成功。KITAQGB 在每個環境通過 48 項測試與 395 項輔助工具檢查；KITAQFC 通過 55 項測試與 401 項檢查，也驗證了 Rust 1.85。PUBLIC_DISTRIBUTION.json 記錄已配置程式的雜湊與驗證來源。公開 GitHub Actions 會獨立建置及驗證這些原始碼。
+
+保存的參考輸出用於檢查 ROM 位元組、診斷與輔助工具格式。先前的 C# 模擬器驗證保留為對應原始碼指紋的歷史紀錄，並不自動證明所有 Rust API、實體硬體或完整的 FDS BIOS 遊戲啟動。原始 PNG 轉換腳本無法取得，因此依規格重新實作，不能宣稱與原腳本位元組一致。
+
+[Rust 原生編譯器與輔助工具](tools/README.zh-TW.md)
+
+<!-- rust-native-20261004:end -->
+
+
 
 [編譯器手冊](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html) · [程式庫手冊](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html)
 
@@ -182,41 +234,68 @@ if ($LASTEXITCODE -ne 0) { throw 'Inspect the analysis report and fix the cause.
 
 ## 儲存庫結構
 
-同名子目錄 `kitaqfc/` 集中存放編譯器原始碼、專案檔與建置設定。已建置的 Release 執行檔及其執行階段設定檔位於根目錄。`lib/` 為 C 程式庫，`examples/` 則提供入門程式與原創字型。
-
 ```text
-kitaqfc/  # 儲存庫根目錄
-├─ kitaqfc/  # 編譯器建置原始碼
-│  ├─ *.cs
-│  ├─ app.config
-│  └─ kitaqfc.csproj
-├─ kitaqfc.exe  # 預先建置的 Release 編譯器
-├─ kitaqfc.exe.config  # .NET Framework 執行階段設定
-├─ lib/  # C 支援程式庫
-├─ examples/  # 入門範例與原創字型
-├─ scripts/build.ps1  # 重新建置 Release 執行檔
-├─ LICENSE
-└─ LICENSE.ja
+Cargo.toml / Cargo.lock
+src/                     # Rust compiler and native helper sources
+kitaqfc.exe             # Windows x64 compiler
+kitaqfc-*.exe           # Windows native helper tools
+bin/                     # Linux and macOS executables
+lib/                     # C libraries for console ROMs
+tests/                   # Frozen reference fixtures and Rust tests
+scripts/build.ps1
+scripts/build.sh
 ```
 
-隨附編譯器須在 Windows 與 .NET Framework 4.8 環境執行。請下載整個儲存庫的 ZIP，將執行檔、設定、程式庫與授權聲明保存在一起。若要自行建置，還須安裝 .NET Framework 4.8 Developer Pack 和 Visual Studio Build Tools。請在儲存庫根目錄執行：
+使用 Rust 1.85 或更新版本，可為 Windows、Linux、macOS ARM 和 macOS Intel 建置編譯器及所有輔助工具。原生程式執行不需要 .NET，素材處理工具也不需要 Python 或 Pillow。
+
+```sh
+cargo test --locked --tests
+cargo build --locked --release
+```
+
+Windows 程式位於儲存庫根目錄；Linux 和 macOS 程式位於下表所列的 bin/ 平台資料夾。請保留 lib/ 和授權聲明。在 Linux/macOS 下載後執行 chmod +x，並將資料夾加入 PATH，或使用完整路徑執行。
+
+| OS | kitaqfc |
+| --- | --- |
+| Windows x64 | `./kitaqfc.exe` |
+| Linux x64 | `bin/Linux-X64/kitaqfc` |
+| macOS ARM64 | `bin/macOS-ARM64/kitaqfc` |
+| macOS Intel | `bin/macOS-X64/kitaqfc` |
 
 ```powershell
 .\scripts\build.ps1
 .\kitaqfc.exe --help
-.\examples\build.ps1
 ```
 
-Release 建置會將程式與設定檔複製到根目錄。Debug 版本保留在 `kitaqfc/bin/Debug`，不會覆寫發行用的 Release 編譯器。發行內容不包含建置快取或 PDB 檔。建置輸入與 SHA-256 請見[二進位檔建置紀錄](BINARY_BUILD.json)。
+```sh
+sh scripts/build.sh
+```
 
 ## 從原始碼建置與開始使用
 
-在 Windows 安裝 .NET Framework 4.8 Developer Pack 與 Visual Studio Build Tools 後，也可以直接呼叫 MSBuild。請開啟 Developer PowerShell 並執行：
+使用 Rust 1.85 或更新版本，可為 Windows、Linux、macOS ARM 和 macOS Intel 建置編譯器及所有輔助工具。原生程式執行不需要 .NET，素材處理工具也不需要 Python 或 Pillow。
+
+```sh
+cargo test --locked --tests
+cargo build --locked --release
+```
+
+Windows 程式位於儲存庫根目錄；Linux 和 macOS 程式位於下表所列的 bin/ 平台資料夾。請保留 lib/ 和授權聲明。在 Linux/macOS 下載後執行 chmod +x，並將資料夾加入 PATH，或使用完整路徑執行。
+
+| OS | kitaqfc |
+| --- | --- |
+| Windows x64 | `./kitaqfc.exe` |
+| Linux x64 | `bin/Linux-X64/kitaqfc` |
+| macOS ARM64 | `bin/macOS-ARM64/kitaqfc` |
+| macOS Intel | `bin/macOS-X64/kitaqfc` |
 
 ```powershell
-MSBuild.exe .\kitaqfc\kitaqfc.csproj /t:Build /p:Configuration=Release
+.\scripts\build.ps1
 .\kitaqfc.exe --help
-.\examples\build.ps1
+```
+
+```sh
+sh scripts/build.sh
 ```
 
 ## 手冊與授權

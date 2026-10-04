@@ -1,0 +1,86 @@
+[
+  {
+    "path": "entity.c",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\entity.c",
+    "sha256": "96197eca2ad3431a6d82a29e5db59205fb6ca9a4d36465d83b9f3a47f3617ef0",
+    "previous_sha256": "48870afb53be4adf5b97b16a7824ec3f83180c216c655b9f66da54fbcb761c35",
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "fc.h",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\fc.h",
+    "sha256": "697d338735cc83db0ee14e3533241ce30cb5c4afd93fed40fd84c4ac7cfb57c4",
+    "previous_sha256": "1ad943b99e4df7cedbecd9a5f195f196b9cc56a2fd98df06a4b4a2744b03d210",
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "intrinsics.h",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\intrinsics.h",
+    "sha256": "8027dcccbad8226568419a332dfd27147b1be72ae7f3ed8c688c6f8276464512",
+    "previous_sha256": "f7b35578a160efbd1cf8cf88a37603b5f711a2844489d60a71d988d743f6a50e",
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "ppu.c",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\ppu.c",
+    "sha256": "1b1c79eb8c29950f4be5a531b8835ffd3e85ecfaa91871ed8b6117aaa88d88d1",
+    "previous_sha256": "0568ffb3b6d195a3327d9305009eb60374ff245f713cbb8f956118b1788c0f77",
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "ppu.h",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\ppu.h",
+    "sha256": "acdf977858899f584ab15cb2303c50489d903bde4f86ae8b7161b5a0005acbe1",
+    "previous_sha256": "6dde099d4205b0b433fea0ca1506bbc2f2ceba5e3d890169238a907e07cc5dcb",
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "sprite.c",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\sprite.c",
+    "sha256": "fe3bdd0d28c34e9b81175f5a8ab7b67ae692cf7aa1ab17b4e20fa9e471d914d5",
+    "previous_sha256": "12b54b247bfa1c4fa9d0693f075e2a0a49aa62f0cce296c4d29d88724a3d498e",
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "vram.c",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\vram.c",
+    "sha256": "b9cdc48b34084ee3a2a6c8aa6d9e4eb584114f4730e362a0dcd79cd20cbea9c9",
+    "previous_sha256": "3b14170b92781482d2a037d81703a111e7b940c84a0797b448883f942ed20e81",
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "vram.h",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\vram.h",
+    "sha256": "462e3e35e9b6db0ae6a873d3dbc721c7f2e924a533c92e9737b6446458c159c4",
+    "previous_sha256": "6311992ac489129a93584b94b8fd5cb4d4e53f9b68348f26b2870efa021c3ee3",
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "physics3d.c",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\physics3d.c",
+    "sha256": "845214a967b09b5ac433ff913287e345fe2acb7252db02c4a4e47fab83f82c20",
+    "previous_sha256": null,
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "physics3d.h",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\physics3d.h",
+    "sha256": "7e207d58e5dcb87a059ec4b1487030b6b7e25a4f853ac2afc4bfcf18064b58ab",
+    "previous_sha256": null,
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "zx0.c",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\zx0.c",
+    "sha256": "da956c77f44d9884fbdb31c9b27bb976506ed540d07919941fc70ca0bbb276e8",
+    "previous_sha256": null,
+    "reason": "Verified public code additions retained alongside local library baseline"
+  },
+  {
+    "path": "zx0.h",
+    "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\zx0.h",
+    "sha256": "50887e6043b3150469deebac8b3f331aabf5852ddb5d9efff0b4611e8b6f94c8",
+    "previous_sha256": null,
+    "reason": "Verified public code additions retained alongside local library baseline"
+  }
+]

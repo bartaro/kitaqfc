@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-04",
+  "source_helpers": [
+    {
+      "path": "tools/zx0/KitaqZx0.cs",
+      "git_blob": "d086add66e4e2978841e8cdc0660dcd96c6add31",
+      "role": "host helper",
+      "sha256": "f7f88b4e07588ed8a43b4bc38886279a7a4a7a5e2bc467099054a70cc0c1c564",
+      "bytes": 12771,
+      "repository": "bartaro/kitaqfc",
+      "local_source": null,
+      "public_commit": "d0a24174021886257a69dbe345187db600d84485",
+      "native_binary": "kitaqfc-zx0"
+    },
+    {
+      "path": "kitaqfc_asset_pack.py",
+      "sha256": "21c802f9595fa0ffdeb64e47179bd27a8ff769d0978a15aa05ac515b859c1d44",
+      "bytes": 7489,
+      "role": "host helper",
+      "repository": null,
+      "local_source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\tools",
+      "public_commit": null,
+      "native_binary": "kitaqfc-asset-pack"
+    },
+    {
+      "path": "kitaqfc_asset_pipeline.py",
+      "sha256": "c39193057c977a32a7fa950e90921242ae3d69783b419d7ae7009c7f10fde160",
+      "bytes": 1590,
+      "role": "host helper",
+      "repository": null,
+      "local_source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\tools",
+      "public_commit": null,
+      "native_binary": "kitaqfc-asset-pipeline"
+    },
+    {
+      "path": "rights_name_guard.py",
+      "sha256": "f7dd53fce2267956da10ca5fde3d847d7957baf29f63ca2b14def1bec5948d1e",
+      "bytes": 2359,
+      "role": "host helper",
+      "repository": null,
+      "local_source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\tools",
+      "public_commit": null,
+      "native_binary": "kitaqfc-rights-name-guard"
+    }
+  ],
+  "orchestration_scripts": "Build and test drivers remain orchestration; all shipped helper transformations execute in Rust.",
+  "runtime_requires_csharp": false,
+  "runtime_requires_python": false,
+  "reconstructed_dependency": {
+    "binary": "kitaqfc-png-index-build",
+    "reason": "Original PNG converter source and original sample images absent from current local/public repositories. Reimplemented local indexed-PNG specification; independent PNG/CHR/attribute fixtures and downstream NES compilation verify the replacement. Original PNG output byte parity cannot be asserted.",
+    "specification_sources": [
+      "KITAQFC_ASSET_PIPELINE.md",
+      "KITAQFC_PHASE14_NOTES.md",
+      "assets/example_png_manifest.json"
+    ]
+  }
+}

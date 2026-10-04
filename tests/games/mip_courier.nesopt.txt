@@ -1,0 +1,1049 @@
+# KITAQFC NES optimization report
+# enabled: zp=True, fastcall=True, static_frame=True, inline=True, loop=True, lto_lite=True, kurosaki_profile=True, mapper_placement=True
+
+## fastcall functions
+__kq_static_3_physics_update_drone0, bank=0, params=, ret=0
+__kq_static_4_physics_update_drone1, bank=0, params=, ret=0
+__nes_nmi, bank=0, params=, ret=0
+game_update_play, bank=0, params=, ret=0
+game_update_result, bank=0, params=, ret=0
+game_update_timers, bank=0, params=, ret=0
+game_update_title, bank=0, params=, ret=0
+hw_begin_frame_updates, bank=0, params=, ret=0
+hw_clear_screen_direct, bank=0, params=1, ret=0
+hw_clear_updates, bank=0, params=, ret=0
+hw_finish_frame_updates, bank=0, params=, ret=0
+hw_oam_hide_all, bank=0, params=, ret=0
+hw_oam_hide_from, bank=0, params=1, ret=0
+hw_ppu_seek, bank=0, params=2, ret=0
+main, bank=0, params=, ret=0
+physics_stage_update_drones, bank=0, params=, ret=0
+physics_stage_update_player, bank=0, params=, ret=1
+__kq_static_0_physics_integrate_player, bank=1, params=, ret=0
+__kq_static_1_physics_integrate_drone0, bank=1, params=, ret=0
+audio_init, bank=1, params=, ret=0
+audio_start_song, bank=1, params=1, ret=0
+audio_tick, bank=1, params=, ret=0
+audio_write_pulse2, bank=1, params=1, ret=0
+audio_write_triangle, bank=1, params=1, ret=0
+fix_from_int, bank=1, params=2, ret=2
+fix_to_int, bank=1, params=2, ret=2
+game_add_score, bank=1, params=2, ret=0
+game_advance_stage, bank=1, params=, ret=0
+game_collect_cargo, bank=1, params=, ret=0
+game_damage_player, bank=1, params=, ret=0
+game_reset_cargo, bank=1, params=, ret=0
+game_run, bank=1, params=, ret=0
+game_start_play, bank=1, params=, ret=0
+game_start_result, bank=1, params=1, ret=0
+game_start_title, bank=1, params=, ret=0
+hw_screen_off, bank=1, params=, ret=0
+hw_screen_on, bank=1, params=, ret=0
+hw_wait_frame, bank=1, params=, ret=0
+kq2d__abs_s16, bank=1, params=2, ret=2
+kq2d__abs_value, bank=1, params=, ret=0
+kq2d__add_value, bank=1, params=, ret=0
+kq2d__clamp_value, bank=1, params=, ret=0
+kq2d_step, bank=1, params=2, ret=0
+kq_abs_s16, bank=1, params=2, ret=2
+physics_stage_check_gate, bank=1, params=, ret=0
+physics_stage_init, bank=1, params=, ret=0
+physics_stage_reset_positions, bank=1, params=, ret=0
+render_font_tile, bank=1, params=1, ret=1
+render_game_screen, bank=1, params=, ret=0
+render_game_sprites, bank=1, params=, ret=0
+render_hud_direct, bank=1, params=, ret=0
+render_queue_boosts, bank=1, params=, ret=0
+render_queue_collected_cargo, bank=1, params=, ret=0
+render_queue_gate, bank=1, params=1, ret=0
+render_queue_health, bank=1, params=, ret=0
+render_queue_next_stage, bank=1, params=, ret=0
+render_queue_score, bank=1, params=, ret=0
+render_queue_stage, bank=1, params=, ret=0
+render_queue_time, bank=1, params=, ret=0
+render_result_screen, bank=1, params=, ret=0
+render_title_screen, bank=1, params=, ret=0
+render_title_sprites, bank=1, params=, ret=0
+__kq_static_2_physics_integrate_drone1, bank=2, params=, ret=0
+audio_music_event, bank=2, params=, ret=0
+audio_play_sfx, bank=2, params=1, ret=0
+audio_sfx_tick, bank=2, params=, ret=0
+hw_init, bank=2, params=, ret=0
+hw_poll_pad, bank=2, params=, ret=0
+hw_wait_vblank_direct, bank=2, params=, ret=0
+physics_stage_check_cargo, bank=2, params=, ret=0
+physics_stage_check_drone, bank=2, params=, ret=0
+physics_stage_knock_selected_drone, bank=2, params=, ret=0
+
+## zero-page allocations
+$10, size=1, runtime, __kq_prg_bank_current, mapper current bank hot state
+$11, size=1, runtime, __kq_thunk_ret_lo, farcall return hot state
+$12, size=1, runtime, __kq_thunk_ret_hi, farcall return hot state
+$13, size=1, runtime, __kq_mapper_tmp, mapper switch temporary
+$14, size=1, runtime, __kq_mapper_tmp2, mapper serial temporary
+$15, size=1, runtime, __kq_mmc1_outer_shadow, MMC1 outer PRG bank shadow
+$16, size=1, runtime, __kq_mmc1_inner_shadow, MMC1 inner PRG bank shadow
+$17, size=1, runtime, __kq_mmc1_control_shadow, MMC1 control register shadow
+$18, size=1, runtime, __kq_mapper_fault, mapper fail-safe status
+$19, size=1, runtime, __kq_ppuctrl_shadow, PPUCTRL shadow hot state
+$1A, size=1, runtime, __kq_ppumask_shadow, PPUMASK shadow hot state
+$1B, size=1, runtime, __kq_scroll_x, scroll hot state
+$1C, size=1, runtime, __kq_scroll_y, scroll hot state
+$1D, size=1, runtime, __kq_nmi_counter, NMI counter hot state
+$1E, size=1, runtime, __kq_intr_tmp0, intrinsic temporary virtual register
+$1F, size=1, runtime, __kq_intr_tmp1, intrinsic temporary virtual register
+$20, size=1, runtime, __kq_intr_tmp2, intrinsic temporary virtual register
+$21, size=1, runtime, __kq_vramq_len, VRAM queue length hot state
+$22, size=1, runtime, __kq_vramq_ready, VRAM queue ready flag hot state
+$23, size=1, runtime, __kq_vramq_overflow, VRAM queue overflow flag hot state
+$24, size=1, runtime, __kq_axrom_mirror_shadow, AxROM mirror shadow hot state
+$25, size=1, runtime, __kq_fds_resident_bank, FDS overlay resident bank hot state
+$26, size=1, runtime, __kq_rng_lo, RNG state hot byte
+$27, size=1, runtime, __kq_rng_hi, RNG state hot byte
+$28, size=1, runtime, __kq_sret_ptr_lo, struct return destination pointer
+$29, size=1, runtime, __kq_sret_ptr_hi, struct return destination pointer
+$2A, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$2B, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$2C, size=1, storage, index, small loop/index/coordinate candidate
+$2D, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$2E, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$2F, size=2, storage, __t16_2, whole-program zero-page allocator first-fit candidate
+$31, size=2, storage, __t16_3, whole-program zero-page allocator first-fit candidate
+$33, size=1, storage, __t8_4, whole-program zero-page allocator first-fit candidate
+$34, size=1, storage, event, whole-program zero-page allocator first-fit candidate
+$35, size=1, storage, index, small loop/index/coordinate candidate
+$36, size=1, storage, mask, whole-program zero-page allocator first-fit candidate
+$37, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$39, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$3A, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$3B, size=2, storage, __t16_1, whole-program zero-page allocator first-fit candidate
+$3D, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$3F, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$40, size=1, storage, __t8_2, whole-program zero-page allocator first-fit candidate
+$41, size=1, storage, __t8_3, whole-program zero-page allocator first-fit candidate
+$42, size=1, storage, __t8_4, whole-program zero-page allocator first-fit candidate
+$43, size=1, storage, __t8_5, whole-program zero-page allocator first-fit candidate
+$44, size=1, storage, __t8_6, whole-program zero-page allocator first-fit candidate
+$45, size=1, storage, __t8_7, whole-program zero-page allocator first-fit candidate
+$46, size=1, storage, __t8_8, whole-program zero-page allocator first-fit candidate
+$47, size=1, storage, accel_x, small loop/index/coordinate candidate
+$48, size=1, storage, accel_y, small loop/index/coordinate candidate
+$49, size=1, storage, accel_dir_x, small loop/index/coordinate candidate
+$4A, size=1, storage, accel_dir_y, small loop/index/coordinate candidate
+$4B, size=1, storage, speed_limit, small loop/index/coordinate candidate
+$4C, size=1, storage, event, whole-program zero-page allocator first-fit candidate
+$4D, size=1, storage, curve, whole-program zero-page allocator first-fit candidate
+$4E, size=1, storage, drag_amount, whole-program zero-page allocator first-fit candidate
+$4F, size=1, storage, drag_shift, small loop/index/coordinate candidate
+$50, size=1, storage, bumper_index, small loop/index/coordinate candidate
+$51, size=1, storage, bumper_base, whole-program zero-page allocator first-fit candidate
+$52, size=1, storage, center_x, small loop/index/coordinate candidate
+$53, size=1, storage, center_y, small loop/index/coordinate candidate
+$54, size=1, storage, distance_x, small loop/index/coordinate candidate
+$55, size=1, storage, distance_y, small loop/index/coordinate candidate
+$56, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$57, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$58, size=1, storage, __t8_2, whole-program zero-page allocator first-fit candidate
+$59, size=1, storage, __t8_3, whole-program zero-page allocator first-fit candidate
+$5A, size=1, storage, __t8_4, whole-program zero-page allocator first-fit candidate
+$5B, size=1, storage, accel_x, small loop/index/coordinate candidate
+$5C, size=1, storage, accel_y, small loop/index/coordinate candidate
+$5D, size=1, storage, accel_dir_x, small loop/index/coordinate candidate
+$5E, size=1, storage, accel_dir_y, small loop/index/coordinate candidate
+$5F, size=1, storage, limit, small loop/index/coordinate candidate
+$60, size=1, storage, drag_amount, whole-program zero-page allocator first-fit candidate
+$61, size=1, storage, drag_shift, small loop/index/coordinate candidate
+$62, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$63, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$64, size=1, storage, __t8_2, whole-program zero-page allocator first-fit candidate
+$65, size=1, storage, __t8_3, whole-program zero-page allocator first-fit candidate
+$66, size=1, storage, __t8_4, whole-program zero-page allocator first-fit candidate
+$67, size=1, storage, accel_x, small loop/index/coordinate candidate
+$68, size=1, storage, accel_y, small loop/index/coordinate candidate
+$69, size=1, storage, accel_dir_x, small loop/index/coordinate candidate
+$6A, size=1, storage, accel_dir_y, small loop/index/coordinate candidate
+$6B, size=1, storage, limit, small loop/index/coordinate candidate
+$6C, size=1, storage, drag_amount, whole-program zero-page allocator first-fit candidate
+$6D, size=1, storage, drag_shift, small loop/index/coordinate candidate
+$6E, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$70, size=2, storage, address, pointer/address candidate
+$72, size=1, storage, latch, whole-program zero-page allocator first-fit candidate
+$73, size=2, storage, address, pointer/address candidate
+$75, size=2, storage, data, whole-program zero-page allocator first-fit candidate
+$77, size=2, storage, length, whole-program zero-page allocator first-fit candidate
+$79, size=2, storage, address, pointer/address candidate
+$7B, size=1, storage, value, whole-program zero-page allocator first-fit candidate
+$7C, size=2, storage, length, whole-program zero-page allocator first-fit candidate
+$7E, size=1, storage, x, small loop/index/coordinate candidate
+$7F, size=1, storage, y, small loop/index/coordinate candidate
+$80, size=1, storage, tile, small loop/index/coordinate candidate
+$81, size=2, storage, address, pointer/address candidate
+$83, size=1, storage, tile, small loop/index/coordinate candidate
+$84, size=1, storage, x, small loop/index/coordinate candidate
+$85, size=1, storage, y, small loop/index/coordinate candidate
+$86, size=1, storage, tile, small loop/index/coordinate candidate
+$87, size=1, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$88, size=2, storage, address, pointer/address candidate
+$8A, size=1, storage, id, small loop/index/coordinate candidate
+$8B, size=1, storage, x, small loop/index/coordinate candidate
+$8C, size=1, storage, y, small loop/index/coordinate candidate
+$8D, size=1, storage, tile, small loop/index/coordinate candidate
+$8E, size=1, storage, attr, whole-program zero-page allocator first-fit candidate
+$8F, size=1, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$90, size=1, storage, base, whole-program zero-page allocator first-fit candidate
+$91, size=1, storage, first_id, small loop/index/coordinate candidate
+$92, size=1, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$93, size=1, storage, id, small loop/index/coordinate candidate
+$94, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$95, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$96, size=1, storage, index, small loop/index/coordinate candidate
+$97, size=1, storage, win, small loop/index/coordinate candidate
+$98, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$99, size=2, storage, value, whole-program zero-page allocator first-fit candidate
+$9B, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$9D, size=2, storage, __t16_1, whole-program zero-page allocator first-fit candidate
+$9F, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$A0, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$A1, size=2, storage, value, whole-program zero-page allocator first-fit candidate
+$A3, size=1, storage, mask, whole-program zero-page allocator first-fit candidate
+$A4, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$A5, size=2, storage, __t16_1, whole-program zero-page allocator first-fit candidate
+$A7, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$A8, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$A9, size=1, storage, __t8_2, whole-program zero-page allocator first-fit candidate
+$AA, size=1, storage, __t8_3, whole-program zero-page allocator first-fit candidate
+$AB, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$AC, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$AD, size=1, storage, __t8_2, whole-program zero-page allocator first-fit candidate
+$AE, size=1, storage, __t8_3, whole-program zero-page allocator first-fit candidate
+$AF, size=1, storage, character, whole-program zero-page allocator first-fit candidate
+$B0, size=1, storage, x, small loop/index/coordinate candidate
+$B1, size=1, storage, y, small loop/index/coordinate candidate
+$B2, size=2, storage, text, small loop/index/coordinate candidate
+$B4, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$B5, size=1, storage, character, whole-program zero-page allocator first-fit candidate
+$B6, size=1, storage, x, small loop/index/coordinate candidate
+$B7, size=1, storage, y, small loop/index/coordinate candidate
+$B8, size=2, storage, value, whole-program zero-page allocator first-fit candidate
+$BA, size=1, storage, digits, small loop/index/coordinate candidate
+$BB, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$BC, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$BD, size=1, storage, index, small loop/index/coordinate candidate
+$BE, size=2, storage, divisor, small loop/index/coordinate candidate
+
+## static frame slots
+__kq_static_0_physics_integrate_player::__t8_0, $050E, size=1, ram_static_frame
+__kq_static_0_physics_integrate_player::__t8_1, $050F, size=1, ram_static_frame
+__kq_static_0_physics_integrate_player::__t8_2, $0510, size=1, ram_static_frame
+__kq_static_0_physics_integrate_player::__t8_3, $0511, size=1, ram_static_frame
+__kq_static_0_physics_integrate_player::__t8_4, $0512, size=1, ram_static_frame
+__kq_static_0_physics_integrate_player::magnitude, $0513, size=1, ram_static_frame
+__kq_static_1_physics_integrate_drone0::__t8_0, $0514, size=1, ram_static_frame
+__kq_static_1_physics_integrate_drone0::__t8_1, $0515, size=1, ram_static_frame
+__kq_static_1_physics_integrate_drone0::__t8_2, $0516, size=1, ram_static_frame
+__kq_static_1_physics_integrate_drone0::__t8_3, $0517, size=1, ram_static_frame
+__kq_static_1_physics_integrate_drone0::__t8_4, $0518, size=1, ram_static_frame
+__kq_static_1_physics_integrate_drone0::magnitude, $0519, size=1, ram_static_frame
+__kq_static_2_physics_integrate_drone1::__t8_0, $0523, size=1, ram_static_frame
+__kq_static_2_physics_integrate_drone1::__t8_1, $0524, size=1, ram_static_frame
+__kq_static_2_physics_integrate_drone1::__t8_2, $0525, size=1, ram_static_frame
+__kq_static_2_physics_integrate_drone1::__t8_3, $0526, size=1, ram_static_frame
+__kq_static_2_physics_integrate_drone1::__t8_4, $0527, size=1, ram_static_frame
+__kq_static_2_physics_integrate_drone1::magnitude, $0528, size=1, ram_static_frame
+__kq_static_3_physics_update_drone0::__t8_0, $0056, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::__t8_1, $0057, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::__t8_2, $0058, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::__t8_3, $0059, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::__t8_4, $005A, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::accel_x, $005B, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::accel_y, $005C, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::accel_dir_x, $005D, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::accel_dir_y, $005E, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::limit, $005F, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::drag_amount, $0060, size=1, zp_static_frame
+__kq_static_3_physics_update_drone0::drag_shift, $0061, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::__t8_0, $0062, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::__t8_1, $0063, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::__t8_2, $0064, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::__t8_3, $0065, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::__t8_4, $0066, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::accel_x, $0067, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::accel_y, $0068, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::accel_dir_x, $0069, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::accel_dir_y, $006A, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::limit, $006B, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::drag_amount, $006C, size=1, zp_static_frame
+__kq_static_4_physics_update_drone1::drag_shift, $006D, size=1, zp_static_frame
+audio_music_event::__t8_0, $053A, size=1, ram_static_frame
+audio_music_event::__t16_1, $053B, size=1, ram_static_frame
+audio_music_event::__t16_2, $053C, size=1, ram_static_frame
+audio_music_event::__t16_3, $053D, size=2, ram_static_frame
+audio_music_event::__t16_4, $053F, size=2, ram_static_frame
+audio_music_event::note, $0541, size=1, ram_static_frame
+audio_music_event::bass, $0542, size=1, ram_static_frame
+audio_music_event::local_step, $0543, size=1, ram_static_frame
+audio_play_sfx::kind, $054D, size=1, ram_static_frame
+audio_play_sfx::__t8_0, $054E, size=1, ram_static_frame
+audio_play_sfx::__t8_1, $054F, size=1, ram_static_frame
+audio_play_sfx::__t8_2, $0550, size=1, ram_static_frame
+audio_play_sfx::__t8_3, $0551, size=1, ram_static_frame
+audio_sfx_tick::__t8_0, $0544, size=1, ram_static_frame
+audio_sfx_tick::__t16_1, $0545, size=1, ram_static_frame
+audio_sfx_tick::__t8_2, $0546, size=1, ram_static_frame
+audio_sfx_tick::__t16_3, $0547, size=1, ram_static_frame
+audio_sfx_tick::__t8_4, $0548, size=1, ram_static_frame
+audio_sfx_tick::__t8_5, $0549, size=1, ram_static_frame
+audio_sfx_tick::__t16_6, $054A, size=1, ram_static_frame
+audio_sfx_tick::phase, $054B, size=1, ram_static_frame
+audio_sfx_tick::note, $054C, size=1, ram_static_frame
+audio_start_song::song, $0521, size=1, ram_static_frame
+audio_write_pulse2::note, $051D, size=1, ram_static_frame
+audio_write_pulse2::__t16_0, $051E, size=1, ram_static_frame
+audio_write_triangle::note, $051F, size=1, ram_static_frame
+audio_write_triangle::__t16_0, $0520, size=1, ram_static_frame
+game_add_score::value, $0099, size=2, zp_static_frame
+game_add_score::__t16_0, $009B, size=2, zp_static_frame
+game_add_score::__t16_1, $009D, size=2, zp_static_frame
+game_advance_stage::__t8_0, $00A4, size=1, zp_static_frame
+game_advance_stage::__t16_1, $00A5, size=2, zp_static_frame
+game_collect_cargo::__t8_0, $009F, size=1, zp_static_frame
+game_collect_cargo::__t8_1, $00A0, size=1, zp_static_frame
+game_collect_cargo::value, $00A1, size=2, zp_static_frame
+game_collect_cargo::mask, $00A3, size=1, zp_static_frame
+game_damage_player::__t8_0, $00A7, size=1, zp_static_frame
+game_damage_player::__t8_1, $00A8, size=1, zp_static_frame
+game_damage_player::__t8_2, $00A9, size=1, zp_static_frame
+game_damage_player::__t8_3, $00AA, size=1, zp_static_frame
+game_run::__t8_0, $00AB, size=1, zp_static_frame
+game_run::__t8_1, $00AC, size=1, zp_static_frame
+game_run::__t8_2, $00AD, size=1, zp_static_frame
+game_run::__t8_3, $00AE, size=1, zp_static_frame
+game_start_play::__t8_0, $0095, size=1, zp_static_frame
+game_start_play::index, $0096, size=1, zp_static_frame
+game_start_result::win, $0097, size=1, zp_static_frame
+game_start_result::__t8_0, $0098, size=1, zp_static_frame
+game_start_title::__t8_0, $0094, size=1, zp_static_frame
+game_update_play::__t8_0, $002D, size=1, zp_static_frame
+game_update_play::__t8_1, $002E, size=1, zp_static_frame
+game_update_play::__t16_2, $002F, size=2, zp_static_frame
+game_update_play::__t16_3, $0031, size=2, zp_static_frame
+game_update_play::__t8_4, $0033, size=1, zp_static_frame
+game_update_play::event, $0034, size=1, zp_static_frame
+game_update_play::index, $0035, size=1, zp_static_frame
+game_update_play::mask, $0036, size=1, zp_static_frame
+game_update_result::__t8_0, $003A, size=1, zp_static_frame
+game_update_result::__t16_1, $003B, size=2, zp_static_frame
+game_update_timers::__t8_0, $002A, size=1, zp_static_frame
+game_update_timers::__t8_1, $002B, size=1, zp_static_frame
+game_update_timers::index, $002C, size=1, zp_static_frame
+game_update_title::__t16_0, $0037, size=2, zp_static_frame
+game_update_title::__t8_1, $0039, size=1, zp_static_frame
+hw_clear_screen_direct::tile, $0083, size=1, zp_static_frame
+hw_oam_hide_from::first_id, $0091, size=1, zp_static_frame
+hw_oam_hide_from::__t16_0, $0092, size=1, zp_static_frame
+hw_oam_hide_from::id, $0093, size=1, zp_static_frame
+hw_oam_set::id, $008A, size=1, zp_static_frame
+hw_oam_set::x, $008B, size=1, zp_static_frame
+hw_oam_set::y, $008C, size=1, zp_static_frame
+hw_oam_set::tile, $008D, size=1, zp_static_frame
+hw_oam_set::attr, $008E, size=1, zp_static_frame
+hw_oam_set::__t16_0, $008F, size=1, zp_static_frame
+hw_oam_set::base, $0090, size=1, zp_static_frame
+hw_poll_pad::__t16_0, $0554, size=2, ram_static_frame
+hw_poll_pad::state, $0556, size=1, ram_static_frame
+hw_poll_pad::mask, $0557, size=1, ram_static_frame
+hw_poll_pad::sample, $0558, size=1, ram_static_frame
+hw_ppu_fill::address, $0079, size=2, zp_static_frame
+hw_ppu_fill::value, $007B, size=1, zp_static_frame
+hw_ppu_fill::length, $007C, size=2, zp_static_frame
+hw_ppu_seek::address, $0070, size=2, zp_static_frame
+hw_ppu_seek::latch, $0072, size=1, zp_static_frame
+hw_ppu_write::address, $0073, size=2, zp_static_frame
+hw_ppu_write::data, $0075, size=2, zp_static_frame
+hw_ppu_write::length, $0077, size=2, zp_static_frame
+hw_put_tile_direct::x, $007E, size=1, zp_static_frame
+hw_put_tile_direct::y, $007F, size=1, zp_static_frame
+hw_put_tile_direct::tile, $0080, size=1, zp_static_frame
+hw_put_tile_direct::address, $0081, size=2, zp_static_frame
+hw_wait_frame::start, $0522, size=1, ram_static_frame
+hw_wait_vblank_direct::__t16_0, $0552, size=2, ram_static_frame
+physics_stage_check_cargo::__t8_0, $0529, size=1, ram_static_frame
+physics_stage_check_cargo::source_index, $052A, size=1, ram_static_frame
+physics_stage_check_cargo::tile_x, $052B, size=1, ram_static_frame
+physics_stage_check_cargo::tile_y, $052C, size=1, ram_static_frame
+physics_stage_check_cargo::center_x, $052D, size=1, ram_static_frame
+physics_stage_check_cargo::center_y, $052E, size=1, ram_static_frame
+physics_stage_check_cargo::distance_x, $052F, size=1, ram_static_frame
+physics_stage_check_cargo::distance_y, $0530, size=1, ram_static_frame
+physics_stage_check_drone::__t8_0, $0531, size=1, ram_static_frame
+physics_stage_check_drone::drone_x, $0532, size=1, ram_static_frame
+physics_stage_check_drone::drone_y, $0533, size=1, ram_static_frame
+physics_stage_check_drone::distance_x, $0534, size=1, ram_static_frame
+physics_stage_check_drone::distance_y, $0535, size=1, ram_static_frame
+physics_stage_check_gate::__t8_0, $051A, size=1, ram_static_frame
+physics_stage_check_gate::distance_x, $051B, size=1, ram_static_frame
+physics_stage_check_gate::distance_y, $051C, size=1, ram_static_frame
+physics_stage_knock_selected_drone::__t8_0, $0536, size=1, ram_static_frame
+physics_stage_knock_selected_drone::__t8_1, $0537, size=1, ram_static_frame
+physics_stage_knock_selected_drone::__t8_2, $0538, size=1, ram_static_frame
+physics_stage_knock_selected_drone::__t8_3, $0539, size=1, ram_static_frame
+physics_stage_update_drones::__t16_0, $006E, size=2, zp_static_frame
+physics_stage_update_player::__t16_0, $003D, size=2, zp_static_frame
+physics_stage_update_player::__t8_1, $003F, size=1, zp_static_frame
+physics_stage_update_player::__t8_2, $0040, size=1, zp_static_frame
+physics_stage_update_player::__t8_3, $0041, size=1, zp_static_frame
+physics_stage_update_player::__t8_4, $0042, size=1, zp_static_frame
+physics_stage_update_player::__t8_5, $0043, size=1, zp_static_frame
+physics_stage_update_player::__t8_6, $0044, size=1, zp_static_frame
+physics_stage_update_player::__t8_7, $0045, size=1, zp_static_frame
+physics_stage_update_player::__t8_8, $0046, size=1, zp_static_frame
+physics_stage_update_player::accel_x, $0047, size=1, zp_static_frame
+physics_stage_update_player::accel_y, $0048, size=1, zp_static_frame
+physics_stage_update_player::accel_dir_x, $0049, size=1, zp_static_frame
+physics_stage_update_player::accel_dir_y, $004A, size=1, zp_static_frame
+physics_stage_update_player::speed_limit, $004B, size=1, zp_static_frame
+physics_stage_update_player::event, $004C, size=1, zp_static_frame
+physics_stage_update_player::curve, $004D, size=1, zp_static_frame
+physics_stage_update_player::drag_amount, $004E, size=1, zp_static_frame
+physics_stage_update_player::drag_shift, $004F, size=1, zp_static_frame
+physics_stage_update_player::bumper_index, $0050, size=1, zp_static_frame
+physics_stage_update_player::bumper_base, $0051, size=1, zp_static_frame
+physics_stage_update_player::center_x, $0052, size=1, zp_static_frame
+physics_stage_update_player::center_y, $0053, size=1, zp_static_frame
+physics_stage_update_player::distance_x, $0054, size=1, zp_static_frame
+physics_stage_update_player::distance_y, $0055, size=1, zp_static_frame
+render_drone_metasprite::first_id, $04B8, size=1, ram_static_frame
+render_drone_metasprite::x, $04B9, size=1, ram_static_frame
+render_drone_metasprite::y, $04BA, size=1, ram_static_frame
+render_drone_metasprite::attr, $04BB, size=1, ram_static_frame
+render_drone_metasprite::__t8_0, $04BC, size=1, ram_static_frame
+render_drone_metasprite::__t8_1, $04BD, size=1, ram_static_frame
+render_drone_metasprite::__t8_2, $04BE, size=1, ram_static_frame
+render_drone_metasprite::__t8_3, $04BF, size=1, ram_static_frame
+render_font_tile::character, $00AF, size=1, zp_static_frame
+render_game_screen::__t8_0, $04C9, size=1, ram_static_frame
+render_game_screen::__t8_1, $04CA, size=1, ram_static_frame
+render_game_screen::__t16_2, $04CB, size=1, ram_static_frame
+render_game_screen::__t8_3, $04CC, size=1, ram_static_frame
+render_game_screen::__t16_4, $04CD, size=1, ram_static_frame
+render_game_screen::__t8_5, $04CE, size=1, ram_static_frame
+render_game_screen::__t16_6, $04CF, size=1, ram_static_frame
+render_game_screen::__t8_7, $04D0, size=1, ram_static_frame
+render_game_screen::__t8_8, $04D1, size=1, ram_static_frame
+render_game_screen::x, $04D2, size=1, ram_static_frame
+render_game_screen::y, $04D3, size=1, ram_static_frame
+render_game_screen::index, $04D4, size=1, ram_static_frame
+render_game_screen::wall_base, $04D5, size=1, ram_static_frame
+render_game_screen::bumper_base, $04D6, size=1, ram_static_frame
+render_game_screen::source, $04D7, size=1, ram_static_frame
+render_game_sprites::__t8_0, $04E0, size=1, ram_static_frame
+render_game_sprites::__t16_1, $04E1, size=2, ram_static_frame
+render_game_sprites::__t8_2, $04E3, size=1, ram_static_frame
+render_game_sprites::__t8_3, $04E4, size=1, ram_static_frame
+render_game_sprites::__t16_4, $04E5, size=2, ram_static_frame
+render_game_sprites::__t8_5, $04E7, size=1, ram_static_frame
+render_game_sprites::player_x, $04E8, size=2, ram_static_frame
+render_game_sprites::player_y, $04EA, size=2, ram_static_frame
+render_game_sprites::base, $04EC, size=1, ram_static_frame
+render_game_sprites::index, $04ED, size=1, ram_static_frame
+render_game_sprites::drone_x, $04EE, size=2, ram_static_frame
+render_game_sprites::drone_y, $04F0, size=2, ram_static_frame
+render_game_sprites::attr, $04F2, size=1, ram_static_frame
+render_hud_direct::__t16_0, $04C3, size=2, ram_static_frame
+render_hud_direct::__t8_1, $04C5, size=1, ram_static_frame
+render_hud_direct::__t8_2, $04C6, size=1, ram_static_frame
+render_hud_direct::__t8_3, $04C7, size=1, ram_static_frame
+render_hud_direct::index, $04C8, size=1, ram_static_frame
+render_number_direct::x, $00B6, size=1, zp_static_frame
+render_number_direct::y, $00B7, size=1, zp_static_frame
+render_number_direct::value, $00B8, size=2, zp_static_frame
+render_number_direct::digits, $00BA, size=1, zp_static_frame
+render_number_direct::__t8_0, $00BB, size=1, zp_static_frame
+render_number_direct::__t8_1, $00BC, size=1, zp_static_frame
+render_number_direct::index, $00BD, size=1, zp_static_frame
+render_number_direct::divisor, $00BE, size=2, zp_static_frame
+render_number_direct::digit, $049C, size=1, ram_static_frame
+render_number_queue::x, $049D, size=1, ram_static_frame
+render_number_queue::y, $049E, size=1, ram_static_frame
+render_number_queue::value, $049F, size=2, ram_static_frame
+render_number_queue::digits, $04A1, size=1, ram_static_frame
+render_number_queue::__t8_0, $04A2, size=1, ram_static_frame
+render_number_queue::__t8_1, $04A3, size=1, ram_static_frame
+render_number_queue::index, $04A4, size=1, ram_static_frame
+render_number_queue::divisor, $04A5, size=2, ram_static_frame
+render_number_queue::digit, $04A7, size=1, ram_static_frame
+render_player_metasprite::x, $04B1, size=1, ram_static_frame
+render_player_metasprite::y, $04B2, size=1, ram_static_frame
+render_player_metasprite::base_tile, $04B3, size=1, ram_static_frame
+render_player_metasprite::attr, $04B4, size=1, ram_static_frame
+render_player_metasprite::__t8_0, $04B5, size=1, ram_static_frame
+render_player_metasprite::__t8_1, $04B6, size=1, ram_static_frame
+render_player_metasprite::__t8_2, $04B7, size=1, ram_static_frame
+render_queue_boosts::__t8_0, $04FA, size=1, ram_static_frame
+render_queue_boosts::__t8_1, $04FB, size=1, ram_static_frame
+render_queue_boosts::__t8_2, $04FC, size=1, ram_static_frame
+render_queue_boosts::index, $04FD, size=1, ram_static_frame
+render_queue_collected_cargo::__t16_0, $04FF, size=1, ram_static_frame
+render_queue_collected_cargo::__t8_1, $0500, size=1, ram_static_frame
+render_queue_collected_cargo::__t16_2, $0501, size=1, ram_static_frame
+render_queue_collected_cargo::__t8_3, $0502, size=1, ram_static_frame
+render_queue_collected_cargo::__t8_4, $0503, size=1, ram_static_frame
+render_queue_collected_cargo::source, $0504, size=1, ram_static_frame
+render_queue_gate::open, $0505, size=1, ram_static_frame
+render_queue_gate::tile, $0506, size=1, ram_static_frame
+render_queue_health::__t8_0, $04F6, size=1, ram_static_frame
+render_queue_health::__t8_1, $04F7, size=1, ram_static_frame
+render_queue_health::__t8_2, $04F8, size=1, ram_static_frame
+render_queue_health::index, $04F9, size=1, ram_static_frame
+render_queue_next_stage::__t16_0, $0507, size=1, ram_static_frame
+render_queue_next_stage::__t8_1, $0508, size=1, ram_static_frame
+render_queue_next_stage::__t16_2, $0509, size=1, ram_static_frame
+render_queue_next_stage::__t8_3, $050A, size=1, ram_static_frame
+render_queue_next_stage::__t8_4, $050B, size=1, ram_static_frame
+render_queue_next_stage::index, $050C, size=1, ram_static_frame
+render_queue_next_stage::source, $050D, size=1, ram_static_frame
+render_queue_score::__t16_0, $04F3, size=2, ram_static_frame
+render_queue_stage::__t8_0, $04FE, size=1, ram_static_frame
+render_queue_time::__t8_0, $04F5, size=1, ram_static_frame
+render_rect_direct::x, $04A8, size=1, ram_static_frame
+render_rect_direct::y, $04A9, size=1, ram_static_frame
+render_rect_direct::width, $04AA, size=1, ram_static_frame
+render_rect_direct::height, $04AB, size=1, ram_static_frame
+render_rect_direct::tile, $04AC, size=1, ram_static_frame
+render_rect_direct::__t8_0, $04AD, size=1, ram_static_frame
+render_rect_direct::__t8_1, $04AE, size=1, ram_static_frame
+render_rect_direct::row, $04AF, size=1, ram_static_frame
+render_rect_direct::column, $04B0, size=1, ram_static_frame
+render_result_screen::__t8_0, $04D8, size=1, ram_static_frame
+render_result_screen::__t8_1, $04D9, size=1, ram_static_frame
+render_result_screen::__t16_2, $04DA, size=2, ram_static_frame
+render_text_direct::x, $00B0, size=1, zp_static_frame
+render_text_direct::y, $00B1, size=1, zp_static_frame
+render_text_direct::text, $00B2, size=2, zp_static_frame
+render_text_direct::__t8_0, $00B4, size=1, zp_static_frame
+render_text_direct::character, $00B5, size=1, zp_static_frame
+render_title_screen::__t8_0, $04C0, size=1, ram_static_frame
+render_title_screen::x, $04C1, size=1, ram_static_frame
+render_title_screen::y, $04C2, size=1, ram_static_frame
+render_title_sprites::__t16_0, $04DC, size=2, ram_static_frame
+render_title_sprites::__t8_1, $04DE, size=1, ram_static_frame
+render_title_sprites::base, $04DF, size=1, ram_static_frame
+settile::x, $0084, size=1, zp_static_frame
+settile::y, $0085, size=1, zp_static_frame
+settile::tile, $0086, size=1, zp_static_frame
+settile::__t16_0, $0087, size=1, zp_static_frame
+settile::address, $0088, size=2, zp_static_frame
+
+## RAM access contract allocations
+$0010-$0010, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0011-$0011, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0012-$0012, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0013-$0013, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0014-$0014, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0015-$0015, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0016-$0016, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0017-$0017, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0018-$0018, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0019-$0019, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001A-$001A, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001B-$001B, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001C-$001C, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001D-$001D, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001E-$001E, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001F-$001F, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0020-$0020, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0021-$0021, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0022-$0022, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0023-$0023, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0024-$0024, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0025-$0025, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0026-$0026, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0027-$0027, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0028-$0028, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0029-$0029, size=1, runtime, cpu_ram_zero_page, conservative=False
+$002A-$002A, size=1, local, cpu_ram_zero_page, conservative=False
+$002B-$002B, size=1, local, cpu_ram_zero_page, conservative=False
+$002C-$002C, size=1, local, cpu_ram_zero_page, conservative=False
+$002D-$002D, size=1, local, cpu_ram_zero_page, conservative=False
+$002E-$002E, size=1, local, cpu_ram_zero_page, conservative=False
+$002F-$0030, size=2, local, cpu_ram_zero_page, conservative=False
+$0031-$0032, size=2, local, cpu_ram_zero_page, conservative=False
+$0033-$0033, size=1, local, cpu_ram_zero_page, conservative=False
+$0034-$0034, size=1, local, cpu_ram_zero_page, conservative=False
+$0035-$0035, size=1, local, cpu_ram_zero_page, conservative=False
+$0036-$0036, size=1, local, cpu_ram_zero_page, conservative=False
+$0037-$0038, size=2, local, cpu_ram_zero_page, conservative=False
+$0039-$0039, size=1, local, cpu_ram_zero_page, conservative=False
+$003A-$003A, size=1, local, cpu_ram_zero_page, conservative=False
+$003B-$003C, size=2, local, cpu_ram_zero_page, conservative=False
+$003D-$003E, size=2, local, cpu_ram_zero_page, conservative=False
+$003F-$003F, size=1, local, cpu_ram_zero_page, conservative=False
+$0040-$0040, size=1, local, cpu_ram_zero_page, conservative=False
+$0041-$0041, size=1, local, cpu_ram_zero_page, conservative=False
+$0042-$0042, size=1, local, cpu_ram_zero_page, conservative=False
+$0043-$0043, size=1, local, cpu_ram_zero_page, conservative=False
+$0044-$0044, size=1, local, cpu_ram_zero_page, conservative=False
+$0045-$0045, size=1, local, cpu_ram_zero_page, conservative=False
+$0046-$0046, size=1, local, cpu_ram_zero_page, conservative=False
+$0047-$0047, size=1, local, cpu_ram_zero_page, conservative=False
+$0048-$0048, size=1, local, cpu_ram_zero_page, conservative=False
+$0049-$0049, size=1, local, cpu_ram_zero_page, conservative=False
+$004A-$004A, size=1, local, cpu_ram_zero_page, conservative=False
+$004B-$004B, size=1, local, cpu_ram_zero_page, conservative=False
+$004C-$004C, size=1, local, cpu_ram_zero_page, conservative=False
+$004D-$004D, size=1, local, cpu_ram_zero_page, conservative=False
+$004E-$004E, size=1, local, cpu_ram_zero_page, conservative=False
+$004F-$004F, size=1, local, cpu_ram_zero_page, conservative=False
+$0050-$0050, size=1, local, cpu_ram_zero_page, conservative=False
+$0051-$0051, size=1, local, cpu_ram_zero_page, conservative=False
+$0052-$0052, size=1, local, cpu_ram_zero_page, conservative=False
+$0053-$0053, size=1, local, cpu_ram_zero_page, conservative=False
+$0054-$0054, size=1, local, cpu_ram_zero_page, conservative=False
+$0055-$0055, size=1, local, cpu_ram_zero_page, conservative=False
+$0056-$0056, size=1, local, cpu_ram_zero_page, conservative=False
+$0057-$0057, size=1, local, cpu_ram_zero_page, conservative=False
+$0058-$0058, size=1, local, cpu_ram_zero_page, conservative=False
+$0059-$0059, size=1, local, cpu_ram_zero_page, conservative=False
+$005A-$005A, size=1, local, cpu_ram_zero_page, conservative=False
+$005B-$005B, size=1, local, cpu_ram_zero_page, conservative=False
+$005C-$005C, size=1, local, cpu_ram_zero_page, conservative=False
+$005D-$005D, size=1, local, cpu_ram_zero_page, conservative=False
+$005E-$005E, size=1, local, cpu_ram_zero_page, conservative=False
+$005F-$005F, size=1, local, cpu_ram_zero_page, conservative=False
+$0060-$0060, size=1, local, cpu_ram_zero_page, conservative=False
+$0061-$0061, size=1, local, cpu_ram_zero_page, conservative=False
+$0062-$0062, size=1, local, cpu_ram_zero_page, conservative=False
+$0063-$0063, size=1, local, cpu_ram_zero_page, conservative=False
+$0064-$0064, size=1, local, cpu_ram_zero_page, conservative=False
+$0065-$0065, size=1, local, cpu_ram_zero_page, conservative=False
+$0066-$0066, size=1, local, cpu_ram_zero_page, conservative=False
+$0067-$0067, size=1, local, cpu_ram_zero_page, conservative=False
+$0068-$0068, size=1, local, cpu_ram_zero_page, conservative=False
+$0069-$0069, size=1, local, cpu_ram_zero_page, conservative=False
+$006A-$006A, size=1, local, cpu_ram_zero_page, conservative=False
+$006B-$006B, size=1, local, cpu_ram_zero_page, conservative=False
+$006C-$006C, size=1, local, cpu_ram_zero_page, conservative=False
+$006D-$006D, size=1, local, cpu_ram_zero_page, conservative=False
+$006E-$006F, size=2, local, cpu_ram_zero_page, conservative=False
+$0070-$0071, size=2, local, cpu_ram_zero_page, conservative=False
+$0072-$0072, size=1, local, cpu_ram_zero_page, conservative=False
+$0073-$0074, size=2, local, cpu_ram_zero_page, conservative=False
+$0075-$0076, size=2, local, cpu_ram_zero_page, conservative=False
+$0077-$0078, size=2, local, cpu_ram_zero_page, conservative=False
+$0079-$007A, size=2, local, cpu_ram_zero_page, conservative=False
+$007B-$007B, size=1, local, cpu_ram_zero_page, conservative=False
+$007C-$007D, size=2, local, cpu_ram_zero_page, conservative=False
+$007E-$007E, size=1, local, cpu_ram_zero_page, conservative=False
+$007F-$007F, size=1, local, cpu_ram_zero_page, conservative=False
+$0080-$0080, size=1, local, cpu_ram_zero_page, conservative=False
+$0081-$0082, size=2, local, cpu_ram_zero_page, conservative=False
+$0083-$0083, size=1, local, cpu_ram_zero_page, conservative=False
+$0084-$0084, size=1, local, cpu_ram_zero_page, conservative=False
+$0085-$0085, size=1, local, cpu_ram_zero_page, conservative=False
+$0086-$0086, size=1, local, cpu_ram_zero_page, conservative=False
+$0087-$0087, size=1, local, cpu_ram_zero_page, conservative=False
+$0088-$0089, size=2, local, cpu_ram_zero_page, conservative=False
+$008A-$008A, size=1, local, cpu_ram_zero_page, conservative=False
+$008B-$008B, size=1, local, cpu_ram_zero_page, conservative=False
+$008C-$008C, size=1, local, cpu_ram_zero_page, conservative=False
+$008D-$008D, size=1, local, cpu_ram_zero_page, conservative=False
+$008E-$008E, size=1, local, cpu_ram_zero_page, conservative=False
+$008F-$008F, size=1, local, cpu_ram_zero_page, conservative=False
+$0090-$0090, size=1, local, cpu_ram_zero_page, conservative=False
+$0091-$0091, size=1, local, cpu_ram_zero_page, conservative=False
+$0092-$0092, size=1, local, cpu_ram_zero_page, conservative=False
+$0093-$0093, size=1, local, cpu_ram_zero_page, conservative=False
+$0094-$0094, size=1, local, cpu_ram_zero_page, conservative=False
+$0095-$0095, size=1, local, cpu_ram_zero_page, conservative=False
+$0096-$0096, size=1, local, cpu_ram_zero_page, conservative=False
+$0097-$0097, size=1, local, cpu_ram_zero_page, conservative=False
+$0098-$0098, size=1, local, cpu_ram_zero_page, conservative=False
+$0099-$009A, size=2, local, cpu_ram_zero_page, conservative=False
+$009B-$009C, size=2, local, cpu_ram_zero_page, conservative=False
+$009D-$009E, size=2, local, cpu_ram_zero_page, conservative=False
+$009F-$009F, size=1, local, cpu_ram_zero_page, conservative=False
+$00A0-$00A0, size=1, local, cpu_ram_zero_page, conservative=False
+$00A1-$00A2, size=2, local, cpu_ram_zero_page, conservative=False
+$00A3-$00A3, size=1, local, cpu_ram_zero_page, conservative=False
+$00A4-$00A4, size=1, local, cpu_ram_zero_page, conservative=False
+$00A5-$00A6, size=2, local, cpu_ram_zero_page, conservative=False
+$00A7-$00A7, size=1, local, cpu_ram_zero_page, conservative=False
+$00A8-$00A8, size=1, local, cpu_ram_zero_page, conservative=False
+$00A9-$00A9, size=1, local, cpu_ram_zero_page, conservative=False
+$00AA-$00AA, size=1, local, cpu_ram_zero_page, conservative=False
+$00AB-$00AB, size=1, local, cpu_ram_zero_page, conservative=False
+$00AC-$00AC, size=1, local, cpu_ram_zero_page, conservative=False
+$00AD-$00AD, size=1, local, cpu_ram_zero_page, conservative=False
+$00AE-$00AE, size=1, local, cpu_ram_zero_page, conservative=False
+$00AF-$00AF, size=1, local, cpu_ram_zero_page, conservative=False
+$00B0-$00B0, size=1, local, cpu_ram_zero_page, conservative=False
+$00B1-$00B1, size=1, local, cpu_ram_zero_page, conservative=False
+$00B2-$00B3, size=2, local, cpu_ram_zero_page, conservative=False
+$00B4-$00B4, size=1, local, cpu_ram_zero_page, conservative=False
+$00B5-$00B5, size=1, local, cpu_ram_zero_page, conservative=False
+$00B6-$00B6, size=1, local, cpu_ram_zero_page, conservative=False
+$00B7-$00B7, size=1, local, cpu_ram_zero_page, conservative=False
+$00B8-$00B9, size=2, local, cpu_ram_zero_page, conservative=False
+$00BA-$00BA, size=1, local, cpu_ram_zero_page, conservative=False
+$00BB-$00BB, size=1, local, cpu_ram_zero_page, conservative=False
+$00BC-$00BC, size=1, local, cpu_ram_zero_page, conservative=False
+$00BD-$00BD, size=1, local, cpu_ram_zero_page, conservative=False
+$00BE-$00BF, size=2, local, cpu_ram_zero_page, conservative=False
+$00C0-$00CF, size=16, abi_call_args, cpu_ram_zero_page, conservative=True
+$00D0-$00FF, size=48, compiler_temp_pool, cpu_ram_zero_page, conservative=True
+$0200-$02FF, size=256, global_fixed, cpu_ram_oam_shadow, conservative=False
+$0300-$03BF, size=192, global_fixed, cpu_ram, conservative=False
+$03C0-$043F, size=128, runtime_buffer, cpu_ram, conservative=False
+$0440-$0441, size=2, runtime_buffer, cpu_ram, conservative=False
+$0442-$0452, size=17, runtime_buffer, cpu_ram, conservative=False
+$0453-$0482, size=48, global, cpu_ram, conservative=False
+$0483-$0483, size=1, global, cpu_ram, conservative=False
+$0484-$0484, size=1, global, cpu_ram, conservative=False
+$0485-$0485, size=1, global, cpu_ram, conservative=False
+$0486-$0486, size=1, global, cpu_ram, conservative=False
+$0487-$0487, size=1, global, cpu_ram, conservative=False
+$0488-$0488, size=1, global, cpu_ram, conservative=False
+$0489-$0489, size=1, global, cpu_ram, conservative=False
+$048A-$048A, size=1, global, cpu_ram, conservative=False
+$048B-$048B, size=1, global, cpu_ram, conservative=False
+$048C-$048C, size=1, global, cpu_ram, conservative=False
+$048D-$048D, size=1, global, cpu_ram, conservative=False
+$048E-$048E, size=1, global, cpu_ram, conservative=False
+$048F-$0490, size=2, global, cpu_ram, conservative=False
+$0491-$0491, size=1, global, cpu_ram, conservative=False
+$0492-$0492, size=1, global, cpu_ram, conservative=False
+$0493-$0493, size=1, global, cpu_ram, conservative=False
+$0494-$0495, size=2, global, cpu_ram, conservative=False
+$0496-$0497, size=2, global, cpu_ram, conservative=False
+$0498-$0499, size=2, global, cpu_ram, conservative=False
+$049A-$049B, size=2, global, cpu_ram, conservative=False
+$049C-$049C, size=1, local, cpu_ram, conservative=False
+$049D-$049D, size=1, local, cpu_ram, conservative=False
+$049E-$049E, size=1, local, cpu_ram, conservative=False
+$049F-$04A0, size=2, local, cpu_ram, conservative=False
+$04A1-$04A1, size=1, local, cpu_ram, conservative=False
+$04A2-$04A2, size=1, local, cpu_ram, conservative=False
+$04A3-$04A3, size=1, local, cpu_ram, conservative=False
+$04A4-$04A4, size=1, local, cpu_ram, conservative=False
+$04A5-$04A6, size=2, local, cpu_ram, conservative=False
+$04A7-$04A7, size=1, local, cpu_ram, conservative=False
+$04A8-$04A8, size=1, local, cpu_ram, conservative=False
+$04A9-$04A9, size=1, local, cpu_ram, conservative=False
+$04AA-$04AA, size=1, local, cpu_ram, conservative=False
+$04AB-$04AB, size=1, local, cpu_ram, conservative=False
+$04AC-$04AC, size=1, local, cpu_ram, conservative=False
+$04AD-$04AD, size=1, local, cpu_ram, conservative=False
+$04AE-$04AE, size=1, local, cpu_ram, conservative=False
+$04AF-$04AF, size=1, local, cpu_ram, conservative=False
+$04B0-$04B0, size=1, local, cpu_ram, conservative=False
+$04B1-$04B1, size=1, local, cpu_ram, conservative=False
+$04B2-$04B2, size=1, local, cpu_ram, conservative=False
+$04B3-$04B3, size=1, local, cpu_ram, conservative=False
+$04B4-$04B4, size=1, local, cpu_ram, conservative=False
+$04B5-$04B5, size=1, local, cpu_ram, conservative=False
+$04B6-$04B6, size=1, local, cpu_ram, conservative=False
+$04B7-$04B7, size=1, local, cpu_ram, conservative=False
+$04B8-$04B8, size=1, local, cpu_ram, conservative=False
+$04B9-$04B9, size=1, local, cpu_ram, conservative=False
+$04BA-$04BA, size=1, local, cpu_ram, conservative=False
+$04BB-$04BB, size=1, local, cpu_ram, conservative=False
+$04BC-$04BC, size=1, local, cpu_ram, conservative=False
+$04BD-$04BD, size=1, local, cpu_ram, conservative=False
+$04BE-$04BE, size=1, local, cpu_ram, conservative=False
+$04BF-$04BF, size=1, local, cpu_ram, conservative=False
+$04C0-$04C0, size=1, local, cpu_ram, conservative=False
+$04C1-$04C1, size=1, local, cpu_ram, conservative=False
+$04C2-$04C2, size=1, local, cpu_ram, conservative=False
+$04C3-$04C4, size=2, local, cpu_ram, conservative=False
+$04C5-$04C5, size=1, local, cpu_ram, conservative=False
+$04C6-$04C6, size=1, local, cpu_ram, conservative=False
+$04C7-$04C7, size=1, local, cpu_ram, conservative=False
+$04C8-$04C8, size=1, local, cpu_ram, conservative=False
+$04C9-$04C9, size=1, local, cpu_ram, conservative=False
+$04CA-$04CA, size=1, local, cpu_ram, conservative=False
+$04CB-$04CB, size=1, local, cpu_ram, conservative=False
+$04CC-$04CC, size=1, local, cpu_ram, conservative=False
+$04CD-$04CD, size=1, local, cpu_ram, conservative=False
+$04CE-$04CE, size=1, local, cpu_ram, conservative=False
+$04CF-$04CF, size=1, local, cpu_ram, conservative=False
+$04D0-$04D0, size=1, local, cpu_ram, conservative=False
+$04D1-$04D1, size=1, local, cpu_ram, conservative=False
+$04D2-$04D2, size=1, local, cpu_ram, conservative=False
+$04D3-$04D3, size=1, local, cpu_ram, conservative=False
+$04D4-$04D4, size=1, local, cpu_ram, conservative=False
+$04D5-$04D5, size=1, local, cpu_ram, conservative=False
+$04D6-$04D6, size=1, local, cpu_ram, conservative=False
+$04D7-$04D7, size=1, local, cpu_ram, conservative=False
+$04D8-$04D8, size=1, local, cpu_ram, conservative=False
+$04D9-$04D9, size=1, local, cpu_ram, conservative=False
+$04DA-$04DB, size=2, local, cpu_ram, conservative=False
+$04DC-$04DD, size=2, local, cpu_ram, conservative=False
+$04DE-$04DE, size=1, local, cpu_ram, conservative=False
+$04DF-$04DF, size=1, local, cpu_ram, conservative=False
+$04E0-$04E0, size=1, local, cpu_ram, conservative=False
+$04E1-$04E2, size=2, local, cpu_ram, conservative=False
+$04E3-$04E3, size=1, local, cpu_ram, conservative=False
+$04E4-$04E4, size=1, local, cpu_ram, conservative=False
+$04E5-$04E6, size=2, local, cpu_ram, conservative=False
+$04E7-$04E7, size=1, local, cpu_ram, conservative=False
+$04E8-$04E9, size=2, local, cpu_ram, conservative=False
+$04EA-$04EB, size=2, local, cpu_ram, conservative=False
+$04EC-$04EC, size=1, local, cpu_ram, conservative=False
+$04ED-$04ED, size=1, local, cpu_ram, conservative=False
+$04EE-$04EF, size=2, local, cpu_ram, conservative=False
+$04F0-$04F1, size=2, local, cpu_ram, conservative=False
+$04F2-$04F2, size=1, local, cpu_ram, conservative=False
+$04F3-$04F4, size=2, local, cpu_ram, conservative=False
+$04F5-$04F5, size=1, local, cpu_ram, conservative=False
+$04F6-$04F6, size=1, local, cpu_ram, conservative=False
+$04F7-$04F7, size=1, local, cpu_ram, conservative=False
+$04F8-$04F8, size=1, local, cpu_ram, conservative=False
+$04F9-$04F9, size=1, local, cpu_ram, conservative=False
+$04FA-$04FA, size=1, local, cpu_ram, conservative=False
+$04FB-$04FB, size=1, local, cpu_ram, conservative=False
+$04FC-$04FC, size=1, local, cpu_ram, conservative=False
+$04FD-$04FD, size=1, local, cpu_ram, conservative=False
+$04FE-$04FE, size=1, local, cpu_ram, conservative=False
+$04FF-$04FF, size=1, local, cpu_ram, conservative=False
+$0500-$0500, size=1, local, cpu_ram, conservative=False
+$0501-$0501, size=1, local, cpu_ram, conservative=False
+$0502-$0502, size=1, local, cpu_ram, conservative=False
+$0503-$0503, size=1, local, cpu_ram, conservative=False
+$0504-$0504, size=1, local, cpu_ram, conservative=False
+$0505-$0505, size=1, local, cpu_ram, conservative=False
+$0506-$0506, size=1, local, cpu_ram, conservative=False
+$0507-$0507, size=1, local, cpu_ram, conservative=False
+$0508-$0508, size=1, local, cpu_ram, conservative=False
+$0509-$0509, size=1, local, cpu_ram, conservative=False
+$050A-$050A, size=1, local, cpu_ram, conservative=False
+$050B-$050B, size=1, local, cpu_ram, conservative=False
+$050C-$050C, size=1, local, cpu_ram, conservative=False
+$050D-$050D, size=1, local, cpu_ram, conservative=False
+$050E-$050E, size=1, local, cpu_ram, conservative=False
+$050F-$050F, size=1, local, cpu_ram, conservative=False
+$0510-$0510, size=1, local, cpu_ram, conservative=False
+$0511-$0511, size=1, local, cpu_ram, conservative=False
+$0512-$0512, size=1, local, cpu_ram, conservative=False
+$0513-$0513, size=1, local, cpu_ram, conservative=False
+$0514-$0514, size=1, local, cpu_ram, conservative=False
+$0515-$0515, size=1, local, cpu_ram, conservative=False
+$0516-$0516, size=1, local, cpu_ram, conservative=False
+$0517-$0517, size=1, local, cpu_ram, conservative=False
+$0518-$0518, size=1, local, cpu_ram, conservative=False
+$0519-$0519, size=1, local, cpu_ram, conservative=False
+$051A-$051A, size=1, local, cpu_ram, conservative=False
+$051B-$051B, size=1, local, cpu_ram, conservative=False
+$051C-$051C, size=1, local, cpu_ram, conservative=False
+$051D-$051D, size=1, local, cpu_ram, conservative=False
+$051E-$051E, size=1, local, cpu_ram, conservative=False
+$051F-$051F, size=1, local, cpu_ram, conservative=False
+$0520-$0520, size=1, local, cpu_ram, conservative=False
+$0521-$0521, size=1, local, cpu_ram, conservative=False
+$0522-$0522, size=1, local, cpu_ram, conservative=False
+$0523-$0523, size=1, local, cpu_ram, conservative=False
+$0524-$0524, size=1, local, cpu_ram, conservative=False
+$0525-$0525, size=1, local, cpu_ram, conservative=False
+$0526-$0526, size=1, local, cpu_ram, conservative=False
+$0527-$0527, size=1, local, cpu_ram, conservative=False
+$0528-$0528, size=1, local, cpu_ram, conservative=False
+$0529-$0529, size=1, local, cpu_ram, conservative=False
+$052A-$052A, size=1, local, cpu_ram, conservative=False
+$052B-$052B, size=1, local, cpu_ram, conservative=False
+$052C-$052C, size=1, local, cpu_ram, conservative=False
+$052D-$052D, size=1, local, cpu_ram, conservative=False
+$052E-$052E, size=1, local, cpu_ram, conservative=False
+$052F-$052F, size=1, local, cpu_ram, conservative=False
+$0530-$0530, size=1, local, cpu_ram, conservative=False
+$0531-$0531, size=1, local, cpu_ram, conservative=False
+$0532-$0532, size=1, local, cpu_ram, conservative=False
+$0533-$0533, size=1, local, cpu_ram, conservative=False
+$0534-$0534, size=1, local, cpu_ram, conservative=False
+$0535-$0535, size=1, local, cpu_ram, conservative=False
+$0536-$0536, size=1, local, cpu_ram, conservative=False
+$0537-$0537, size=1, local, cpu_ram, conservative=False
+$0538-$0538, size=1, local, cpu_ram, conservative=False
+$0539-$0539, size=1, local, cpu_ram, conservative=False
+$053A-$053A, size=1, local, cpu_ram, conservative=False
+$053B-$053B, size=1, local, cpu_ram, conservative=False
+$053C-$053C, size=1, local, cpu_ram, conservative=False
+$053D-$053E, size=2, local, cpu_ram, conservative=False
+$053F-$0540, size=2, local, cpu_ram, conservative=False
+$0541-$0541, size=1, local, cpu_ram, conservative=False
+$0542-$0542, size=1, local, cpu_ram, conservative=False
+$0543-$0543, size=1, local, cpu_ram, conservative=False
+$0544-$0544, size=1, local, cpu_ram, conservative=False
+$0545-$0545, size=1, local, cpu_ram, conservative=False
+$0546-$0546, size=1, local, cpu_ram, conservative=False
+$0547-$0547, size=1, local, cpu_ram, conservative=False
+$0548-$0548, size=1, local, cpu_ram, conservative=False
+$0549-$0549, size=1, local, cpu_ram, conservative=False
+$054A-$054A, size=1, local, cpu_ram, conservative=False
+$054B-$054B, size=1, local, cpu_ram, conservative=False
+$054C-$054C, size=1, local, cpu_ram, conservative=False
+$054D-$054D, size=1, local, cpu_ram, conservative=False
+$054E-$054E, size=1, local, cpu_ram, conservative=False
+$054F-$054F, size=1, local, cpu_ram, conservative=False
+$0550-$0550, size=1, local, cpu_ram, conservative=False
+$0551-$0551, size=1, local, cpu_ram, conservative=False
+$0552-$0553, size=2, local, cpu_ram, conservative=False
+$0554-$0555, size=2, local, cpu_ram, conservative=False
+$0556-$0556, size=1, local, cpu_ram, conservative=False
+$0557-$0557, size=1, local, cpu_ram, conservative=False
+$0558-$0558, size=1, local, cpu_ram, conservative=False
+$2000-$2000, size=1, global_fixed, memory_mapped_io, conservative=False
+$2001-$2001, size=1, global_fixed, memory_mapped_io, conservative=False
+$2002-$2002, size=1, global_fixed, memory_mapped_io, conservative=False
+$2003-$2003, size=1, global_fixed, memory_mapped_io, conservative=False
+$2005-$2005, size=1, global_fixed, memory_mapped_io, conservative=False
+$2006-$2006, size=1, global_fixed, memory_mapped_io, conservative=False
+$2007-$2007, size=1, global_fixed, memory_mapped_io, conservative=False
+$4000-$4000, size=1, global_fixed, memory_mapped_io, conservative=False
+$4001-$4001, size=1, global_fixed, memory_mapped_io, conservative=False
+$4002-$4002, size=1, global_fixed, memory_mapped_io, conservative=False
+$4003-$4003, size=1, global_fixed, memory_mapped_io, conservative=False
+$4004-$4004, size=1, global_fixed, memory_mapped_io, conservative=False
+$4005-$4005, size=1, global_fixed, memory_mapped_io, conservative=False
+$4006-$4006, size=1, global_fixed, memory_mapped_io, conservative=False
+$4007-$4007, size=1, global_fixed, memory_mapped_io, conservative=False
+$4008-$4008, size=1, global_fixed, memory_mapped_io, conservative=False
+$400A-$400A, size=1, global_fixed, memory_mapped_io, conservative=False
+$400B-$400B, size=1, global_fixed, memory_mapped_io, conservative=False
+$400C-$400C, size=1, global_fixed, memory_mapped_io, conservative=False
+$400E-$400E, size=1, global_fixed, memory_mapped_io, conservative=False
+$400F-$400F, size=1, global_fixed, memory_mapped_io, conservative=False
+$4014-$4014, size=1, global_fixed, memory_mapped_io, conservative=False
+$4015-$4015, size=1, global_fixed, memory_mapped_io, conservative=False
+$4016-$4016, size=1, global_fixed, memory_mapped_io, conservative=False
+$4017-$4017, size=1, global_fixed, memory_mapped_io, conservative=False
+
+## inline decisions
+game_add_score->render_queue_score, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_advance_stage->game_add_score, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_advance_stage->game_reset_cargo, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_advance_stage->game_start_result, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_advance_stage->physics_stage_reset_positions, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_advance_stage->render_queue_next_stage, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_collect_cargo->game_add_score, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_collect_cargo->game_add_score, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_collect_cargo->render_queue_boosts, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_collect_cargo->render_queue_collected_cargo, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_collect_cargo->render_queue_gate, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_damage_player->game_start_result, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_damage_player->render_queue_health, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_damage_player->render_queue_time, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_run->audio_init, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_run->audio_tick, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_run->game_start_title, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_run->game_update_play, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_run->game_update_result, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_run->game_update_title, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_run->hw_begin_frame_updates, auto-inline, applied=True, small void statement body
+game_run->hw_finish_frame_updates, auto-inline, applied=True, small void statement body
+game_run->hw_wait_frame, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_start_play->audio_start_song, auto-inline, applied=True, small void statement body
+game_start_play->game_reset_cargo, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_start_play->physics_stage_init, auto-inline, applied=True, small void statement body
+game_start_play->physics_stage_reset_positions, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_start_play->render_game_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_start_result->audio_start_song, auto-inline, applied=True, small void statement body
+game_start_result->audio_start_song, auto-inline, applied=True, small void statement body
+game_start_result->render_result_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_start_title->audio_start_song, auto-inline, applied=True, small void statement body
+game_start_title->render_title_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_update_play->game_update_timers, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_update_play->physics_stage_update_drones, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_update_play->physics_stage_update_player, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+game_update_result->hw_oam_hide_all, auto-inline, applied=True, small void statement body
+game_update_result->hw_oam_hide_from, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+hw_init->hw_oam_hide_all, auto-inline, applied=True, small void statement body
+hw_init->hw_oam_hide_from, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+hw_init->hw_wait_vblank_direct, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+hw_init->hw_wait_vblank_direct, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+hw_oam_hide_all->hw_oam_hide_from, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+hw_ppu_fill->hw_ppu_seek, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+hw_ppu_write->hw_ppu_seek, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+hw_put_tile_direct->hw_ppu_seek, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+physics_stage_init->physics_stage_reset_positions, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+physics_stage_update_drones->__kq_static_3_physics_update_drone0, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+physics_stage_update_drones->__kq_static_4_physics_update_drone1, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_game_screen->hw_clear_screen_direct, auto-inline, applied=True, small void statement body
+render_game_screen->hw_clear_updates, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_game_screen->hw_screen_off, auto-inline, applied=True, small void statement body
+render_game_screen->hw_screen_on, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_game_screen->render_hud_direct, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_game_sprites->hw_oam_hide_from, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_game_sprites->hw_oam_hide_from, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_hud_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_queue_next_stage->render_queue_boosts, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_queue_next_stage->render_queue_gate, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_queue_next_stage->render_queue_stage, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_queue_next_stage->render_queue_time, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_result_screen->hw_clear_screen_direct, auto-inline, applied=True, small void statement body
+render_result_screen->hw_clear_updates, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_result_screen->hw_screen_off, auto-inline, applied=True, small void statement body
+render_result_screen->hw_screen_on, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_text_direct->render_font_tile, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_title_screen->hw_clear_screen_direct, auto-inline, applied=True, small void statement body
+render_title_screen->hw_clear_updates, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_title_screen->hw_screen_off, auto-inline, applied=True, small void statement body
+render_title_screen->hw_screen_on, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+render_title_sprites->hw_oam_hide_from, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+
+## loop lowerings
+
+## LTO-lite removed functions
+kq2d__abs_s16, not reachable from main/interrupt roots or function-address references
+kq2d__abs_value, not reachable from main/interrupt roots or function-address references
+kq2d__add_value, not reachable from main/interrupt roots or function-address references
+kq2d__clamp_value, not reachable from main/interrupt roots or function-address references
+kq2d__fraction_q8, not reachable from main/interrupt roots or function-address references
+kq2d__resolve_pair, not reachable from main/interrupt roots or function-address references
+kq2d__rest_component, not reachable from main/interrupt roots or function-address references
+kq2d_body_apply_friction, not reachable from main/interrupt roots or function-address references
+kq2d_body_apply_gravity, not reachable from main/interrupt roots or function-address references
+kq2d_body_init, not reachable from main/interrupt roots or function-address references
+kq2d_body_limit_speed, not reachable from main/interrupt roots or function-address references
+kq2d_body_resolve_surface, not reachable from main/interrupt roots or function-address references
+kq2d_body_set_pos, not reachable from main/interrupt roots or function-address references
+kq2d_body_set_velocity, not reachable from main/interrupt roots or function-address references
+kq2d_integrate_body, not reachable from main/interrupt roots or function-address references
+kq2d_overlap_aabb, not reachable from main/interrupt roots or function-address references
+kq2d_point_in_rect, not reachable from main/interrupt roots or function-address references
+kq2d_rect_intersect, not reachable from main/interrupt roots or function-address references
+kq2d_scale_q8, not reachable from main/interrupt roots or function-address references
+kq2d_step, not reachable from main/interrupt roots or function-address references
+kq2d_surface_toi_q8, not reachable from main/interrupt roots or function-address references
+kq2d_world_init, not reachable from main/interrupt roots or function-address references
+
+## mapper-aware bank placements
+__kq_static_3_physics_update_drone0, bank=0, hotness=0, game-loop style function pinned to common bank
+__kq_static_4_physics_update_drone1, bank=0, hotness=0, game-loop style function pinned to common bank
+game_update_play, bank=0, hotness=0, game-loop style function pinned to common bank
+game_update_result, bank=0, hotness=0, game-loop style function pinned to common bank
+game_update_timers, bank=0, hotness=0, game-loop style function pinned to common bank
+game_update_title, bank=0, hotness=0, game-loop style function pinned to common bank
+hw_begin_frame_updates, bank=0, hotness=0, game-loop style function pinned to common bank
+hw_begin_frame_updates, bank=0, hotness=0, game-loop style function pinned to common bank
+hw_clear_updates, bank=0, hotness=0, game-loop style function pinned to common bank
+hw_clear_updates, bank=0, hotness=0, game-loop style function pinned to common bank
+hw_finish_frame_updates, bank=0, hotness=0, game-loop style function pinned to common bank
+hw_finish_frame_updates, bank=0, hotness=0, game-loop style function pinned to common bank
+main, bank=0, hotness=0, game-loop style function pinned to common bank
+physics_stage_update_drones, bank=0, hotness=0, game-loop style function pinned to common bank
+physics_stage_update_drones, bank=0, hotness=0, game-loop style function pinned to common bank
+physics_stage_update_player, bank=0, hotness=0, game-loop style function pinned to common bank
+physics_stage_update_player, bank=0, hotness=0, game-loop style function pinned to common bank

@@ -1,0 +1,70 @@
+# KITAQGB farcall suggestion report
+# caller -> callee, count, caller_bank, callee_bank, current_kind, recommendation
+render_hud_direct -> hw_put_tile_direct, 20, 1, 0, direct, check bank safety
+render_title_screen -> hw_put_tile_direct, 8, 1, 0, direct, check bank safety
+render_game_screen -> hw_put_tile_direct, 7, 1, 0, direct, check bank safety
+render_game_sprites -> hw_oam_set, 6, 1, 0, direct, check bank safety
+render_drone_metasprite -> hw_oam_set, 4, 1, 0, direct, check bank safety
+render_player_metasprite -> hw_oam_set, 4, 1, 0, direct, check bank safety
+render_queue_gate -> settile, 4, 1, 0, direct, check bank safety
+render_result_screen -> hw_put_tile_direct, 4, 1, 0, direct, check bank safety
+game_update_play -> audio_play_sfx, 3, 0, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_collect_cargo -> audio_play_sfx, 2, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_start_result -> audio_music_event, 2, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_start_result -> audio_play_sfx, 2, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_play -> game_collect_cargo, 2, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_play -> physics_stage_check_cargo, 2, 0, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+render_game_screen -> hw_ppu_fill, 2, 1, 0, direct, check bank safety
+render_game_sprites -> hw_oam_hide_from, 2, 1, 0, direct, check bank safety
+render_queue_boosts -> settile, 2, 1, 0, direct, check bank safety
+render_queue_collected_cargo -> settile, 2, 1, 0, direct, check bank safety
+render_queue_health -> settile, 2, 1, 0, direct, check bank safety
+render_queue_next_stage -> settile, 2, 1, 0, direct, check bank safety
+render_result_screen -> hw_ppu_fill, 2, 1, 0, direct, check bank safety
+render_title_screen -> hw_ppu_fill, 2, 1, 0, direct, check bank safety
+render_title_sprites -> hw_oam_set, 2, 1, 0, direct, check bank safety
+__kq_static_3_physics_update_drone0 -> __kq_static_1_physics_integrate_drone0, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+__kq_static_4_physics_update_drone1 -> __kq_static_2_physics_integrate_drone1, 1, 0, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+audio_music_event -> audio_write_pulse2, 1, 2, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+audio_music_event -> audio_write_triangle, 1, 2, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+audio_start_song -> audio_music_event, 1, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+audio_tick -> audio_music_event, 1, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+audio_tick -> audio_sfx_tick, 1, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_advance_stage -> audio_play_sfx, 1, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_damage_player -> audio_play_sfx, 1, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_run -> game_update_play, 1, 1, 0, direct, check bank safety
+game_run -> game_update_result, 1, 1, 0, direct, check bank safety
+game_run -> game_update_title, 1, 1, 0, direct, check bank safety
+game_run -> hw_init, 1, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_run -> hw_poll_pad, 1, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_start_play -> audio_music_event, 1, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_start_title -> audio_music_event, 1, 1, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_play -> game_add_score, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_play -> game_advance_stage, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_play -> game_damage_player, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_play -> physics_stage_check_drone, 1, 0, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_play -> physics_stage_check_gate, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_play -> physics_stage_knock_selected_drone, 1, 0, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_play -> render_game_sprites, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_play -> render_queue_boosts, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_result -> game_start_play, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_timers -> game_start_result, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_timers -> render_queue_time, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_title -> audio_play_sfx, 1, 0, 2, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_title -> game_start_play, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+game_update_title -> render_title_sprites, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+hw_init -> hw_oam_hide_from, 1, 2, 0, direct, check bank safety
+main -> game_run, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+physics_stage_update_player -> __kq_static_0_physics_integrate_player, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent
+render_game_screen -> hw_clear_updates, 1, 1, 0, direct, check bank safety
+render_game_screen -> hw_ppu_write, 1, 1, 0, direct, check bank safety
+render_number_direct -> hw_put_tile_direct, 1, 1, 0, direct, check bank safety
+render_number_queue -> settile, 1, 1, 0, direct, check bank safety
+render_queue_stage -> settile, 1, 1, 0, direct, check bank safety
+render_rect_direct -> hw_put_tile_direct, 1, 1, 0, direct, check bank safety
+render_result_screen -> hw_clear_updates, 1, 1, 0, direct, check bank safety
+render_result_screen -> hw_ppu_write, 1, 1, 0, direct, check bank safety
+render_text_direct -> hw_put_tile_direct, 1, 1, 0, direct, check bank safety
+render_title_screen -> hw_clear_updates, 1, 1, 0, direct, check bank safety
+render_title_screen -> hw_ppu_write, 1, 1, 0, direct, check bank safety
+render_title_sprites -> hw_oam_hide_from, 1, 1, 0, direct, check bank safety

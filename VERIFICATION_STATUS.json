@@ -1,0 +1,327 @@
+{
+  "date": "2026-10-04",
+  "ready_to_replace_csharp": true,
+  "reference_source": "C:/kitaqgb_project/kitaqfc_project/kitaqfc",
+  "windows_tests_passed": 55,
+  "frontend_source_cases": 29,
+  "frontend_comparisons": 58,
+  "frontend_passed": true,
+  "native_assembler_profiles": 12,
+  "native_assembler_passed": true,
+  "fds_disk_cases": 8,
+  "fds_disk_passed": true,
+  "native_c_to_rom_boot_profiles": 12,
+  "native_c_to_fds_cases": 8,
+  "native_intrinsic_rom_cases": 158,
+  "native_c_rom_comparisons": 318,
+  "native_helper_configurations": 14,
+  "native_helper_reference_comparisons": 28,
+  "native_runtime_smoke_cases": 2,
+  "native_runtime_smoke_passed": true,
+  "native_runtime_dependency": "Rust only",
+  "remaining": [],
+  "native_original_source_rom_cases": 15,
+  "native_original_source_rejection_status_cases": 14,
+  "native_library_rom_and_runtime_cases": 2,
+  "native_cli_option_rom_cases": 53,
+  "native_cli_option_runtime_cases": 53,
+  "native_fds_argument_rom_and_disk_cases": 4,
+  "native_surom_constraint_cases": 6,
+  "native_complete_game_rom_cases": 2,
+  "native_complete_game_runtime_cases": 4,
+  "native_optimization_report_cases": 9,
+  "native_kurosaki_metadata_cases": 112,
+  "native_text_report_comparisons": 70,
+  "native_tool_command_cases": 103,
+  "native_workflow_cases": 32,
+  "native_complete_fds_game_disk_cases": 1,
+  "native_complete_game_play_mode_cases": 2,
+  "native_complete_game_play_mode_checks_passed": true,
+  "native_fds_bios_state_parity_cases": 3,
+  "native_fds_bios_game_started": false,
+  "native_fds_direct_boot_runtime_passed": true,
+  "known_limitations": [
+    "KITAQ BLOCKS FDS disks match completely, but the available KUROSAKI BIOS runs remain at $E681 with rendering disabled for both compilers. Successful FDS game startup and physical hardware were not verified.",
+    "The C# NES backend accepts legacy Game Boy RST/header flags without NES rewriting, does not produce NES disassembly, and its repro-check fails same_map because no .map is emitted. These behaviors are preserved.",
+    "Managed .NET debugger attachment is inapplicable to the native executable; accepted --attach does not attach a managed debugger.",
+    "Emulator snapshots cover bounded runs; full game completion and subjective audio were not evaluated."
+  ],
+  "native_value_rom_cases": 61,
+  "native_value_runtime_cases": 61,
+  "native_value_runtime_passed": true,
+  "completion_scope": "Native implementation of the referenced C# NES/FDS compiler and command-line tools, subject to documented inherited backend and runtime verification limits.",
+  "ci_commit": "50c48583cc867b20a1c69a84fa47277029b0c978",
+  "ci_run_url": "https://github.com/bartaro/kitaqgb-rust-validation-20261004/actions/runs/37169762288",
+  "ci_jobs_passed": 5,
+  "native_platforms": [
+    "Windows-X64",
+    "Linux-X64",
+    "macOS-ARM64",
+    "macOS-X64"
+  ],
+  "windows_release_cli_comparisons_passed": 318,
+  "public_csharp_replacement_performed": false,
+  "historical_compiler_ci_commit": "8292503e5c5d8fa33073552d5508ec5a3801b95d",
+  "auxiliary_tools": {
+    "date": "2026-10-04",
+    "status": "complete",
+    "passed": true,
+    "implementation_ci_commit": "50c48583cc867b20a1c69a84fa47277029b0c978",
+    "private_repository": "bartaro/kitaqgb-rust-validation-20261004",
+    "native_helper_binaries": [
+      "kitaqfc-asset-pack",
+      "kitaqfc-asset-pipeline",
+      "kitaqfc-png-index-build",
+      "kitaqfc-rights-name-guard",
+      "kitaqfc-zx0"
+    ],
+    "full_tests_per_environment": 55,
+    "codec_reference_inputs": 60,
+    "malformed_stream_cases": 33,
+    "runtime_requires_dotnet": false,
+    "runtime_requires_python": false,
+    "all_source_helpers_accounted_for": true,
+    "source_manifest": "AUXILIARY_SOURCE_MANIFEST.json",
+    "native_validation": [
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-ARM64",
+        "system": "Darwin",
+        "machine": "arm64",
+        "helper_checks": 401,
+        "ci_url": "https://github.com/bartaro/kitaqgb-rust-validation-20261004/actions/runs/37169762288"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-X64",
+        "system": "Darwin",
+        "machine": "x86_64",
+        "helper_checks": 401,
+        "ci_url": "https://github.com/bartaro/kitaqgb-rust-validation-20261004/actions/runs/37169762288"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Linux-X64",
+        "system": "Linux",
+        "machine": "x86_64",
+        "helper_checks": 401,
+        "ci_url": "https://github.com/bartaro/kitaqgb-rust-validation-20261004/actions/runs/37169762288"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Windows-X64",
+        "system": "Windows",
+        "machine": "AMD64",
+        "helper_checks": 401,
+        "ci_url": "https://github.com/bartaro/kitaqgb-rust-validation-20261004/actions/runs/37169762288"
+      }
+    ],
+    "executables": [
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-ARM64",
+        "name": "kitaqfc",
+        "sha256": "266cdf139902b8161b7b64148809e402be9bb1c4465481e54519871addeb09fb",
+        "bytes": 4290864,
+        "format": "Mach-O 64",
+        "architecture": "arm64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-ARM64",
+        "name": "kitaqfc-zx0",
+        "sha256": "9a70dec2e92fc45df6bbc0c56fa00a336c62e61b6aebd85e5f0635d6dea9594e",
+        "bytes": 442528,
+        "format": "Mach-O 64",
+        "architecture": "arm64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-ARM64",
+        "name": "kitaqfc-asset-pack",
+        "sha256": "d4f575138a4cf1daf6847e9b5404e85743a4d9c26d57f506120d940c60abb199",
+        "bytes": 634096,
+        "format": "Mach-O 64",
+        "architecture": "arm64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-ARM64",
+        "name": "kitaqfc-png-index-build",
+        "sha256": "4e981cb81de614a7cf2459acf3a5d12564a60c618bca4d22b2805ddd23b6b8ba",
+        "bytes": 634096,
+        "format": "Mach-O 64",
+        "architecture": "arm64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-ARM64",
+        "name": "kitaqfc-asset-pipeline",
+        "sha256": "f725d5f8318ecce41875c50d391de1e7ef10532f941f5a99111dc4c3ebd7dcf8",
+        "bytes": 634096,
+        "format": "Mach-O 64",
+        "architecture": "arm64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-ARM64",
+        "name": "kitaqfc-rights-name-guard",
+        "sha256": "f941f4020a8a8feef218ff66d5c7fa9e2e238a6bec0b4bbd23b19723a60f90ed",
+        "bytes": 509888,
+        "format": "Mach-O 64",
+        "architecture": "arm64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-X64",
+        "name": "kitaqfc",
+        "sha256": "5448b2b128370d1bf92b6c710d65e8ba1893118ae376657e8ec65326f4e2f58e",
+        "bytes": 4807968,
+        "format": "Mach-O 64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-X64",
+        "name": "kitaqfc-zx0",
+        "sha256": "a2c4e23e7ba33ae44a111753b3ce1d68d49d6b9785a8fd8c3e05efbcb0f1f37a",
+        "bytes": 430520,
+        "format": "Mach-O 64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-X64",
+        "name": "kitaqfc-asset-pack",
+        "sha256": "47d09563482fb6a174e43d17971dfb403a05da17852276b767c7adf99ead0255",
+        "bytes": 662768,
+        "format": "Mach-O 64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-X64",
+        "name": "kitaqfc-png-index-build",
+        "sha256": "2999303e80bf50f5c99abaa29f55483202b32a7840215aa40682d5fab0149cf9",
+        "bytes": 662768,
+        "format": "Mach-O 64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-X64",
+        "name": "kitaqfc-asset-pipeline",
+        "sha256": "c56630c3089ce065393f3e2c2b1c75f579cb79443321313e4928bdca2fab8a0f",
+        "bytes": 662768,
+        "format": "Mach-O 64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-macOS-X64",
+        "name": "kitaqfc-rights-name-guard",
+        "sha256": "6cfd473ae4dc3d67ae7c0689a1aaab4f4f7aaa9be5ba54fab3827297aefdc9d3",
+        "bytes": 518176,
+        "format": "Mach-O 64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Linux-X64",
+        "name": "kitaqfc",
+        "sha256": "d00023ecd36f0b69853fd0d00a611e5e8de19e071f5c74908bf2be31f7a24d6d",
+        "bytes": 5229016,
+        "format": "ELF64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Linux-X64",
+        "name": "kitaqfc-zx0",
+        "sha256": "66afd7de5faa78f5d32b3e6b65f970ad246c702def51deb9d8f8b65d573205d0",
+        "bytes": 456224,
+        "format": "ELF64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Linux-X64",
+        "name": "kitaqfc-asset-pack",
+        "sha256": "e4f2ca6507db1d98567969ed3ef1e9f4b24dfee3605e5162a5d4a8f396304600",
+        "bytes": 709480,
+        "format": "ELF64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Linux-X64",
+        "name": "kitaqfc-png-index-build",
+        "sha256": "8e0f3810bb4fdae558985cb154b4bd27bb69fd8b0b0a5cef132d51a398ad6cfb",
+        "bytes": 709488,
+        "format": "ELF64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Linux-X64",
+        "name": "kitaqfc-asset-pipeline",
+        "sha256": "5d27bd1b8486b482b7cc376781f8e9bf04ddd1908583239def8c6cc0ea51c874",
+        "bytes": 709488,
+        "format": "ELF64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Linux-X64",
+        "name": "kitaqfc-rights-name-guard",
+        "sha256": "56adc1516db8677981bebf8afc05835a330f3cb024b9f92e0cc983f2ddc1a70e",
+        "bytes": 554160,
+        "format": "ELF64",
+        "architecture": "x86_64"
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Windows-X64",
+        "name": "kitaqfc.exe",
+        "sha256": "4c3a26621615bd6e7bd4031900c63cf2ec127e8d3223bbdc4ddd8c7973e9ac59",
+        "bytes": 5168640,
+        "format": "PE32+",
+        "architecture": "x86_64",
+        "managed_clr_header": false
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Windows-X64",
+        "name": "kitaqfc-zx0.exe",
+        "sha256": "78c8b696b99d30306f215d9a996523481068c0ed354c70ee5a04a15478e1198a",
+        "bytes": 184320,
+        "format": "PE32+",
+        "architecture": "x86_64",
+        "managed_clr_header": false
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Windows-X64",
+        "name": "kitaqfc-asset-pack.exe",
+        "sha256": "51852c376119b42a3ecf6717691dd2a5fee8681342c6db6fef454b33b04d384a",
+        "bytes": 406528,
+        "format": "PE32+",
+        "architecture": "x86_64",
+        "managed_clr_header": false
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Windows-X64",
+        "name": "kitaqfc-png-index-build.exe",
+        "sha256": "516e07ee707d5d3f01436da18b3964745358de4f9fd8a6912c232fe22827f023",
+        "bytes": 406528,
+        "format": "PE32+",
+        "architecture": "x86_64",
+        "managed_clr_header": false
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Windows-X64",
+        "name": "kitaqfc-asset-pipeline.exe",
+        "sha256": "e4c1aa5a9dc4d3148accc7a2c1e9a8b5634ffe021c8f010201643bba34465044",
+        "bytes": 406528,
+        "format": "PE32+",
+        "architecture": "x86_64",
+        "managed_clr_header": false
+      },
+      {
+        "artifact": "kitaqfc-checkpoint-Windows-X64",
+        "name": "kitaqfc-rights-name-guard.exe",
+        "sha256": "a9aebff439e0b656da9363130a996b47b70b7cc37500640460caea153aa02b25",
+        "bytes": 284160,
+        "format": "PE32+",
+        "architecture": "x86_64",
+        "managed_clr_header": false
+      }
+    ],
+    "png_source_gap": {
+      "binary": "kitaqfc-png-index-build",
+      "reason": "Original PNG converter source and original sample images absent from current local/public repositories. Reimplemented local indexed-PNG specification; independent PNG/CHR/attribute fixtures and downstream NES compilation verify the replacement. Original PNG output byte parity cannot be asserted.",
+      "specification_sources": [
+        "KITAQFC_ASSET_PIPELINE.md",
+        "KITAQFC_PHASE14_NOTES.md",
+        "assets/example_png_manifest.json"
+      ]
+    },
+    "unicode_casefold_version": "13.0.0",
+    "post_build_changes": "Dependency license texts and correction of the Unicode version in a generated table comment; executable table data unchanged."
+  }
+}

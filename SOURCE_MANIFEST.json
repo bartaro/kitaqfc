@@ -1,0 +1,657 @@
+{
+  "source_directory": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc",
+  "source_files": [
+    {
+      "path": "AsmInfo.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\AsmInfo.cs",
+      "sha256": "5cb5144a3a7167a2b6f13478af06eb0818cfbbfdc3cd01334fb77516bccdcf96"
+    },
+    {
+      "path": "Assembler.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Assembler.cs",
+      "sha256": "c1486d56cef50a861a71224b9df66da068011f79975e3ab9391692b47383cb3c"
+    },
+    {
+      "path": "BankedAssemblerCore.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\BankedAssemblerCore.cs",
+      "sha256": "9981000cc27a2762bb857ef3c297abbf51b67c366d8f3b19e814835e0165f031"
+    },
+    {
+      "path": "BuildReports.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\BuildReports.cs",
+      "sha256": "63e4a4a1177de722dd346c6ac9f20ae8cf316cb57fd212dcc2cd6582dc7f4f3f"
+    },
+    {
+      "path": "CType.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\CType.cs",
+      "sha256": "4f99133318339dd9931699086d0381cc6fd0212e370fe4dcb56f59b7157a47de"
+    },
+    {
+      "path": "CodeGenerator.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\CodeGenerator.cs",
+      "sha256": "becd033a1bae5d83039c2cf908ed8ff3de8090b94a575e17c77a79899a4743ef"
+    },
+    {
+      "path": "DebugExporter.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\DebugExporter.cs",
+      "sha256": "a14ff83f2456bfcf128165bea13e2d5fd87eb0b9edf1c3e2d73747c47838452e"
+    },
+    {
+      "path": "Disassembler.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Disassembler.cs",
+      "sha256": "9a921867a3f816fb951e32e017acd5b04be9ddaf0369402c5dc71cfc29feac46"
+    },
+    {
+      "path": "Expr.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Expr.cs",
+      "sha256": "db839d1a6a5a932d43ec863e8cda1af6e084177a5d19cbce32c32b1739c0f6a4"
+    },
+    {
+      "path": "FdsDiskImageBuilder.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\FdsDiskImageBuilder.cs",
+      "sha256": "046efa75c08b17891ea61d659f8af51b90039cf2ab6b0e01325c23f13362dba7"
+    },
+    {
+      "path": "FdsDiskMetadata.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\FdsDiskMetadata.cs",
+      "sha256": "a1cc772fb236d3b7dd5327675f3bd759b054fb0b8e406d2c8d7b3e13e0c0b736"
+    },
+    {
+      "path": "IoUtil.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\IoUtil.cs",
+      "sha256": "17f0ec2a7596b94c1a0334a19defd0c959367bef710bb4870ff92601f63b9ffb"
+    },
+    {
+      "path": "Lowerer.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Lowerer.cs",
+      "sha256": "26c9b8993d66c5e9e2629f717af048ce6a211f5a96d7693fd745805b3cce5476"
+    },
+    {
+      "path": "Maybe.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Maybe.cs",
+      "sha256": "4df9faa279a8030316e025a18b91bb04c61c4b72940eb08ee2709d2a09d0bc9c"
+    },
+    {
+      "path": "Minimizer.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Minimizer.cs",
+      "sha256": "5df8489811f7c48d16ef92bf804215cf718ac3ca28e404d9a3f95e1d14e10a94"
+    },
+    {
+      "path": "NesActionCatalog.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\NesActionCatalog.cs",
+      "sha256": "434e3f55281615fb33a06b3b1f6803aaf7f052f137ca7ced296c4549ea510e24"
+    },
+    {
+      "path": "NesCartridge.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\NesCartridge.cs",
+      "sha256": "25577e5e708f1eabd93f90fc6563d94443faae73ae2d47bbb2e795e27f986a0c"
+    },
+    {
+      "path": "Optimizer.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Optimizer.cs",
+      "sha256": "b05b52b4630de79a0f7f55d358579da3884db27e716c55ae42293480fc03c5b8"
+    },
+    {
+      "path": "Other.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Other.cs",
+      "sha256": "6bf85ad20728bff7db405f1612f4ba8db50870164e56d6bfd20198d1f22d2db5"
+    },
+    {
+      "path": "Parser.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Parser.cs",
+      "sha256": "a44aaa63d2a4f4f28d2f2722ce3f10a6d726bb2111853fe00b13bc7d69b8d889"
+    },
+    {
+      "path": "Program.DebugTools.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Program.DebugTools.cs",
+      "sha256": "b5906a95225665a961cae30b432ee46c37159f06532a3c9a0b7f94a2208afd1f"
+    },
+    {
+      "path": "Program.VibeTools.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Program.VibeTools.cs",
+      "sha256": "d71f5fd062f2064692fef716f9cc16f1ddf81e4ec807ba409b78ee965d5b86e9"
+    },
+    {
+      "path": "Program.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Program.cs",
+      "sha256": "6eb6709bcfe8f7280baed5c81f5441e1cd38201a132c8afd0a61ab521632fd5b"
+    },
+    {
+      "path": "RomHeaderPatcher.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\RomHeaderPatcher.cs",
+      "sha256": "8b49be9811f3b58db9328dda523881548c56adfa8253b25d5cead6a051308877"
+    },
+    {
+      "path": "TargetBackend.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\TargetBackend.cs",
+      "sha256": "a7a3843e5bf163a91b2f84c0d22bba83ce9a766848ea2b8bbe917c29b146e9e2"
+    },
+    {
+      "path": "Tokenizer.cs",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\Tokenizer.cs",
+      "sha256": "073919183c4710dc5dd16d2bf75e351882a761c0ce46339dffdfca33e16e36ee"
+    },
+    {
+      "path": "assets/example_manifest.json",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\assets\\example_manifest.json",
+      "sha256": "db48201e852692db70caf0fded9254c1984a1d7182f3670e73e1db7e96ffa8cb"
+    },
+    {
+      "path": "assets/example_pack_from_png_manifest.json",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\assets\\example_pack_from_png_manifest.json",
+      "sha256": "e2b62c366dc16882f80bc5231dfccd07837265333c24e857bd7461b7f81e9bf7"
+    },
+    {
+      "path": "assets/example_pipeline_manifest.json",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\assets\\example_pipeline_manifest.json",
+      "sha256": "de45d0408e6e2010fa0087e7c0002854614836031d1d41b6703923bfceb6a1ba"
+    },
+    {
+      "path": "assets/example_png_manifest.json",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\assets\\example_png_manifest.json",
+      "sha256": "f49452e9c511e7f48656bb034320bdca372e76c0869534a876f32b187147d320"
+    },
+    {
+      "path": "lib/ASSET_CONVENTIONS.md",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\ASSET_CONVENTIONS.md",
+      "sha256": "2c40357343b33587427f01f5c9e2809893bec1abe6c206d24af419ed7fb6f7e1"
+    },
+    {
+      "path": "lib/LICENSE",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\LICENSE",
+      "sha256": "7d5abe61e64b4a76df8153cb6f8f2092fd8f7bd34247dae0503571094227bab0"
+    },
+    {
+      "path": "lib/LICENSE.ja",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\LICENSE.ja",
+      "sha256": "7f7c6fabf0453f3615f63ad4e1da6643e0ae1ccda006c5f3d02bf2319501b93f"
+    },
+    {
+      "path": "lib/README.md",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\README.md",
+      "sha256": "57b771abf109589726ad2b08631fa9c22093d74cd4562a49bce1e1999321ba37"
+    },
+    {
+      "path": "lib/actor.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\actor.c",
+      "sha256": "33264b6926cee95d8e1890acfcee1f45bdaa7d14c7a60b83bee612a91f69e362"
+    },
+    {
+      "path": "lib/actor.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\actor.h",
+      "sha256": "f6968cd2b1095163d58be096d6931da2494183a0f9b10b04802c8f8d63f977d2"
+    },
+    {
+      "path": "lib/asset.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\asset.c",
+      "sha256": "41b89f106afd7e9d7686b237839df96fdd2dfd7a5d01f0b8e2f07a56353ac461"
+    },
+    {
+      "path": "lib/asset.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\asset.h",
+      "sha256": "dc88fe3e5f28c716a990b452a9d5e1244048714ae9865c547cdd4d45048a615b"
+    },
+    {
+      "path": "lib/attribute.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\attribute.c",
+      "sha256": "03e7e68b032922d2b63a47004541cb3c47f23e5bf5e44056515252c5716c3b8a"
+    },
+    {
+      "path": "lib/attribute.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\attribute.h",
+      "sha256": "ac636474b5850064e72cc75cb8fbfe099c001b0d7cf8764ad4c0caffe9a8c2ec"
+    },
+    {
+      "path": "lib/audio.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\audio.c",
+      "sha256": "cb8fd25727c9fc83096137e2fc977858a758fba94659d07eb784cd3fa9a81227"
+    },
+    {
+      "path": "lib/audio.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\audio.h",
+      "sha256": "2b067542a8a29184e26c2f993acb5c46436c475b14edac2d26eb03c671a24247"
+    },
+    {
+      "path": "lib/audio_vblank.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\audio_vblank.c",
+      "sha256": "2c1a645e9eb640c73d6d40d93a6d59b68ecddc3cea02d97f9b5dc015a15078ab"
+    },
+    {
+      "path": "lib/audio_vblank.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\audio_vblank.h",
+      "sha256": "14ab99a1202127cf6b723da1f76682602f0c597be4da880174a714d13b2594cb"
+    },
+    {
+      "path": "lib/bank.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\bank.c",
+      "sha256": "eea6317fc0b6c2186f12c24112f192cf390704812cc2e8c56838e891ceb8cd8a"
+    },
+    {
+      "path": "lib/bank.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\bank.h",
+      "sha256": "c47eaebe1a0dd3db4ab11bcb4276940c0261104918e2041b4057e833b573007a"
+    },
+    {
+      "path": "lib/chain.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\chain.c",
+      "sha256": "e19f54805c022fd372fa717a5e0962051c649a8da25ce350efb29d8b5d134fc4"
+    },
+    {
+      "path": "lib/chain.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\chain.h",
+      "sha256": "92d06e42a79674b6fa298796ad04544e3a853d7463f31a6c8de4aef30c6fe3f4"
+    },
+    {
+      "path": "lib/collision.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\collision.c",
+      "sha256": "50168cc58ac18c80826ed7dd7d6690d9680f098db21daef9303436d37a3a6f5d"
+    },
+    {
+      "path": "lib/collision.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\collision.h",
+      "sha256": "a5639e3c478ce66dafa8bdbd3e16e81ae87d0ad3e002d1da3dbdada9cc91fcec"
+    },
+    {
+      "path": "lib/core.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\core.h",
+      "sha256": "f75700c6f85f43b46eab7f87eb9b327eb17b169ab5ff8cfdf6e23debf8fb92d8"
+    },
+    {
+      "path": "lib/danmaku.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\danmaku.c",
+      "sha256": "a658be5ba9a5b58f029121a0d4cb27b41ce588a3dd8b6ef0e2f5bb5358955c28"
+    },
+    {
+      "path": "lib/danmaku.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\danmaku.h",
+      "sha256": "b75523c5158133f6ba57e6102dbb68f715c645006d86266974c42c27cce5b97b"
+    },
+    {
+      "path": "lib/danmaku.md",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\danmaku.md",
+      "sha256": "1550f37cd6375a52e0f055c2fc7afbf24defe64db5ebeb4be2a681d5a921a3e9"
+    },
+    {
+      "path": "lib/debug.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\debug.c",
+      "sha256": "86370d4faaa5906378b25f2f80b6d39c52b86734fed529869e8daddd9e873281"
+    },
+    {
+      "path": "lib/debug.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\debug.h",
+      "sha256": "29a1b074b5e4752efd84f2303ac4b695ef9575ada237c7bdb5c7d3fd4f151727"
+    },
+    {
+      "path": "lib/entity.c",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\entity.c",
+      "sha256": "96197eca2ad3431a6d82a29e5db59205fb6ca9a4d36465d83b9f3a47f3617ef0"
+    },
+    {
+      "path": "lib/entity.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\entity.h",
+      "sha256": "33e9d40177d42acc0e45760d9c1b0c133fe60c4fb0a7a5cb7493f7744bd428ef"
+    },
+    {
+      "path": "lib/fc.h",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\fc.h",
+      "sha256": "697d338735cc83db0ee14e3533241ce30cb5c4afd93fed40fd84c4ac7cfb57c4"
+    },
+    {
+      "path": "lib/fds.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\fds.h",
+      "sha256": "2705c809735ac4398e2bd6404e70dee16e549011bdc4b6b0d1d364996c92ddd0"
+    },
+    {
+      "path": "lib/fds_file.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\fds_file.h",
+      "sha256": "fa69d479b21cd8dbb2ed372b1fc12f67a3f9ffed78e46b1bbd3d7a297d5e7818"
+    },
+    {
+      "path": "lib/fds_overlay.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\fds_overlay.h",
+      "sha256": "ee94f793e4833940ec308539158c3c7bab85370f95c47f2d10fe0777c736211f"
+    },
+    {
+      "path": "lib/fds_save.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\fds_save.h",
+      "sha256": "dfc20752471a7626ab780840f3a13fb58965863d73cb7c9b832793a82f39d174"
+    },
+    {
+      "path": "lib/fds_sound.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\fds_sound.h",
+      "sha256": "6b7d04779a7be5a36291b86cc89c47227d089f9e813dd75525de01803b8988c7"
+    },
+    {
+      "path": "lib/fixed.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\fixed.c",
+      "sha256": "797eaf21aeaa4ae3c788e95bc4e7f6fb5f56a954eaf33a7b5f754c85300d01fb"
+    },
+    {
+      "path": "lib/fixed.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\fixed.h",
+      "sha256": "2c547b675025be814016dfd30ca47bde010a6a4ff66e26531077b1956b609090"
+    },
+    {
+      "path": "lib/input.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\input.c",
+      "sha256": "36f87d578439ad6ec4db7172ad7572d474c021e8931c7ac76539c41115553027"
+    },
+    {
+      "path": "lib/input.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\input.h",
+      "sha256": "58a77a4b8fc24fb0ea67af2d9e819de10298860c473a6c288ec44dce5f55d21c"
+    },
+    {
+      "path": "lib/input_repeat.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\input_repeat.c",
+      "sha256": "715345beec7b4171feced3c907e3a1350f02f970856512959f4c2a002c02598f"
+    },
+    {
+      "path": "lib/input_repeat.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\input_repeat.h",
+      "sha256": "675d259730af53e46dae95d6df0219e1be2083991a8c3b92461109399e240575"
+    },
+    {
+      "path": "lib/intrinsics.h",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\intrinsics.h",
+      "sha256": "8027dcccbad8226568419a332dfd27147b1be72ae7f3ed8c688c6f8276464512"
+    },
+    {
+      "path": "lib/keyboard.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\keyboard.h",
+      "sha256": "a7e4c19eabd8b8eadc42ab240900871fcd1f57540c720790aea6db40c5bff047"
+    },
+    {
+      "path": "lib/licenses/fonts/ASCII-font-MIT.ja.txt",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\licenses\\fonts\\ASCII-font-MIT.ja.txt",
+      "sha256": "e029b241b0162ced6bed1bcab25f6ccf86a3f8c31593d5a6a7d95e78cd0cdadc"
+    },
+    {
+      "path": "lib/licenses/fonts/ASCII-font-MIT.txt",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\licenses\\fonts\\ASCII-font-MIT.txt",
+      "sha256": "4249d959c06a988eb60caa631fcd3c3b4f6a4cd161f8274acfc0175e02bac5c2"
+    },
+    {
+      "path": "lib/mapper.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\mapper.h",
+      "sha256": "a60e79ff9f24f84095ddbe91a7483f8ce2a5532ca4632365f29de28b1246bfeb"
+    },
+    {
+      "path": "lib/math_fast.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\math_fast.h",
+      "sha256": "3b0f9c09f4c3acab3c626db60059499f00656cf6e03efc2e441809ff730d15c7"
+    },
+    {
+      "path": "lib/math_fixed.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\math_fixed.h",
+      "sha256": "f58f00719442061cfdd28532fe023b053cb874ca25981a63bebe8f1c35e6ea4e"
+    },
+    {
+      "path": "lib/math_lut.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\math_lut.c",
+      "sha256": "f8390e120b91504b747ebd27a194586764eb90756edcfa355e71834904772fdf"
+    },
+    {
+      "path": "lib/math_lut.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\math_lut.h",
+      "sha256": "fac60ecee18eab42af7b5e2c4b2430faa10ab46f1a25900d943f4e28a764e12a"
+    },
+    {
+      "path": "lib/metasprite.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\metasprite.c",
+      "sha256": "a3b62a6a22cfce5da18436f18e19a126d2aefac096497cef3a6d052c556e1ff3"
+    },
+    {
+      "path": "lib/metasprite.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\metasprite.h",
+      "sha256": "4d03bff9d01c12f4c366ae841a39666181c88ee0d96edccf06ea03ea2bc6694d"
+    },
+    {
+      "path": "lib/mic.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\mic.h",
+      "sha256": "b9ee99c620f832746cec17a7d7bde9a28b4f641c398363f2aedaf0b8df871b77"
+    },
+    {
+      "path": "lib/midi.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\midi.h",
+      "sha256": "6c47c1b6bc31b24b1e5e1c1121b056fe155cd906d041d3693248f9ac2623f6f5"
+    },
+    {
+      "path": "lib/nametable_asset.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\nametable_asset.c",
+      "sha256": "c0afd6cca1aea8c609190300f98d077e292a4bac04a08a637a9cb00f327a04c1"
+    },
+    {
+      "path": "lib/nametable_asset.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\nametable_asset.h",
+      "sha256": "2b9dc1fc25bf9e9f5a79f6147e5777b3b30f486d3dc445cfa59c0ca8d908a74d"
+    },
+    {
+      "path": "lib/nes_game.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\nes_game.h",
+      "sha256": "98d383b3253508287957f21d70df7c96c12e08676db9bbcf765d85ea58ab5974"
+    },
+    {
+      "path": "lib/oam.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\oam.h",
+      "sha256": "2b65d1c8d8d043e9aced39544e79b46d6ad5f5ee8ec6ae9d9271489d5b7222b7"
+    },
+    {
+      "path": "lib/oam_fair.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\oam_fair.h",
+      "sha256": "36760c0be3a4a84d8cdace1ff61d334e10adc90b552fabe6ce95ef06a482264d"
+    },
+    {
+      "path": "lib/oam_fair.md",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\oam_fair.md",
+      "sha256": "aa817bb3bfc5373855faf48f36645ba55f77eb0148c12101224f1a54dab5334c"
+    },
+    {
+      "path": "lib/oam_fair_impl.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\oam_fair_impl.h",
+      "sha256": "e00f0b00c8092902008483da0dc4f03c866491a8e86d68fa37b029ad59875577"
+    },
+    {
+      "path": "lib/pad.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\pad.c",
+      "sha256": "bd467c59dbc97128ab4bb5929a66027bbd6667cf7a4f494b4b5479f7796f27d2"
+    },
+    {
+      "path": "lib/pad.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\pad.h",
+      "sha256": "f98be37465ebe3e02089f01933fe0314d334df3ddf9cc259ce185cb8f58b32dc"
+    },
+    {
+      "path": "lib/palette.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\palette.c",
+      "sha256": "12c7a763917d02f95beee69e6da517f90c8cb328c8514777bb5fcb82eaaf613c"
+    },
+    {
+      "path": "lib/palette.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\palette.h",
+      "sha256": "b0aff1d1026a9239fb83eb86f65c8b1b2af7e29c1d905af5c7fac98864440fbe"
+    },
+    {
+      "path": "lib/physics2d.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\physics2d.c",
+      "sha256": "743bf663b525e5c3166e87f2e9dabc0888c8df92b58fe788e82421d33c81fe13"
+    },
+    {
+      "path": "lib/physics2d.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\physics2d.h",
+      "sha256": "8b3292eb3274a7702722339ff80362ef2d7ed95b42d85cf229106872361b52df"
+    },
+    {
+      "path": "lib/physics3d.c",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\physics3d.c",
+      "sha256": "845214a967b09b5ac433ff913287e345fe2acb7252db02c4a4e47fab83f82c20"
+    },
+    {
+      "path": "lib/physics3d.h",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\physics3d.h",
+      "sha256": "7e207d58e5dcb87a059ec4b1487030b6b7e25a4f853ac2afc4bfcf18064b58ab"
+    },
+    {
+      "path": "lib/ppu.c",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\ppu.c",
+      "sha256": "1b1c79eb8c29950f4be5a531b8835ffd3e85ecfaa91871ed8b6117aaa88d88d1"
+    },
+    {
+      "path": "lib/ppu.h",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\ppu.h",
+      "sha256": "acdf977858899f584ab15cb2303c50489d903bde4f86ae8b7161b5a0005acbe1"
+    },
+    {
+      "path": "lib/ppu_direct.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\ppu_direct.h",
+      "sha256": "c41e643dce3bb9b4983609f817f48b1d9104348e764d9695b2d5eeb7ed9091a6"
+    },
+    {
+      "path": "lib/rob.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\rob.h",
+      "sha256": "44f2c2a29d4cad6e34d414bec2dc829c8bbbeeda2f04df519203dbd984126f54"
+    },
+    {
+      "path": "lib/runtime.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\runtime.c",
+      "sha256": "4a953bc05b1a18caccc6e3722fe48e239de6e7d39ab0e7c65870a8f5648ad5d5"
+    },
+    {
+      "path": "lib/runtime.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\runtime.h",
+      "sha256": "79dfb6cbcf3016c571ec567fb3f5db013e190c321035286de2f93c8863e7030f"
+    },
+    {
+      "path": "lib/scene.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\scene.c",
+      "sha256": "48a409e79469a2f6953cc23a135c343fd3686747446b55236d163f323d482b66"
+    },
+    {
+      "path": "lib/scene.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\scene.h",
+      "sha256": "7fcdc7fb7f9501df2c0d8b44f6d34becbf61aabf20d1686842e2e41c04a1a074"
+    },
+    {
+      "path": "lib/scroll.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\scroll.c",
+      "sha256": "c2619ad582a3b950d20d4afc2d79a57b721d8384a9748c653c702ed29e50e8ef"
+    },
+    {
+      "path": "lib/scroll.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\scroll.h",
+      "sha256": "89ed493fb048b30709f58249b5bba9925b497192ddbd7468d0d20bd838ac23b5"
+    },
+    {
+      "path": "lib/sprite.c",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\sprite.c",
+      "sha256": "fe3bdd0d28c34e9b81175f5a8ab7b67ae692cf7aa1ab17b4e20fa9e471d914d5"
+    },
+    {
+      "path": "lib/sprite.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\sprite.h",
+      "sha256": "8de822351bb384cae69483380ca176d589379fe4cded3caa6fff0da1df566c48"
+    },
+    {
+      "path": "lib/system.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\system.c",
+      "sha256": "4cf453270535749e37f10a1fcc0d34032580632a359c327a62007441afa32d04"
+    },
+    {
+      "path": "lib/system.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\system.h",
+      "sha256": "9ee154cb4fe244d6920f33afb2d8eb663f36a0a7a9bd8b3de7b571ba910a5a9e"
+    },
+    {
+      "path": "lib/tilemap.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\tilemap.c",
+      "sha256": "1cd8fc1e7a3d63877fb94eaa77ebaa1f461a43cbc07441fca524d38406a12407"
+    },
+    {
+      "path": "lib/tilemap.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\tilemap.h",
+      "sha256": "1ec45bbbc960621b04dc24df09166526cfbe129ef23c1918558a69b895abc0aa"
+    },
+    {
+      "path": "lib/vram.c",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\vram.c",
+      "sha256": "b9cdc48b34084ee3a2a6c8aa6d9e4eb584114f4730e362a0dcd79cd20cbea9c9"
+    },
+    {
+      "path": "lib/vram.h",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\vram.h",
+      "sha256": "462e3e35e9b6db0ae6a873d3dbc721c7f2e924a533c92e9737b6446458c159c4"
+    },
+    {
+      "path": "lib/vram_queue.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\vram_queue.h",
+      "sha256": "319bb73c69af0e6ef3a218aea16cd1d4b5d87e6402c9231fbedf18de3de6db82"
+    },
+    {
+      "path": "lib/vrc6_sound.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\vrc6_sound.c",
+      "sha256": "da6e1b6f6c638299f7a420c889881523acffe1b8639449044475b90a65014340"
+    },
+    {
+      "path": "lib/vrc6_sound.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\vrc6_sound.h",
+      "sha256": "56a4b7f434a356ae5bcb01d5306d99131896ddbeca0ba16bb7527afa5ed08f6c"
+    },
+    {
+      "path": "lib/vrc7_sound.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\vrc7_sound.c",
+      "sha256": "4553d21d0406d75ea49dd830834ae0bf7e19422fb3b774c90e2b242a92669cb7"
+    },
+    {
+      "path": "lib/vrc7_sound.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\vrc7_sound.h",
+      "sha256": "740e1dd1c08e744ee1770e28a5dcc4b1e66ad8e1453a524cf6f9ace0f57d4320"
+    },
+    {
+      "path": "lib/wire3d.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\wire3d.c",
+      "sha256": "22002ecdeb0e3659579142d102617992fa21cc2e20528cc6516da6fe1583b77f"
+    },
+    {
+      "path": "lib/wire3d.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\wire3d.h",
+      "sha256": "ba067668b6fa461b1b17bbf9f1717d7fa2e3ac4f30211d02d022451a3ae3b119"
+    },
+    {
+      "path": "lib/wire3d.md",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\wire3d.md",
+      "sha256": "4d2445c12e8c4f4f0491561d3c31f51ba0ce8a66b67e4271097a3ba8a65ef1cc"
+    },
+    {
+      "path": "lib/wire3d_tables.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\wire3d_tables.h",
+      "sha256": "7aaa2403d34fa11bd34e28efd0d157e4322c36e6f24eefe112105f8193f46a2f"
+    },
+    {
+      "path": "lib/zapper.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\lib\\zapper.h",
+      "sha256": "0f85a27808a2dbf88fbea6199b4424ce2a9216db1befbe41cff313817c0bad89"
+    },
+    {
+      "path": "lib/zx0.c",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\zx0.c",
+      "sha256": "da956c77f44d9884fbdb31c9b27bb976506ed540d07919941fc70ca0bbb276e8"
+    },
+    {
+      "path": "lib/zx0.h",
+      "source": "C:\\kitaqgb_project\\publish\\github_20260912\\kitaqfc\\lib\\zx0.h",
+      "sha256": "50887e6043b3150469deebac8b3f331aabf5852ddb5d9efff0b4611e8b6f94c8"
+    },
+    {
+      "path": "licenses/fonts/ASCII-font-MIT.ja.txt",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\licenses\\fonts\\ASCII-font-MIT.ja.txt",
+      "sha256": "e029b241b0162ced6bed1bcab25f6ccf86a3f8c31593d5a6a7d95e78cd0cdadc"
+    },
+    {
+      "path": "licenses/fonts/ASCII-font-MIT.txt",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaqfc\\licenses\\fonts\\ASCII-font-MIT.txt",
+      "sha256": "4249d959c06a988eb60caa631fcd3c3b4f6a4cd161f8274acfc0175e02bac5c2"
+    }
+  ],
+  "scope": "Reference compiler input hashes and the exact selected support assets. C# source inputs are not part of the Rust runtime or build.",
+  "public_baseline_revision": "952ab9b369bde68b53d85fd1b4f99f744f58bd16"
+}

@@ -1,0 +1,99 @@
+{
+  "passed": true,
+  "inputs": [
+    {
+      "path": "audio.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\audio.c",
+      "sha256": "2c9a9cba75148e083ab84671a05d3f21a3dc7a11aaf2c720e8ecdbb307436321"
+    },
+    {
+      "path": "music.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\music.c",
+      "sha256": "e61f699c4f72c0f8344c1e1eac6d21addb11f80f7f38865df6c9516ca7c8f022"
+    },
+    {
+      "path": "common.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\common.c",
+      "sha256": "2f6207aa821975a2367f5370db287f97610802e20d9fea07ec76d9a7707d6343"
+    },
+    {
+      "path": "data.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\data.c",
+      "sha256": "799739fd77892895efe8f2645fe42a34784d1055744772e0370e1e5bab2ec129"
+    },
+    {
+      "path": "main.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\main.c",
+      "sha256": "f080673e69ad66e9e8b07279c1667cc8b6c1918868362ea33a856fecea80388c"
+    },
+    {
+      "path": "title.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\title.c",
+      "sha256": "6658dfe5607d0c7a62de09fd4c3bdfeaa7fa5d1ca8bbca3b4bc07740bd9e2660"
+    },
+    {
+      "path": "game.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\game.c",
+      "sha256": "43abf9f6e397ced5e28767550a49d84885781c34c07c0c52420091bd86cdc329"
+    },
+    {
+      "path": "render.c",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\render.c",
+      "sha256": "a0fba923741cc38cb677509fdf4b9d3116b9573aedfc873fabccf3c43c2e7c0c"
+    },
+    {
+      "path": "intrinsics.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\intrinsics.h",
+      "sha256": "09e117f49f446d02fb6fc8e511304da33b2fed685a5081dab1b6ad6e76e64a21"
+    },
+    {
+      "path": "kbfc.h",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\kbfc.h",
+      "sha256": "b06e9287b4f2169ec024e4cddf89b3c6cfd2ccad38ee0cfe9a23924bddc3f664"
+    },
+    {
+      "path": "chr.bin",
+      "source": "C:\\kitaqgb_project\\kitaqfc_project\\kitaq_blocs_fc_fds_20260526\\chr.bin",
+      "sha256": "894ff5a25bcf96ce4fa43708f4c3a00006e8e3a6fb64c43942fc37a22e44d3cb"
+    }
+  ],
+  "sources": [
+    "audio.c",
+    "music.c",
+    "common.c",
+    "data.c",
+    "main.c",
+    "title.c",
+    "game.c",
+    "render.c"
+  ],
+  "flags": [
+    "--target=nes",
+    "--nes-chr=$GAME/chr.bin",
+    "--include-dir=$GAME",
+    "--mapper=fds",
+    "--output-format=fds",
+    "--fds-layout=fds32",
+    "--fds-game-code=KBF",
+    "--fds-license-bypass",
+    "--mirroring=vertical",
+    "--no-cache",
+    "--fast-build",
+    "-O2",
+    "--small-inline",
+    "--loop-lowering",
+    "--library-lto-lite",
+    "--no-mapper-aware-placement"
+  ],
+  "results": {
+    "reference": {
+      "exit": 0,
+      "sha256": "3d0b675157cb83d02236b05f3cc8e934cbddd302e3136ad3e25b305213ebe676"
+    },
+    "native": {
+      "exit": 0,
+      "sha256": "3d0b675157cb83d02236b05f3cc8e934cbddd302e3136ad3e25b305213ebe676"
+    }
+  },
+  "native_compiler_sha256": "63101c8ebbe2f0adc801d3f954bd87c5e2fc3aaacc36d3aeb2e868f9b4dc3189"
+}

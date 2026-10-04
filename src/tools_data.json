@@ -1,0 +1,44 @@
+{
+  "snippets": [
+    {
+      "id": "input.poll_joypad",
+      "category": "input",
+      "title": "Poll FC controller 1",
+      "body": "// Return A=1, B=2, Select=4, Start=8, Up=16, Down=32, Left=64, Right=128.\nu8 PollJoypad(void) {\n    return __pad_read1();\n}"
+    },
+    {
+      "id": "render.wait_vblank",
+      "category": "render",
+      "title": "Wait for FC VBlank (polling)",
+      "body": "// Requires NMI disabled (__ppu_ctrl_set(0)); do not mix with __nmi_wait().\n// Reading PPUSTATUS clears VBlank and resets the PPU address/scroll latch.\nvoid WaitVBlank(void) {\n    while ((__ppu_read_status() & 0x80) == 0) { }\n}"
+    },
+    {
+      "id": "render.clear_oam4",
+      "category": "render",
+      "title": "Hide the first four FC sprites",
+      "body": "// Initialize the OAM buffer with __oam_clear() or __sprite_set() first.\n// Call with rendering disabled or during VBlank; this DMA copies all 64 entries.\nvoid ClearOam4(void) {\n    __sprite_hide(0);\n    __sprite_hide(1);\n    __sprite_hide(2);\n    __sprite_hide(3);\n    __oam_dma();\n}"
+    },
+    {
+      "id": "sound.beep_ch2",
+      "category": "sound",
+      "title": "Beep on FC pulse channel 2",
+      "body": "__location(0x4004) u8 SNIP_PULSE2_VOLUME;\n__location(0x4005) u8 SNIP_PULSE2_SWEEP;\n__location(0x4006) u8 SNIP_PULSE2_TIMER;\n__location(0x4007) u8 SNIP_PULSE2_LENGTH;\n__location(0x4015) u8 SNIP_APU_ENABLE;\n__location(0x4017) u8 SNIP_APU_FRAME;\n\n// Start a short pulse tone. This standalone effect disables all other APU channels.\nvoid SfxBeepCh2(void) {\n    SNIP_APU_FRAME = 0x40;\n    SNIP_APU_ENABLE = 0x02;\n    SNIP_PULSE2_SWEEP = 0x08;\n    SNIP_PULSE2_VOLUME = 0x9A;\n    SNIP_PULSE2_TIMER = 0xFD;\n    SNIP_PULSE2_LENGTH = 0x20;\n}"
+    },
+    {
+      "id": "sram.enable_disable",
+      "category": "sram",
+      "title": "MMC3 PRG RAM access control",
+      "body": "// Requires an MMC3 board with PRG RAM at $6000-$7FFF: build with --mapper=mmc3.\n// Add --battery only for battery-backed RAM. These registers do not apply to other mappers.\n__location(0xA001) u8 SNIP_MMC3_RAM_CONTROL;\n\n// Enable PRG-RAM reads and writes on MMC3.\nvoid SRAM_Enable(void) { SNIP_MMC3_RAM_CONTROL = 0x80; }\n// Disable PRG-RAM access after a save; re-enable it before reading saved bytes.\nvoid SRAM_Disable(void) { SNIP_MMC3_RAM_CONTROL = 0x00; }"
+    },
+    {
+      "id": "sram.save_byte",
+      "category": "sram",
+      "title": "Save one byte to MMC3 PRG RAM",
+      "body": "// Requires the sram.enable_disable fragment and an MMC3 board with PRG RAM.\n// Writes one byte only within $6000-$7FFF; invalid addresses leave memory untouched.\nvoid SRAM_SaveByte(u16 addr, u8 value) {\n    if (addr < 0x6000 || addr >= 0x8000) return;\n    SRAM_Enable();\n    *((u8*)addr) = value;\n    SRAM_Disable();\n}"
+    }
+  ],
+  "template_fc": "#pragma bank 0\n\n// KITAQFC single-file NROM example: blue/green backdrop, red while A is held.\n// Build with the adjacent script or: kitaqfc quickstart.c -o quickstart.nes\n__wram u8 g_frame;\n__wram u8 g_flash;\n\n// Poll PPUSTATUS with NMI disabled. Reading the status clears its VBlank flag.\n// Call once per frame; do not combine this polling loop with an NMI frame waiter.\nvoid WaitVBlank(void) {\n    while ((__ppu_read_status() & 0x80) == 0) { }\n}\n\n// Keep rendering disabled so this first example needs no tiles or font data.\nvoid main(void) {\n    __ppu_ctrl_set(0);\n    __ppu_off();\n    __ppu_read_status();\n    WaitVBlank();\n    WaitVBlank();\n    g_frame = 0;\n    g_flash = 0;\n    while (1) {\n        WaitVBlank();\n        g_frame++;\n        if ((g_frame & 31) == 0) g_flash ^= 1;\n\n        // Latch controller 1; bit 0 is A. Update the universal backdrop color.\n        __ppu_addr(0x3F00);\n        if ((__pad_read1() & 1) != 0) __ppu_data(0x16);\n        else if (g_flash != 0) __ppu_data(0x1A);\n        else __ppu_data(0x01);\n        // Leave the palette address range before the next visible frame.\n        __ppu_addr(0);\n    }\n}\n",
+  "build_ps1": "param([switch]$Release, [string]$Compiler = 'kitaqfc')\n$ErrorActionPreference = 'Stop'\nif (Test-Path -LiteralPath $Compiler -PathType Leaf) { $Compiler = (Resolve-Path -LiteralPath $Compiler).Path }\n$compileArgs = @('__SOURCE__', '-o', '__ROM__', '--cache', '--deps-out')\nif ($Release) { $compileArgs += '--profile=release' }\nelse { $compileArgs += '--profile=dev'; $compileArgs += '--fast-build' }\nPush-Location -LiteralPath $PSScriptRoot\ntry { & $Compiler @compileArgs; $buildExit = $LASTEXITCODE }\nfinally { Pop-Location }\nexit $buildExit\n",
+  "conventions": "# KITAQFC Project Conventions\n\ngenerated_utc=__UTC__\n\n## Build\n- Default dev build: `kitaqfc a.c b.c -o out.nes --profile=dev --fast-build --cache --deps-out`\n- Release build: `kitaqfc a.c b.c -o out.nes --profile=release --cache --deps-out`\n- Test entrypoint: `kitaqfc test`\n\n## Diagnostics\n- Use `--diag-json` for machine-readable diagnostics.\n- Use `kitaqfc fixhint <diag-or-log>` for shortest fix suggestions.\n- Use `--strict` in CI and `--permissive` during exploration.\n\n## Vibe Workflow\n- Start with `kitaqfc template` and keep prototype in one file.\n- Use `kitaqfc snippet list` and `kitaqfc snippet get <id>` to paste proven fragments.\n- Use `kitaqfc devserver ...` for dependency-aware rebuild loop.\n- Record reproducible steps with `kitaqfc recipe`.\n\n## Encoding\n- Treat source, reports, and scripts as UTF-8.\n- Keep command history in `integration_test/reports/COMMAND_HISTORY.log`.\n",
+  "readme": "# KITAQFC Quick Prototype\n\nThe backdrop alternates between blue and green every 32 frames. Hold A for red.\nThis single-file NROM example needs no external CHR or font asset.\nRendering and NMI stay disabled; WaitVBlank polls PPUSTATUS before direct palette updates.\n\n1. Open a terminal in this folder and build:\n   `kitaqfc \"__SOURCE__\" -o \"__ROM__\" --profile=dev --fast-build`\n   Or run the adjacent build script; -Compiler accepts a compiler path, and -Release selects the release profile.\n2. Open the .nes file in KUROSAKI and check the color change and A-button response.\n3. Browse `kitaqfc snippet list` and retrieve a fragment with `kitaqfc snippet get <id>`.\n   Read each fragment's prerequisites. Reuse the existing WaitVBlank instead of defining it twice.\n   The SRAM fragments specifically require an MMC3 board with PRG RAM; use --mapper=mmc3 --battery for battery-backed saves.\n"
+}

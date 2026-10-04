@@ -1,0 +1,667 @@
+[
+  {
+    "case": "option_00",
+    "source": "nested_calls.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O1"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "2f6b971cf0ace13d096b631cff3d570c4347fe44cd254738eeb35ea352054d13",
+    "native_sha256": "2f6b971cf0ace13d096b631cff3d570c4347fe44cd254738eeb35ea352054d13"
+  },
+  {
+    "case": "option_01",
+    "source": "signed_compare.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O1"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "45d651fb4620e8c3d8ad492d84334c36519ec11f30a8f5a83e095024f8efb22b",
+    "native_sha256": "45d651fb4620e8c3d8ad492d84334c36519ec11f30a8f5a83e095024f8efb22b"
+  },
+  {
+    "case": "option_02",
+    "source": "aggregate_bank.c",
+    "mapper": "uxrom",
+    "flags": [
+      "-O1"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "265a0155b6c6a4cf3370c4a9b4e3c50b1cc874aad491dde1c488fc2c9275d56c",
+    "native_sha256": "265a0155b6c6a4cf3370c4a9b4e3c50b1cc874aad491dde1c488fc2c9275d56c"
+  },
+  {
+    "case": "option_03",
+    "source": "callback_word.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O1"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "a926623e12ff4ec1b1e5345abe08d7d2275cba6c8b7ba85054e468f60578e30d",
+    "native_sha256": "a926623e12ff4ec1b1e5345abe08d7d2275cba6c8b7ba85054e468f60578e30d"
+  },
+  {
+    "case": "option_04",
+    "source": "complex_struct_runtime.c",
+    "mapper": "mmc3",
+    "flags": [
+      "-O1"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "a2667702f43d27dc03dd14432ba154abc2c9c76380db1667a8ca9106e0e8fba6",
+    "native_sha256": "a2667702f43d27dc03dd14432ba154abc2c9c76380db1667a8ca9106e0e8fba6"
+  },
+  {
+    "case": "option_05",
+    "source": "nested_calls.c",
+    "mapper": "nrom",
+    "flags": [
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "4c2d528d7bee17a4749d6b8f8a67f8fcbf6e224c1014ca9bbb7fbaed0647eef5",
+    "native_sha256": "4c2d528d7bee17a4749d6b8f8a67f8fcbf6e224c1014ca9bbb7fbaed0647eef5"
+  },
+  {
+    "case": "option_06",
+    "source": "signed_compare.c",
+    "mapper": "nrom",
+    "flags": [
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "0aaa9da27f7bbc160b7ddc53fe9640853e44e26de32f4b119810395f1e7946ab",
+    "native_sha256": "0aaa9da27f7bbc160b7ddc53fe9640853e44e26de32f4b119810395f1e7946ab"
+  },
+  {
+    "case": "option_07",
+    "source": "aggregate_bank.c",
+    "mapper": "uxrom",
+    "flags": [
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "736f95cb916a1718d18f8b56f2fc4089c1a8712e234700636156aeffa833aa92",
+    "native_sha256": "736f95cb916a1718d18f8b56f2fc4089c1a8712e234700636156aeffa833aa92"
+  },
+  {
+    "case": "option_08",
+    "source": "callback_word.c",
+    "mapper": "nrom",
+    "flags": [
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "d1c9f59a0d589856e5676136cf9181ed5866cba710df81531fe45f19249a30ff",
+    "native_sha256": "d1c9f59a0d589856e5676136cf9181ed5866cba710df81531fe45f19249a30ff"
+  },
+  {
+    "case": "option_09",
+    "source": "complex_struct_runtime.c",
+    "mapper": "mmc3",
+    "flags": [
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "5d3f956da1a08695cc31b9935f698040c6d1392601b20c1aca7b3bd5907260c8",
+    "native_sha256": "5d3f956da1a08695cc31b9935f698040c6d1392601b20c1aca7b3bd5907260c8"
+  },
+  {
+    "case": "option_10",
+    "source": "nested_calls.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O1",
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "2e8dff6c487d004c16494cc65ec829e9b10dd94e212eb4da466682b4f7fd3cbd",
+    "native_sha256": "2e8dff6c487d004c16494cc65ec829e9b10dd94e212eb4da466682b4f7fd3cbd"
+  },
+  {
+    "case": "option_11",
+    "source": "signed_compare.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O1",
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "d6d5ca5fa2ec0de17631e261b9dae860eb92f67f14634f12d61fc61dbb3bada6",
+    "native_sha256": "d6d5ca5fa2ec0de17631e261b9dae860eb92f67f14634f12d61fc61dbb3bada6"
+  },
+  {
+    "case": "option_12",
+    "source": "aggregate_bank.c",
+    "mapper": "uxrom",
+    "flags": [
+      "-O1",
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "2969840b9cb1e6708bc8cfda61affe201eb9984c13af71a5721df3389d2c6188",
+    "native_sha256": "2969840b9cb1e6708bc8cfda61affe201eb9984c13af71a5721df3389d2c6188"
+  },
+  {
+    "case": "option_13",
+    "source": "callback_word.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O1",
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "0b0d0f4e1fd02b035f9e0c790dd39b5e9a035d843f83e3ef97fcbfec3b1f927a",
+    "native_sha256": "0b0d0f4e1fd02b035f9e0c790dd39b5e9a035d843f83e3ef97fcbfec3b1f927a"
+  },
+  {
+    "case": "option_14",
+    "source": "complex_struct_runtime.c",
+    "mapper": "mmc3",
+    "flags": [
+      "-O1",
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "1e122dc3b0386364f15bb02bfb6d4b032fb51cbdcb68f381650dac62ec19b756",
+    "native_sha256": "1e122dc3b0386364f15bb02bfb6d4b032fb51cbdcb68f381650dac62ec19b756"
+  },
+  {
+    "case": "option_15",
+    "source": "nested_calls.c",
+    "mapper": "nrom",
+    "flags": [
+      "--nes-local-ram=0x0600:0x0100",
+      "--nes-temp-ram=0x0020:0x0040"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "24ea8de742bffa5e05a61cee46f9f6d052def80be63887a3fde437b05550a184",
+    "native_sha256": "24ea8de742bffa5e05a61cee46f9f6d052def80be63887a3fde437b05550a184"
+  },
+  {
+    "case": "option_16",
+    "source": "aggregate_bank.c",
+    "mapper": "uxrom",
+    "flags": [
+      "--nes-local-ram=0x0600:0x0100",
+      "--nes-temp-ram=0x0020:0x0040"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "878cbd95a6532c783e99905ef6d146e4cc6cbc4027348f3974628699c21b9f47",
+    "native_sha256": "878cbd95a6532c783e99905ef6d146e4cc6cbc4027348f3974628699c21b9f47"
+  },
+  {
+    "case": "option_17",
+    "source": "callback_word.c",
+    "mapper": "nrom",
+    "flags": [
+      "--nes-local-ram=0x0600:0x0100",
+      "--nes-temp-ram=0x0020:0x0040"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "86c52b9eddb26aa7d53889d9fc96b35467ec5ef11f10e2eb748c5d74bfa8353d",
+    "native_sha256": "86c52b9eddb26aa7d53889d9fc96b35467ec5ef11f10e2eb748c5d74bfa8353d"
+  },
+  {
+    "case": "option_18",
+    "source": "complex_struct_runtime.c",
+    "mapper": "mmc3",
+    "flags": [
+      "--nes-local-ram=0x0600:0x0100",
+      "--nes-temp-ram=0x0020:0x0040"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "30b91fbcb53220a774edae78d1d965896142aa62bc6fea695ffed84cc416a071",
+    "native_sha256": "30b91fbcb53220a774edae78d1d965896142aa62bc6fea695ffed84cc416a071"
+  },
+  {
+    "case": "option_19",
+    "source": "nested_calls.c",
+    "mapper": "nrom",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "cd8c59564a9ac9c1b487e537e4545d58a98f2b109b56249d4aba2566d8e8a91e",
+    "native_sha256": "cd8c59564a9ac9c1b487e537e4545d58a98f2b109b56249d4aba2566d8e8a91e"
+  },
+  {
+    "case": "option_20",
+    "source": "bank_args.c",
+    "mapper": "uxrom",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "785bd1113b664a1f8454590b33bd3f53d66cb40d9002c5c43c42e3ffcbaf1d28",
+    "native_sha256": "785bd1113b664a1f8454590b33bd3f53d66cb40d9002c5c43c42e3ffcbaf1d28"
+  },
+  {
+    "case": "option_21",
+    "source": "callback_word.c",
+    "mapper": "nrom",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "33aaaba0ecd24c418933fe168d7db08b93c1a51e0b94a2f684a55ffec79d1162",
+    "native_sha256": "33aaaba0ecd24c418933fe168d7db08b93c1a51e0b94a2f684a55ffec79d1162"
+  },
+  {
+    "case": "option_22",
+    "source": "complex_struct_runtime.c",
+    "mapper": "mmc3",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "05e2f0a15ca005ef88b10ba1bbff3c69bb954fab6721d296d0b45355480aa710",
+    "native_sha256": "05e2f0a15ca005ef88b10ba1bbff3c69bb954fab6721d296d0b45355480aa710"
+  },
+  {
+    "case": "option_23",
+    "source": "bank_fast_args.c",
+    "mapper": "uxrom",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "e4ab5c3604f2ad53662f5c39616457c4804826f6c255099ee28f190716a01372",
+    "native_sha256": "e4ab5c3604f2ad53662f5c39616457c4804826f6c255099ee28f190716a01372"
+  },
+  {
+    "case": "option_24",
+    "source": "nested_calls.c",
+    "mapper": "nrom",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "5b8f7466ef01de2692655765b117e32517bf4036d525a5397a101a97805497f5",
+    "native_sha256": "5b8f7466ef01de2692655765b117e32517bf4036d525a5397a101a97805497f5"
+  },
+  {
+    "case": "option_25",
+    "source": "multiply_call.c",
+    "mapper": "nrom",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "e5e5b5f73d0969881753030f81d9ac618e2965bb0114bdfe7889e3df9ad3b50b",
+    "native_sha256": "e5e5b5f73d0969881753030f81d9ac618e2965bb0114bdfe7889e3df9ad3b50b"
+  },
+  {
+    "case": "option_26",
+    "source": "callback_word.c",
+    "mapper": "nrom",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "ecfd7f018114a5da0adbb9f6a7dd8df8a8490c2dd81e7f5d4117bb8a82d62168",
+    "native_sha256": "ecfd7f018114a5da0adbb9f6a7dd8df8a8490c2dd81e7f5d4117bb8a82d62168"
+  },
+  {
+    "case": "option_27",
+    "source": "bank_fast_args.c",
+    "mapper": "uxrom",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "4b5b02a6b062890375e5c79b30f71cf4d9b41b1f9addef041dc3581c33db9def",
+    "native_sha256": "4b5b02a6b062890375e5c79b30f71cf4d9b41b1f9addef041dc3581c33db9def"
+  },
+  {
+    "case": "option_28",
+    "source": "complex_struct_runtime.c",
+    "mapper": "mmc3",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "05e2f0a15ca005ef88b10ba1bbff3c69bb954fab6721d296d0b45355480aa710",
+    "native_sha256": "05e2f0a15ca005ef88b10ba1bbff3c69bb954fab6721d296d0b45355480aa710"
+  },
+  {
+    "case": "option_29",
+    "source": "loop.c",
+    "mapper": "nrom",
+    "flags": [
+      "--loop-lowering"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "bacdbf58597d50825f9d035d11bf19f6024f9dd10718a52991afb4188af47433",
+    "native_sha256": "bacdbf58597d50825f9d035d11bf19f6024f9dd10718a52991afb4188af47433"
+  },
+  {
+    "case": "option_30",
+    "source": "byte_array.c",
+    "mapper": "nrom",
+    "flags": [
+      "--loop-lowering"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "f24642b73f5962a7678f858606526f197ebed927b2201b79463391c0878ec2d7",
+    "native_sha256": "f24642b73f5962a7678f858606526f197ebed927b2201b79463391c0878ec2d7"
+  },
+  {
+    "case": "option_31",
+    "source": "switch_continue.c",
+    "mapper": "nrom",
+    "flags": [
+      "--loop-lowering"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "b5bd45fa9a2cc477ba8bc3b6f879c8c6f55a344e8d90b0b617e01f114365fb9e",
+    "native_sha256": "b5bd45fa9a2cc477ba8bc3b6f879c8c6f55a344e8d90b0b617e01f114365fb9e"
+  },
+  {
+    "case": "option_32",
+    "source": "nested_calls.c",
+    "mapper": "nrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "5b8f7466ef01de2692655765b117e32517bf4036d525a5397a101a97805497f5",
+    "native_sha256": "5b8f7466ef01de2692655765b117e32517bf4036d525a5397a101a97805497f5"
+  },
+  {
+    "case": "option_33",
+    "source": "callback_word.c",
+    "mapper": "nrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "ecfd7f018114a5da0adbb9f6a7dd8df8a8490c2dd81e7f5d4117bb8a82d62168",
+    "native_sha256": "ecfd7f018114a5da0adbb9f6a7dd8df8a8490c2dd81e7f5d4117bb8a82d62168"
+  },
+  {
+    "case": "option_34",
+    "source": "aggregate_bank.c",
+    "mapper": "uxrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "ada6d13aae056dee71656be6f12af61242425cd86c0ed02d06b9ae309b1a5850",
+    "native_sha256": "ada6d13aae056dee71656be6f12af61242425cd86c0ed02d06b9ae309b1a5850"
+  },
+  {
+    "case": "option_35",
+    "source": "complex_struct_runtime.c",
+    "mapper": "mmc3",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "05e2f0a15ca005ef88b10ba1bbff3c69bb954fab6721d296d0b45355480aa710",
+    "native_sha256": "05e2f0a15ca005ef88b10ba1bbff3c69bb954fab6721d296d0b45355480aa710"
+  },
+  {
+    "case": "option_36",
+    "source": "bank_fast_args.c",
+    "mapper": "uxrom",
+    "flags": [
+      "--mapper-aware-placement"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "7b282646eeb2c0111374ec63342ae1e6bd090cf872d6883e8dd454d99819bbe8",
+    "native_sha256": "7b282646eeb2c0111374ec63342ae1e6bd090cf872d6883e8dd454d99819bbe8"
+  },
+  {
+    "case": "option_37",
+    "source": "aggregate_bank.c",
+    "mapper": "uxrom",
+    "flags": [
+      "--mapper-aware-placement"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "ae9eecab7649f1fdf56cfa012dd355bf80c967312bc6e6d0338066dfd3285b8f",
+    "native_sha256": "ae9eecab7649f1fdf56cfa012dd355bf80c967312bc6e6d0338066dfd3285b8f"
+  },
+  {
+    "case": "option_38",
+    "source": "complex_struct_runtime.c",
+    "mapper": "mmc3",
+    "flags": [
+      "--mapper-aware-placement"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "75c7fe103fa69571d9213071833a22ced293f884750c7c27a9dff2163683c0e3",
+    "native_sha256": "75c7fe103fa69571d9213071833a22ced293f884750c7c27a9dff2163683c0e3"
+  },
+  {
+    "case": "option_39",
+    "source": "nested_calls.c",
+    "mapper": "nrom",
+    "flags": [
+      "--static-frame"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "5b8f7466ef01de2692655765b117e32517bf4036d525a5397a101a97805497f5",
+    "native_sha256": "5b8f7466ef01de2692655765b117e32517bf4036d525a5397a101a97805497f5"
+  },
+  {
+    "case": "option_40",
+    "source": "complex_struct_runtime.c",
+    "mapper": "nrom",
+    "flags": [
+      "--static-frame"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "f89b9e82d3f0fa1c436fd5ea131c9975af40d23a74b8feaf45b4a5ae8c332c89",
+    "native_sha256": "f89b9e82d3f0fa1c436fd5ea131c9975af40d23a74b8feaf45b4a5ae8c332c89"
+  },
+  {
+    "case": "option_41",
+    "source": "nested_calls.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "593217541e42ae918c721c5ed656bdf38106d68b8393c4d3b5f3c8d87aa22776",
+    "native_sha256": "593217541e42ae918c721c5ed656bdf38106d68b8393c4d3b5f3c8d87aa22776"
+  },
+  {
+    "case": "option_42",
+    "source": "loop.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "d2cfe0b053d46b9a13d5802d6daf2fe05c8cd965c0cc7d951ce0d429072dfefa",
+    "native_sha256": "d2cfe0b053d46b9a13d5802d6daf2fe05c8cd965c0cc7d951ce0d429072dfefa"
+  },
+  {
+    "case": "option_43",
+    "source": "switch_continue.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "064082af87de51d3bd23e9837ef968aa33e3859a2a45bf7980592a7668078b39",
+    "native_sha256": "064082af87de51d3bd23e9837ef968aa33e3859a2a45bf7980592a7668078b39"
+  },
+  {
+    "case": "option_44",
+    "source": "callback_word.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "290e13b7240d259eca50b0890c02cc22e2242943df58dc190fcc4410ed83d4be",
+    "native_sha256": "290e13b7240d259eca50b0890c02cc22e2242943df58dc190fcc4410ed83d4be"
+  },
+  {
+    "case": "option_45",
+    "source": "bank_fast_args.c",
+    "mapper": "uxrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "01c5d9962fa507e2a1d7cc113f8476e162770831a8fc1870ce79db07387b9329",
+    "native_sha256": "01c5d9962fa507e2a1d7cc113f8476e162770831a8fc1870ce79db07387b9329"
+  },
+  {
+    "case": "option_46",
+    "source": "complex_struct_runtime.c",
+    "mapper": "mmc3",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "2a4f8cedb1ba43016f0c1122241119ffd018d49f18f61dd1ab3609bcea723b9a",
+    "native_sha256": "2a4f8cedb1ba43016f0c1122241119ffd018d49f18f61dd1ab3609bcea723b9a"
+  },
+  {
+    "case": "option_47",
+    "source": "../options/counted_wrap.c",
+    "mapper": "nrom",
+    "flags": [
+      "--loop-lowering"
+    ],
+    "passed": true,
+    "expected_ram_0700": [
+      0,
+      0
+    ],
+    "reference_behavior_note": "The C# lowering casts the 256 comparison bound to u8 zero, so the source loop is skipped. This fixture preserves that observed reference behavior; it is not proof of a 256-iteration loop.",
+    "rom_equal": true,
+    "reference_sha256": "b97d464171f6e6cb9584eab7302e09dbcec09db0f233a65a34504ffa9ff80da5",
+    "native_sha256": "b97d464171f6e6cb9584eab7302e09dbcec09db0f233a65a34504ffa9ff80da5"
+  },
+  {
+    "case": "option_48",
+    "source": "../options/lto_unused.c",
+    "mapper": "nrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "expected_ram_0700": [
+      42
+    ],
+    "rom_equal": true,
+    "reference_sha256": "a7ec60a435a0801e2d7366d932a0db2533b18ac681d937a63231b4289ee88d1f",
+    "native_sha256": "a7ec60a435a0801e2d7366d932a0db2533b18ac681d937a63231b4289ee88d1f"
+  },
+  {
+    "case": "option_49",
+    "source": "../options/lto_asm.c",
+    "mapper": "nrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "expected_ram_0700": [
+      42
+    ],
+    "rom_equal": true,
+    "reference_sha256": "f2f243b009e145e40ea5dffe333c48d175501ba429d3c33aac1c5c5037f5e062",
+    "native_sha256": "f2f243b009e145e40ea5dffe333c48d175501ba429d3c33aac1c5c5037f5e062"
+  },
+  {
+    "case": "option_50",
+    "source": "../options/inline_void.c",
+    "mapper": "nrom",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "expected_ram_0700": [
+      42
+    ],
+    "rom_equal": true,
+    "reference_sha256": "513a508b649413c9dd46d539bbf1b9b317c1dbb76656103d1d01a41d6688db67",
+    "native_sha256": "513a508b649413c9dd46d539bbf1b9b317c1dbb76656103d1d01a41d6688db67"
+  },
+  {
+    "case": "option_51",
+    "source": "../options/counted_wrap.c",
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "expected_ram_0700": [
+      0,
+      0
+    ],
+    "reference_behavior_note": "The C# lowering casts the 256 comparison bound to u8 zero, so the source loop is skipped. This fixture preserves that observed reference behavior; it is not proof of a 256-iteration loop.",
+    "rom_equal": true,
+    "reference_sha256": "9d7719176f8f961a6f53056314fb08363b97284078a102a428b903cebe80bb84",
+    "native_sha256": "9d7719176f8f961a6f53056314fb08363b97284078a102a428b903cebe80bb84"
+  },
+  {
+    "case": "option_52",
+    "source": "bank_fast_args.c",
+    "mapper": "uxrom",
+    "flags": [
+      "--mapper-aware-placement",
+      "--kurosaki-profile=$FIXTURES/hotness.json"
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "02c031e622f02c62ae6152e4fbb0c0fe19f79455aa0cee52023f0095b2148aa2",
+    "native_sha256": "02c031e622f02c62ae6152e4fbb0c0fe19f79455aa0cee52023f0095b2148aa2"
+  }
+]

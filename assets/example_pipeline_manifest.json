@@ -1,0 +1,4 @@
+{
+  "png_manifest": "assets/example_png_manifest.json",
+  "pack_manifest": "assets/example_pack_from_png_manifest.json"
+}

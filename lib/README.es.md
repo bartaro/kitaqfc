@@ -1,8 +1,6 @@
 # Organización de las bibliotecas estándar FC/NES
 
-<!-- readme-language-links:start -->
-[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | **Español** | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
-<!-- readme-language-links:end -->
+
 
 <!-- fc-current-20261004:es:start -->
 ### Distribución actual del compilador y las bibliotecas — 4 de octubre de 2026
@@ -88,3 +86,33 @@ Las bibliotecas públicas siguen el estilo de KITAQGB: nombres breves que descri
 - `math_lut.h` / `math_lut.c`
 
 Las transiciones de escena, las actualizaciones y el dibujo llaman de forma síncrona a los manejadores registrados. Consulta cada API para conocer el orden de los callbacks y las restricciones de reentrada.
+
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
+
+<!-- manual-language-links:start -->
+| Language / 言語 | HTML |
+| --- | --- |
+| English | [fc-library](https://bartaro.github.io/kitaq-docs/en/fc-library.html) |
+| 日本語 | [fc-library](https://bartaro.github.io/kitaq-docs/fc-library.html) |
+| 한국어 | [fc-library](https://bartaro.github.io/kitaq-docs/ko/fc-library.html) |
+| 简体中文 | [fc-library](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html) |
+| 繁體中文 | [fc-library](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html) |
+| Français | [fc-library](https://bartaro.github.io/kitaq-docs/fr/fc-library.html) |
+| Español | [fc-library](https://bartaro.github.io/kitaq-docs/es/fc-library.html) |
+| Deutsch | [fc-library](https://bartaro.github.io/kitaq-docs/de/fc-library.html) |
+<!-- manual-language-links:end -->
+
+<!-- rust-native-20261004:start -->
+## Uso de la biblioteca con el compilador nativo
+
+lib/ contiene cabeceras y fuentes C que se compilan en la ROM de la consola. El compilador de PC y las herramientas están escritos en Rust; el código de los juegos, las bibliotecas de destino y sus API siguen en C. SOURCE_MANIFEST.json y LIBRARY_MERGE.json registran las fuentes elegidas cuando se incluyen.
+
+Las compilaciones nativas y comprobaciones de ejecución finalizaron correctamente en Windows, Linux, macOS ARM y macOS Intel. KITAQGB superó 48 pruebas y 395 comprobaciones de herramientas por entorno; KITAQFC, 55 y 401. También se probó Rust 1.85. PUBLIC_DISTRIBUTION.json registra los hashes de los binarios instalados y el origen de la validación. Los flujos públicos de GitHub Actions compilan y prueban estas fuentes de forma independiente.
+
+Las salidas de referencia guardadas comprueban bytes de ROM, diagnósticos y formatos de las herramientas. Las anteriores pruebas de emulación C# son registros históricos vinculados a sus fuentes originales. No demuestran automáticamente todas las API Rust, el hardware real ni el arranque completo de juegos mediante el BIOS FDS. El script PNG original no está disponible y se reconstruyó a partir de su especificación; no puede afirmarse igualdad de bytes con él.
+
+[Compilador nativo Rust y herramientas auxiliares](../tools/README.es.md)
+
+<!-- rust-native-20261004:end -->

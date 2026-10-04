@@ -1,0 +1,254 @@
+[
+  {
+    "name": "nrom",
+    "mapper": "nrom",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "nrom.EmitMapperSwitchSequence.json",
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "nodes": 0
+      }
+    ]
+  },
+  {
+    "name": "uxrom",
+    "mapper": "uxrom",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "uxrom.EmitMapperSwitchSequence.json",
+        "sha256": "ac58ba517ad77f9649b1cdf49f873d8d2a1b2a1622f316cc064338c5f8cf3760",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "name": "cnrom",
+    "mapper": "cnrom",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "cnrom.EmitMapperSwitchSequence.json",
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "nodes": 0
+      }
+    ]
+  },
+  {
+    "name": "axrom",
+    "mapper": "axrom",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "axrom.EmitMapperSwitchSequence.json",
+        "sha256": "2747ed2cdcd9d6fc1146775c82b0b62fed8584df59de8e5593c55c4c301e0545",
+        "nodes": 5
+      }
+    ]
+  },
+  {
+    "name": "mmc1",
+    "mapper": "mmc1",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "mmc1.EmitMapperSwitchSequence.json",
+        "sha256": "acbd32647dbe4098a631d0cf365939225ed8592ec962c42cf063ad7e8cb479cb",
+        "nodes": 13
+      }
+    ]
+  },
+  {
+    "name": "mmc3",
+    "mapper": "mmc3",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "mmc3.EmitMapperSwitchSequence.json",
+        "sha256": "b925abcee219ca9da26c0990cc03d43ba96614bfc4bb7bb62be3c892b6b6af33",
+        "nodes": 14
+      }
+    ]
+  },
+  {
+    "name": "mmc5",
+    "mapper": "mmc5",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "mmc5.EmitMapperSwitchSequence.json",
+        "sha256": "200c9abbe347d98473fb2d8ae903a1be51df92123684c8f22df29d0724994617",
+        "nodes": 10
+      }
+    ]
+  },
+  {
+    "name": "vrc6",
+    "mapper": "vrc6",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "vrc6.EmitMapperSwitchSequence.json",
+        "sha256": "ac58ba517ad77f9649b1cdf49f873d8d2a1b2a1622f316cc064338c5f8cf3760",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "name": "vrc7",
+    "mapper": "vrc7",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "vrc7.EmitMapperSwitchSequence.json",
+        "sha256": "6ceb636d2d00b5a842e2d3cd69769bafadad41bc24c4f598162d464ddb715fb3",
+        "nodes": 9
+      }
+    ]
+  },
+  {
+    "name": "fme7",
+    "mapper": "fme7",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "fme7.EmitMapperSwitchSequence.json",
+        "sha256": "f84752740b710c8e32d94e1aae835254e418a3f812629b93bf577f99b1d4861c",
+        "nodes": 14
+      }
+    ]
+  },
+  {
+    "name": "fds",
+    "mapper": "fds",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "fds.EmitIntrinsicHelpers.json",
+        "sha256": "47d3408b18757d47260806022b1e7a1bbda84821732c567287ae3099b60cc859",
+        "nodes": 2670
+      },
+      {
+        "path": "fds.EmitMapperSwitchSequence.json",
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "nodes": 0
+      }
+    ]
+  },
+  {
+    "name": "surom512",
+    "mapper": "surom512",
+    "zero_page": false,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom.EmitIntrinsicHelpers.json",
+        "sha256": "35ee161d9ee3d278e6bc4b624e7ec1fb0e567a32cba113d160065a159b384f9e",
+        "nodes": 2670
+      },
+      {
+        "path": "surom512.EmitMapperSwitchSequence.json",
+        "sha256": "847a48efd0c6016c39494ca7d13be190b6113421f3092116218c0d05ffb0390d",
+        "nodes": 38
+      }
+    ]
+  },
+  {
+    "name": "nrom-zp",
+    "mapper": "nrom",
+    "zero_page": true,
+    "fds_guard": true,
+    "files": [
+      {
+        "path": "nrom-zp.EmitIntrinsicHelpers.json",
+        "sha256": "d6b50b4dd51a931cf10dc909349d1d30f2c42e8831f6407e2967b98a8a34a62b",
+        "nodes": 2686
+      },
+      {
+        "path": "nrom-zp.EmitMapperSwitchSequence.json",
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "nodes": 0
+      }
+    ]
+  },
+  {
+    "name": "fds-zp-no-guard",
+    "mapper": "fds",
+    "zero_page": true,
+    "fds_guard": false,
+    "files": [
+      {
+        "path": "fds-zp-no-guard.EmitIntrinsicHelpers.json",
+        "sha256": "178bd63936b704774d140cf20e0b80a0fcf3706f13b3df6fc530eecce606c492",
+        "nodes": 2681
+      },
+      {
+        "path": "fds-zp-no-guard.EmitMapperSwitchSequence.json",
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "nodes": 0
+      }
+    ]
+  }
+]

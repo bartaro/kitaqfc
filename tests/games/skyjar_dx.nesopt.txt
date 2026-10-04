@@ -1,0 +1,620 @@
+# KITAQFC NES optimization report
+# enabled: zp=True, fastcall=True, static_frame=True, inline=True, loop=True, lto_lite=True, kurosaki_profile=True, mapper_placement=True
+
+## fastcall functions
+__nes_nmi, bank=0, params=, ret=0
+add_score, bank=1, params=1, ret=0
+apu_init, bank=1, params=, ret=0
+boot, bank=1, params=, ret=0
+brave_graze, bank=1, params=1, ret=0
+collect_star_kind, bank=1, params=1, ret=0
+draw_base_screen, bank=1, params=, ret=0
+draw_game_objects, bank=1, params=, ret=0
+draw_over_screen, bank=1, params=, ret=0
+draw_play_screen, bank=1, params=, ret=0
+draw_skyline, bank=1, params=, ret=0
+draw_starfield, bank=1, params=, ret=0
+draw_title_screen, bank=1, params=, ret=0
+draw_win_screen, bank=1, params=, ret=0
+hurt_player, bank=1, params=, ret=0
+init_objects, bank=1, params=, ret=0
+main, bank=1, params=, ret=1
+music_step_do, bank=1, params=, ret=0
+music_tick, bank=1, params=, ret=0
+near_player_x, bank=1, params=1, ret=1
+nes_vblank_wait, bank=1, params=, ret=0
+nes_wait_nmi, bank=1, params=, ret=0
+nt_addr, bank=1, params=1,1, ret=2
+oam_hide_all, bank=1, params=, ret=0
+oam_hide_from, bank=1, params=1, ret=0
+pad_poll, bank=1, params=, ret=0
+ppu_seek, bank=1, params=2, ret=0
+pulse1_play, bank=1, params=1,1, ret=0
+pulse2_play, bank=1, params=1, ret=0
+queue_hud, bank=1, params=, ret=0
+respawn_object, bank=1, params=1, ret=0
+rng8, bank=1, params=, ret=1
+sfx_collect, bank=1, params=, ret=0
+sfx_hit, bank=1, params=, ret=0
+sfx_power, bank=1, params=, ret=0
+sfx_step, bank=1, params=, ret=0
+start_game, bank=1, params=, ret=0
+triangle_play, bank=1, params=1, ret=0
+update_objects, bank=1, params=, ret=0
+update_player, bank=1, params=, ret=0
+update_playing, bank=1, params=, ret=0
+update_score_digits, bank=1, params=, ret=0
+vramq_clear, bank=1, params=, ret=0
+vramq_flush, bank=1, params=, ret=0
+
+## zero-page allocations
+$10, size=1, runtime, __kq_prg_bank_current, mapper current bank hot state
+$11, size=1, runtime, __kq_thunk_ret_lo, farcall return hot state
+$12, size=1, runtime, __kq_thunk_ret_hi, farcall return hot state
+$13, size=1, runtime, __kq_mapper_tmp, mapper switch temporary
+$14, size=1, runtime, __kq_mapper_tmp2, mapper serial temporary
+$15, size=1, runtime, __kq_mmc1_outer_shadow, MMC1 outer PRG bank shadow
+$16, size=1, runtime, __kq_mmc1_inner_shadow, MMC1 inner PRG bank shadow
+$17, size=1, runtime, __kq_mmc1_control_shadow, MMC1 control register shadow
+$18, size=1, runtime, __kq_mapper_fault, mapper fail-safe status
+$19, size=1, runtime, __kq_ppuctrl_shadow, PPUCTRL shadow hot state
+$1A, size=1, runtime, __kq_ppumask_shadow, PPUMASK shadow hot state
+$1B, size=1, runtime, __kq_scroll_x, scroll hot state
+$1C, size=1, runtime, __kq_scroll_y, scroll hot state
+$1D, size=1, runtime, __kq_nmi_counter, NMI counter hot state
+$1E, size=1, runtime, __kq_intr_tmp0, intrinsic temporary virtual register
+$1F, size=1, runtime, __kq_intr_tmp1, intrinsic temporary virtual register
+$20, size=1, runtime, __kq_intr_tmp2, intrinsic temporary virtual register
+$21, size=1, runtime, __kq_vramq_len, VRAM queue length hot state
+$22, size=1, runtime, __kq_vramq_ready, VRAM queue ready flag hot state
+$23, size=1, runtime, __kq_vramq_overflow, VRAM queue overflow flag hot state
+$24, size=1, runtime, __kq_axrom_mirror_shadow, AxROM mirror shadow hot state
+$25, size=1, runtime, __kq_fds_resident_bank, FDS overlay resident bank hot state
+$26, size=1, runtime, __kq_rng_lo, RNG state hot byte
+$27, size=1, runtime, __kq_rng_hi, RNG state hot byte
+$28, size=1, runtime, __kq_sret_ptr_lo, struct return destination pointer
+$29, size=1, runtime, __kq_sret_ptr_hi, struct return destination pointer
+$2A, size=1, storage, row, whole-program zero-page allocator first-fit candidate
+$2B, size=1, storage, col, whole-program zero-page allocator first-fit candidate
+$2C, size=2, storage, a, whole-program zero-page allocator first-fit candidate
+$2E, size=2, storage, addr, pointer/address candidate
+$30, size=1, storage, latch, whole-program zero-page allocator first-fit candidate
+$31, size=2, storage, addr, pointer/address candidate
+$33, size=2, storage, src, whole-program zero-page allocator first-fit candidate
+$35, size=1, storage, len, whole-program zero-page allocator first-fit candidate
+$36, size=2, storage, addr, pointer/address candidate
+$38, size=1, storage, value, whole-program zero-page allocator first-fit candidate
+$39, size=2, storage, len, whole-program zero-page allocator first-fit candidate
+$3B, size=2, storage, addr, pointer/address candidate
+$3D, size=1, storage, value, whole-program zero-page allocator first-fit candidate
+$3E, size=2, storage, addr, pointer/address candidate
+$40, size=2, storage, src, whole-program zero-page allocator first-fit candidate
+$42, size=1, storage, len, whole-program zero-page allocator first-fit candidate
+$43, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$44, size=1, storage, used, whole-program zero-page allocator first-fit candidate
+$45, size=1, storage, need, whole-program zero-page allocator first-fit candidate
+$46, size=1, storage, i, small loop/index/coordinate candidate
+$47, size=1, storage, dst, whole-program zero-page allocator first-fit candidate
+$48, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$49, size=1, storage, i, small loop/index/coordinate candidate
+$4A, size=1, storage, len, whole-program zero-page allocator first-fit candidate
+$4B, size=1, storage, data_index, small loop/index/coordinate candidate
+$4C, size=1, storage, latch, whole-program zero-page allocator first-fit candidate
+$4D, size=1, storage, i, small loop/index/coordinate candidate
+$4E, size=1, storage, dst, whole-program zero-page allocator first-fit candidate
+$4F, size=1, storage, index, small loop/index/coordinate candidate
+$50, size=1, storage, dst, whole-program zero-page allocator first-fit candidate
+$51, size=1, storage, index, small loop/index/coordinate candidate
+$52, size=1, storage, x, small loop/index/coordinate candidate
+$53, size=1, storage, y, small loop/index/coordinate candidate
+$54, size=1, storage, tile, small loop/index/coordinate candidate
+$55, size=1, storage, attr, whole-program zero-page allocator first-fit candidate
+$56, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$57, size=1, storage, dst, whole-program zero-page allocator first-fit candidate
+$58, size=1, storage, index, small loop/index/coordinate candidate
+$59, size=1, storage, x, small loop/index/coordinate candidate
+$5A, size=1, storage, y, small loop/index/coordinate candidate
+$5B, size=1, storage, tile, small loop/index/coordinate candidate
+$5C, size=1, storage, attr, whole-program zero-page allocator first-fit candidate
+$5D, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$5E, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$5F, size=1, storage, __t8_2, whole-program zero-page allocator first-fit candidate
+$60, size=1, storage, start, whole-program zero-page allocator first-fit candidate
+$61, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$63, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$65, size=1, storage, state, whole-program zero-page allocator first-fit candidate
+$66, size=1, storage, mask, whole-program zero-page allocator first-fit candidate
+$67, size=1, storage, sample, whole-program zero-page allocator first-fit candidate
+$68, size=1, storage, x, small loop/index/coordinate candidate
+$69, size=1, storage, idx, small loop/index/coordinate candidate
+$6A, size=1, storage, volume, whole-program zero-page allocator first-fit candidate
+$6B, size=1, storage, idx, small loop/index/coordinate candidate
+$6C, size=1, storage, idx, small loop/index/coordinate candidate
+$6D, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$6F, size=1, storage, n, whole-program zero-page allocator first-fit candidate
+$70, size=1, storage, b, whole-program zero-page allocator first-fit candidate
+$71, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$73, size=1, storage, row, whole-program zero-page allocator first-fit candidate
+$74, size=1, storage, col, whole-program zero-page allocator first-fit candidate
+$75, size=2, storage, text, small loop/index/coordinate candidate
+$77, size=1, storage, len, whole-program zero-page allocator first-fit candidate
+$78, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$7A, size=1, storage, i, small loop/index/coordinate candidate
+$7B, size=1, storage, r, whole-program zero-page allocator first-fit candidate
+$7C, size=1, storage, c, whole-program zero-page allocator first-fit candidate
+$7D, size=2, storage, a, whole-program zero-page allocator first-fit candidate
+$7F, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$81, size=2, storage, __t16_1, whole-program zero-page allocator first-fit candidate
+$83, size=1, storage, col, whole-program zero-page allocator first-fit candidate
+$84, size=1, storage, h, whole-program zero-page allocator first-fit candidate
+$85, size=1, storage, row, whole-program zero-page allocator first-fit candidate
+$86, size=1, storage, i, small loop/index/coordinate candidate
+$87, size=1, storage, r, whole-program zero-page allocator first-fit candidate
+$88, size=1, storage, x, small loop/index/coordinate candidate
+$89, size=1, storage, i, small loop/index/coordinate candidate
+$8A, size=1, storage, tens, whole-program zero-page allocator first-fit candidate
+$8B, size=1, storage, ones, whole-program zero-page allocator first-fit candidate
+$8C, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$8E, size=1, storage, ax, small loop/index/coordinate candidate
+$8F, size=1, storage, ay, small loop/index/coordinate candidate
+$90, size=1, storage, bx, small loop/index/coordinate candidate
+$91, size=1, storage, by, small loop/index/coordinate candidate
+$92, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$93, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$95, size=1, storage, spd, whole-program zero-page allocator first-fit candidate
+$96, size=1, storage, gain, small loop/index/coordinate candidate
+$97, size=1, storage, kind, small loop/index/coordinate candidate
+$98, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$9A, size=1, storage, gain, small loop/index/coordinate candidate
+$9B, size=1, storage, ox, small loop/index/coordinate candidate
+$9C, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$9D, size=1, storage, i, small loop/index/coordinate candidate
+$9E, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$9F, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$A0, size=1, storage, __t8_2, whole-program zero-page allocator first-fit candidate
+$A1, size=1, storage, __t8_3, whole-program zero-page allocator first-fit candidate
+$A2, size=1, storage, __t8_4, whole-program zero-page allocator first-fit candidate
+$A3, size=1, storage, __t8_5, whole-program zero-page allocator first-fit candidate
+$A4, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$A6, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$A7, size=1, storage, __t8_2, whole-program zero-page allocator first-fit candidate
+$A8, size=1, storage, __t8_3, whole-program zero-page allocator first-fit candidate
+$A9, size=1, storage, __t8_4, whole-program zero-page allocator first-fit candidate
+$AA, size=1, storage, __t8_5, whole-program zero-page allocator first-fit candidate
+$AB, size=1, storage, __t8_6, whole-program zero-page allocator first-fit candidate
+$AC, size=1, storage, i, small loop/index/coordinate candidate
+$AD, size=1, storage, sp, whole-program zero-page allocator first-fit candidate
+$AE, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+$B0, size=1, storage, __t8_1, whole-program zero-page allocator first-fit candidate
+$B1, size=1, storage, __t8_2, whole-program zero-page allocator first-fit candidate
+$B2, size=1, storage, __t8_3, whole-program zero-page allocator first-fit candidate
+$B3, size=1, storage, next, small loop/index/coordinate candidate
+$B4, size=1, storage, i, small loop/index/coordinate candidate
+$B5, size=1, storage, t, whole-program zero-page allocator first-fit candidate
+$B6, size=1, storage, a, whole-program zero-page allocator first-fit candidate
+$B7, size=2, storage, __t16_0, whole-program zero-page allocator first-fit candidate
+
+## static frame slots
+add_score::gain, $0096, size=1, zp_static_frame
+box_hit::ax, $008E, size=1, zp_static_frame
+box_hit::ay, $008F, size=1, zp_static_frame
+box_hit::bx, $0090, size=1, zp_static_frame
+box_hit::by, $0091, size=1, zp_static_frame
+box_hit::__t8_0, $0092, size=1, zp_static_frame
+brave_graze::i, $009D, size=1, zp_static_frame
+brave_graze::__t8_0, $009E, size=1, zp_static_frame
+brave_graze::__t8_1, $009F, size=1, zp_static_frame
+brave_graze::__t8_2, $00A0, size=1, zp_static_frame
+brave_graze::__t8_3, $00A1, size=1, zp_static_frame
+brave_graze::__t8_4, $00A2, size=1, zp_static_frame
+brave_graze::__t8_5, $00A3, size=1, zp_static_frame
+collect_star_kind::kind, $0097, size=1, zp_static_frame
+collect_star_kind::__t16_0, $0098, size=2, zp_static_frame
+collect_star_kind::gain, $009A, size=1, zp_static_frame
+draw_16::index, $0058, size=1, zp_static_frame
+draw_16::x, $0059, size=1, zp_static_frame
+draw_16::y, $005A, size=1, zp_static_frame
+draw_16::tile, $005B, size=1, zp_static_frame
+draw_16::attr, $005C, size=1, zp_static_frame
+draw_16::__t8_0, $005D, size=1, zp_static_frame
+draw_16::__t8_1, $005E, size=1, zp_static_frame
+draw_16::__t8_2, $005F, size=1, zp_static_frame
+draw_game_objects::__t16_0, $00AE, size=2, zp_static_frame
+draw_game_objects::__t8_1, $00B0, size=1, zp_static_frame
+draw_game_objects::__t8_2, $00B1, size=1, zp_static_frame
+draw_game_objects::__t8_3, $00B2, size=1, zp_static_frame
+draw_game_objects::next, $00B3, size=1, zp_static_frame
+draw_game_objects::i, $00B4, size=1, zp_static_frame
+draw_game_objects::t, $00B5, size=1, zp_static_frame
+draw_game_objects::a, $00B6, size=1, zp_static_frame
+draw_skyline::__t16_0, $007F, size=2, zp_static_frame
+draw_skyline::__t16_1, $0081, size=2, zp_static_frame
+draw_skyline::col, $0083, size=1, zp_static_frame
+draw_skyline::h, $0084, size=1, zp_static_frame
+draw_skyline::row, $0085, size=1, zp_static_frame
+draw_starfield::i, $007A, size=1, zp_static_frame
+draw_starfield::r, $007B, size=1, zp_static_frame
+draw_starfield::c, $007C, size=1, zp_static_frame
+draw_starfield::a, $007D, size=2, zp_static_frame
+init_objects::i, $0089, size=1, zp_static_frame
+main::__t16_0, $00B7, size=2, zp_static_frame
+music_step_do::__t16_0, $006D, size=2, zp_static_frame
+music_step_do::n, $006F, size=1, zp_static_frame
+music_step_do::b, $0070, size=1, zp_static_frame
+music_tick::__t16_0, $0071, size=2, zp_static_frame
+near_player_x::ox, $009B, size=1, zp_static_frame
+near_player_x::__t8_0, $009C, size=1, zp_static_frame
+nes_vblank_wait::__t16_0, $0061, size=2, zp_static_frame
+nes_wait_nmi::start, $0060, size=1, zp_static_frame
+nt_addr::row, $002A, size=1, zp_static_frame
+nt_addr::col, $002B, size=1, zp_static_frame
+nt_addr::a, $002C, size=2, zp_static_frame
+oam_hide_all::i, $004D, size=1, zp_static_frame
+oam_hide_all::dst, $004E, size=1, zp_static_frame
+oam_hide_from::index, $004F, size=1, zp_static_frame
+oam_hide_from::dst, $0050, size=1, zp_static_frame
+pad_poll::__t16_0, $0063, size=2, zp_static_frame
+pad_poll::state, $0065, size=1, zp_static_frame
+pad_poll::mask, $0066, size=1, zp_static_frame
+pad_poll::sample, $0067, size=1, zp_static_frame
+ppu_fill::addr, $0036, size=2, zp_static_frame
+ppu_fill::value, $0038, size=1, zp_static_frame
+ppu_fill::len, $0039, size=2, zp_static_frame
+ppu_put::addr, $003B, size=2, zp_static_frame
+ppu_put::value, $003D, size=1, zp_static_frame
+ppu_seek::addr, $002E, size=2, zp_static_frame
+ppu_seek::latch, $0030, size=1, zp_static_frame
+ppu_write::addr, $0031, size=2, zp_static_frame
+ppu_write::src, $0033, size=2, zp_static_frame
+ppu_write::len, $0035, size=1, zp_static_frame
+pulse1_play::idx, $0069, size=1, zp_static_frame
+pulse1_play::volume, $006A, size=1, zp_static_frame
+pulse2_play::idx, $006B, size=1, zp_static_frame
+put_text::row, $0073, size=1, zp_static_frame
+put_text::col, $0074, size=1, zp_static_frame
+put_text::text, $0075, size=2, zp_static_frame
+put_text::len, $0077, size=1, zp_static_frame
+put_text::__t16_0, $0078, size=2, zp_static_frame
+queue_hud::__t16_0, $008C, size=2, zp_static_frame
+respawn_object::i, $0086, size=1, zp_static_frame
+respawn_object::r, $0087, size=1, zp_static_frame
+respawn_object::x, $0088, size=1, zp_static_frame
+rng8::x, $0068, size=1, zp_static_frame
+sprite_set::index, $0051, size=1, zp_static_frame
+sprite_set::x, $0052, size=1, zp_static_frame
+sprite_set::y, $0053, size=1, zp_static_frame
+sprite_set::tile, $0054, size=1, zp_static_frame
+sprite_set::attr, $0055, size=1, zp_static_frame
+sprite_set::__t8_0, $0056, size=1, zp_static_frame
+sprite_set::dst, $0057, size=1, zp_static_frame
+triangle_play::idx, $006C, size=1, zp_static_frame
+update_objects::__t16_0, $00A4, size=2, zp_static_frame
+update_objects::__t8_1, $00A6, size=1, zp_static_frame
+update_objects::__t8_2, $00A7, size=1, zp_static_frame
+update_objects::__t8_3, $00A8, size=1, zp_static_frame
+update_objects::__t8_4, $00A9, size=1, zp_static_frame
+update_objects::__t8_5, $00AA, size=1, zp_static_frame
+update_objects::__t8_6, $00AB, size=1, zp_static_frame
+update_objects::i, $00AC, size=1, zp_static_frame
+update_objects::sp, $00AD, size=1, zp_static_frame
+update_player::__t16_0, $0093, size=2, zp_static_frame
+update_player::spd, $0095, size=1, zp_static_frame
+update_score_digits::tens, $008A, size=1, zp_static_frame
+update_score_digits::ones, $008B, size=1, zp_static_frame
+vramq_flush::__t8_0, $0048, size=1, zp_static_frame
+vramq_flush::i, $0049, size=1, zp_static_frame
+vramq_flush::len, $004A, size=1, zp_static_frame
+vramq_flush::data_index, $004B, size=1, zp_static_frame
+vramq_flush::latch, $004C, size=1, zp_static_frame
+vramq_write::addr, $003E, size=2, zp_static_frame
+vramq_write::src, $0040, size=2, zp_static_frame
+vramq_write::len, $0042, size=1, zp_static_frame
+vramq_write::__t8_0, $0043, size=1, zp_static_frame
+vramq_write::used, $0044, size=1, zp_static_frame
+vramq_write::need, $0045, size=1, zp_static_frame
+vramq_write::i, $0046, size=1, zp_static_frame
+vramq_write::dst, $0047, size=1, zp_static_frame
+
+## RAM access contract allocations
+$0010-$0010, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0011-$0011, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0012-$0012, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0013-$0013, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0014-$0014, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0015-$0015, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0016-$0016, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0017-$0017, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0018-$0018, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0019-$0019, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001A-$001A, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001B-$001B, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001C-$001C, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001D-$001D, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001E-$001E, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001F-$001F, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0020-$0020, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0021-$0021, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0022-$0022, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0023-$0023, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0024-$0024, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0025-$0025, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0026-$0026, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0027-$0027, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0028-$0028, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0029-$0029, size=1, runtime, cpu_ram_zero_page, conservative=False
+$002A-$002A, size=1, local, cpu_ram_zero_page, conservative=False
+$002B-$002B, size=1, local, cpu_ram_zero_page, conservative=False
+$002C-$002D, size=2, local, cpu_ram_zero_page, conservative=False
+$002E-$002F, size=2, local, cpu_ram_zero_page, conservative=False
+$0030-$0030, size=1, local, cpu_ram_zero_page, conservative=False
+$0031-$0032, size=2, local, cpu_ram_zero_page, conservative=False
+$0033-$0034, size=2, local, cpu_ram_zero_page, conservative=False
+$0035-$0035, size=1, local, cpu_ram_zero_page, conservative=False
+$0036-$0037, size=2, local, cpu_ram_zero_page, conservative=False
+$0038-$0038, size=1, local, cpu_ram_zero_page, conservative=False
+$0039-$003A, size=2, local, cpu_ram_zero_page, conservative=False
+$003B-$003C, size=2, local, cpu_ram_zero_page, conservative=False
+$003D-$003D, size=1, local, cpu_ram_zero_page, conservative=False
+$003E-$003F, size=2, local, cpu_ram_zero_page, conservative=False
+$0040-$0041, size=2, local, cpu_ram_zero_page, conservative=False
+$0042-$0042, size=1, local, cpu_ram_zero_page, conservative=False
+$0043-$0043, size=1, local, cpu_ram_zero_page, conservative=False
+$0044-$0044, size=1, local, cpu_ram_zero_page, conservative=False
+$0045-$0045, size=1, local, cpu_ram_zero_page, conservative=False
+$0046-$0046, size=1, local, cpu_ram_zero_page, conservative=False
+$0047-$0047, size=1, local, cpu_ram_zero_page, conservative=False
+$0048-$0048, size=1, local, cpu_ram_zero_page, conservative=False
+$0049-$0049, size=1, local, cpu_ram_zero_page, conservative=False
+$004A-$004A, size=1, local, cpu_ram_zero_page, conservative=False
+$004B-$004B, size=1, local, cpu_ram_zero_page, conservative=False
+$004C-$004C, size=1, local, cpu_ram_zero_page, conservative=False
+$004D-$004D, size=1, local, cpu_ram_zero_page, conservative=False
+$004E-$004E, size=1, local, cpu_ram_zero_page, conservative=False
+$004F-$004F, size=1, local, cpu_ram_zero_page, conservative=False
+$0050-$0050, size=1, local, cpu_ram_zero_page, conservative=False
+$0051-$0051, size=1, local, cpu_ram_zero_page, conservative=False
+$0052-$0052, size=1, local, cpu_ram_zero_page, conservative=False
+$0053-$0053, size=1, local, cpu_ram_zero_page, conservative=False
+$0054-$0054, size=1, local, cpu_ram_zero_page, conservative=False
+$0055-$0055, size=1, local, cpu_ram_zero_page, conservative=False
+$0056-$0056, size=1, local, cpu_ram_zero_page, conservative=False
+$0057-$0057, size=1, local, cpu_ram_zero_page, conservative=False
+$0058-$0058, size=1, local, cpu_ram_zero_page, conservative=False
+$0059-$0059, size=1, local, cpu_ram_zero_page, conservative=False
+$005A-$005A, size=1, local, cpu_ram_zero_page, conservative=False
+$005B-$005B, size=1, local, cpu_ram_zero_page, conservative=False
+$005C-$005C, size=1, local, cpu_ram_zero_page, conservative=False
+$005D-$005D, size=1, local, cpu_ram_zero_page, conservative=False
+$005E-$005E, size=1, local, cpu_ram_zero_page, conservative=False
+$005F-$005F, size=1, local, cpu_ram_zero_page, conservative=False
+$0060-$0060, size=1, local, cpu_ram_zero_page, conservative=False
+$0061-$0062, size=2, local, cpu_ram_zero_page, conservative=False
+$0063-$0064, size=2, local, cpu_ram_zero_page, conservative=False
+$0065-$0065, size=1, local, cpu_ram_zero_page, conservative=False
+$0066-$0066, size=1, local, cpu_ram_zero_page, conservative=False
+$0067-$0067, size=1, local, cpu_ram_zero_page, conservative=False
+$0068-$0068, size=1, local, cpu_ram_zero_page, conservative=False
+$0069-$0069, size=1, local, cpu_ram_zero_page, conservative=False
+$006A-$006A, size=1, local, cpu_ram_zero_page, conservative=False
+$006B-$006B, size=1, local, cpu_ram_zero_page, conservative=False
+$006C-$006C, size=1, local, cpu_ram_zero_page, conservative=False
+$006D-$006E, size=2, local, cpu_ram_zero_page, conservative=False
+$006F-$006F, size=1, local, cpu_ram_zero_page, conservative=False
+$0070-$0070, size=1, local, cpu_ram_zero_page, conservative=False
+$0071-$0072, size=2, local, cpu_ram_zero_page, conservative=False
+$0073-$0073, size=1, local, cpu_ram_zero_page, conservative=False
+$0074-$0074, size=1, local, cpu_ram_zero_page, conservative=False
+$0075-$0076, size=2, local, cpu_ram_zero_page, conservative=False
+$0077-$0077, size=1, local, cpu_ram_zero_page, conservative=False
+$0078-$0079, size=2, local, cpu_ram_zero_page, conservative=False
+$007A-$007A, size=1, local, cpu_ram_zero_page, conservative=False
+$007B-$007B, size=1, local, cpu_ram_zero_page, conservative=False
+$007C-$007C, size=1, local, cpu_ram_zero_page, conservative=False
+$007D-$007E, size=2, local, cpu_ram_zero_page, conservative=False
+$007F-$0080, size=2, local, cpu_ram_zero_page, conservative=False
+$0081-$0082, size=2, local, cpu_ram_zero_page, conservative=False
+$0083-$0083, size=1, local, cpu_ram_zero_page, conservative=False
+$0084-$0084, size=1, local, cpu_ram_zero_page, conservative=False
+$0085-$0085, size=1, local, cpu_ram_zero_page, conservative=False
+$0086-$0086, size=1, local, cpu_ram_zero_page, conservative=False
+$0087-$0087, size=1, local, cpu_ram_zero_page, conservative=False
+$0088-$0088, size=1, local, cpu_ram_zero_page, conservative=False
+$0089-$0089, size=1, local, cpu_ram_zero_page, conservative=False
+$008A-$008A, size=1, local, cpu_ram_zero_page, conservative=False
+$008B-$008B, size=1, local, cpu_ram_zero_page, conservative=False
+$008C-$008D, size=2, local, cpu_ram_zero_page, conservative=False
+$008E-$008E, size=1, local, cpu_ram_zero_page, conservative=False
+$008F-$008F, size=1, local, cpu_ram_zero_page, conservative=False
+$0090-$0090, size=1, local, cpu_ram_zero_page, conservative=False
+$0091-$0091, size=1, local, cpu_ram_zero_page, conservative=False
+$0092-$0092, size=1, local, cpu_ram_zero_page, conservative=False
+$0093-$0094, size=2, local, cpu_ram_zero_page, conservative=False
+$0095-$0095, size=1, local, cpu_ram_zero_page, conservative=False
+$0096-$0096, size=1, local, cpu_ram_zero_page, conservative=False
+$0097-$0097, size=1, local, cpu_ram_zero_page, conservative=False
+$0098-$0099, size=2, local, cpu_ram_zero_page, conservative=False
+$009A-$009A, size=1, local, cpu_ram_zero_page, conservative=False
+$009B-$009B, size=1, local, cpu_ram_zero_page, conservative=False
+$009C-$009C, size=1, local, cpu_ram_zero_page, conservative=False
+$009D-$009D, size=1, local, cpu_ram_zero_page, conservative=False
+$009E-$009E, size=1, local, cpu_ram_zero_page, conservative=False
+$009F-$009F, size=1, local, cpu_ram_zero_page, conservative=False
+$00A0-$00A0, size=1, local, cpu_ram_zero_page, conservative=False
+$00A1-$00A1, size=1, local, cpu_ram_zero_page, conservative=False
+$00A2-$00A2, size=1, local, cpu_ram_zero_page, conservative=False
+$00A3-$00A3, size=1, local, cpu_ram_zero_page, conservative=False
+$00A4-$00A5, size=2, local, cpu_ram_zero_page, conservative=False
+$00A6-$00A6, size=1, local, cpu_ram_zero_page, conservative=False
+$00A7-$00A7, size=1, local, cpu_ram_zero_page, conservative=False
+$00A8-$00A8, size=1, local, cpu_ram_zero_page, conservative=False
+$00A9-$00A9, size=1, local, cpu_ram_zero_page, conservative=False
+$00AA-$00AA, size=1, local, cpu_ram_zero_page, conservative=False
+$00AB-$00AB, size=1, local, cpu_ram_zero_page, conservative=False
+$00AC-$00AC, size=1, local, cpu_ram_zero_page, conservative=False
+$00AD-$00AD, size=1, local, cpu_ram_zero_page, conservative=False
+$00AE-$00AF, size=2, local, cpu_ram_zero_page, conservative=False
+$00B0-$00B0, size=1, local, cpu_ram_zero_page, conservative=False
+$00B1-$00B1, size=1, local, cpu_ram_zero_page, conservative=False
+$00B2-$00B2, size=1, local, cpu_ram_zero_page, conservative=False
+$00B3-$00B3, size=1, local, cpu_ram_zero_page, conservative=False
+$00B4-$00B4, size=1, local, cpu_ram_zero_page, conservative=False
+$00B5-$00B5, size=1, local, cpu_ram_zero_page, conservative=False
+$00B6-$00B6, size=1, local, cpu_ram_zero_page, conservative=False
+$00B7-$00B8, size=2, local, cpu_ram_zero_page, conservative=False
+$00C0-$00CF, size=16, abi_call_args, cpu_ram_zero_page, conservative=True
+$00D0-$00FF, size=48, compiler_temp_pool, cpu_ram_zero_page, conservative=True
+$0200-$02FF, size=256, global_fixed, cpu_ram_oam_shadow, conservative=False
+$0300-$03BF, size=192, global_fixed, cpu_ram, conservative=False
+$03C0-$043F, size=128, runtime_buffer, cpu_ram, conservative=False
+$0440-$0441, size=2, runtime_buffer, cpu_ram, conservative=False
+$0442-$0452, size=17, runtime_buffer, cpu_ram, conservative=False
+$0453-$0453, size=1, global, cpu_ram, conservative=False
+$0454-$0454, size=1, global, cpu_ram, conservative=False
+$0455-$0455, size=1, global, cpu_ram, conservative=False
+$0456-$0456, size=1, global, cpu_ram, conservative=False
+$0457-$0457, size=1, global, cpu_ram, conservative=False
+$0458-$0458, size=1, global, cpu_ram, conservative=False
+$0459-$0459, size=1, global, cpu_ram, conservative=False
+$045A-$045A, size=1, global, cpu_ram, conservative=False
+$045B-$045B, size=1, global, cpu_ram, conservative=False
+$045C-$045C, size=1, global, cpu_ram, conservative=False
+$045D-$045D, size=1, global, cpu_ram, conservative=False
+$045E-$045E, size=1, global, cpu_ram, conservative=False
+$045F-$045F, size=1, global, cpu_ram, conservative=False
+$0460-$0460, size=1, global, cpu_ram, conservative=False
+$0461-$0461, size=1, global, cpu_ram, conservative=False
+$0462-$0462, size=1, global, cpu_ram, conservative=False
+$0463-$0463, size=1, global, cpu_ram, conservative=False
+$0464-$0464, size=1, global, cpu_ram, conservative=False
+$0465-$046A, size=6, global, cpu_ram, conservative=False
+$046B-$0470, size=6, global, cpu_ram, conservative=False
+$0471-$0476, size=6, global, cpu_ram, conservative=False
+$0477-$047C, size=6, global, cpu_ram, conservative=False
+$047D-$047E, size=2, global, cpu_ram, conservative=False
+$047F-$047F, size=1, global, cpu_ram, conservative=False
+$0480-$0480, size=1, global, cpu_ram, conservative=False
+$0481-$0481, size=1, global, cpu_ram, conservative=False
+$0482-$0482, size=1, global, cpu_ram, conservative=False
+$0483-$0483, size=1, global, cpu_ram, conservative=False
+$0484-$0484, size=1, global, cpu_ram, conservative=False
+$0485-$0485, size=1, global, cpu_ram, conservative=False
+$0486-$0486, size=1, global, cpu_ram, conservative=False
+$0487-$0487, size=1, global, cpu_ram, conservative=False
+$2000-$2000, size=1, global_fixed, memory_mapped_io, conservative=False
+$2001-$2001, size=1, global_fixed, memory_mapped_io, conservative=False
+$2002-$2002, size=1, global_fixed, memory_mapped_io, conservative=False
+$2003-$2003, size=1, global_fixed, memory_mapped_io, conservative=False
+$2005-$2005, size=1, global_fixed, memory_mapped_io, conservative=False
+$2006-$2006, size=1, global_fixed, memory_mapped_io, conservative=False
+$2007-$2007, size=1, global_fixed, memory_mapped_io, conservative=False
+$4000-$4000, size=1, global_fixed, memory_mapped_io, conservative=False
+$4001-$4001, size=1, global_fixed, memory_mapped_io, conservative=False
+$4002-$4002, size=1, global_fixed, memory_mapped_io, conservative=False
+$4003-$4003, size=1, global_fixed, memory_mapped_io, conservative=False
+$4004-$4004, size=1, global_fixed, memory_mapped_io, conservative=False
+$4005-$4005, size=1, global_fixed, memory_mapped_io, conservative=False
+$4006-$4006, size=1, global_fixed, memory_mapped_io, conservative=False
+$4007-$4007, size=1, global_fixed, memory_mapped_io, conservative=False
+$4008-$4008, size=1, global_fixed, memory_mapped_io, conservative=False
+$400A-$400A, size=1, global_fixed, memory_mapped_io, conservative=False
+$400B-$400B, size=1, global_fixed, memory_mapped_io, conservative=False
+$400C-$400C, size=1, global_fixed, memory_mapped_io, conservative=False
+$400E-$400E, size=1, global_fixed, memory_mapped_io, conservative=False
+$400F-$400F, size=1, global_fixed, memory_mapped_io, conservative=False
+$4014-$4014, size=1, global_fixed, memory_mapped_io, conservative=False
+$4015-$4015, size=1, global_fixed, memory_mapped_io, conservative=False
+$4016-$4016, size=1, global_fixed, memory_mapped_io, conservative=False
+$4017-$4017, size=1, global_fixed, memory_mapped_io, conservative=False
+
+## inline decisions
+__nes_nmi->vramq_flush, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+boot->apu_init, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+boot->draw_title_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+boot->nes_vblank_wait, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+boot->nes_vblank_wait, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+boot->oam_hide_all, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+brave_graze->add_score, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+brave_graze->near_player_x, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+brave_graze->respawn_object, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+brave_graze->sfx_collect, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+collect_star_kind->add_score, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+collect_star_kind->draw_win_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+collect_star_kind->sfx_collect, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_base_screen->draw_skyline, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_base_screen->draw_starfield, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_base_screen->vramq_clear, auto-inline, applied=True, small void statement body
+draw_game_objects->oam_hide_from, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_over_screen->draw_base_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_over_screen->oam_hide_all, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_play_screen->draw_base_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_skyline->nt_addr, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_skyline->nt_addr, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_skyline->nt_addr, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_skyline->ppu_put, auto-inline, applied=True, small void statement body
+draw_skyline->ppu_put, auto-inline, applied=True, small void statement body
+draw_skyline->ppu_seek, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_skyline->ppu_seek, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_skyline->rng8, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_starfield->nt_addr, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_starfield->ppu_put, auto-inline, applied=True, small void statement body
+draw_starfield->ppu_seek, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_starfield->rng8, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_starfield->rng8, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_title_screen->draw_base_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_title_screen->oam_hide_all, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_win_screen->draw_base_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+draw_win_screen->oam_hide_all, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+hurt_player->draw_over_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+hurt_player->sfx_hit, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+hurt_player->sfx_hit, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+init_objects->respawn_object, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+main->boot, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+main->music_tick, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+main->nes_wait_nmi, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+main->pad_poll, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+main->start_game, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+main->start_game, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+main->update_playing, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+music_step_do->pulse2_play, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+music_step_do->triangle_play, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+music_tick->music_step_do, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+music_tick->sfx_step, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+ppu_fill->ppu_seek, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+ppu_put->ppu_seek, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+ppu_write->ppu_seek, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+put_text->nt_addr, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+queue_hud->nt_addr, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+queue_hud->nt_addr, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+queue_hud->nt_addr, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+queue_hud->nt_addr, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+queue_hud->nt_addr, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+queue_hud->update_score_digits, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+respawn_object->rng8, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+respawn_object->rng8, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+respawn_object->rng8, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+respawn_object->rng8, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+sfx_collect->pulse1_play, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+sfx_power->pulse1_play, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+sfx_step->pulse1_play, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+sfx_step->pulse1_play, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+sfx_step->pulse1_play, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+start_game->draw_play_screen, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+start_game->init_objects, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+start_game->queue_hud, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_objects->brave_graze, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_objects->collect_star_kind, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_objects->collect_star_kind, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_objects->hurt_player, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_objects->respawn_object, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_objects->respawn_object, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_objects->sfx_power, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_playing->draw_game_objects, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_playing->queue_hud, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_playing->update_objects, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+update_playing->update_player, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+
+## loop lowerings
+
+## LTO-lite removed functions
+
+## mapper-aware bank placements

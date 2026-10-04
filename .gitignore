@@ -1,32 +1,15 @@
 /target/
-/bin/
-/obj/
 /out/
-/dist/
-/work/
-/local/
-**/__pycache__/
-*.pyc
-*.exe
-*.dll
-*.pdb
-*.gb
-*.gbc
-*.nes
-*.fds
-*.rom
-*.sav
-*.srm
-*.kqs
-*.wav
-.kitaqgb_cache/
-.kitaqfc_cache/
-
-# Compiler source builds stay local; the root Release executable is distributed.
-**/bin/
-**/obj/
-!/kitaqfc.exe
+*.actual.json
+*.progress
+/.kitaqfc_cache/
+/debug_output/
+/trace_output/
 /integration_test/reports/
+/kitaqfc.diag.json
 
-# MIT-licensed asset compression tool.
-!/kitaqfc-zx0.exe
+/target/
+**/__pycache__/
+!/*.exe
+!/bin/
+!/bin/**

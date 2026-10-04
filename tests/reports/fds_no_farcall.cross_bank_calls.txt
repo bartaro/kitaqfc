@@ -1,0 +1,4 @@
+# KITAQGB cross-bank call report
+# caller, caller_bank, callee, callee_bank, count, kind, via_thunk, via_farcall
+<none>, 0, main, 1, 1, direct_boot, 0, 0
+main, 1, add, 2, 1, direct, 0, 0

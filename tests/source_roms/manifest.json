@@ -1,0 +1,264 @@
+[
+  {
+    "source": "fc_assembly.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "91969be11565e128217b2acb47343b9200e9c3b3ca10fd45c7503ebb1209f6ad",
+    "native_sha256": "91969be11565e128217b2acb47343b9200e9c3b3ca10fd45c7503ebb1209f6ad",
+    "passed": true
+  },
+  {
+    "source": "fc_strings_banks.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "4cbcc808b64c866638623d8968ba78ed8d10771db3b9f575769fc79c49c5bbc1",
+    "native_sha256": "4cbcc808b64c866638623d8968ba78ed8d10771db3b9f575769fc79c49c5bbc1",
+    "passed": true
+  },
+  {
+    "source": "fc_types_layout.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "0527b6dbc4809050be8c707df0e201289880334870df07159da2a40cb60ecfe1",
+    "native_sha256": "0527b6dbc4809050be8c707df0e201289880334870df07159da2a40cb60ecfe1",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase10_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase11_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase12_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase13_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase14_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase15_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase20_intrinsics_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase21_intrinsics_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "cbe262873d56e08ba2bb10632d2f2614b457d320a96115391370808db999c778",
+    "native_sha256": "cbe262873d56e08ba2bb10632d2f2614b457d320a96115391370808db999c778",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase22_fds_metadata_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase23_input_midi_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "70ddd6613dc76c64356fa769bb16cfb66d44f06f930895e7a9f0c338d8dbefb0",
+    "native_sha256": "70ddd6613dc76c64356fa769bb16cfb66d44f06f930895e7a9f0c338d8dbefb0",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase24_intrinsic_audit_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "2e9c7eed1c637fa0011893a73eafe35391e1f67f6deb976aff1dc58dc0cb298a",
+    "native_sha256": "2e9c7eed1c637fa0011893a73eafe35391e1f67f6deb976aff1dc58dc0cb298a",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase25_public_symbol_intrinsics_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "1f5fef1a9d8def0b3514d96ab080064091ebb6ede1d78e7aa2df91de4136305f",
+    "native_sha256": "1f5fef1a9d8def0b3514d96ab080064091ebb6ede1d78e7aa2df91de4136305f",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase26_library_reorg_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "7de28cc6dfbd7de0998caa051c1c48f1f57d90fc485bee280727d7c712388e17",
+    "native_sha256": "7de28cc6dfbd7de0998caa051c1c48f1f57d90fc485bee280727d7c712388e17",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase29_fds_overlay_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase30_fds_overlay_farcall_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase31_nes_dsl_kurosaki_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "39bde549d8a2bdf3c2e5030155e74667e68d2160355bbb81dabcedc8456ed5a5",
+    "native_sha256": "39bde549d8a2bdf3c2e5030155e74667e68d2160355bbb81dabcedc8456ed5a5",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase32_nes_optimization_8pack_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "62cb5727822a05d8fa69aac944cf3a8646e17c7ae2110627631ddbac0333359f",
+    "native_sha256": "62cb5727822a05d8fa69aac944cf3a8646e17c7ae2110627631ddbac0333359f",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase33_audio_drivers_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase3_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "5e57fb74e82a0f5bbbbf005e26f452d3fb3bc0f06283c62eca65e35d38eaa2c7",
+    "native_sha256": "5e57fb74e82a0f5bbbbf005e26f452d3fb3bc0f06283c62eca65e35d38eaa2c7",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase4_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "ea8f91cd88bd29e3f472cb80321eab35b070fa3dd719d52b39b3d2725dbefa1e",
+    "native_sha256": "ea8f91cd88bd29e3f472cb80321eab35b070fa3dd719d52b39b3d2725dbefa1e",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase5_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "5177894d4ad73a6d149452f5a052e0ad20f03a46587e42ef9b748f1a9bbf0ed2",
+    "native_sha256": "5177894d4ad73a6d149452f5a052e0ad20f03a46587e42ef9b748f1a9bbf0ed2",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase6_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "fb49b5a009fb4ce0226e596a45e539dc38e46df0f7170f552017407b001f0262",
+    "native_sha256": "fb49b5a009fb4ce0226e596a45e539dc38e46df0f7170f552017407b001f0262",
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase7_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase8_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_phase9_smoke.c",
+    "reference_exit": 1,
+    "native_exit": 1,
+    "reference_accepted": false,
+    "matched_rejection_status": true,
+    "passed": true
+  },
+  {
+    "source": "kitaqfc_struct_complex_smoke.c",
+    "reference_exit": 0,
+    "native_exit": 0,
+    "reference_accepted": true,
+    "rom_equal": true,
+    "reference_sha256": "0a94cd2ec52e9e1a1613b58b395adf512b08cc8d2ba6f58b9f787158d3f2b5f1",
+    "native_sha256": "0a94cd2ec52e9e1a1613b58b395adf512b08cc8d2ba6f58b9f787158d3f2b5f1",
+    "passed": true
+  }
+]

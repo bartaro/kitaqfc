@@ -1,0 +1,24 @@
+{
+  "backgrounds": [
+    {
+      "name": "demo_png_bg",
+      "input": "raw_png/demo_bg_indexed.png",
+      "out_prefix": "generated_png/demo_bg",
+      "tile_base": 0,
+      "dedupe": true
+    }
+  ],
+  "spritesheets": [
+    {
+      "name": "demo_png_player",
+      "input": "raw_png/demo_sprite_indexed.png",
+      "out_prefix": "generated_png/demo_sprite",
+      "tile_base": 128,
+      "dedupe": true,
+      "frame_w_tiles": 2,
+      "frame_h_tiles": 2,
+      "sprite_attr": 0
+    }
+  ],
+  "report_out": "generated_png/demo_png_build_report.json"
+}

@@ -1,0 +1,56 @@
+KITAQFC native Rust compiler
+
+Build a NES ROM:
+  kitaqfc SOURCE.c ... -I INCLUDE --mapper=nrom -o GAME.nes
+  kitaqfc SOURCE.c ... -I lib --mapper=mmc3 --nes-chr=tiles.chr -O2 -o GAME.nes
+
+Build a Famicom Disk System image:
+  kitaqfc SOURCE.c ... --mapper=fds --fds-layout=fds32 -o GAME.fds
+  --fds-meta=FILE --fds-meta-out[=FILE] --fds-out[=FILE]
+  --fds-auto-overlay / --fds-no-auto-overlay
+  --fds-overlay-farcall / --fds-no-overlay-farcall
+  --fds-overlay-guard / --fds-no-overlay-guard
+  --fds-overlay-trim --fds-overlay-prefix=NAME --fds-overlay-start-id=N
+  --fds-overlay-table / --fds-no-overlay-table
+  --fds-header / --fds-raw --fds-game-code=CODE
+  --fds-license-bypass / --fds-no-license-bypass
+
+Cartridge and optimization:
+  --target=nes|fc|famicom|6502|2a03
+  --mapper=nrom|uxrom|cnrom|axrom|mmc1|mmc3|mmc5|vrc6|vrc7|fme7|fds|surom512
+  --board=auto|generic|surom512 --mirroring=horizontal|vertical|four_screen
+  --battery / --no-battery --nes-chr-ram --nes-chr=FILE
+  -O0 / -O1 / -O2 --nes-opt=all|off
+  --abi=legacy|stack|fastcall --reg-cc-v2 / --no-reg-cc-v2
+  --zp-alloc --static-frame --small-inline --loop-lowering
+  --library-lto-lite --mapper-aware-placement --kurosaki-profile=FILE
+  --nes-local-ram=START:LENGTH --nes-temp-ram=START:LENGTH
+  -Zcheck -Zcheck-bounds -Zconst-scalar-in-rom
+
+Diagnostics and reports:
+  --strict / --permissive --max-errors=N --diag-json[=FILE|-]
+  --profile=dev|release|test --cache / --no-cache --deps-out[=FILE]
+  --debug-output[=DIR] --trace[=tokens,ast,ir,asm] --trace-out=DIR
+  --no-debug-output --no-trace --fast-build --emit-path-manifest=FILE
+  --kurosaki-metadata[=FILE] --nes-opt-report[=FILE]
+  --func-size-report --hotspot-report --cross-bank-report --farcall-suggest
+  --abi-verify --abi-diff-report --bank-sim --opt-diff --rst-report --repro-check
+  Report switches accept =FILE; otherwise reports are placed beside the ROM.
+
+Frontend and typed assembly:
+  tokenize SOURCE.c ... -I INCLUDE -o tokens.json
+  parse SOURCE.c ... -I INCLUDE -o ast.json
+  lower SOURCE.c ... -I INCLUDE -o lowered.json
+  emit-ir SOURCE.c ... -I INCLUDE -o assembly.json
+  assemble-ir ASSEMBLY.json --mapper=nrom -o ROM.nes
+
+Utilities and development:
+  kqhelp, symfind, src2asm, romdiff, template, snippet,
+  conventions, fixhint, irsum, attrviz, recipe, test
+  SOURCE.c ... --watch [--watch-max-builds=N]
+  devserver SOURCE.c ... [--once --poll-ms=N --debounce-ms=N --max-builds=N]
+  SOURCE.c ... --repro-pack[=DIR] --auto-minimize
+  SOURCE.c ... --minimize[=FILE] --minimize-work=DIR --minimize-out=FILE
+
+Legacy ROM-header and RST flags retain the C# NES backend's behavior.
+NES disassembly and managed debugger attachment do not run in that backend.

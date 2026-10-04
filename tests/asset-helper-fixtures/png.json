@@ -1,0 +1,23 @@
+{
+  "backgrounds": [
+    {
+      "name": "bg",
+      "input": "background.png",
+      "out_prefix": "actual/bg",
+      "dedupe": true,
+      "tile_base": 0
+    }
+  ],
+  "spritesheets": [
+    {
+      "name": "sprites",
+      "input": "sprite.png",
+      "out_prefix": "actual/sprite",
+      "tile_base": 128,
+      "frame_w_tiles": 2,
+      "frame_h_tiles": 2,
+      "sprite_attr": 64
+    }
+  ],
+  "report_out": "actual/png-report.json"
+}

@@ -1,0 +1,98 @@
+# KITAQFC NES optimization report
+# enabled: zp=True, fastcall=True, static_frame=True, inline=True, loop=True, lto_lite=True, kurosaki_profile=True, mapper_placement=True
+
+## fastcall functions
+inc, bank=1, params=1, ret=1
+main, bank=1, params=, ret=0
+
+## zero-page allocations
+$10, size=1, runtime, __kq_prg_bank_current, mapper current bank hot state
+$11, size=1, runtime, __kq_thunk_ret_lo, farcall return hot state
+$12, size=1, runtime, __kq_thunk_ret_hi, farcall return hot state
+$13, size=1, runtime, __kq_mapper_tmp, mapper switch temporary
+$14, size=1, runtime, __kq_mapper_tmp2, mapper serial temporary
+$15, size=1, runtime, __kq_mmc1_outer_shadow, MMC1 outer PRG bank shadow
+$16, size=1, runtime, __kq_mmc1_inner_shadow, MMC1 inner PRG bank shadow
+$17, size=1, runtime, __kq_mmc1_control_shadow, MMC1 control register shadow
+$18, size=1, runtime, __kq_mapper_fault, mapper fail-safe status
+$19, size=1, runtime, __kq_ppuctrl_shadow, PPUCTRL shadow hot state
+$1A, size=1, runtime, __kq_ppumask_shadow, PPUMASK shadow hot state
+$1B, size=1, runtime, __kq_scroll_x, scroll hot state
+$1C, size=1, runtime, __kq_scroll_y, scroll hot state
+$1D, size=1, runtime, __kq_nmi_counter, NMI counter hot state
+$1E, size=1, runtime, __kq_intr_tmp0, intrinsic temporary virtual register
+$1F, size=1, runtime, __kq_intr_tmp1, intrinsic temporary virtual register
+$20, size=1, runtime, __kq_intr_tmp2, intrinsic temporary virtual register
+$21, size=1, runtime, __kq_vramq_len, VRAM queue length hot state
+$22, size=1, runtime, __kq_vramq_ready, VRAM queue ready flag hot state
+$23, size=1, runtime, __kq_vramq_overflow, VRAM queue overflow flag hot state
+$24, size=1, runtime, __kq_axrom_mirror_shadow, AxROM mirror shadow hot state
+$25, size=1, runtime, __kq_fds_resident_bank, FDS overlay resident bank hot state
+$26, size=1, runtime, __kq_rng_lo, RNG state hot byte
+$27, size=1, runtime, __kq_rng_hi, RNG state hot byte
+$28, size=1, runtime, __kq_sret_ptr_lo, struct return destination pointer
+$29, size=1, runtime, __kq_sret_ptr_hi, struct return destination pointer
+$2A, size=2, storage, a, whole-program zero-page allocator first-fit candidate
+$2C, size=1, storage, b, whole-program zero-page allocator first-fit candidate
+$2D, size=1, storage, a, whole-program zero-page allocator first-fit candidate
+$2E, size=1, storage, __t8_0, whole-program zero-page allocator first-fit candidate
+$2F, size=2, storage, f, whole-program zero-page allocator first-fit candidate
+$31, size=2, storage, n, whole-program zero-page allocator first-fit candidate
+
+## static frame slots
+add::a, $002A, size=2, zp_static_frame
+add::b, $002C, size=1, zp_static_frame
+inc::a, $002D, size=1, zp_static_frame
+main::__t8_0, $002E, size=1, zp_static_frame
+main::f, $002F, size=2, zp_static_frame
+main::n, $0031, size=2, zp_static_frame
+
+## RAM access contract allocations
+$0010-$0010, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0011-$0011, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0012-$0012, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0013-$0013, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0014-$0014, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0015-$0015, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0016-$0016, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0017-$0017, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0018-$0018, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0019-$0019, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001A-$001A, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001B-$001B, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001C-$001C, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001D-$001D, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001E-$001E, size=1, runtime, cpu_ram_zero_page, conservative=False
+$001F-$001F, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0020-$0020, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0021-$0021, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0022-$0022, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0023-$0023, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0024-$0024, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0025-$0025, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0026-$0026, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0027-$0027, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0028-$0028, size=1, runtime, cpu_ram_zero_page, conservative=False
+$0029-$0029, size=1, runtime, cpu_ram_zero_page, conservative=False
+$002A-$002B, size=2, local, cpu_ram_zero_page, conservative=False
+$002C-$002C, size=1, local, cpu_ram_zero_page, conservative=False
+$002D-$002D, size=1, local, cpu_ram_zero_page, conservative=False
+$002E-$002E, size=1, local, cpu_ram_zero_page, conservative=False
+$002F-$0030, size=2, local, cpu_ram_zero_page, conservative=False
+$0031-$0032, size=2, local, cpu_ram_zero_page, conservative=False
+$00C0-$00CF, size=16, abi_call_args, cpu_ram_zero_page, conservative=True
+$00D0-$00FF, size=48, compiler_temp_pool, cpu_ram_zero_page, conservative=True
+$0300-$037F, size=128, runtime_buffer, cpu_ram, conservative=False
+$0380-$0381, size=2, runtime_buffer, cpu_ram, conservative=False
+$0382-$0392, size=17, runtime_buffer, cpu_ram, conservative=False
+$0700-$0700, size=1, global_fixed, cpu_ram, conservative=False
+$0701-$0701, size=1, global_fixed, cpu_ram, conservative=False
+
+## inline decisions
+main->inc, fastcall-v2, applied=True, arguments passed in A/X instead of call argument area
+
+## loop lowerings
+
+## LTO-lite removed functions
+
+## mapper-aware bank placements

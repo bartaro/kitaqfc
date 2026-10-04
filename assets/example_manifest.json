@@ -1,0 +1,67 @@
+{
+  "chr_out": "generated/demo_chr8k.chr",
+  "c_out": "generated/demo_assets.c",
+  "h_out": "generated/demo_assets.h",
+  "report_out": "generated/demo_assets_report.json",
+  "chr": [
+    {
+      "name": "demo_bg",
+      "input": "raw/demo_bg_tiles.chr",
+      "tile_offset": 0
+    },
+    {
+      "name": "demo_spr",
+      "input": "raw/demo_sprite_tiles.chr",
+      "tile_offset": 128
+    }
+  ],
+  "palettes": [
+    {
+      "name": "demo_palette32",
+      "input": "raw/demo_palette.pal"
+    }
+  ],
+  "nametables": [
+    {
+      "name": "demo_title_nt",
+      "input": "raw/demo_title.nam"
+    }
+  ],
+  "attributes": [
+    {
+      "name": "demo_title_at",
+      "input": "raw/demo_title.atr"
+    }
+  ],
+  "metasprites": [
+    {
+      "name": "demo_player_ms",
+      "data": [
+        [
+          0,
+          0,
+          128,
+          0
+        ],
+        [
+          8,
+          0,
+          129,
+          0
+        ],
+        [
+          0,
+          8,
+          130,
+          0
+        ],
+        [
+          8,
+          8,
+          131,
+          0
+        ]
+      ]
+    }
+  ]
+}

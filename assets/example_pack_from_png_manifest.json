@@ -1,0 +1,42 @@
+{
+  "chr_out": "generated_pipeline/demo_pipeline_chr8k.chr",
+  "c_out": "generated_pipeline/demo_pipeline_assets.c",
+  "h_out": "generated_pipeline/demo_pipeline_assets.h",
+  "report_out": "generated_pipeline/demo_pipeline_assets_report.json",
+  "chr": [
+    {
+      "name": "demo_png_bg_chr",
+      "input": "generated_png/demo_bg.chr",
+      "tile_offset": 0
+    },
+    {
+      "name": "demo_png_sprite_chr",
+      "input": "generated_png/demo_sprite.chr",
+      "tile_offset": 128
+    }
+  ],
+  "palettes": [
+    {
+      "name": "demo_png_palette32",
+      "input": "generated_png/demo_bg.pal"
+    }
+  ],
+  "nametables": [
+    {
+      "name": "demo_png_title_nt",
+      "input": "generated_png/demo_bg.nam"
+    }
+  ],
+  "attributes": [
+    {
+      "name": "demo_png_title_at",
+      "input": "generated_png/demo_bg.atr"
+    }
+  ],
+  "metasprites": [
+    {
+      "name": "demo_png_player_ms",
+      "input": "generated_png/demo_sprite.metasprite.json"
+    }
+  ]
+}

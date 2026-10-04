@@ -1,0 +1,3 @@
+# KITAQGB farcall suggestion report
+# caller -> callee, count, caller_bank, callee_bank, current_kind, recommendation
+<none> -> main, 1, 0, 1, bank_thunk, consider __farcall(bank, func) for explicit cross-bank intent

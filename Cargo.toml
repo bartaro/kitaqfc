@@ -1,0 +1,26 @@
+[package]
+name = "kitaqfc"
+default-run = "kitaqfc"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+description = "Native Rust port of the KITAQFC NES/Famicom/FDS toolchain"
+
+[profile.dev]
+debug = 0
+incremental = false
+
+[profile.test]
+debug = 0
+incremental = false
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+
+[dependencies]
+regex = "=1.12.3"
+fancy-regex = "=0.19.1"
+ctrlc = "=3.5.2"
+png = "=0.17.16"

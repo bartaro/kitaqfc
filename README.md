@@ -1,23 +1,63 @@
 # KITAQFC
 
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
+
 <!-- manual-language-links:start -->
 | Language / 言語 | HTML |
 | --- | --- |
-| English | [KITAQFC](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/en/fc-library.html) |
-| 日本語 | [KITAQFC](https://bartaro.github.io/kitaq-docs/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/fc-library.html) |
-| 한국어 | [KITAQFC](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/ko/fc-library.html) |
-| 简体中文 | [KITAQFC](https://bartaro.github.io/kitaq-docs/zh-CN/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html) |
-| 繁體中文 | [KITAQFC](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html) |
-| Français | [KITAQFC](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/fr/fc-library.html) |
-| Español | [KITAQFC](https://bartaro.github.io/kitaq-docs/es/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/es/fc-library.html) |
-| Deutsch | [KITAQFC](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/de/fc-library.html) |
-| Português (Brasil) | [KITAQFC](https://bartaro.github.io/kitaq-docs/pt/kitaqfc.html) · [KITAQFC Library](https://bartaro.github.io/kitaq-docs/pt/fc-library.html) |
+| English | [kitaqfc](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html) |
+| 日本語 | [kitaqfc](https://bartaro.github.io/kitaq-docs/kitaqfc.html) |
+| 한국어 | [kitaqfc](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html) |
+| 简体中文 | [kitaqfc](https://bartaro.github.io/kitaq-docs/zh-CN/kitaqfc.html) |
+| 繁體中文 | [kitaqfc](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html) |
+| Français | [kitaqfc](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html) |
+| Español | [kitaqfc](https://bartaro.github.io/kitaq-docs/es/kitaqfc.html) |
+| Deutsch | [kitaqfc](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html) |
 <!-- manual-language-links:end -->
 
+<!-- rust-native-20261004:start -->
+## Native Rust compiler and helper tools
 
-<!-- readme-language-links:start -->
-**English** | [日本語](README.md#japanese) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
-<!-- readme-language-links:end -->
+Build the compiler and all helper tools on Windows, Linux, macOS ARM or macOS Intel with Rust 1.85 or later. The native executables run without .NET; production asset tools also run without Python or Pillow.
+
+```sh
+cargo test --locked --tests
+cargo build --locked --release
+```
+
+Windows executables are at the repository root. Linux and macOS executables are under bin/ in the platform folders listed below. Keep lib/ and license notices with the tools. On Linux/macOS, run chmod +x on the downloaded executables and add their folder to PATH, or invoke them by their full path.
+
+| OS | kitaqfc |
+| --- | --- |
+| Windows x64 | `./kitaqfc.exe` |
+| Linux x64 | `bin/Linux-X64/kitaqfc` |
+| macOS ARM64 | `bin/macOS-ARM64/kitaqfc` |
+| macOS Intel | `bin/macOS-X64/kitaqfc` |
+
+```powershell
+.\scripts\build.ps1
+.\kitaqfc.exe --help
+```
+
+```sh
+sh scripts/build.sh
+```
+
+
+Native builds and executable checks passed on Windows, Linux, macOS ARM and macOS Intel. KITAQGB passed 48 tests and 395 helper checks per platform; KITAQFC passed 55 tests and 401 helper checks. Rust 1.85 was also tested. PUBLIC_DISTRIBUTION.json records the installed binary hashes and validation provenance. The public GitHub Actions workflows rebuild and test this source independently.
+
+Frozen reference outputs test ROM bytes, diagnostics and helper formats. Earlier C# emulator evidence remains historical evidence with its original source fingerprints. It does not automatically prove every Rust API, real hardware or complete FDS BIOS/game startup. The unavailable original PNG conversion script was reconstructed from its specification; byte parity with that missing script cannot be claimed.
+
+[Native Rust compiler and helper tools](tools/README.en.md)
+
+<!-- rust-native-20261004:end -->
+
+
+
+
+
 
 <a name="english"></a>
 
@@ -194,44 +234,67 @@ If environment or permission constraints prevent a required check, report the ex
 ### Repository layout
 
 ```text
-kitaqfc/                  # Repository root
-├─ kitaqfc/               # Compiler build sources
-│  ├─ *.cs
-│  ├─ app.config
-│  └─ kitaqfc.csproj
-├─ kitaqfc.exe            # Prebuilt Release compiler
-├─ kitaqfc.exe.config     # .NET Framework runtime configuration
-├─ lib/                # C support libraries
-├─ examples/           # Tutorial programs and original font
-├─ scripts/build.ps1   # Rebuild the Release executable
-├─ LICENSE
-└─ LICENSE.ja
+Cargo.toml / Cargo.lock
+src/                     # Rust compiler and native helper sources
+kitaqfc.exe             # Windows x64 compiler
+kitaqfc-*.exe           # Windows native helper tools
+bin/                     # Linux and macOS executables
+lib/                     # C libraries for console ROMs
+tests/                   # Frozen reference fixtures and Rust tests
+scripts/build.ps1
+scripts/build.sh
 ```
 
-The prebuilt compiler requires Windows with .NET Framework 4.8. Download the
-repository ZIP to keep the executable, runtime configuration, libraries and
-license notices together. Rebuilding additionally requires the .NET Framework
-4.8 Developer Pack and Visual Studio Build Tools. From the repository root:
+Build the compiler and all helper tools on Windows, Linux, macOS ARM or macOS Intel with Rust 1.85 or later. The native executables run without .NET; production asset tools also run without Python or Pillow.
+
+```sh
+cargo test --locked --tests
+cargo build --locked --release
+```
+
+Windows executables are at the repository root. Linux and macOS executables are under bin/ in the platform folders listed below. Keep lib/ and license notices with the tools. On Linux/macOS, run chmod +x on the downloaded executables and add their folder to PATH, or invoke them by their full path.
+
+| OS | kitaqfc |
+| --- | --- |
+| Windows x64 | `./kitaqfc.exe` |
+| Linux x64 | `bin/Linux-X64/kitaqfc` |
+| macOS ARM64 | `bin/macOS-ARM64/kitaqfc` |
+| macOS Intel | `bin/macOS-X64/kitaqfc` |
 
 ```powershell
 .\scripts\build.ps1
 .\kitaqfc.exe --help
-.\examples\build.ps1
 ```
 
-A Release build copies the executable and its configuration to the repository
-root. Debug builds stay inside `kitaqfc/bin/Debug` and do not overwrite the
-distributed Release compiler. Build caches and PDB files are not distributed.
-See [binary build record](BINARY_BUILD.json) for the build inputs and SHA-256.
+```sh
+sh scripts/build.sh
+```
 
 ### Build and first use
 
-Windows, .NET Framework 4.8 Developer Pack and Visual Studio Build Tools (MSBuild). Run from a Developer PowerShell prompt.
+Build the compiler and all helper tools on Windows, Linux, macOS ARM or macOS Intel with Rust 1.85 or later. The native executables run without .NET; production asset tools also run without Python or Pillow.
+
+```sh
+cargo test --locked --tests
+cargo build --locked --release
+```
+
+Windows executables are at the repository root. Linux and macOS executables are under bin/ in the platform folders listed below. Keep lib/ and license notices with the tools. On Linux/macOS, run chmod +x on the downloaded executables and add their folder to PATH, or invoke them by their full path.
+
+| OS | kitaqfc |
+| --- | --- |
+| Windows x64 | `./kitaqfc.exe` |
+| Linux x64 | `bin/Linux-X64/kitaqfc` |
+| macOS ARM64 | `bin/macOS-ARM64/kitaqfc` |
+| macOS Intel | `bin/macOS-X64/kitaqfc` |
 
 ```powershell
-MSBuild.exe .\kitaqfc\kitaqfc.csproj /t:Build /p:Configuration=Release
+.\scripts\build.ps1
 .\kitaqfc.exe --help
-.\examples\build.ps1
+```
+
+```sh
+sh scripts/build.sh
 ```
 
 ### Manuals and licenses
@@ -244,7 +307,62 @@ The project license does not replace third-party font, dependency, logo or trade
 
 ---
 
+
 <a name="japanese"></a>
+
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
+
+<!-- manual-language-links:start -->
+| Language / 言語 | HTML |
+| --- | --- |
+| English | [kitaqfc](https://bartaro.github.io/kitaq-docs/en/kitaqfc.html) |
+| 日本語 | [kitaqfc](https://bartaro.github.io/kitaq-docs/kitaqfc.html) |
+| 한국어 | [kitaqfc](https://bartaro.github.io/kitaq-docs/ko/kitaqfc.html) |
+| 简体中文 | [kitaqfc](https://bartaro.github.io/kitaq-docs/zh-CN/kitaqfc.html) |
+| 繁體中文 | [kitaqfc](https://bartaro.github.io/kitaq-docs/zh-TW/kitaqfc.html) |
+| Français | [kitaqfc](https://bartaro.github.io/kitaq-docs/fr/kitaqfc.html) |
+| Español | [kitaqfc](https://bartaro.github.io/kitaq-docs/es/kitaqfc.html) |
+| Deutsch | [kitaqfc](https://bartaro.github.io/kitaq-docs/de/kitaqfc.html) |
+<!-- manual-language-links:end -->
+
+<!-- rust-native-20261004:start -->
+## Rust製コンパイラと補助ツール
+
+Rust 1.85以降で、Windows・Linux・macOS ARM・macOS Intel用のコンパイラと全補助ツールをビルドできます。ネイティブ実行ファイルの動作に.NETは不要です。素材処理用の補助ツールもPythonやPillowを必要としません。
+
+```sh
+cargo test --locked --tests
+cargo build --locked --release
+```
+
+Windows用実行ファイルはリポジトリ直下、Linux・macOS用は下表のbin/配下にあります。lib/とライセンス表記を一緒に保持してください。Linux/macOSでは取得した実行ファイルにchmod +xで実行権限を付け、配置先をPATHに追加するかフルパスで実行します。
+
+| OS | kitaqfc |
+| --- | --- |
+| Windows x64 | `./kitaqfc.exe` |
+| Linux x64 | `bin/Linux-X64/kitaqfc` |
+| macOS ARM64 | `bin/macOS-ARM64/kitaqfc` |
+| macOS Intel | `bin/macOS-X64/kitaqfc` |
+
+```powershell
+.\scripts\build.ps1
+.\kitaqfc.exe --help
+```
+
+```sh
+sh scripts/build.sh
+```
+
+
+Windows・Linux・macOS ARM・macOS Intelでネイティブビルドと実行検証が成功しています。KITAQGBは各環境48件のテストと395件の補助ツール検証、KITAQFCは55件と401件が成功しました。Rust 1.85でも確認済みです。PUBLIC_DISTRIBUTION.jsonに配置済みバイナリのハッシュと検証の出典を記録しています。公開GitHub Actionsでもこのソースを独立してビルド・検証します。
+
+保存済みの比較データでROMのバイト列、診断と補助ツールの形式を検証しています。以前のC#版によるエミュレータ検証は、そのソース指紋に対応する過去の記録として残しています。これだけでRust版の全API、実機動作、FDSのBIOS経由のゲーム起動を保証するものではありません。元のPNG変換スクリプトは入手できないため仕様から再実装し、元スクリプトとのバイト一致は確認できません。
+
+[Rust製コンパイラと補助ツール](tools/README.ja.md)
+
+<!-- rust-native-20261004:end -->
 
 ## 日本語
 
@@ -429,40 +547,67 @@ if ($LASTEXITCODE -ne 0) { throw 'Inspect the analysis report and fix the cause.
 ### リポジトリの構成
 
 ```text
-kitaqfc/                  # リポジトリのルート
-├─ kitaqfc/               # コンパイラのビルド用ソース
-│  ├─ *.cs
-│  ├─ app.config
-│  └─ kitaqfc.csproj
-├─ kitaqfc.exe            # ビルド済みRelease版コンパイラ
-├─ kitaqfc.exe.config     # .NET Frameworkの実行設定
-├─ lib/                   # C支援ライブラリ
-├─ examples/              # 入門プログラムと自作フォント
-├─ scripts/build.ps1      # Release版の再ビルド
-├─ LICENSE
-└─ LICENSE.ja
+Cargo.toml / Cargo.lock
+src/                     # Rust compiler and native helper sources
+kitaqfc.exe             # Windows x64 compiler
+kitaqfc-*.exe           # Windows native helper tools
+bin/                     # Linux and macOS executables
+lib/                     # C libraries for console ROMs
+tests/                   # Frozen reference fixtures and Rust tests
+scripts/build.ps1
+scripts/build.sh
 ```
 
-ビルド用のC#ソースとプロジェクトは `kitaqfc/` にまとめています。ビルド済みRelease版はリポジトリ直下の `kitaqfc.exe` です。実行にはWindowsと.NET Framework 4.8が必要です。リポジトリのZIPを取得すると、実行ファイル、設定ファイル、ライブラリ、権利表記をまとめて入手できます。
+Rust 1.85以降で、Windows・Linux・macOS ARM・macOS Intel用のコンパイラと全補助ツールをビルドできます。ネイティブ実行ファイルの動作に.NETは不要です。素材処理用の補助ツールもPythonやPillowを必要としません。
 
-再ビルドには.NET Framework 4.8 Developer PackとVisual Studio Build Toolsも必要です。リポジトリ直下で実行してください。
+```sh
+cargo test --locked --tests
+cargo build --locked --release
+```
+
+Windows用実行ファイルはリポジトリ直下、Linux・macOS用は下表のbin/配下にあります。lib/とライセンス表記を一緒に保持してください。Linux/macOSでは取得した実行ファイルにchmod +xで実行権限を付け、配置先をPATHに追加するかフルパスで実行します。
+
+| OS | kitaqfc |
+| --- | --- |
+| Windows x64 | `./kitaqfc.exe` |
+| Linux x64 | `bin/Linux-X64/kitaqfc` |
+| macOS ARM64 | `bin/macOS-ARM64/kitaqfc` |
+| macOS Intel | `bin/macOS-X64/kitaqfc` |
 
 ```powershell
 .\scripts\build.ps1
 .\kitaqfc.exe --help
-.\examples\build.ps1
 ```
 
-Releaseビルドでは実行ファイルと設定ファイルをリポジトリ直下にコピーします。Debugビルドは `kitaqfc/bin/Debug` に置かれ、配布用Release版を上書きしません。ビルドキャッシュとPDBファイルは配布していません。ビルド入力とSHA-256は[バイナリのビルド記録](BINARY_BUILD.json)を参照してください。
+```sh
+sh scripts/build.sh
+```
 
 ### ビルドと初回利用
 
-Windows、.NET Framework 4.8 Developer Pack、Visual Studio Build Tools（MSBuild）を用意し、Developer PowerShellから実行します。
+Rust 1.85以降で、Windows・Linux・macOS ARM・macOS Intel用のコンパイラと全補助ツールをビルドできます。ネイティブ実行ファイルの動作に.NETは不要です。素材処理用の補助ツールもPythonやPillowを必要としません。
+
+```sh
+cargo test --locked --tests
+cargo build --locked --release
+```
+
+Windows用実行ファイルはリポジトリ直下、Linux・macOS用は下表のbin/配下にあります。lib/とライセンス表記を一緒に保持してください。Linux/macOSでは取得した実行ファイルにchmod +xで実行権限を付け、配置先をPATHに追加するかフルパスで実行します。
+
+| OS | kitaqfc |
+| --- | --- |
+| Windows x64 | `./kitaqfc.exe` |
+| Linux x64 | `bin/Linux-X64/kitaqfc` |
+| macOS ARM64 | `bin/macOS-ARM64/kitaqfc` |
+| macOS Intel | `bin/macOS-X64/kitaqfc` |
 
 ```powershell
-MSBuild.exe .\kitaqfc\kitaqfc.csproj /t:Build /p:Configuration=Release
+.\scripts\build.ps1
 .\kitaqfc.exe --help
-.\examples\build.ps1
+```
+
+```sh
+sh scripts/build.sh
 ```
 
 ### マニュアルとライセンス

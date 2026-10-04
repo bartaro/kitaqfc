@@ -1,7 +1,5 @@
 #include "vrc6_sound.h"
 
-// Direct expansion-audio addresses for the expected VRC6 register wiring.
-// The cartridge/mapper must expose this layout; no hardware detection is performed.
 __location(0x9000) u8 VRC6_P1_CTRL;
 __location(0x9001) u8 VRC6_P1_LO;
 __location(0x9002) u8 VRC6_P1_HI;
@@ -12,7 +10,6 @@ __location(0xB000) u8 VRC6_SAW_RATE;
 __location(0xB001) u8 VRC6_SAW_LO;
 __location(0xB002) u8 VRC6_SAW_HI;
 
-// Clear channel-enable/high-timer registers and output controls for all VRC6 voices.
 void nes_vrc6_silence_all(void)
 {
     VRC6_P1_HI = 0x00;
@@ -23,7 +20,6 @@ void nes_vrc6_silence_all(void)
     VRC6_SAW_RATE = 0x00;
 }
 
-// Write pulse-1 control and the low 12 timer bits, then enable the channel.
 void nes_vrc6_pulse1_set(u8 control, u16 period)
 {
     VRC6_P1_CTRL = control;
@@ -31,7 +27,6 @@ void nes_vrc6_pulse1_set(u8 control, u16 period)
     VRC6_P1_HI = (u8)(0x80 | ((period >> 8) & 0x0F));
 }
 
-// Write pulse-2 control and the low 12 timer bits, then enable the channel.
 void nes_vrc6_pulse2_set(u8 control, u16 period)
 {
     VRC6_P2_CTRL = control;
@@ -39,19 +34,16 @@ void nes_vrc6_pulse2_set(u8 control, u16 period)
     VRC6_P2_HI = (u8)(0x80 | ((period >> 8) & 0x0F));
 }
 
-// Disable pulse 1 by clearing its high timer/enable register.
 void nes_vrc6_pulse1_off(void)
 {
     VRC6_P1_HI = 0x00;
 }
 
-// Disable pulse 2 by clearing its high timer/enable register.
 void nes_vrc6_pulse2_off(void)
 {
     VRC6_P2_HI = 0x00;
 }
 
-// Mask the saw accumulation rate to six bits, load a 12-bit timer and enable output.
 void nes_vrc6_saw_set(u8 rate, u16 period)
 {
     VRC6_SAW_RATE = (u8)(rate & 0x3F);
@@ -59,7 +51,6 @@ void nes_vrc6_saw_set(u8 rate, u16 period)
     VRC6_SAW_HI = (u8)(0x80 | ((period >> 8) & 0x0F));
 }
 
-// Disable the saw channel by clearing its high timer/enable register.
 void nes_vrc6_saw_off(void)
 {
     VRC6_SAW_HI = 0x00;

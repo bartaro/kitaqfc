@@ -1,0 +1,144 @@
+[
+  {
+    "case": "skyjar_dx",
+    "source_folder": "C:\\kitaqgb_project\\kitaqfc_project\\skyjar_dx_kitaqfc_20260502_src",
+    "sources": [
+      "main.c"
+    ],
+    "mapper": "nrom",
+    "chr": "assets/skyjar.chr",
+    "flags": [
+      "-O2",
+      "--mirroring=vertical"
+    ],
+    "inputs": [
+      {
+        "path": "assets/skyjar.chr",
+        "original_sha256": "b6638c7b89fd712f45271459c84feec4852862818fb17b6f269ea3def7f007ab",
+        "fixture_sha256": "b6638c7b89fd712f45271459c84feec4852862818fb17b6f269ea3def7f007ab"
+      },
+      {
+        "path": "main.c",
+        "original_sha256": "daefb5bb8068b945840673e6d0e1545d5bee397d89337f1ee313032ce46710f6",
+        "fixture_sha256": "daefb5bb8068b945840673e6d0e1545d5bee397d89337f1ee313032ce46710f6"
+      }
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "2ecfb10df758b4a9ea8c30b1efa63836e914144b20dc6c00141aa2e2f71fe963",
+    "native_sha256": "2ecfb10df758b4a9ea8c30b1efa63836e914144b20dc6c00141aa2e2f71fe963",
+    "rom_bytes": 40976
+  },
+  {
+    "case": "mip_courier",
+    "source_folder": "C:\\kitaqgb_project\\kitaqfc_project\\mip_rocket_courier_20260725_src",
+    "sources": [
+      "main.c",
+      "game.c",
+      "render.c",
+      "physics_stage.c",
+      "audio.c",
+      "hardware.c",
+      "assets.c",
+      "../../../lib/physics2d.c"
+    ],
+    "mapper": "mmc3",
+    "chr": "assets/mip_courier.chr",
+    "flags": [
+      "-O2",
+      "--mirroring=vertical"
+    ],
+    "inputs": [
+      {
+        "path": "assets/mip_courier.chr",
+        "original_sha256": "1c48aa186af56da348bb13b7008306b87d3282b84cc0bcc28257813d31856c4a",
+        "fixture_sha256": "1c48aa186af56da348bb13b7008306b87d3282b84cc0bcc28257813d31856c4a"
+      },
+      {
+        "path": "assets/mip_courier_assets.c",
+        "original_sha256": "78c6e3d56961683c24ab1508c8c4c58ebcf94fb5d3ce03eda348ca80d8cf513c",
+        "fixture_sha256": "78c6e3d56961683c24ab1508c8c4c58ebcf94fb5d3ce03eda348ca80d8cf513c"
+      },
+      {
+        "path": "assets/mip_courier_assets.h",
+        "original_sha256": "b55e213a82220702a6a2060b27fd37db967465e8a10da92379cd5f5bfea5eaf1",
+        "fixture_sha256": "b55e213a82220702a6a2060b27fd37db967465e8a10da92379cd5f5bfea5eaf1"
+      },
+      {
+        "path": "assets.c",
+        "original_sha256": "4c8a274fdd8373b1b53b28101152809dcf02e81de6bd6427b4fbb62f78412461",
+        "fixture_sha256": "4c8a274fdd8373b1b53b28101152809dcf02e81de6bd6427b4fbb62f78412461"
+      },
+      {
+        "path": "assets.h",
+        "original_sha256": "0c9843b234892f36b5573531f5186994b7c2a962d9999c57495b3b554fdde5cd",
+        "fixture_sha256": "0c9843b234892f36b5573531f5186994b7c2a962d9999c57495b3b554fdde5cd"
+      },
+      {
+        "path": "audio.c",
+        "original_sha256": "b46ef18541096d091032c86784d79e278d8e3783dbd764e4b7630c829d4041af",
+        "fixture_sha256": "b46ef18541096d091032c86784d79e278d8e3783dbd764e4b7630c829d4041af"
+      },
+      {
+        "path": "audio.h",
+        "original_sha256": "cd7665c9f7396cf989a6c3424ea0f95974b085094bb963c9a50a5ef4ef468e99",
+        "fixture_sha256": "cd7665c9f7396cf989a6c3424ea0f95974b085094bb963c9a50a5ef4ef468e99"
+      },
+      {
+        "path": "game.c",
+        "original_sha256": "cc73108bbbd517bead6d01f4e0e776b04e0252f461f531b5d93c56d0310130a6",
+        "fixture_sha256": "cc73108bbbd517bead6d01f4e0e776b04e0252f461f531b5d93c56d0310130a6"
+      },
+      {
+        "path": "game.h",
+        "original_sha256": "53b5a8e073da0f62894e72fe2fa16a5b7574ec92a3d5df11c06a5631107c2cc1",
+        "fixture_sha256": "53b5a8e073da0f62894e72fe2fa16a5b7574ec92a3d5df11c06a5631107c2cc1"
+      },
+      {
+        "path": "game_defs.h",
+        "original_sha256": "1121c437da27565ab1736d61e71a00ceaf87a0d4acb8cc6084d35a769ece060f",
+        "fixture_sha256": "9dd73a1af4b3e9b1236a0410431ffc21b3896ee218b82389df36c3de8a34fb24"
+      },
+      {
+        "path": "hardware.c",
+        "original_sha256": "2e79e2d148c20bbdd0914c96582564059eda820006aa86aa51c88351e665717f",
+        "fixture_sha256": "2e79e2d148c20bbdd0914c96582564059eda820006aa86aa51c88351e665717f"
+      },
+      {
+        "path": "hardware.h",
+        "original_sha256": "ee7d524062c0345a89e058fd64f9aed9e0b359d710c463ddc98bfb2133b6ba9c",
+        "fixture_sha256": "ee7d524062c0345a89e058fd64f9aed9e0b359d710c463ddc98bfb2133b6ba9c"
+      },
+      {
+        "path": "main.c",
+        "original_sha256": "c8099080e2d8b732bf194b0682b21bb1ec55cf8f17171a1d4bb0f11f14b3b5ea",
+        "fixture_sha256": "c8099080e2d8b732bf194b0682b21bb1ec55cf8f17171a1d4bb0f11f14b3b5ea"
+      },
+      {
+        "path": "physics_stage.c",
+        "original_sha256": "460ebcba7041d44aece96492c3db3bd4a5b84ac17eea895e1888f73cd976eb71",
+        "fixture_sha256": "460ebcba7041d44aece96492c3db3bd4a5b84ac17eea895e1888f73cd976eb71"
+      },
+      {
+        "path": "physics_stage.h",
+        "original_sha256": "f5c38b5bde56a70873dd6a6ddd34d7b23ed5efe36109670775168875a404ea16",
+        "fixture_sha256": "f5c38b5bde56a70873dd6a6ddd34d7b23ed5efe36109670775168875a404ea16"
+      },
+      {
+        "path": "render.c",
+        "original_sha256": "e9c4257a8b33239b71abf40a785b644b5f7e6e6ebc8a1b0cb3fbd5bfef5347d7",
+        "fixture_sha256": "e9c4257a8b33239b71abf40a785b644b5f7e6e6ebc8a1b0cb3fbd5bfef5347d7"
+      },
+      {
+        "path": "render.h",
+        "original_sha256": "2626f3e1bf45e0ac5e2c8decdba39dd8566d3e7c0c0bf592224a0058afb9c3f3",
+        "fixture_sha256": "2626f3e1bf45e0ac5e2c8decdba39dd8566d3e7c0c0bf592224a0058afb9c3f3"
+      }
+    ],
+    "passed": true,
+    "rom_equal": true,
+    "reference_sha256": "02d914aab50c447907033e500a2992a77b06b03f067871fd3589fc499c071937",
+    "native_sha256": "02d914aab50c447907033e500a2992a77b06b03f067871fd3589fc499c071937",
+    "rom_bytes": 57360
+  }
+]

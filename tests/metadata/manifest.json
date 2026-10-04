@@ -1,0 +1,1487 @@
+[
+  {
+    "case": "boot",
+    "sources": [
+      "tests/codegen/boot.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "776b7420b20d3df5ab077b250d7ba2e2b77af43c2766317fbe9e05dd2bca62ba",
+    "native_sha256": "776b7420b20d3df5ab077b250d7ba2e2b77af43c2766317fbe9e05dd2bca62ba"
+  },
+  {
+    "case": "surom",
+    "sources": [
+      "tests/codegen/boot.c"
+    ],
+    "mapper": "surom512",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "b531860eb137c4b11f25f1c020a5ea75936d98d5e904842f2c8f3154501b6d31",
+    "native_sha256": "b531860eb137c4b11f25f1c020a5ea75936d98d5e904842f2c8f3154501b6d31"
+  },
+  {
+    "case": "option_00",
+    "sources": [
+      "tests/values/nested_calls.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O1"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "34fcfd2749dee99d4aacd5a89741f0dd277d6782def770f603cab6423ddc9ab1",
+    "native_sha256": "34fcfd2749dee99d4aacd5a89741f0dd277d6782def770f603cab6423ddc9ab1"
+  },
+  {
+    "case": "option_01",
+    "sources": [
+      "tests/values/signed_compare.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O1"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "49a07bd39080af5bea4a46840742a810932458dab939353638e2fb1b59635940",
+    "native_sha256": "49a07bd39080af5bea4a46840742a810932458dab939353638e2fb1b59635940"
+  },
+  {
+    "case": "option_02",
+    "sources": [
+      "tests/values/aggregate_bank.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "-O1"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "83fd6bf4c9f8635338844600e63df71bbcce82e59d4fa2309aa90b23d6eaf0d1",
+    "native_sha256": "83fd6bf4c9f8635338844600e63df71bbcce82e59d4fa2309aa90b23d6eaf0d1"
+  },
+  {
+    "case": "option_03",
+    "sources": [
+      "tests/values/callback_word.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O1"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "d01bb75b6dbe14a65d8cbe32b097297b42a8c1be92615d793a76688062f0c5b7",
+    "native_sha256": "d01bb75b6dbe14a65d8cbe32b097297b42a8c1be92615d793a76688062f0c5b7"
+  },
+  {
+    "case": "option_04",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "-O1"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "962aa40240e36f73231ee2b8cba70175cc09382f0292b5de39d3f39675926e46",
+    "native_sha256": "962aa40240e36f73231ee2b8cba70175cc09382f0292b5de39d3f39675926e46"
+  },
+  {
+    "case": "option_05",
+    "sources": [
+      "tests/values/nested_calls.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "6c6ce8b4239826d025508c3e3d17bf9f93448aaf51016b4372e4b4c632fbb4d7",
+    "native_sha256": "6c6ce8b4239826d025508c3e3d17bf9f93448aaf51016b4372e4b4c632fbb4d7"
+  },
+  {
+    "case": "option_06",
+    "sources": [
+      "tests/values/signed_compare.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "94ed8f1166d8407435c0a33d1994b793288b431dcad54a0c0cc67d2627d32cdb",
+    "native_sha256": "94ed8f1166d8407435c0a33d1994b793288b431dcad54a0c0cc67d2627d32cdb"
+  },
+  {
+    "case": "option_07",
+    "sources": [
+      "tests/values/aggregate_bank.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "4098494d6da014035eb5b37299de313fb05a7fedc4893db0228ff0f05cf489f1",
+    "native_sha256": "4098494d6da014035eb5b37299de313fb05a7fedc4893db0228ff0f05cf489f1"
+  },
+  {
+    "case": "option_08",
+    "sources": [
+      "tests/values/callback_word.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "45c9d910fd5c09a9920716c0d6b3de9ef2313fecd7be807ccbf34043033c5c91",
+    "native_sha256": "45c9d910fd5c09a9920716c0d6b3de9ef2313fecd7be807ccbf34043033c5c91"
+  },
+  {
+    "case": "option_09",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "5d0a49c0f5d9c0d52626e1486b1059e2bd59f7da1f622f6b4baaf79ddf3b162c",
+    "native_sha256": "5d0a49c0f5d9c0d52626e1486b1059e2bd59f7da1f622f6b4baaf79ddf3b162c"
+  },
+  {
+    "case": "option_10",
+    "sources": [
+      "tests/values/nested_calls.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O1",
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "b19e08d4788adb91fa5443d2ab529fc37f4118e62948e01d45c41bdfd9493c5c",
+    "native_sha256": "b19e08d4788adb91fa5443d2ab529fc37f4118e62948e01d45c41bdfd9493c5c"
+  },
+  {
+    "case": "option_11",
+    "sources": [
+      "tests/values/signed_compare.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O1",
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "97d678dd70b0a837c618b15400a460678a665f91fca3bd00d007c853877a8d99",
+    "native_sha256": "97d678dd70b0a837c618b15400a460678a665f91fca3bd00d007c853877a8d99"
+  },
+  {
+    "case": "option_12",
+    "sources": [
+      "tests/values/aggregate_bank.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "-O1",
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "0f26ae2a1f2b5e0ca1ec14bcb4a4738c02fb32e2858364c4844944ea48414de2",
+    "native_sha256": "0f26ae2a1f2b5e0ca1ec14bcb4a4738c02fb32e2858364c4844944ea48414de2"
+  },
+  {
+    "case": "option_13",
+    "sources": [
+      "tests/values/callback_word.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O1",
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "c1a0ef5649dbc4726537b118651c2a0a96c8baef24c72ba75540947f6c9adb1f",
+    "native_sha256": "c1a0ef5649dbc4726537b118651c2a0a96c8baef24c72ba75540947f6c9adb1f"
+  },
+  {
+    "case": "option_14",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "-O1",
+      "--whole-program-zp"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "f70d6aedb7e13992d33a8216e02e0f76daf8d693b3d6e70462c09866383f5b62",
+    "native_sha256": "f70d6aedb7e13992d33a8216e02e0f76daf8d693b3d6e70462c09866383f5b62"
+  },
+  {
+    "case": "option_15",
+    "sources": [
+      "tests/values/nested_calls.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--nes-local-ram=0x0600:0x0100",
+      "--nes-temp-ram=0x0020:0x0040"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "f86b938a3a3019c686db04d86d54a472ee21a2fe07eb5062c72bd398c882445d",
+    "native_sha256": "f86b938a3a3019c686db04d86d54a472ee21a2fe07eb5062c72bd398c882445d"
+  },
+  {
+    "case": "option_16",
+    "sources": [
+      "tests/values/aggregate_bank.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "--nes-local-ram=0x0600:0x0100",
+      "--nes-temp-ram=0x0020:0x0040"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "5ca3628f734251d2b29dbdabee716e405d33120329da7e4a570216d3aac82491",
+    "native_sha256": "5ca3628f734251d2b29dbdabee716e405d33120329da7e4a570216d3aac82491"
+  },
+  {
+    "case": "option_17",
+    "sources": [
+      "tests/values/callback_word.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--nes-local-ram=0x0600:0x0100",
+      "--nes-temp-ram=0x0020:0x0040"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "056ca35ef70f7ba10313f2c41b61055d617acec584cb772891e0fe908c676d03",
+    "native_sha256": "056ca35ef70f7ba10313f2c41b61055d617acec584cb772891e0fe908c676d03"
+  },
+  {
+    "case": "option_18",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "--nes-local-ram=0x0600:0x0100",
+      "--nes-temp-ram=0x0020:0x0040"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "150c5dc1c6de5f22c6909665c749461f0d659d9aa59f88521e3a32e58998db1d",
+    "native_sha256": "150c5dc1c6de5f22c6909665c749461f0d659d9aa59f88521e3a32e58998db1d"
+  },
+  {
+    "case": "option_19",
+    "sources": [
+      "tests/values/nested_calls.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "3b0957183b2a12046d25106d85c6613dc1b050305f2bb01bbbe8e6ad92ae22f3",
+    "native_sha256": "3b0957183b2a12046d25106d85c6613dc1b050305f2bb01bbbe8e6ad92ae22f3"
+  },
+  {
+    "case": "option_20",
+    "sources": [
+      "tests/values/bank_args.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "a11a8dd7ff96cc811aa07f732c33b89a6ddf3a16afc9c7cae050b0b73b67f6b2",
+    "native_sha256": "a11a8dd7ff96cc811aa07f732c33b89a6ddf3a16afc9c7cae050b0b73b67f6b2"
+  },
+  {
+    "case": "option_21",
+    "sources": [
+      "tests/values/callback_word.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "f9517ef0106cade1b7cdf7654181ecaeba7b4232cfcf1eef7511681f25ff34a4",
+    "native_sha256": "f9517ef0106cade1b7cdf7654181ecaeba7b4232cfcf1eef7511681f25ff34a4"
+  },
+  {
+    "case": "option_22",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "2d78ec4321443b468065f05d97a4a252d0adba5a33ea13674c05a29be23a9231",
+    "native_sha256": "2d78ec4321443b468065f05d97a4a252d0adba5a33ea13674c05a29be23a9231"
+  },
+  {
+    "case": "option_23",
+    "sources": [
+      "tests/values/bank_fast_args.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "1020e3ea791e117901aa346f81e6aeca2fd0af46c748641b5bb38b7bc8b1b44d",
+    "native_sha256": "1020e3ea791e117901aa346f81e6aeca2fd0af46c748641b5bb38b7bc8b1b44d"
+  },
+  {
+    "case": "option_24",
+    "sources": [
+      "tests/values/nested_calls.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "185e22ab9c61cc38441d572e802edc38aa97b0c3fc3c8279c40081172134b7b3",
+    "native_sha256": "185e22ab9c61cc38441d572e802edc38aa97b0c3fc3c8279c40081172134b7b3"
+  },
+  {
+    "case": "option_25",
+    "sources": [
+      "tests/values/multiply_call.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "d31a4ee7fcb3ab2d0951a6469f3c51978cedb00214a056ba3a573a6ca78ab317",
+    "native_sha256": "d31a4ee7fcb3ab2d0951a6469f3c51978cedb00214a056ba3a573a6ca78ab317"
+  },
+  {
+    "case": "option_26",
+    "sources": [
+      "tests/values/callback_word.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "e8d68c41079183026aef9a77a891c3c50aecbc9366c59ff520deac8c16149799",
+    "native_sha256": "e8d68c41079183026aef9a77a891c3c50aecbc9366c59ff520deac8c16149799"
+  },
+  {
+    "case": "option_27",
+    "sources": [
+      "tests/values/bank_fast_args.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "2619df8673701275a796d897adfa6c94fbd0b60819b6ccaf79bae228a3f58fee",
+    "native_sha256": "2619df8673701275a796d897adfa6c94fbd0b60819b6ccaf79bae228a3f58fee"
+  },
+  {
+    "case": "option_28",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "e24a5da4ea14b637c3e9dbf40232910ec6e7333d2db2a00449a87b86f7ba0d53",
+    "native_sha256": "e24a5da4ea14b637c3e9dbf40232910ec6e7333d2db2a00449a87b86f7ba0d53"
+  },
+  {
+    "case": "option_29",
+    "sources": [
+      "tests/values/loop.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--loop-lowering"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "c7f7c49b348af32eec398aebcdf272a34832183cba1743cedee8639b25c89e81",
+    "native_sha256": "c7f7c49b348af32eec398aebcdf272a34832183cba1743cedee8639b25c89e81"
+  },
+  {
+    "case": "option_30",
+    "sources": [
+      "tests/values/byte_array.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--loop-lowering"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "3b6aab2f83fd13276bb7a6e90cdc1eb5c1fe2dfe6f3bd1d5b019b6e89620f11a",
+    "native_sha256": "3b6aab2f83fd13276bb7a6e90cdc1eb5c1fe2dfe6f3bd1d5b019b6e89620f11a"
+  },
+  {
+    "case": "option_31",
+    "sources": [
+      "tests/values/switch_continue.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--loop-lowering"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "8b8864a4dede31f5082c0bfc71335d9bd3e1651a3155acbc8a7eba16d3867ef2",
+    "native_sha256": "8b8864a4dede31f5082c0bfc71335d9bd3e1651a3155acbc8a7eba16d3867ef2"
+  },
+  {
+    "case": "option_32",
+    "sources": [
+      "tests/values/nested_calls.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "1d36f5998554d2517c68939a38c1bb1e41f46140f7f8da5c5c2d14fe1cac9d39",
+    "native_sha256": "1d36f5998554d2517c68939a38c1bb1e41f46140f7f8da5c5c2d14fe1cac9d39"
+  },
+  {
+    "case": "option_33",
+    "sources": [
+      "tests/values/callback_word.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "4b34635b1a4d5e85f1ce355b4b1fbbde12e855fe8d36ef859c3e7b06043aba53",
+    "native_sha256": "4b34635b1a4d5e85f1ce355b4b1fbbde12e855fe8d36ef859c3e7b06043aba53"
+  },
+  {
+    "case": "option_34",
+    "sources": [
+      "tests/values/aggregate_bank.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "7d34bbc1f0bc970f584f0156340077dc8b74e8912757e360a2adf72115dd8f26",
+    "native_sha256": "7d34bbc1f0bc970f584f0156340077dc8b74e8912757e360a2adf72115dd8f26"
+  },
+  {
+    "case": "option_35",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "a5b439dd31c7a85085cd77e638311d6532ea70793ea0a745defa2d41eb597139",
+    "native_sha256": "a5b439dd31c7a85085cd77e638311d6532ea70793ea0a745defa2d41eb597139"
+  },
+  {
+    "case": "option_36",
+    "sources": [
+      "tests/values/bank_fast_args.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "--mapper-aware-placement"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "cafeabd10bdbdad6c10fc822d35a19eb9b683d063b032711cef8158c7aba9b5d",
+    "native_sha256": "cafeabd10bdbdad6c10fc822d35a19eb9b683d063b032711cef8158c7aba9b5d"
+  },
+  {
+    "case": "option_37",
+    "sources": [
+      "tests/values/aggregate_bank.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "--mapper-aware-placement"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "83dd7e98a213564e6e261a47146b03f42065143c0683fe6adbb046c296142a67",
+    "native_sha256": "83dd7e98a213564e6e261a47146b03f42065143c0683fe6adbb046c296142a67"
+  },
+  {
+    "case": "option_38",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "--mapper-aware-placement"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "f9e9d195a777215c8b418fd49efa5b935956d21a1d903b7d366f83ca7e3d920e",
+    "native_sha256": "f9e9d195a777215c8b418fd49efa5b935956d21a1d903b7d366f83ca7e3d920e"
+  },
+  {
+    "case": "option_39",
+    "sources": [
+      "tests/values/nested_calls.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--static-frame"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "7c04e1cc77a051c045108d70aabfee5db97af46182c0c616ca43cd96470bd62d",
+    "native_sha256": "7c04e1cc77a051c045108d70aabfee5db97af46182c0c616ca43cd96470bd62d"
+  },
+  {
+    "case": "option_40",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--static-frame"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "5c25b55edc1368dabddba5e909bf1e359e166ea4fb8b719a7ff8d76b2fc59d37",
+    "native_sha256": "5c25b55edc1368dabddba5e909bf1e359e166ea4fb8b719a7ff8d76b2fc59d37"
+  },
+  {
+    "case": "option_41",
+    "sources": [
+      "tests/values/nested_calls.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "347f7717c14904fa43a6865e5c2e76be5cd75ce72eef04d82a3cf2cbabe7ee5b",
+    "native_sha256": "347f7717c14904fa43a6865e5c2e76be5cd75ce72eef04d82a3cf2cbabe7ee5b"
+  },
+  {
+    "case": "option_42",
+    "sources": [
+      "tests/values/loop.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "ad71e927dd3585137d9d6cbdcdb23f87507be558ea06d20df39b70df65353769",
+    "native_sha256": "ad71e927dd3585137d9d6cbdcdb23f87507be558ea06d20df39b70df65353769"
+  },
+  {
+    "case": "option_43",
+    "sources": [
+      "tests/values/switch_continue.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "28e1caf31ccf410de11195182d5d6573d9046f8c64a8c5d960dbbc8e338051bd",
+    "native_sha256": "28e1caf31ccf410de11195182d5d6573d9046f8c64a8c5d960dbbc8e338051bd"
+  },
+  {
+    "case": "option_44",
+    "sources": [
+      "tests/values/callback_word.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "2da1f366bfca190634db55c85aec5fac85dda87d252d4ba4ba42254df15c3ef2",
+    "native_sha256": "2da1f366bfca190634db55c85aec5fac85dda87d252d4ba4ba42254df15c3ef2"
+  },
+  {
+    "case": "option_45",
+    "sources": [
+      "tests/values/bank_fast_args.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "d9e5e3e1e05066ea8c124c3f66da7b21be73e879ec12a1a5253ded3d22c75ed1",
+    "native_sha256": "d9e5e3e1e05066ea8c124c3f66da7b21be73e879ec12a1a5253ded3d22c75ed1"
+  },
+  {
+    "case": "option_46",
+    "sources": [
+      "tests/values/complex_struct_runtime.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "f0f25f8caaf586ee7a7e27d49d73f8e0633bc6f8e7ebef7b14df8155a3d57a60",
+    "native_sha256": "f0f25f8caaf586ee7a7e27d49d73f8e0633bc6f8e7ebef7b14df8155a3d57a60"
+  },
+  {
+    "case": "option_47",
+    "sources": [
+      "tests/values/../options/counted_wrap.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--loop-lowering"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "161d07b3d2cae84d534a339ebf550c90fd1c1e693b7d15cdfeedc7d7fe635658",
+    "native_sha256": "161d07b3d2cae84d534a339ebf550c90fd1c1e693b7d15cdfeedc7d7fe635658"
+  },
+  {
+    "case": "option_48",
+    "sources": [
+      "tests/values/../options/lto_unused.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "8977ff354c0b0542165234b7b0fd19f716e36cfad3c75b566e6ba7be0dff8001",
+    "native_sha256": "8977ff354c0b0542165234b7b0fd19f716e36cfad3c75b566e6ba7be0dff8001"
+  },
+  {
+    "case": "option_49",
+    "sources": [
+      "tests/values/../options/lto_asm.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--lto-lite"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "37f2e67fd7d7f37983584b070997e0e14abb19906ebc5f89bb736b7d2621e38f",
+    "native_sha256": "37f2e67fd7d7f37983584b070997e0e14abb19906ebc5f89bb736b7d2621e38f"
+  },
+  {
+    "case": "option_50",
+    "sources": [
+      "tests/values/../options/inline_void.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "--small-inline"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "c707a9911299eb596f870cb566eeb032791a83ad3bbc03828d0661afcb5079a5",
+    "native_sha256": "c707a9911299eb596f870cb566eeb032791a83ad3bbc03828d0661afcb5079a5"
+  },
+  {
+    "case": "option_51",
+    "sources": [
+      "tests/values/../options/counted_wrap.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "288c6f0bd2de549335a15a477e79914c89da4bcf0f167f7753f207beba52de84",
+    "native_sha256": "288c6f0bd2de549335a15a477e79914c89da4bcf0f167f7753f207beba52de84"
+  },
+  {
+    "case": "option_52",
+    "sources": [
+      "tests/values/bank_fast_args.c"
+    ],
+    "mapper": "uxrom",
+    "flags": [
+      "--mapper-aware-placement",
+      "--kurosaki-profile=$PORT/tests/options/hotness.json"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "26834ef91e73f9fa4b7b7d0bf958cb089a5dfad5d2f55a86beb9d338c1eb26e0",
+    "native_sha256": "26834ef91e73f9fa4b7b7d0bf958cb089a5dfad5d2f55a86beb9d338c1eb26e0"
+  },
+  {
+    "case": "action___ppu_on",
+    "sources": [
+      "tests/intrinsics/__ppu_on.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "70702278108a3975a8ece2dc993cddc9417a5b443900465e8eb4c8d4333fa0b9",
+    "native_sha256": "70702278108a3975a8ece2dc993cddc9417a5b443900465e8eb4c8d4333fa0b9"
+  },
+  {
+    "case": "action___ppu_off",
+    "sources": [
+      "tests/intrinsics/__ppu_off.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "b86b6fdaef7dd5252ec18e309ad225046390530dd8c56fb2a5165291d67ee993",
+    "native_sha256": "b86b6fdaef7dd5252ec18e309ad225046390530dd8c56fb2a5165291d67ee993"
+  },
+  {
+    "case": "action___ppu_mask_set",
+    "sources": [
+      "tests/intrinsics/__ppu_mask_set.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "cc54d04332db5944179adb36f0a7bd5cab6951a0469cf55527a232fb98a3eb32",
+    "native_sha256": "cc54d04332db5944179adb36f0a7bd5cab6951a0469cf55527a232fb98a3eb32"
+  },
+  {
+    "case": "action___ppu_ctrl_set",
+    "sources": [
+      "tests/intrinsics/__ppu_ctrl_set.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "8c085ba472a22d69cb4f256f89b7328ab0981d58ffc785d7db3017bca1e92388",
+    "native_sha256": "8c085ba472a22d69cb4f256f89b7328ab0981d58ffc785d7db3017bca1e92388"
+  },
+  {
+    "case": "action___ppu_addr",
+    "sources": [
+      "tests/intrinsics/__ppu_addr.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "b6f62b4c94c916128f0601a735407f738f02f70acfc7b035b993a5f3c3738e02",
+    "native_sha256": "b6f62b4c94c916128f0601a735407f738f02f70acfc7b035b993a5f3c3738e02"
+  },
+  {
+    "case": "action___ppu_data",
+    "sources": [
+      "tests/intrinsics/__ppu_data.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "b44314d36e7beda08502c0077fabf548da4ce818772a090f125c215657eff57a",
+    "native_sha256": "b44314d36e7beda08502c0077fabf548da4ce818772a090f125c215657eff57a"
+  },
+  {
+    "case": "action___vram_write",
+    "sources": [
+      "tests/intrinsics/__vram_write.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "0e6068fd4693d1e241f45cb711186afc13835fbab70fed6d085df9ffb8c8d07b",
+    "native_sha256": "0e6068fd4693d1e241f45cb711186afc13835fbab70fed6d085df9ffb8c8d07b"
+  },
+  {
+    "case": "action___vram_fill",
+    "sources": [
+      "tests/intrinsics/__vram_fill.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "d35f603cc40306e218ec452aeac30184d5dc3f8a57d5e172e1e4580928ea23fe",
+    "native_sha256": "d35f603cc40306e218ec452aeac30184d5dc3f8a57d5e172e1e4580928ea23fe"
+  },
+  {
+    "case": "action___nametable_put",
+    "sources": [
+      "tests/intrinsics/__nametable_put.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "283aa6af4f4b24936310c96151bca323f4fb44effdb786a5570ffdae8a912c0e",
+    "native_sha256": "283aa6af4f4b24936310c96151bca323f4fb44effdb786a5570ffdae8a912c0e"
+  },
+  {
+    "case": "action___nametable_put_nt",
+    "sources": [
+      "tests/intrinsics/__nametable_put_nt.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "ea36be673c7476cf8a8f5c551ddc5364257557b547d375d6d2b36dbb191602a0",
+    "native_sha256": "ea36be673c7476cf8a8f5c551ddc5364257557b547d375d6d2b36dbb191602a0"
+  },
+  {
+    "case": "action___nametable_rect",
+    "sources": [
+      "tests/intrinsics/__nametable_rect.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "1b2e235a83b8cdf5dbbb57b3d2ccf684507897190b4f86b578b04b3374c43313",
+    "native_sha256": "1b2e235a83b8cdf5dbbb57b3d2ccf684507897190b4f86b578b04b3374c43313"
+  },
+  {
+    "case": "action___nametable_rect_nt",
+    "sources": [
+      "tests/intrinsics/__nametable_rect_nt.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "dc398bffcc3260a81f91e41db0936a2ef7f35c1f146f754435baa928f23d454a",
+    "native_sha256": "dc398bffcc3260a81f91e41db0936a2ef7f35c1f146f754435baa928f23d454a"
+  },
+  {
+    "case": "action___attr_set",
+    "sources": [
+      "tests/intrinsics/__attr_set.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "615d072ee4493588568116be0f44fc0792bfe20a432ad3e19c94bbf3b307d6e4",
+    "native_sha256": "615d072ee4493588568116be0f44fc0792bfe20a432ad3e19c94bbf3b307d6e4"
+  },
+  {
+    "case": "action___attr_set_nt",
+    "sources": [
+      "tests/intrinsics/__attr_set_nt.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "e43aea8489a60d7d787f4065e59e02b33645848a3b48866349e49756727a1dab",
+    "native_sha256": "e43aea8489a60d7d787f4065e59e02b33645848a3b48866349e49756727a1dab"
+  },
+  {
+    "case": "action___palette_bg_load",
+    "sources": [
+      "tests/intrinsics/__palette_bg_load.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "161bd5cf7b621d30d3b5c129fed499905b853dc25b9fa69d6ec183900b37a64a",
+    "native_sha256": "161bd5cf7b621d30d3b5c129fed499905b853dc25b9fa69d6ec183900b37a64a"
+  },
+  {
+    "case": "action___palette_sp_load",
+    "sources": [
+      "tests/intrinsics/__palette_sp_load.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "890dbf8df78a0549af2ffc2b49aed6e22257bd9341de449074e8c60f0a276fa5",
+    "native_sha256": "890dbf8df78a0549af2ffc2b49aed6e22257bd9341de449074e8c60f0a276fa5"
+  },
+  {
+    "case": "action___vramq_clear",
+    "sources": [
+      "tests/intrinsics/__vramq_clear.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "af30bda25080fd730fbb100cf49309f85a1a533ca9be244be745a45436135f3c",
+    "native_sha256": "af30bda25080fd730fbb100cf49309f85a1a533ca9be244be745a45436135f3c"
+  },
+  {
+    "case": "action___vramq_put",
+    "sources": [
+      "tests/intrinsics/__vramq_put.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "f1c69258c3b5d4a628a2f456f8a61eb94abe9f4d6503e3eb8216c9579843203f",
+    "native_sha256": "f1c69258c3b5d4a628a2f456f8a61eb94abe9f4d6503e3eb8216c9579843203f"
+  },
+  {
+    "case": "action___vramq_copy",
+    "sources": [
+      "tests/intrinsics/__vramq_copy.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "e04dafefb3f62fcafac8e89c3fd166aff1505889da2ceb5eaee086956cd66a10",
+    "native_sha256": "e04dafefb3f62fcafac8e89c3fd166aff1505889da2ceb5eaee086956cd66a10"
+  },
+  {
+    "case": "action___vramq_fill",
+    "sources": [
+      "tests/intrinsics/__vramq_fill.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "19db0410a43b961d990a3a72cb3773c060c758dc317e3578734bd48501e50d37",
+    "native_sha256": "19db0410a43b961d990a3a72cb3773c060c758dc317e3578734bd48501e50d37"
+  },
+  {
+    "case": "action___vramq_commit",
+    "sources": [
+      "tests/intrinsics/__vramq_commit.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "664a427eb92fdb46e96e2fe58dd2fac05552b1d004f0e06a4282a28d50625fca",
+    "native_sha256": "664a427eb92fdb46e96e2fe58dd2fac05552b1d004f0e06a4282a28d50625fca"
+  },
+  {
+    "case": "action___vramq_exec",
+    "sources": [
+      "tests/intrinsics/__vramq_exec.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "f9bb0bf850f70ba67ed619564594eb4e41ff8296f771b811e521ab300c00a003",
+    "native_sha256": "f9bb0bf850f70ba67ed619564594eb4e41ff8296f771b811e521ab300c00a003"
+  },
+  {
+    "case": "action___oam_dma",
+    "sources": [
+      "tests/intrinsics/__oam_dma.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "025d0c829f18d1ff8e6e16b10383268ed1876a5955f638d8e23b2cc9fd093fd9",
+    "native_sha256": "025d0c829f18d1ff8e6e16b10383268ed1876a5955f638d8e23b2cc9fd093fd9"
+  },
+  {
+    "case": "action___oam_dma_page",
+    "sources": [
+      "tests/intrinsics/__oam_dma_page.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "c0cf1ce8ccaf1a4e3d230b124ef8e5ec64ff89204bc080bf014b692e5260a0ea",
+    "native_sha256": "c0cf1ce8ccaf1a4e3d230b124ef8e5ec64ff89204bc080bf014b692e5260a0ea"
+  },
+  {
+    "case": "action___oam_clear",
+    "sources": [
+      "tests/intrinsics/__oam_clear.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "5c8c97b964e3089c8391726017ef9a684fcc6a86ab81d78eaa6f2a5352c9a397",
+    "native_sha256": "5c8c97b964e3089c8391726017ef9a684fcc6a86ab81d78eaa6f2a5352c9a397"
+  },
+  {
+    "case": "action___sprite_set",
+    "sources": [
+      "tests/intrinsics/__sprite_set.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "8498d38e1b5ba4dfa204099cf9719491d51827469788af0beec90e25972ce367",
+    "native_sha256": "8498d38e1b5ba4dfa204099cf9719491d51827469788af0beec90e25972ce367"
+  },
+  {
+    "case": "action___sprite_move",
+    "sources": [
+      "tests/intrinsics/__sprite_move.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "140bfc547a2e044174ca624e79b2f344d93dba8149803b2f55f4e89e52366e0b",
+    "native_sha256": "140bfc547a2e044174ca624e79b2f344d93dba8149803b2f55f4e89e52366e0b"
+  },
+  {
+    "case": "action___sprite_tile",
+    "sources": [
+      "tests/intrinsics/__sprite_tile.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "64e3aed7c7e15dd28438f203fdb35184d4e499bd9a11f81ef52a9d3919582621",
+    "native_sha256": "64e3aed7c7e15dd28438f203fdb35184d4e499bd9a11f81ef52a9d3919582621"
+  },
+  {
+    "case": "action___sprite_attr",
+    "sources": [
+      "tests/intrinsics/__sprite_attr.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "2e22351d84b90ddc70bce330d16f2ba468c9d951a7b06171ca7c5c2432c2a8c4",
+    "native_sha256": "2e22351d84b90ddc70bce330d16f2ba468c9d951a7b06171ca7c5c2432c2a8c4"
+  },
+  {
+    "case": "action___sprite_hide",
+    "sources": [
+      "tests/intrinsics/__sprite_hide.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "38e9dcc476bfa884989ff5a450672d11d745424e9e142e48db0166bbc9b9a87b",
+    "native_sha256": "38e9dcc476bfa884989ff5a450672d11d745424e9e142e48db0166bbc9b9a87b"
+  },
+  {
+    "case": "action___metasprite_draw",
+    "sources": [
+      "tests/intrinsics/__metasprite_draw.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "ce6c7ea6fd3319d208dead48803e5917ad4c107805e88960dfbb9105344867aa",
+    "native_sha256": "ce6c7ea6fd3319d208dead48803e5917ad4c107805e88960dfbb9105344867aa"
+  },
+  {
+    "case": "action___irq_scanline_set",
+    "sources": [
+      "tests/intrinsics/__irq_scanline_set.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "0c7f9b621618acab0475f7d84748ec9e95b800001b8e02b4e516aba951bf7617",
+    "native_sha256": "0c7f9b621618acab0475f7d84748ec9e95b800001b8e02b4e516aba951bf7617"
+  },
+  {
+    "case": "action___mapper_irq_set",
+    "sources": [
+      "tests/intrinsics/__mapper_irq_set.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "906f9124254c7c3b87f9f2f9f6adfdf0e1b64dbced96206f13bc533b4cc34c0d",
+    "native_sha256": "906f9124254c7c3b87f9f2f9f6adfdf0e1b64dbced96206f13bc533b4cc34c0d"
+  },
+  {
+    "case": "action___mapper_irq_enable",
+    "sources": [
+      "tests/intrinsics/__mapper_irq_enable.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "325962b6b96bf6c8cb28423631b295c11d4f569d56af0e3c8486dfbe49081e34",
+    "native_sha256": "325962b6b96bf6c8cb28423631b295c11d4f569d56af0e3c8486dfbe49081e34"
+  },
+  {
+    "case": "action___mapper_irq_disable",
+    "sources": [
+      "tests/intrinsics/__mapper_irq_disable.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "9d3d93df058576cdedb52fd2e394e03c606b43b44ea3c06e80d58dd6eac090af",
+    "native_sha256": "9d3d93df058576cdedb52fd2e394e03c606b43b44ea3c06e80d58dd6eac090af"
+  },
+  {
+    "case": "action___mapper_irq_ack",
+    "sources": [
+      "tests/intrinsics/__mapper_irq_ack.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "b09633eb27fdf5c02c543a9d25c429c1eea44d46b128da9def48b94b6dc45c41",
+    "native_sha256": "b09633eb27fdf5c02c543a9d25c429c1eea44d46b128da9def48b94b6dc45c41"
+  },
+  {
+    "case": "action___split_scroll_sprite0",
+    "sources": [
+      "tests/intrinsics/__split_scroll_sprite0.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "1c106fa2de32deeaad92871027c9d5ffe51f58e363b1823e1a5a3bd0e423a9ff",
+    "native_sha256": "1c106fa2de32deeaad92871027c9d5ffe51f58e363b1823e1a5a3bd0e423a9ff"
+  },
+  {
+    "case": "action___fds_load_file",
+    "sources": [
+      "tests/intrinsics/__fds_load_file.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "d10aa249933f519fe0f1d8f221ae0746992dd92db931637cd6bb6f4971d24a65",
+    "native_sha256": "d10aa249933f519fe0f1d8f221ae0746992dd92db931637cd6bb6f4971d24a65"
+  },
+  {
+    "case": "action___fds_save_file",
+    "sources": [
+      "tests/intrinsics/__fds_save_file.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "4a497d7ca6fabd51be1cc4ff98d3147a1534a37f7ba746d3b31935a539d08554",
+    "native_sha256": "4a497d7ca6fabd51be1cc4ff98d3147a1534a37f7ba746d3b31935a539d08554"
+  },
+  {
+    "case": "action___fds_load_overlay",
+    "sources": [
+      "tests/intrinsics/__fds_load_overlay.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "c3a96c3b8f619823b109ffff5fbc438bcef72accb35044bf4d0e3e39a1a4fdde",
+    "native_sha256": "c3a96c3b8f619823b109ffff5fbc438bcef72accb35044bf4d0e3e39a1a4fdde"
+  },
+  {
+    "case": "action___fds_load_bank",
+    "sources": [
+      "tests/intrinsics/__fds_load_bank.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "9acab6af15876c614f332db48b39e717788890b673068009774fe167f6222663",
+    "native_sha256": "9acab6af15876c614f332db48b39e717788890b673068009774fe167f6222663"
+  },
+  {
+    "case": "action___fds_overlay_farcall",
+    "sources": [
+      "tests/intrinsics/__fds_overlay_farcall.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "2f705f337093c562fb3024259735310357ddd6265254c42f2417dc6be07f7f95",
+    "native_sha256": "2f705f337093c562fb3024259735310357ddd6265254c42f2417dc6be07f7f95"
+  },
+  {
+    "case": "action___fds_farcall",
+    "sources": [
+      "tests/intrinsics/__fds_farcall.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "66f55a073b0079db9f5139873d1f5279a9d981c02d08efda109bed51b7e0a6cc",
+    "native_sha256": "66f55a073b0079db9f5139873d1f5279a9d981c02d08efda109bed51b7e0a6cc"
+  },
+  {
+    "case": "action___fds_wave_load",
+    "sources": [
+      "tests/intrinsics/__fds_wave_load.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "ca50ecb43d06ac1f9e06be8c71b28011054d9f4eafc9665dce1cb783346fe997",
+    "native_sha256": "ca50ecb43d06ac1f9e06be8c71b28011054d9f4eafc9665dce1cb783346fe997"
+  },
+  {
+    "case": "action___fds_mod_load",
+    "sources": [
+      "tests/intrinsics/__fds_mod_load.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "9e7c688da295cd58ce006bfbb45a24dc12bf23a42a82841dad8b7a4a28733334",
+    "native_sha256": "9e7c688da295cd58ce006bfbb45a24dc12bf23a42a82841dad8b7a4a28733334"
+  },
+  {
+    "case": "action___fds_freq_set",
+    "sources": [
+      "tests/intrinsics/__fds_freq_set.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "80bca051ae493b42cfccdbe1ff3a7bd081e4ef47b20cc053c3c81cd66985abcc",
+    "native_sha256": "80bca051ae493b42cfccdbe1ff3a7bd081e4ef47b20cc053c3c81cd66985abcc"
+  },
+  {
+    "case": "action___fds_volume_set",
+    "sources": [
+      "tests/intrinsics/__fds_volume_set.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "06df52a11367573c429e54f0dca95c96719fd6b9ca89292db0b4c90ac611e7e0",
+    "native_sha256": "06df52a11367573c429e54f0dca95c96719fd6b9ca89292db0b4c90ac611e7e0"
+  },
+  {
+    "case": "action___fds_env_set",
+    "sources": [
+      "tests/intrinsics/__fds_env_set.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "2ef5d594e83e1844d4f1135bfe9c53694b1d9a864f04a5a2fdb9cff7c8bd993d",
+    "native_sha256": "2ef5d594e83e1844d4f1135bfe9c53694b1d9a864f04a5a2fdb9cff7c8bd993d"
+  },
+  {
+    "case": "library_dispatch",
+    "sources": [
+      "tests/library/library_dispatch.c",
+      "lib/entity.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "daf8b4d95f51705fed7160d8d369ce25bab83fae5be03a2b32f5da47b14ed3c6",
+    "native_sha256": "daf8b4d95f51705fed7160d8d369ce25bab83fae5be03a2b32f5da47b14ed3c6"
+  },
+  {
+    "case": "library_basics",
+    "sources": [
+      "tests/library/library_basics.c"
+    ],
+    "mapper": "nrom",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "845788b37a1e55501917119de7463264c5bef8a68196df77583701fd07dac187",
+    "native_sha256": "845788b37a1e55501917119de7463264c5bef8a68196df77583701fd07dac187"
+  },
+  {
+    "case": "skyjar_dx",
+    "sources": [
+      "tests/games/skyjar_dx/main.c"
+    ],
+    "mapper": "nrom",
+    "flags": [
+      "-O2",
+      "--mirroring=vertical",
+      "--nes-chr=$PORT/tests/games/skyjar_dx/assets/skyjar.chr"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "fd5dcc9f0b8744fca91bd1a3884176fd28d6f8d1214909c7960166846f820a1a",
+    "native_sha256": "fd5dcc9f0b8744fca91bd1a3884176fd28d6f8d1214909c7960166846f820a1a"
+  },
+  {
+    "case": "mip_courier",
+    "sources": [
+      "tests/games/mip_courier/main.c",
+      "tests/games/mip_courier/game.c",
+      "tests/games/mip_courier/render.c",
+      "tests/games/mip_courier/physics_stage.c",
+      "tests/games/mip_courier/audio.c",
+      "tests/games/mip_courier/hardware.c",
+      "tests/games/mip_courier/assets.c",
+      "tests/games/mip_courier/../../../lib/physics2d.c"
+    ],
+    "mapper": "mmc3",
+    "flags": [
+      "-O2",
+      "--mirroring=vertical",
+      "--nes-chr=$PORT/tests/games/mip_courier/assets/mip_courier.chr"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "2396ef4311f09bf8d744b43ba426cbab7c4aa1cc56decdb9d7eda327e5da73a3",
+    "native_sha256": "2396ef4311f09bf8d744b43ba426cbab7c4aa1cc56decdb9d7eda327e5da73a3"
+  },
+  {
+    "case": "fds_args_0",
+    "sources": [
+      "tests/fds_arguments/fds_args_0.c"
+    ],
+    "mapper": "fds",
+    "flags": [],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "c2abea8b4ba8186abe02b5ebc9eed0ad6577f582d7cf43898067eeed77f47482",
+    "native_sha256": "c2abea8b4ba8186abe02b5ebc9eed0ad6577f582d7cf43898067eeed77f47482"
+  },
+  {
+    "case": "fds_args_1",
+    "sources": [
+      "tests/fds_arguments/fds_args_1.c"
+    ],
+    "mapper": "fds",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "7e330eae5144c80b08b1f49f97c58495312778565bc4938cb0a86de742927840",
+    "native_sha256": "7e330eae5144c80b08b1f49f97c58495312778565bc4938cb0a86de742927840"
+  },
+  {
+    "case": "fds_args_2",
+    "sources": [
+      "tests/fds_arguments/fds_args_2.c"
+    ],
+    "mapper": "fds",
+    "flags": [
+      "--fds-no-overlay-guard"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "f6352adb0fce7dcf8d7e64fba4d06704640a38414ad7e6107f3063d912e1e188",
+    "native_sha256": "f6352adb0fce7dcf8d7e64fba4d06704640a38414ad7e6107f3063d912e1e188"
+  },
+  {
+    "case": "fds_args_3",
+    "sources": [
+      "tests/fds_arguments/fds_args_3.c"
+    ],
+    "mapper": "fds",
+    "flags": [
+      "--fastcall-v2",
+      "--fds-no-overlay-guard"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "22cba019b49cfb723b94f02dd2fd454d3e7d71d5d4a331aabede63187e6091b5",
+    "native_sha256": "22cba019b49cfb723b94f02dd2fd454d3e7d71d5d4a331aabede63187e6091b5"
+  },
+  {
+    "case": "fds_no_farcall",
+    "sources": [
+      "tests/fds_arguments/fds_args_0.c"
+    ],
+    "mapper": "fds",
+    "flags": [
+      "--fds-no-overlay-farcall"
+    ],
+    "passed": true,
+    "metadata_equal": true,
+    "reference_sha256": "5fde0214b5db93f4f65cc28f2cd7d7de7a4739e3234873ae125f6a5cbc9bafdf",
+    "native_sha256": "5fde0214b5db93f4f65cc28f2cd7d7de7a4739e3234873ae125f6a5cbc9bafdf"
+  }
+]

@@ -1,0 +1,4 @@
+# KITAQGB farcall suggestion report
+# caller -> callee, count, caller_bank, callee_bank, current_kind, recommendation
+<none> -> main, 1, 0, 1, direct_boot, check bank safety
+main -> add, 1, 1, 2, direct, check bank safety

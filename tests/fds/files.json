@@ -1,0 +1,36 @@
+{
+  "format": "kitaqfc-fds-metadata-v1",
+  "files": [
+    {
+      "id": 4,
+      "size": 16384,
+      "load": "0x6000",
+      "type": 0,
+      "name": "BOOT"
+    },
+    {
+      "id": 5,
+      "size": 16384,
+      "load": "0xA000",
+      "type": 0,
+      "name": "COMMON"
+    },
+    {
+      "id": 6,
+      "size": 8192,
+      "load": "0x0000",
+      "type": 1,
+      "name": "CHR"
+    },
+    {
+      "id": 10,
+      "size": 24,
+      "load": "0x0300",
+      "type": 0,
+      "name": "EXTERNAL",
+      "source": "payload.bin",
+      "side": 1,
+      "boot": false
+    }
+  ]
+}

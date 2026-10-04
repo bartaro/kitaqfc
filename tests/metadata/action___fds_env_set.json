@@ -1,0 +1,3000 @@
+{
+  "schema": "kitaqfc-nes-build-metadata-v2",
+  "producer": "KITAQFC",
+  "target": "nes",
+  "output": "$OUTPUT",
+  "mapper": "fds",
+  "board": "generic",
+  "cartridge": {
+    "mapper_number": 20,
+    "mapper": "fds",
+    "board": "generic",
+    "header": "ines1",
+    "prg_rom_bytes": 32768,
+    "chr_rom_bytes": 8192,
+    "chr_ram_bytes": 0,
+    "prg_ram_bytes": 8192,
+    "battery": false,
+    "prg_mode": 3,
+    "chr_mode": 0
+  },
+  "optimizations": {
+    "whole_program_zp": false,
+    "fastcall_v2": false,
+    "static_frame": false,
+    "small_inline": false,
+    "loop_lowering": false,
+    "lto_lite": false,
+    "profile_feedback": false,
+    "mapper_aware_placement": false
+  },
+  "ram_access_contract": {
+    "schema": "kitaqfc-ram-access-v1",
+    "allocator_complete": true,
+    "implicit_stack": {
+      "start": 256,
+      "end_exclusive": 512,
+      "conservative": true
+    },
+    "configured_local_window": null,
+    "compiler_temp_window": {
+      "start": 208,
+      "end_exclusive": 256,
+      "custom": false
+    },
+    "allocations": [
+      {
+        "id": "allocation_0001",
+        "kind": "abi_call_args",
+        "address": 192,
+        "size": 16,
+        "end_exclusive": 208,
+        "region": "cpu_ram_zero_page",
+        "conservative": true
+      },
+      {
+        "id": "allocation_0002",
+        "kind": "compiler_temp_pool",
+        "address": 208,
+        "size": 48,
+        "end_exclusive": 256,
+        "region": "cpu_ram_zero_page",
+        "conservative": true
+      },
+      {
+        "id": "allocation_0003",
+        "kind": "runtime",
+        "address": 768,
+        "size": 1,
+        "end_exclusive": 769,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0004",
+        "kind": "runtime",
+        "address": 769,
+        "size": 1,
+        "end_exclusive": 770,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0005",
+        "kind": "runtime",
+        "address": 770,
+        "size": 1,
+        "end_exclusive": 771,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0006",
+        "kind": "runtime",
+        "address": 771,
+        "size": 1,
+        "end_exclusive": 772,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0007",
+        "kind": "runtime",
+        "address": 772,
+        "size": 1,
+        "end_exclusive": 773,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0008",
+        "kind": "runtime",
+        "address": 773,
+        "size": 1,
+        "end_exclusive": 774,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0009",
+        "kind": "runtime",
+        "address": 774,
+        "size": 1,
+        "end_exclusive": 775,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0010",
+        "kind": "runtime",
+        "address": 775,
+        "size": 1,
+        "end_exclusive": 776,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0011",
+        "kind": "runtime",
+        "address": 776,
+        "size": 1,
+        "end_exclusive": 777,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0012",
+        "kind": "runtime",
+        "address": 777,
+        "size": 1,
+        "end_exclusive": 778,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0013",
+        "kind": "runtime",
+        "address": 778,
+        "size": 1,
+        "end_exclusive": 779,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0014",
+        "kind": "runtime",
+        "address": 779,
+        "size": 1,
+        "end_exclusive": 780,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0015",
+        "kind": "runtime",
+        "address": 780,
+        "size": 1,
+        "end_exclusive": 781,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0016",
+        "kind": "runtime",
+        "address": 781,
+        "size": 1,
+        "end_exclusive": 782,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0017",
+        "kind": "runtime",
+        "address": 782,
+        "size": 1,
+        "end_exclusive": 783,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0018",
+        "kind": "runtime",
+        "address": 783,
+        "size": 1,
+        "end_exclusive": 784,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0019",
+        "kind": "runtime",
+        "address": 784,
+        "size": 1,
+        "end_exclusive": 785,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0020",
+        "kind": "runtime",
+        "address": 785,
+        "size": 1,
+        "end_exclusive": 786,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0021",
+        "kind": "runtime",
+        "address": 786,
+        "size": 1,
+        "end_exclusive": 787,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0022",
+        "kind": "runtime",
+        "address": 787,
+        "size": 1,
+        "end_exclusive": 788,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0023",
+        "kind": "runtime_buffer",
+        "address": 788,
+        "size": 128,
+        "end_exclusive": 916,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0024",
+        "kind": "runtime",
+        "address": 916,
+        "size": 1,
+        "end_exclusive": 917,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0025",
+        "kind": "runtime_buffer",
+        "address": 917,
+        "size": 2,
+        "end_exclusive": 919,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0026",
+        "kind": "runtime_buffer",
+        "address": 919,
+        "size": 49,
+        "end_exclusive": 968,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0027",
+        "kind": "runtime",
+        "address": 968,
+        "size": 1,
+        "end_exclusive": 969,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0028",
+        "kind": "runtime",
+        "address": 969,
+        "size": 1,
+        "end_exclusive": 970,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0029",
+        "kind": "runtime",
+        "address": 970,
+        "size": 1,
+        "end_exclusive": 971,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0030",
+        "kind": "runtime",
+        "address": 971,
+        "size": 1,
+        "end_exclusive": 972,
+        "region": "cpu_ram",
+        "conservative": false
+      },
+      {
+        "id": "allocation_0031",
+        "kind": "runtime",
+        "address": 972,
+        "size": 1,
+        "end_exclusive": 973,
+        "region": "cpu_ram",
+        "conservative": false
+      }
+    ],
+    "function_accesses": [
+      {
+        "id": "access_0001",
+        "function": "main",
+        "bank": 1,
+        "operation": "write",
+        "address": 192,
+        "span": 1,
+        "end_exclusive": 193,
+        "region": "cpu_ram_zero_page",
+        "dynamic_target": false
+      },
+      {
+        "id": "access_0002",
+        "function": "main",
+        "bank": 1,
+        "operation": "write",
+        "address": 193,
+        "span": 1,
+        "end_exclusive": 194,
+        "region": "cpu_ram_zero_page",
+        "dynamic_target": false
+      },
+      {
+        "id": "access_0003",
+        "function": "main",
+        "bank": 1,
+        "operation": "write",
+        "address": 194,
+        "span": 1,
+        "end_exclusive": 195,
+        "region": "cpu_ram_zero_page",
+        "dynamic_target": false
+      },
+      {
+        "id": "access_0004",
+        "function": "main",
+        "bank": 1,
+        "operation": "read",
+        "address": 208,
+        "span": 1,
+        "end_exclusive": 209,
+        "region": "cpu_ram_zero_page",
+        "dynamic_target": false
+      },
+      {
+        "id": "access_0005",
+        "function": "main",
+        "bank": 1,
+        "operation": "write",
+        "address": 208,
+        "span": 1,
+        "end_exclusive": 209,
+        "region": "cpu_ram_zero_page",
+        "dynamic_target": false
+      },
+      {
+        "id": "access_0006",
+        "function": "main",
+        "bank": 1,
+        "operation": "read",
+        "address": 209,
+        "span": 1,
+        "end_exclusive": 210,
+        "region": "cpu_ram_zero_page",
+        "dynamic_target": false
+      },
+      {
+        "id": "access_0007",
+        "function": "main",
+        "bank": 1,
+        "operation": "write",
+        "address": 209,
+        "span": 1,
+        "end_exclusive": 210,
+        "region": "cpu_ram_zero_page",
+        "dynamic_target": false
+      },
+      {
+        "id": "access_0008",
+        "function": "main",
+        "bank": 1,
+        "operation": "read",
+        "address": 210,
+        "span": 1,
+        "end_exclusive": 211,
+        "region": "cpu_ram_zero_page",
+        "dynamic_target": false
+      },
+      {
+        "id": "access_0009",
+        "function": "main",
+        "bank": 1,
+        "operation": "write",
+        "address": 210,
+        "span": 1,
+        "end_exclusive": 211,
+        "region": "cpu_ram_zero_page",
+        "dynamic_target": false
+      }
+    ]
+  },
+  "fds": {
+    "enabled": true,
+    "layout": "fds32",
+    "auto_overlay": true,
+    "overlay_farcall": true
+  },
+  "functions": [
+    {
+      "name": "__attr_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__attr_set_nt",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__bankof",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        2
+      ]
+    },
+    {
+      "name": "__bankswitch",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__bit_clear",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "__bit_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "__bit_test",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "__bit_toggle",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "__chr_bank_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__chr_bank_set0",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__chr_bank_set1",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__copy16",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "__copy32",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "__dot2_q8_8",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__dot3_q8_8",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        2,
+        2,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__exp_pad_read1",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__exp_pad_read2",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__far_memcpy",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "__farcall",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "__farpeek16",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "__farpeek8",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "__fds_available",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__fds_current_bank",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__fds_disk_ready",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__fds_env_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__fds_error",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__fds_farcall",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "__fds_file_exists",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__fds_file_size",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__fds_freq_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2
+      ]
+    },
+    {
+      "name": "__fds_is_bank_resident",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__fds_load_bank",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__fds_load_file",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "__fds_load_overlay",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__fds_mod_load",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2
+      ]
+    },
+    {
+      "name": "__fds_overlay_farcall",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "__fds_overlay_function_count",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__fds_require_bank",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__fds_save_file",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "__fds_side",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__fds_sound_enable",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__fds_volume_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__fds_wait_insert",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__fds_wait_ready",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__fds_wave_load",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2
+      ]
+    },
+    {
+      "name": "__fkb_detect",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__fkb_read_row_col",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__fkb_scan",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2
+      ]
+    },
+    {
+      "name": "__irq_disable",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__irq_enable",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__irq_restore",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__irq_save",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__irq_scanline_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__joypad2p_voice",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__mac16",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "__manhattan",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__map_index",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__mapper_id",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__mapper_irq_ack",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__mapper_irq_disable",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__mapper_irq_enable",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__mapper_irq_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__memcpy",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "__memcpy_small",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "__memset",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "__memset_small",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__metasprite_draw",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "__mic_read2p",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__midi_clock",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__midi_continue",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__midi_control_change",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__midi_in_byte",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__midi_note_off",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__midi_note_on",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__midi_out_byte",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__midi_program_change",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__midi_start",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__midi_stop",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__mirroring_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__mul16x8",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "__mul8x8_hi",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__nametable_put",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__nametable_put_nt",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__nametable_rect",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__nametable_rect_nt",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__nmi_disable",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__nmi_enable",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__nmi_ready",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__nmi_wait",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__oam_clear",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__oam_dma",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__oam_dma_page",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__pad_buttons",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__pad_dirs",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__pad_read1",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__pad_read1_d1",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__pad_read1_safe",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__pad_read2",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__pad_read2_d1",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__pad_read2_safe",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__palette_bg_load",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2
+      ]
+    },
+    {
+      "name": "__palette_sp_load",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2
+      ]
+    },
+    {
+      "name": "__ppu_addr",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2
+      ]
+    },
+    {
+      "name": "__ppu_ctrl_get",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__ppu_ctrl_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__ppu_data",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__ppu_mask_get",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__ppu_mask_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__ppu_off",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__ppu_on",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__ppu_read_status",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__prg_bank_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__rng8",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__rng_seed",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2
+      ]
+    },
+    {
+      "name": "__rob_flash",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__rob_pulse",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__rob_send_byte",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__scroll_latch_reset",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__scroll_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__scroll_x_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__scroll_y_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__sdot2_q1_7",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__sdot2_q8_8",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__sdot3_q1_7",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        2,
+        2,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__sdot3_q8_8",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        2,
+        2,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__serial_rx_bit",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__serial_tx_bit",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__smac16",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "__smac16_q1_7",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "__smul16x8",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "__smul16x8_q1_7",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 2,
+      "param_sizes": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "__split_scroll_sprite0",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__sprite0_wait_hit",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__sprite_attr",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__sprite_hide",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1
+      ]
+    },
+    {
+      "name": "__sprite_move",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__sprite_set",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__sprite_tile",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__vram_fill",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__vram_write",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "__vramq_capacity",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__vramq_clear",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__vramq_clear_overflow",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__vramq_commit",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__vramq_copy",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "__vramq_exec",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    },
+    {
+      "name": "__vramq_fill",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__vramq_len",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__vramq_overflow",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__vramq_put",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "__xy_in_rect",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "__zapper_light",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__zapper_light1",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__zapper_light2",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__zapper_raw1",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__zapper_raw2",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__zapper_trigger",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__zapper_trigger1",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "__zapper_trigger2",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": true,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 1,
+      "param_sizes": []
+    },
+    {
+      "name": "main",
+      "bank": 1,
+      "fixed_bank": false,
+      "prototype": false,
+      "inline": false,
+      "fastcall": false,
+      "return_size": 0,
+      "param_sizes": []
+    }
+  ],
+  "calls": [
+    {
+      "caller": "<none>",
+      "caller_bank": 0,
+      "callee": "main",
+      "callee_bank": 1,
+      "kind": "direct_boot",
+      "via_thunk": false,
+      "via_farcall": false,
+      "count": 1
+    }
+  ],
+  "optimization_events": {
+    "zp_allocations": 0,
+    "static_frame_slots": 0,
+    "ram_allocations": 31,
+    "ram_accesses": 9,
+    "inline_decisions": 0,
+    "loop_lowerings": 0,
+    "lto_removed_functions": 0,
+    "bank_placements": 0
+  },
+  "nes_actions": [
+    {
+      "name": "__fds_env_set",
+      "category": "fds_sound",
+      "operation": "fds_env_set",
+      "kurosaki_kind": "fds_sound",
+      "caller": "main",
+      "caller_bank": 1,
+      "source": "<unknown> (line 1, column 1)",
+      "timing": "FdsOnly",
+      "direct_ppu": false,
+      "queue_ppu": false,
+      "oam_shadow": false,
+      "oam_dma": false,
+      "requires_fds": true,
+      "mapper_requirement": "",
+      "note": ""
+    }
+  ],
+  "function_sizes": [
+    {
+      "name": "__kq_reset_stub",
+      "bank": 0,
+      "cpu_address": 40960,
+      "size": 63
+    },
+    {
+      "name": "__kq_nmi_default",
+      "bank": 0,
+      "cpu_address": 41023,
+      "size": 59
+    },
+    {
+      "name": "__kq_irq_default",
+      "bank": 0,
+      "cpu_address": 41082,
+      "size": 1
+    },
+    {
+      "name": "__kq_hang",
+      "bank": 0,
+      "cpu_address": 41083,
+      "size": 3
+    },
+    {
+      "name": "__kq_prg_set_bank_a",
+      "bank": 0,
+      "cpu_address": 41086,
+      "size": 10
+    },
+    {
+      "name": "__nmi_wait",
+      "bank": 0,
+      "cpu_address": 41096,
+      "size": 15
+    },
+    {
+      "name": "__memcpy_small",
+      "bank": 0,
+      "cpu_address": 41111,
+      "size": 7
+    },
+    {
+      "name": "__memcpy",
+      "bank": 0,
+      "cpu_address": 41118,
+      "size": 39
+    },
+    {
+      "name": "__memset_small",
+      "bank": 0,
+      "cpu_address": 41157,
+      "size": 7
+    },
+    {
+      "name": "__memset",
+      "bank": 0,
+      "cpu_address": 41164,
+      "size": 33
+    },
+    {
+      "name": "__bit_test",
+      "bank": 0,
+      "cpu_address": 41197,
+      "size": 63
+    },
+    {
+      "name": "__bit_set",
+      "bank": 0,
+      "cpu_address": 41260,
+      "size": 65
+    },
+    {
+      "name": "__bit_clear",
+      "bank": 0,
+      "cpu_address": 41325,
+      "size": 75
+    },
+    {
+      "name": "__bit_toggle",
+      "bank": 0,
+      "cpu_address": 41400,
+      "size": 65
+    },
+    {
+      "name": "__mul16x8",
+      "bank": 0,
+      "cpu_address": 41465,
+      "size": 45
+    },
+    {
+      "name": "__mul8x8_hi",
+      "bank": 0,
+      "cpu_address": 41510,
+      "size": 19
+    },
+    {
+      "name": "__smul16x8",
+      "bank": 0,
+      "cpu_address": 41529,
+      "size": 101
+    },
+    {
+      "name": "__mac16",
+      "bank": 0,
+      "cpu_address": 41630,
+      "size": 37
+    },
+    {
+      "name": "__smac16",
+      "bank": 0,
+      "cpu_address": 41667,
+      "size": 37
+    },
+    {
+      "name": "__dot2_q8_8",
+      "bank": 0,
+      "cpu_address": 41704,
+      "size": 52
+    },
+    {
+      "name": "__dot3_q8_8",
+      "bank": 0,
+      "cpu_address": 41756,
+      "size": 89
+    },
+    {
+      "name": "__sdot2_q8_8",
+      "bank": 0,
+      "cpu_address": 41845,
+      "size": 52
+    },
+    {
+      "name": "__sdot3_q8_8",
+      "bank": 0,
+      "cpu_address": 41897,
+      "size": 89
+    },
+    {
+      "name": "__smul16x8_q1_7",
+      "bank": 0,
+      "cpu_address": 41986,
+      "size": 3
+    },
+    {
+      "name": "__smac16_q1_7",
+      "bank": 0,
+      "cpu_address": 41989,
+      "size": 3
+    },
+    {
+      "name": "__sdot2_q1_7",
+      "bank": 0,
+      "cpu_address": 41992,
+      "size": 3
+    },
+    {
+      "name": "__sdot3_q1_7",
+      "bank": 0,
+      "cpu_address": 41995,
+      "size": 3
+    },
+    {
+      "name": "__xy_in_rect",
+      "bank": 0,
+      "cpu_address": 41998,
+      "size": 30
+    },
+    {
+      "name": "__manhattan",
+      "bank": 0,
+      "cpu_address": 42028,
+      "size": 32
+    },
+    {
+      "name": "__map_index",
+      "bank": 0,
+      "cpu_address": 42060,
+      "size": 41
+    },
+    {
+      "name": "__rng_seed",
+      "bank": 0,
+      "cpu_address": 42101,
+      "size": 11
+    },
+    {
+      "name": "__rng8",
+      "bank": 0,
+      "cpu_address": 42112,
+      "size": 52
+    },
+    {
+      "name": "__farpeek8",
+      "bank": 0,
+      "cpu_address": 42164,
+      "size": 24
+    },
+    {
+      "name": "__farpeek16",
+      "bank": 0,
+      "cpu_address": 42188,
+      "size": 33
+    },
+    {
+      "name": "__far_memcpy",
+      "bank": 0,
+      "cpu_address": 42221,
+      "size": 52
+    },
+    {
+      "name": "__vramq_put",
+      "bank": 0,
+      "cpu_address": 42273,
+      "size": 41
+    },
+    {
+      "name": "__vramq_fill",
+      "bank": 0,
+      "cpu_address": 42314,
+      "size": 47
+    },
+    {
+      "name": "__vramq_copy",
+      "bank": 0,
+      "cpu_address": 42361,
+      "size": 53
+    },
+    {
+      "name": "__vramq_exec",
+      "bank": 0,
+      "cpu_address": 42414,
+      "size": 219
+    },
+    {
+      "name": "__fds_wait_ready",
+      "bank": 0,
+      "cpu_address": 42807,
+      "size": 8
+    },
+    {
+      "name": "__kq_fds_find_io",
+      "bank": 0,
+      "cpu_address": 42815,
+      "size": 50
+    },
+    {
+      "name": "__kq_fds_check_span",
+      "bank": 0,
+      "cpu_address": 42865,
+      "size": 56
+    },
+    {
+      "name": "__fds_load_file",
+      "bank": 0,
+      "cpu_address": 42921,
+      "size": 296
+    },
+    {
+      "name": "__kq_fds_copy_count",
+      "bank": 0,
+      "cpu_address": 43217,
+      "size": 13
+    },
+    {
+      "name": "__fds_load_overlay",
+      "bank": 0,
+      "cpu_address": 43230,
+      "size": 28
+    },
+    {
+      "name": "__fds_load_bank",
+      "bank": 0,
+      "cpu_address": 43258,
+      "size": 70
+    },
+    {
+      "name": "__fds_require_bank",
+      "bank": 0,
+      "cpu_address": 43328,
+      "size": 18
+    },
+    {
+      "name": "__fds_is_bank_resident",
+      "bank": 0,
+      "cpu_address": 43346,
+      "size": 17
+    },
+    {
+      "name": "__fds_file_exists",
+      "bank": 0,
+      "cpu_address": 43363,
+      "size": 26
+    },
+    {
+      "name": "__fds_file_size",
+      "bank": 0,
+      "cpu_address": 43389,
+      "size": 41
+    },
+    {
+      "name": "__fds_save_file",
+      "bank": 0,
+      "cpu_address": 43430,
+      "size": 174
+    },
+    {
+      "name": "__fds_wave_load",
+      "bank": 0,
+      "cpu_address": 43604,
+      "size": 23
+    },
+    {
+      "name": "__fds_mod_load",
+      "bank": 0,
+      "cpu_address": 43627,
+      "size": 13
+    },
+    {
+      "name": "__fds_freq_set",
+      "bank": 0,
+      "cpu_address": 43640,
+      "size": 13
+    },
+    {
+      "name": "__fds_env_set",
+      "bank": 0,
+      "cpu_address": 43653,
+      "size": 16
+    },
+    {
+      "name": "__pad_read1",
+      "bank": 0,
+      "cpu_address": 43669,
+      "size": 46
+    },
+    {
+      "name": "__pad_read2",
+      "bank": 0,
+      "cpu_address": 43715,
+      "size": 46
+    },
+    {
+      "name": "__pad_read1_d1",
+      "bank": 0,
+      "cpu_address": 43761,
+      "size": 46
+    },
+    {
+      "name": "__pad_read2_d1",
+      "bank": 0,
+      "cpu_address": 43807,
+      "size": 46
+    },
+    {
+      "name": "__pad_read1_safe",
+      "bank": 0,
+      "cpu_address": 43853,
+      "size": 15
+    },
+    {
+      "name": "__pad_read2_safe",
+      "bank": 0,
+      "cpu_address": 43868,
+      "size": 15
+    },
+    {
+      "name": "__mic_read2p",
+      "bank": 0,
+      "cpu_address": 43883,
+      "size": 15
+    },
+    {
+      "name": "__zapper_trigger1",
+      "bank": 0,
+      "cpu_address": 43898,
+      "size": 15
+    },
+    {
+      "name": "__zapper_trigger2",
+      "bank": 0,
+      "cpu_address": 43913,
+      "size": 15
+    },
+    {
+      "name": "__zapper_light1",
+      "bank": 0,
+      "cpu_address": 43928,
+      "size": 15
+    },
+    {
+      "name": "__zapper_light2",
+      "bank": 0,
+      "cpu_address": 43943,
+      "size": 15
+    },
+    {
+      "name": "__fkb_scan",
+      "bank": 0,
+      "cpu_address": 43958,
+      "size": 100
+    },
+    {
+      "name": "__fkb_read_row_col",
+      "bank": 0,
+      "cpu_address": 44058,
+      "size": 161
+    },
+    {
+      "name": "__fkb_detect",
+      "bank": 0,
+      "cpu_address": 44219,
+      "size": 33
+    },
+    {
+      "name": "__rob_flash",
+      "bank": 0,
+      "cpu_address": 44252,
+      "size": 28
+    },
+    {
+      "name": "__rob_pulse",
+      "bank": 0,
+      "cpu_address": 44280,
+      "size": 33
+    },
+    {
+      "name": "__rob_send_byte",
+      "bank": 0,
+      "cpu_address": 44313,
+      "size": 42
+    },
+    {
+      "name": "__serial_tx_bit",
+      "bank": 0,
+      "cpu_address": 44355,
+      "size": 8
+    },
+    {
+      "name": "__serial_rx_bit",
+      "bank": 0,
+      "cpu_address": 44363,
+      "size": 15
+    },
+    {
+      "name": "__kq_midi_out_a",
+      "bank": 0,
+      "cpu_address": 44378,
+      "size": 325
+    },
+    {
+      "name": "__midi_out_byte",
+      "bank": 0,
+      "cpu_address": 44703,
+      "size": 6
+    },
+    {
+      "name": "__midi_in_byte",
+      "bank": 0,
+      "cpu_address": 44709,
+      "size": 309
+    },
+    {
+      "name": "__midi_note_on",
+      "bank": 0,
+      "cpu_address": 45018,
+      "size": 20
+    },
+    {
+      "name": "__midi_note_off",
+      "bank": 0,
+      "cpu_address": 45038,
+      "size": 20
+    },
+    {
+      "name": "__midi_control_change",
+      "bank": 0,
+      "cpu_address": 45058,
+      "size": 20
+    },
+    {
+      "name": "__midi_program_change",
+      "bank": 0,
+      "cpu_address": 45078,
+      "size": 15
+    },
+    {
+      "name": "__oam_clear",
+      "bank": 0,
+      "cpu_address": 45093,
+      "size": 14
+    },
+    {
+      "name": "__vram_write",
+      "bank": 0,
+      "cpu_address": 45107,
+      "size": 28
+    },
+    {
+      "name": "__vram_fill",
+      "bank": 0,
+      "cpu_address": 45135,
+      "size": 26
+    },
+    {
+      "name": "__nametable_put",
+      "bank": 0,
+      "cpu_address": 45161,
+      "size": 78
+    },
+    {
+      "name": "__nametable_put_nt",
+      "bank": 0,
+      "cpu_address": 45239,
+      "size": 91
+    },
+    {
+      "name": "__nametable_rect",
+      "bank": 0,
+      "cpu_address": 45330,
+      "size": 117
+    },
+    {
+      "name": "__nametable_rect_nt",
+      "bank": 0,
+      "cpu_address": 45447,
+      "size": 130
+    },
+    {
+      "name": "__attr_set",
+      "bank": 0,
+      "cpu_address": 45577,
+      "size": 44
+    },
+    {
+      "name": "__attr_set_nt",
+      "bank": 0,
+      "cpu_address": 45621,
+      "size": 57
+    },
+    {
+      "name": "__sprite_set",
+      "bank": 0,
+      "cpu_address": 45678,
+      "size": 26
+    },
+    {
+      "name": "__sprite_move",
+      "bank": 0,
+      "cpu_address": 45704,
+      "size": 16
+    },
+    {
+      "name": "__sprite_tile",
+      "bank": 0,
+      "cpu_address": 45720,
+      "size": 11
+    },
+    {
+      "name": "__sprite_attr",
+      "bank": 0,
+      "cpu_address": 45731,
+      "size": 11
+    },
+    {
+      "name": "__sprite_hide",
+      "bank": 0,
+      "cpu_address": 45742,
+      "size": 11
+    },
+    {
+      "name": "__metasprite_draw",
+      "bank": 0,
+      "cpu_address": 45753,
+      "size": 80
+    },
+    {
+      "name": "__palette_bg_load",
+      "bank": 0,
+      "cpu_address": 45833,
+      "size": 26
+    },
+    {
+      "name": "__palette_sp_load",
+      "bank": 0,
+      "cpu_address": 45859,
+      "size": 26
+    },
+    {
+      "name": "__sprite0_wait_hit",
+      "bank": 0,
+      "cpu_address": 45885,
+      "size": 15
+    },
+    {
+      "name": "__split_scroll_sprite0",
+      "bank": 0,
+      "cpu_address": 45900,
+      "size": 17
+    },
+    {
+      "name": "main",
+      "bank": 1,
+      "cpu_address": 24576,
+      "size": 31
+    }
+  ]
+}

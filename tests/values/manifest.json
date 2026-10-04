@@ -1,0 +1,718 @@
+[
+  {
+    "case": "byte",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      42
+    ],
+    "rom_equal": true,
+    "reference_sha256": "7b5af546b4e49b93546352ab51221478b943ccdd2b77750c0967f598cbbca9c0",
+    "native_sha256": "7b5af546b4e49b93546352ab51221478b943ccdd2b77750c0967f598cbbca9c0",
+    "passed": true
+  },
+  {
+    "case": "word",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      54,
+      19
+    ],
+    "rom_equal": true,
+    "reference_sha256": "fc7a4d015d7c4f9e30af2d4e7e0e10edc8a0b3beadd57f33e9d6f81104b06851",
+    "native_sha256": "fc7a4d015d7c4f9e30af2d4e7e0e10edc8a0b3beadd57f33e9d6f81104b06851",
+    "passed": true
+  },
+  {
+    "case": "nested_calls",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      26,
+      1
+    ],
+    "rom_equal": true,
+    "reference_sha256": "5b8f7466ef01de2692655765b117e32517bf4036d525a5397a101a97805497f5",
+    "native_sha256": "5b8f7466ef01de2692655765b117e32517bf4036d525a5397a101a97805497f5",
+    "passed": true
+  },
+  {
+    "case": "logic",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      165
+    ],
+    "rom_equal": true,
+    "reference_sha256": "121f5a22005d81c79a7fe258d7cf31218cda252a14a89aa9ff88e239652b0bc2",
+    "native_sha256": "121f5a22005d81c79a7fe258d7cf31218cda252a14a89aa9ff88e239652b0bc2",
+    "passed": true
+  },
+  {
+    "case": "loop",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      45
+    ],
+    "rom_equal": true,
+    "reference_sha256": "385990eec7cce621584f48bff9cc688ad78f3fb7f65747e258eaf297475b9ad4",
+    "native_sha256": "385990eec7cce621584f48bff9cc688ad78f3fb7f65747e258eaf297475b9ad4",
+    "passed": true
+  },
+  {
+    "case": "do_loop",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      7
+    ],
+    "rom_equal": true,
+    "reference_sha256": "c9a68e7d2f612096155e3e00283222aae2dded901559b2114342e8a098f22f04",
+    "native_sha256": "c9a68e7d2f612096155e3e00283222aae2dded901559b2114342e8a098f22f04",
+    "passed": true
+  },
+  {
+    "case": "signed_compare",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      90
+    ],
+    "rom_equal": true,
+    "reference_sha256": "ae5dc476161aec184e75f8644637e1c589f642f7b3d5bcbdcd218b516bf068ab",
+    "native_sha256": "ae5dc476161aec184e75f8644637e1c589f642f7b3d5bcbdcd218b516bf068ab",
+    "passed": true
+  },
+  {
+    "case": "word_compare",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      90
+    ],
+    "rom_equal": true,
+    "reference_sha256": "2f9c600b0c96436acb53d53e3f51180d0e09de6345a2ca110acd161a042c3593",
+    "native_sha256": "2f9c600b0c96436acb53d53e3f51180d0e09de6345a2ca110acd161a042c3593",
+    "passed": true
+  },
+  {
+    "case": "signed_shift",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      254
+    ],
+    "rom_equal": true,
+    "reference_sha256": "5c04da3cbdb8fe111bb8f91e11a17cbf41681731a67ba568c72f434b2d1bd189",
+    "native_sha256": "5c04da3cbdb8fe111bb8f91e11a17cbf41681731a67ba568c72f434b2d1bd189",
+    "passed": true
+  },
+  {
+    "case": "bits",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      196
+    ],
+    "rom_equal": true,
+    "reference_sha256": "01bf3ce559ee1e3f4d885e884fcf330628bede5625f1518c07a209d9f1a11d43",
+    "native_sha256": "01bf3ce559ee1e3f4d885e884fcf330628bede5625f1518c07a209d9f1a11d43",
+    "passed": true
+  },
+  {
+    "case": "conditional",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      165
+    ],
+    "rom_equal": true,
+    "reference_sha256": "4755e9c7a26d07ca8a349ce9827ebd308944fda22669fab9c645a4118c582783",
+    "native_sha256": "4755e9c7a26d07ca8a349ce9827ebd308944fda22669fab9c645a4118c582783",
+    "passed": true
+  },
+  {
+    "case": "bank_args",
+    "mapper": "uxrom",
+    "expected_ram_0700": [
+      57,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "785bd1113b664a1f8454590b33bd3f53d66cb40d9002c5c43c42e3ffcbaf1d28",
+    "native_sha256": "785bd1113b664a1f8454590b33bd3f53d66cb40d9002c5c43c42e3ffcbaf1d28",
+    "passed": true
+  },
+  {
+    "case": "bank_fast_args",
+    "mapper": "uxrom",
+    "expected_ram_0700": [
+      67,
+      1
+    ],
+    "rom_equal": true,
+    "reference_sha256": "4b5b02a6b062890375e5c79b30f71cf4d9b41b1f9addef041dc3581c33db9def",
+    "native_sha256": "4b5b02a6b062890375e5c79b30f71cf4d9b41b1f9addef041dc3581c33db9def",
+    "passed": true
+  },
+  {
+    "case": "fixed_mirror",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      165
+    ],
+    "rom_equal": true,
+    "reference_sha256": "e12b40e9007c05cdf92228efffc859a430a7221b7605ef1f6ad82f9d537e9f41",
+    "native_sha256": "e12b40e9007c05cdf92228efffc859a430a7221b7605ef1f6ad82f9d537e9f41",
+    "passed": true
+  },
+  {
+    "case": "postfix",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      4
+    ],
+    "rom_equal": true,
+    "reference_sha256": "98f72e39ccd4c376a7b5a7aa321d4f04789babc0afe6a748996d0c5c4ec2c582",
+    "native_sha256": "98f72e39ccd4c376a7b5a7aa321d4f04789babc0afe6a748996d0c5c4ec2c582",
+    "passed": true
+  },
+  {
+    "case": "byte_array",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      13
+    ],
+    "rom_equal": true,
+    "reference_sha256": "8ea24ae622f424391bf7031075b1c02779b56d3e3a6ad1bb633f68b4a58f766a",
+    "native_sha256": "8ea24ae622f424391bf7031075b1c02779b56d3e3a6ad1bb633f68b4a58f766a",
+    "passed": true
+  },
+  {
+    "case": "word_array",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      52,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "38018627601e8f4edc00f36f0a37942eaeee89ebb4ee7dc3b9f365444ea2a1c0",
+    "native_sha256": "38018627601e8f4edc00f36f0a37942eaeee89ebb4ee7dc3b9f365444ea2a1c0",
+    "passed": true
+  },
+  {
+    "case": "pointer",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      165
+    ],
+    "rom_equal": true,
+    "reference_sha256": "87966ece3229b1fc99ff5f0800a647d53f96e3b326c10e3e597feb6f10891582",
+    "native_sha256": "87966ece3229b1fc99ff5f0800a647d53f96e3b326c10e3e597feb6f10891582",
+    "passed": true
+  },
+  {
+    "case": "field",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "58f593b0994c58ba2edcfbf1a0d1249a01fcf6bed781ee40ad1cbbde1ab38b97",
+    "native_sha256": "58f593b0994c58ba2edcfbf1a0d1249a01fcf6bed781ee40ad1cbbde1ab38b97",
+    "passed": true
+  },
+  {
+    "case": "local_sizeof",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      12
+    ],
+    "rom_equal": true,
+    "reference_sha256": "f535828b4b11310d2aa4d8c8a2535f38b7d77457f8ded1048fcabcba62a8315c",
+    "native_sha256": "f535828b4b11310d2aa4d8c8a2535f38b7d77457f8ded1048fcabcba62a8315c",
+    "passed": true
+  },
+  {
+    "case": "readonly_byte",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      6
+    ],
+    "rom_equal": true,
+    "reference_sha256": "026430d537ecb30dfff5f6cecf58434ed2d8aea7e326f6b82182b30e576facde",
+    "native_sha256": "026430d537ecb30dfff5f6cecf58434ed2d8aea7e326f6b82182b30e576facde",
+    "passed": true
+  },
+  {
+    "case": "readonly_word",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      120,
+      86
+    ],
+    "rom_equal": true,
+    "reference_sha256": "5b5692aac28ab6d20ce5b78f83576e6f1e3ee288f8a3cfa8d55cc54128714463",
+    "native_sha256": "5b5692aac28ab6d20ce5b78f83576e6f1e3ee288f8a3cfa8d55cc54128714463",
+    "passed": true
+  },
+  {
+    "case": "readonly_pointer",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      6
+    ],
+    "rom_equal": true,
+    "reference_sha256": "628a0d4f6bdb0e8ea1bf47551609765df57222bb6c55a557ef0c5eafa45efc69",
+    "native_sha256": "628a0d4f6bdb0e8ea1bf47551609765df57222bb6c55a557ef0c5eafa45efc69",
+    "passed": true
+  },
+  {
+    "case": "readonly_struct",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "0813ddff4bc2a06a61a3401100bf499b109471d86c17ed24266786c4f30eb476",
+    "native_sha256": "0813ddff4bc2a06a61a3401100bf499b109471d86c17ed24266786c4f30eb476",
+    "passed": true
+  },
+  {
+    "case": "multiply_word",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      123,
+      123
+    ],
+    "rom_equal": true,
+    "reference_sha256": "cf2286055753bc2a9ee9471c962cadaa46ac329115efc2a4ddede1362797452a",
+    "native_sha256": "cf2286055753bc2a9ee9471c962cadaa46ac329115efc2a4ddede1362797452a",
+    "passed": true
+  },
+  {
+    "case": "multiply_signed",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      211,
+      254
+    ],
+    "rom_equal": true,
+    "reference_sha256": "ff6120762deb95f185b613516c0f3fbdd85bccb71e84b902886e4e11e3f17648",
+    "native_sha256": "ff6120762deb95f185b613516c0f3fbdd85bccb71e84b902886e4e11e3f17648",
+    "passed": true
+  },
+  {
+    "case": "divide_word",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      71,
+      5
+    ],
+    "rom_equal": true,
+    "reference_sha256": "cfec616c06f7f2e1281ceac6fc373fe8eff5dcea18a7d320abaa248fb4f1474a",
+    "native_sha256": "cfec616c06f7f2e1281ceac6fc373fe8eff5dcea18a7d320abaa248fb4f1474a",
+    "passed": true
+  },
+  {
+    "case": "divide_signed",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      213,
+      255
+    ],
+    "rom_equal": true,
+    "reference_sha256": "3ed0bbfcc826a589ee6ada7774998e70ab31a8165665061684cde8ea4c79c220",
+    "native_sha256": "3ed0bbfcc826a589ee6ada7774998e70ab31a8165665061684cde8ea4c79c220",
+    "passed": true
+  },
+  {
+    "case": "modulus_signed",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      255,
+      255
+    ],
+    "rom_equal": true,
+    "reference_sha256": "e202a26aaf474781de4626cccb1b70a8ea2207376ad9381da34966c009a120b5",
+    "native_sha256": "e202a26aaf474781de4626cccb1b70a8ea2207376ad9381da34966c009a120b5",
+    "passed": true
+  },
+  {
+    "case": "divide_zero",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      0,
+      0
+    ],
+    "rom_equal": true,
+    "reference_sha256": "92e70aab061fb7ddb21663eb527d087349d17374449203541f1e45df5e96de0f",
+    "native_sha256": "92e70aab061fb7ddb21663eb527d087349d17374449203541f1e45df5e96de0f",
+    "passed": true
+  },
+  {
+    "case": "lookup_multiply",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      200,
+      200
+    ],
+    "rom_equal": true,
+    "reference_sha256": "ae7dbfd3e974eb7e2d618dc0045730fd249dc4635976d8ec761f121ec34ac062",
+    "native_sha256": "ae7dbfd3e974eb7e2d618dc0045730fd249dc4635976d8ec761f121ec34ac062",
+    "passed": true
+  },
+  {
+    "case": "lookup_signed",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      211,
+      254
+    ],
+    "rom_equal": true,
+    "reference_sha256": "5d1e6082c702fd8abbc532e38f0a79446ecaab04ae7ea26f0b0dfc858e50ca6f",
+    "native_sha256": "5d1e6082c702fd8abbc532e38f0a79446ecaab04ae7ea26f0b0dfc858e50ca6f",
+    "passed": true
+  },
+  {
+    "case": "lookup_divide",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      238,
+      255
+    ],
+    "rom_equal": true,
+    "reference_sha256": "c29f48c65c2bd7491a118289c9118add37df467a35babeb982b186069e5e986e",
+    "native_sha256": "c29f48c65c2bd7491a118289c9118add37df467a35babeb982b186069e5e986e",
+    "passed": true
+  },
+  {
+    "case": "lookup_modulus",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      255,
+      255
+    ],
+    "rom_equal": true,
+    "reference_sha256": "dda58a5eed31c928b44fee37fdfac3d0cab7054719ee1f34e61c6565971aacfc",
+    "native_sha256": "dda58a5eed31c928b44fee37fdfac3d0cab7054719ee1f34e61c6565971aacfc",
+    "passed": true
+  },
+  {
+    "case": "lookup_bank",
+    "mapper": "uxrom",
+    "expected_ram_0700": [
+      200,
+      200
+    ],
+    "rom_equal": true,
+    "reference_sha256": "418aa839739508341ac2ae70417e8a90761a53226011a78fcc37995f4b0d944f",
+    "native_sha256": "418aa839739508341ac2ae70417e8a90761a53226011a78fcc37995f4b0d944f",
+    "passed": true
+  },
+  {
+    "case": "switch_break",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      165
+    ],
+    "rom_equal": true,
+    "reference_sha256": "95211c6440d3b131628672a46b2744e10e93210fb6ebebee4164d162b346ea4d",
+    "native_sha256": "95211c6440d3b131628672a46b2744e10e93210fb6ebebee4164d162b346ea4d",
+    "passed": true
+  },
+  {
+    "case": "switch_fallthrough",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      7
+    ],
+    "rom_equal": true,
+    "reference_sha256": "3049a85f9a2ca1ebcc45a5f091eca3eb94857c7cf7d019ad96d5f25fef460471",
+    "native_sha256": "3049a85f9a2ca1ebcc45a5f091eca3eb94857c7cf7d019ad96d5f25fef460471",
+    "passed": true
+  },
+  {
+    "case": "switch_continue",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      8
+    ],
+    "rom_equal": true,
+    "reference_sha256": "37fc82e1c2bd5f674bf2ce2953f023f4c667b26faaa10a05a433efa9af8fb84e",
+    "native_sha256": "37fc82e1c2bd5f674bf2ce2953f023f4c667b26faaa10a05a433efa9af8fb84e",
+    "passed": true
+  },
+  {
+    "case": "multiply_call",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      17,
+      1
+    ],
+    "rom_equal": true,
+    "reference_sha256": "e5e5b5f73d0969881753030f81d9ac618e2965bb0114bdfe7889e3df9ad3b50b",
+    "native_sha256": "e5e5b5f73d0969881753030f81d9ac618e2965bb0114bdfe7889e3df9ad3b50b",
+    "passed": true
+  },
+  {
+    "case": "aggregate_copy",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "1eb361d0591dc50357f358d17856d1ddf5f7a3e5e7972b877745bc26012de885",
+    "native_sha256": "1eb361d0591dc50357f358d17856d1ddf5f7a3e5e7972b877745bc26012de885",
+    "passed": true
+  },
+  {
+    "case": "aggregate_pointer",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "56b1c63deb65debece73decb9db011c647565cb22df046351f6b04e10c2a935e",
+    "native_sha256": "56b1c63deb65debece73decb9db011c647565cb22df046351f6b04e10c2a935e",
+    "passed": true
+  },
+  {
+    "case": "aggregate_parameter",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      60,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "79bcf1ac158271c670e4b37898baea6bbdb9523c6ab6027e7b9353591be4e435",
+    "native_sha256": "79bcf1ac158271c670e4b37898baea6bbdb9523c6ab6027e7b9353591be4e435",
+    "passed": true
+  },
+  {
+    "case": "aggregate_return",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "e26bda155389b6cf9273668eba183cf84d959de8591bf5c40278f18c495b9d25",
+    "native_sha256": "e26bda155389b6cf9273668eba183cf84d959de8591bf5c40278f18c495b9d25",
+    "passed": true
+  },
+  {
+    "case": "aggregate_forward",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "adbaedd9028482b5709dbbc1e2cfc87aa10fd5b7e2cc0ad7016fe5ac950c8739",
+    "native_sha256": "adbaedd9028482b5709dbbc1e2cfc87aa10fd5b7e2cc0ad7016fe5ac950c8739",
+    "passed": true
+  },
+  {
+    "case": "aggregate_bank",
+    "mapper": "uxrom",
+    "expected_ram_0700": [
+      3,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "ada6d13aae056dee71656be6f12af61242425cd86c0ed02d06b9ae309b1a5850",
+    "native_sha256": "ada6d13aae056dee71656be6f12af61242425cd86c0ed02d06b9ae309b1a5850",
+    "passed": true
+  },
+  {
+    "case": "aggregate_call_field",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "2fa3cfa932ce703cfca423b8339f580794699feefbcad5003c962b6b1705842d",
+    "native_sha256": "2fa3cfa932ce703cfca423b8339f580794699feefbcad5003c962b6b1705842d",
+    "passed": true
+  },
+  {
+    "case": "aggregate_call_argument",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3
+    ],
+    "rom_equal": true,
+    "reference_sha256": "bda53527e9b7970e34d2fc3c0346dc55de82ec5c6426bb50187edbfe6a404fda",
+    "native_sha256": "bda53527e9b7970e34d2fc3c0346dc55de82ec5c6426bb50187edbfe6a404fda",
+    "passed": true
+  },
+  {
+    "case": "union_copy",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      52,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "47954f32d753a798b4c819a94819264ad37673962c64bb17e319020d0c9954bb",
+    "native_sha256": "47954f32d753a798b4c819a94819264ad37673962c64bb17e319020d0c9954bb",
+    "passed": true
+  },
+  {
+    "case": "callback_byte",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      42
+    ],
+    "rom_equal": true,
+    "reference_sha256": "d05ad40a9db292a757f389f838045e789426657b5f1a0cc6298394de60be7b7f",
+    "native_sha256": "d05ad40a9db292a757f389f838045e789426657b5f1a0cc6298394de60be7b7f",
+    "passed": true
+  },
+  {
+    "case": "callback_word",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      57,
+      18
+    ],
+    "rom_equal": true,
+    "reference_sha256": "ecfd7f018114a5da0adbb9f6a7dd8df8a8490c2dd81e7f5d4117bb8a82d62168",
+    "native_sha256": "ecfd7f018114a5da0adbb9f6a7dd8df8a8490c2dd81e7f5d4117bb8a82d62168",
+    "passed": true
+  },
+  {
+    "case": "callback_deref",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      42
+    ],
+    "rom_equal": true,
+    "reference_sha256": "d05ad40a9db292a757f389f838045e789426657b5f1a0cc6298394de60be7b7f",
+    "native_sha256": "d05ad40a9db292a757f389f838045e789426657b5f1a0cc6298394de60be7b7f",
+    "passed": true
+  },
+  {
+    "case": "callback_array",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      42
+    ],
+    "rom_equal": true,
+    "reference_sha256": "86dec37d3302c985d23c791eb1a1405c7f15f57a7567db663f7c2a8522523e4d",
+    "native_sha256": "86dec37d3302c985d23c791eb1a1405c7f15f57a7567db663f7c2a8522523e4d",
+    "passed": true
+  },
+  {
+    "case": "callback_field",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      42
+    ],
+    "rom_equal": true,
+    "reference_sha256": "ee5930f8b01612929cf534fe3b75a58f01f04c0b9b249b368f69118e2a5b434c",
+    "native_sha256": "ee5930f8b01612929cf534fe3b75a58f01f04c0b9b249b368f69118e2a5b434c",
+    "passed": true
+  },
+  {
+    "case": "lvalue_byte_post",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      4
+    ],
+    "rom_equal": true,
+    "reference_sha256": "53f069fa62670e3b2eb0a64bf06c9ea1c718c5f30cb7b5e406ca511ef37d01f8",
+    "native_sha256": "53f069fa62670e3b2eb0a64bf06c9ea1c718c5f30cb7b5e406ca511ef37d01f8",
+    "passed": true
+  },
+  {
+    "case": "lvalue_word_post",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      255,
+      1
+    ],
+    "rom_equal": true,
+    "reference_sha256": "86f3acb9c3b1b12e5670a436b1eadd7141cf4f5a8292ee205ea575f45432909b",
+    "native_sha256": "86f3acb9c3b1b12e5670a436b1eadd7141cf4f5a8292ee205ea575f45432909b",
+    "passed": true
+  },
+  {
+    "case": "lvalue_pointer_post",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      7
+    ],
+    "rom_equal": true,
+    "reference_sha256": "947a6525326c432c92427b618b4f167c94e94a1c04256ffe00e80a74f36005a9",
+    "native_sha256": "947a6525326c432c92427b618b4f167c94e94a1c04256ffe00e80a74f36005a9",
+    "passed": true
+  },
+  {
+    "case": "lvalue_index_side_effect",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      3,
+      5
+    ],
+    "rom_equal": true,
+    "reference_sha256": "6999ef2f880205e12e1d6d8d6480a2da2d8a776dd643ef93ee898beb32832f33",
+    "native_sha256": "6999ef2f880205e12e1d6d8d6480a2da2d8a776dd643ef93ee898beb32832f33",
+    "passed": true
+  },
+  {
+    "case": "named_word_post",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      255,
+      1
+    ],
+    "rom_equal": true,
+    "reference_sha256": "aa86648080445af9842a94957a0fded68fe66f118f2950a309793324060a7142",
+    "native_sha256": "aa86648080445af9842a94957a0fded68fe66f118f2950a309793324060a7142",
+    "passed": true
+  },
+  {
+    "case": "named_pointer_step",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      0,
+      5
+    ],
+    "rom_equal": true,
+    "reference_sha256": "116c963f49a93afb576254199242c613308051eb871175a60724558e188ed564",
+    "native_sha256": "116c963f49a93afb576254199242c613308051eb871175a60724558e188ed564",
+    "passed": true
+  },
+  {
+    "case": "runtime_buffer_type",
+    "mapper": "nrom",
+    "expected_ram_0700": [
+      1
+    ],
+    "rom_equal": true,
+    "reference_sha256": "a81bcf38bbed9f8f5e41fd4ddb8a71cef2d45f47d451f4add6654f3329887e5e",
+    "native_sha256": "a81bcf38bbed9f8f5e41fd4ddb8a71cef2d45f47d451f4add6654f3329887e5e",
+    "passed": true
+  },
+  {
+    "case": "complex_struct_runtime",
+    "mapper": "mmc3",
+    "expected_ram_0700": [
+      11,
+      14,
+      11,
+      12,
+      12,
+      25,
+      10,
+      0,
+      165,
+      29
+    ],
+    "rom_equal": true,
+    "reference_sha256": "05e2f0a15ca005ef88b10ba1bbff3c69bb954fab6721d296d0b45355480aa710",
+    "native_sha256": "05e2f0a15ca005ef88b10ba1bbff3c69bb954fab6721d296d0b45355480aa710",
+    "passed": true
+  }
+]

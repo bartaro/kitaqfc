@@ -1,0 +1,45 @@
+[
+  {
+    "case": "fds_args_0",
+    "flags": [],
+    "rom_sha256": "880aa1da7abec188fd18b461569f98c1804829315331f302f26cfdbc1a390c58",
+    "disk_sha256": "f9b88bb03a984a7d08ffa44c6914aa9bbcc00e155bb8a6c518bc1191fe7d720f",
+    "rom_equal": true,
+    "disk_equal": true,
+    "passed": true
+  },
+  {
+    "case": "fds_args_1",
+    "flags": [
+      "--fastcall-v2"
+    ],
+    "rom_sha256": "b4eddc3d158af6d13785897fbb5cfa2e19aba75e52b22f3b93e9de75e39bc9c9",
+    "disk_sha256": "616faa83af688465a1a2222c732b830dcc47b80558b7ec6eeb169ba110f624c2",
+    "rom_equal": true,
+    "disk_equal": true,
+    "passed": true
+  },
+  {
+    "case": "fds_args_2",
+    "flags": [
+      "--fds-no-overlay-guard"
+    ],
+    "rom_sha256": "963e59b557f73358c334d6541999095495a7f4ce5a05ae7a756e96c1da4cd56b",
+    "disk_sha256": "a42be3114224c2cd7757d801fb54a4fc4cf971efa6c8ee3bc99aa34749ed1471",
+    "rom_equal": true,
+    "disk_equal": true,
+    "passed": true
+  },
+  {
+    "case": "fds_args_3",
+    "flags": [
+      "--fastcall-v2",
+      "--fds-no-overlay-guard"
+    ],
+    "rom_sha256": "93294033efaddefa69e216ca77a28387470b943717f8926973cc06a5a820d5cf",
+    "disk_sha256": "6df0605141955c6812e233bbdf5e37906efe925c8c840a91a8ac2afaa4d20238",
+    "rom_equal": true,
+    "disk_equal": true,
+    "passed": true
+  }
+]

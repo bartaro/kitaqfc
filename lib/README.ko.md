@@ -1,8 +1,6 @@
 # FC/NES 표준 라이브러리 구성
 
-<!-- readme-language-links:start -->
-[English](README.md) | [日本語](README.ja.md) | **한국어** | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt-BR.md)
-<!-- readme-language-links:end -->
+
 
 <!-- fc-current-20261004:ko:start -->
 ### 현재 컴파일러와 라이브러리 배포 구성 — 2026년 10월 4일
@@ -88,3 +86,33 @@ fc.h에는 physics3d와 audio_vblank의 선언이 포함됩니다. 필요한 구
 - `math_lut.h` / `math_lut.c`
 
 장면 전환, 갱신, 그리기는 등록한 처리 함수를 동기적으로 호출합니다. 콜백 순서와 재진입 제한은 각 API 항목을 참고하세요.
+
+<!-- readme-language-links:start -->
+[English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md)
+<!-- readme-language-links:end -->
+
+<!-- manual-language-links:start -->
+| Language / 言語 | HTML |
+| --- | --- |
+| English | [fc-library](https://bartaro.github.io/kitaq-docs/en/fc-library.html) |
+| 日本語 | [fc-library](https://bartaro.github.io/kitaq-docs/fc-library.html) |
+| 한국어 | [fc-library](https://bartaro.github.io/kitaq-docs/ko/fc-library.html) |
+| 简体中文 | [fc-library](https://bartaro.github.io/kitaq-docs/zh-CN/fc-library.html) |
+| 繁體中文 | [fc-library](https://bartaro.github.io/kitaq-docs/zh-TW/fc-library.html) |
+| Français | [fc-library](https://bartaro.github.io/kitaq-docs/fr/fc-library.html) |
+| Español | [fc-library](https://bartaro.github.io/kitaq-docs/es/fc-library.html) |
+| Deutsch | [fc-library](https://bartaro.github.io/kitaq-docs/de/fc-library.html) |
+<!-- manual-language-links:end -->
+
+<!-- rust-native-20261004:start -->
+## 네이티브 컴파일러로 라이브러리 사용
+
+lib/는 콘솔 ROM에 컴파일되는 C 헤더와 소스입니다. PC용 컴파일러와 보조 도구는 Rust로 구현되었으며 게임 소스, 대상 콘솔 라이브러리 및 API는 C로 사용합니다. 제공된 SOURCE_MANIFEST.json과 LIBRARY_MERGE.json은 선택한 라이브러리 소스를 기록합니다.
+
+Windows, Linux, macOS ARM 및 macOS Intel에서 네이티브 빌드와 실행 검증이 성공했습니다. KITAQGB는 환경별 테스트 48개와 보조 도구 검사 395개, KITAQFC는 55개와 401개를 통과했습니다. Rust 1.85도 검증했습니다. PUBLIC_DISTRIBUTION.json은 배치한 바이너리의 해시와 검증 출처를 기록합니다. 공개 GitHub Actions는 이 소스를 독립적으로 빌드하고 검증합니다.
+
+저장된 참조 출력으로 ROM 바이트, 진단 및 보조 도구 형식을 검사합니다. 이전 C# 에뮬레이터 검증은 원래 소스 지문에 해당하는 과거 기록입니다. 모든 Rust API, 실제 하드웨어 또는 FDS BIOS를 통한 완전한 게임 시작을 입증하지는 않습니다. 원본 PNG 변환 스크립트는 없어 사양으로 재구현했으며 원본과의 바이트 일치는 확인할 수 없습니다.
+
+[Rust 네이티브 컴파일러와 보조 도구](../tools/README.ko.md)
+
+<!-- rust-native-20261004:end -->

@@ -1,28 +1,24 @@
-# Compresión de recursos compatible con ZX0
+# Herramientas auxiliares nativas
 
-<!-- readme-language-links:start -->
-[English](README.md#english) | [日本語](README.md#%E6%97%A5%E6%9C%AC%E8%AA%9E) | [한국어](README.ko.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | **Español** | [Deutsch](README.de.md)
-<!-- readme-language-links:end -->
+[en](../README.en.md) · [ja](../README.ja.md) · [ko](../README.ko.md) · [zh-CN](../README.zh-CN.md) · [zh-TW](../README.zh-TW.md) · [fr](../README.fr.md) · [es](../README.es.md) · [de](../README.de.md)
 
-[API y ejemplos](https://bartaro.github.io/kitaq-docs/es/fc-library.html#module-zx0)
+Todas las herramientas están implementadas en Rust y se ejecutan sin .NET, Python ni Pillow. Compile todos los ejecutables con `cargo build --locked --release`. En Windows, añada `.exe` a los comandos.
 
-El compresor para PC y el descompresor FC son implementaciones independientes de KITAQ para flujos ZX0 v2 de lectura hacia delante. La implementación de KITAQ se distribuye con licencia MIT, copyright (c) 2026 DAISUKE OBA.
-
-[Einar Saukas](https://github.com/einar-saukas/ZX0) diseñó el formato ZX0 y el algoritmo de compresión original. Este reconocimiento del formato es independiente de los derechos de autor y la licencia de la implementación de KITAQ. Consulta [LICENSE](../../LICENSE) y [LICENSE.ja](../../LICENSE.ja).
-
-Compila la herramienta de PC desde la raíz del repositorio:
-
-```powershell
-.\tools\zx0\build.ps1
-.\kitaqfc-zx0.exe input.bin output.zx0
-.\kitaqfc-zx0.exe input.bin asset.h --header=level_data
-.\kitaqfc-zx0.exe output.zx0 restored.bin --decompress
+```text
+kitaqfc-zx0 input.bin output.zx0
+kitaqfc-zx0 output.zx0 restored.bin --decompress
+kitaqfc-zx0 input.bin asset.h --header=level_data
+kitaqfc-zx0 input.bin output.kqa --format=auto
+kitaqfc-asset-pack assets/example_manifest.json
+kitaqfc-png-index-build assets/example_png_manifest.json
+kitaqfc-asset-pipeline assets/example_pipeline_manifest.json
+kitaqfc-rights-name-guard --root . --denylist deny_terms.local.txt
 ```
 
-La herramienta de PC utiliza .NET Framework 4.x. El compresor realiza una búsqueda acotada mediante cadenas hash; no garantiza la salida más pequeña posible. Esta interfaz no admite flujos inversos, diccionarios externos de prefijos ni ZX0 v1. Los derechos de los recursos originales siguen perteneciendo a sus autores.
+ZX0 acepta de 1 a 65535 bytes y conserva la salida del codificador C#. Admite `raw`, `rle` cantidad/valor y el contenedor automático `KQA1` de nueve bytes. En caso de empate: raw, RLE y ZX0. `--decompress` decodifica un flujo ZX0 v2 hacia delante con límite de salida. No admite flujos inversos ni v1. Einar Saukas diseñó el formato; esta implementación KITAQ tiene licencia MIT.
 
-La entrada y la salida codificada deben ocupar como máximo 65535 bytes cada una. `--format=auto` compara las cargas útiles raw, RLE y ZX0 y envuelve la menor en una cabecera KQA1 de nueve bytes; la cabecera cuenta para el límite de salida. Usa `asset_decompress` con KQA1. Divide también los recursos para respetar las ventanas de banco de la CPU y la capacidad real de RAM. Una cabecera C raw vacía contiene un byte de reserva con `_SIZE` lógico igual a 0.
+Los manifiestos JSON existentes generan CHR de 8 KiB, arrays C/cabeceras e informes JSON. Los metasprites admiten data, frames o archivos JSON. El convertidor PNG indexado genera CHR, nametable, atributos, paleta y JSON de metasprites. Fondos: 256×240; tiles: 8×8; grupos de paleta uniformes por tile y cuadrante de fondo de 16×16. Índices 0–15, profundidades 1/2/4/8 y Adam7. El script PNG ausente se reconstruyó a partir de la especificación local y los manifiestos de ejemplo; no puede compararse con el original no disponible. Los RGB se asignan a una paleta NES aproximada definida. El pipeline ejecuta ambas etapas internamente. El comprobador de nombres lee una lista externa y solo muestra archivo/línea, sin términos protegidos, excluyendo directorios generados.
 
-Incluye `zx0.h` y compila `lib/zx0.c` para el destino. `zx0_decompress` recibe la dirección de destino, su capacidad, el origen comprimido y su tamaño. Comprueba tanto el número de bytes devuelto como `zx0_error`. Un error puede dejar una salida parcial: no la muestres ni la utilices si la llamada falla. Los búferes de origen y destino no deben solaparse ni atravesar los límites de las ventanas de banco de CPU mapeadas. Estas rutinas comparten una zona de trabajo y no deben volver a invocarse desde una interrupción mientras se ejecutan.
-
-`zx0_decompress_vram` necesita un área de trabajo RAM con espacio para todo el recurso descomprimido. Con el renderizado desactivado, descomprime en esa área y transfiere el resultado a CHR RAM o a la memoria de tablas de nombres. Conserva PPUCTRL; configura el desplazamiento antes de volver a activar el renderizado. No carga paletas ni escribe en CHR ROM.
+```sh
+sh tools/zx0/build.sh
+```
