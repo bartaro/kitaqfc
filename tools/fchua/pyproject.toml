@@ -1,0 +1,17 @@
+[build-system]
+requires = ["maturin>=1.8,<2"]
+build-backend = "maturin"
+
+[project]
+name = "fchua"
+version = "0.1.0"
+description = "Headless NES graphics editing and asset conversion for KITAQFC."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "DAISUKE OBA" }, { name = "PLITA UI Contributors" }]
+
+[tool.maturin]
+bindings = "pyo3"
+features = ["python"]
+module-name = "fchua"
+include = ["licenses/**/*", "THIRD_PARTY_NOTICES.md", "DEPENDENCIES.json"]

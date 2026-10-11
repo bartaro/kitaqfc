@@ -1,0 +1,8 @@
+[
+  {"op":"checker","tile":1,"a":1,"b":3},
+  {"op":"palette","index":1,"value":48},
+  {"op":"map_rect","x":0,"y":0,"width":32,"height":30,"tile":1,"palette":0},
+  {"op":"sprite","frame":0,"index":0,"x":0,"y":0,"tile":1,"attr":0},
+  {"op":"clone_frame","frame":0},
+  {"op":"sprite","frame":1,"index":0,"x":0,"y":0,"tile":1,"attr":64}
+]

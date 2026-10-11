@@ -1,5 +1,16 @@
 # ネイティブ補助ツール
 
+## FCHUA
+
+[FCHUA CLI](fchua/) は、NESのタイル・マップ・パレット・メタスプライトを編集・変換する独立ツールです。
+編集可能な `.fch` プロジェクト、PNG取り込みとプレビュー、JSON一括編集、KITAQFC用の資産出力に対応します。
+GUI・GPUなしで利用できるPython bindingsも付属します（Python 3.10以降）。
+[Windows x64 CLI](fchua/bin/windows-x86_64/fchua.exe)と[Python wheel](fchua/python-dist/fchua-0.1.0-cp310-abi3-win_amd64.whl)を同梱しています。
+[日本語マニュアル](fchua/README.ja.md)と、同ページから選べる全9言語の説明書を同梱しています。
+FCHUAのみをビルドする場合は `cargo build --release --locked --manifest-path tools/fchua/Cargo.toml` を使ってください。
+
+## その他の補助ツール
+
 [en](README.en.md) · [ja](README.ja.md) · [ko](README.ko.md) · [zh-CN](README.zh-CN.md) · [zh-TW](README.zh-TW.md) · [fr](README.fr.md) · [es](README.es.md) · [de](README.de.md)
 
 すべての補助実行ファイルはRust実装です。実行時に.NET・Python・Pillowは不要です。`cargo build --locked --release`で全実行ファイルをビルドします。Windowsでは各コマンド名に`.exe`を付けます。

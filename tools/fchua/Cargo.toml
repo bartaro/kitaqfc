@@ -1,0 +1,37 @@
+[workspace]
+resolver = "2"
+
+[package]
+name = "fchua"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.92"
+license = "MIT"
+authors = ["DAISUKE OBA", "PLITA UI Contributors"]
+description = "FCHUA: headless NES tile, map, palette and metasprite tools for KITAQFC"
+default-run = "fchua"
+
+[lib]
+name = "kitaqfc_graphics_editor_lib"
+crate-type = ["rlib", "cdylib"]
+
+[features]
+default = []
+python = ["dep:pyo3"]
+
+[[bin]]
+name = "fchua"
+path = "src/bin/fchua.rs"
+
+[dependencies]
+pyo3 = { version = "0.21", optional = true, features = ["abi3-py310", "extension-module"] }
+image = { version = "0.25.10", default-features = false, features = ["png"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tempfile = "3"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(feature, values("gui", "python"))'] }
+
+[profile.release]
+strip = true
