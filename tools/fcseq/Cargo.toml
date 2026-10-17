@@ -1,0 +1,53 @@
+[package]
+name = "fcseq"
+version = "0.4.1"
+authors = ["DAISUKE OBA"]
+rust-version = "1.92"
+repository = "https://github.com/bartaro/kitaqfc"
+edition = "2021"
+default-run = "fcseq"
+license = "MIT"
+description = "plita Famicom sequencer with expansion audio, DPCM instruments and native playback"
+
+[lib]
+name = "fcseq_native"
+crate-type = ["rlib", "cdylib"]
+
+[features]
+default = ["gui"]
+gui = ["dep:plita", "dep:rfd", "dep:windows", "dep:windows-core"]
+python = ["dep:pyo3"]
+
+[dependencies]
+plita = { path = "vendor/plita", optional = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rfd = { version = "0.17", optional = true }
+rodio = "0.19"
+pyo3 = { version = "0.21", features = ["abi3-py310", "extension-module"], optional = true }
+kurosaki-core = { path = "vendor/kurosaki-core" }
+hound = "3.5"
+
+[[bin]]
+name = "fcseq-cli"
+path = "src/bin/fcseq-cli.rs"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package.kurosaki-core]
+opt-level = 3
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "=0.62.0", optional = true }
+windows-core = { version = "=0.62.0", optional = true }
+
+[[bin]]
+name = "fcseq"
+path = "src/main.rs"
+required-features = ["gui"]
+
+[workspace]
+
+[profile.release]
+strip = "debuginfo"

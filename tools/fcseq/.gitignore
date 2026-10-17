@@ -1,0 +1,9 @@
+/target/
+/dist/
+/scripts/__pycache__/
+/out/
+/__pycache__/
+/tests/__pycache__/
+/verification/ui/
+/fcseq_native.pyd
+/fcseq_native.so

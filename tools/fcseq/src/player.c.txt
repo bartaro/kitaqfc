@@ -1,0 +1,60 @@
+/* Generic NTSC FCSEQ register stream player. Keep data/driver mapped while active.
+   Place dpcm_bank.bin at $C000 as described by fcseq_export.json.
+   Define FCSEQ_WRITE(addr,value) for a host harness; default writes hardware. */
+#include "fcseq_score.h"
+#ifndef FCSEQ_WRITE
+#ifdef FCSEQ_KITAQFC
+/* KITAQFC does not parse volatile-qualified casts. Its pointer stores are
+   emitted directly; define FCSEQ_KITAQFC before including this driver. */
+#define FCSEQ_WRITE(a,v) (*(fcseq_u8 *)(a)=(v))
+#else
+#define FCSEQ_WRITE(a,v) (*(volatile fcseq_u8 *)(a)=(v))
+#endif
+#endif
+static const fcseq_u8 *fcseq_ptr;
+static fcseq_u16 fcseq_wait;
+static fcseq_u8 fcseq_running;
+static fcseq_u8 fcseq_count;
+static fcseq_u8 fcseq_lo;
+static fcseq_u8 fcseq_hi;
+static fcseq_u8 fcseq_value;
+static fcseq_u16 fcseq_address;
+static void fcseq_delay(void) {
+    fcseq_lo=*fcseq_ptr++; fcseq_hi=*fcseq_ptr++;
+    fcseq_wait=(fcseq_u16)fcseq_lo+((fcseq_u16)fcseq_hi<<8);
+}
+void fcseq_start(const fcseq_u8 *data) { fcseq_ptr=data;fcseq_running=1;fcseq_delay(); }
+void fcseq_stop(void) {
+    fcseq_running=0;
+    FCSEQ_WRITE(0x4015,0);
+#if FCSEQ_EXPANSION == 6
+    FCSEQ_WRITE(0x9002,0);FCSEQ_WRITE(0xA002,0);FCSEQ_WRITE(0xB002,0);
+#elif FCSEQ_EXPANSION == 7
+    FCSEQ_WRITE(0x9010,0x20);FCSEQ_WRITE(0x9030,0);
+    FCSEQ_WRITE(0x9010,0x21);FCSEQ_WRITE(0x9030,0);
+    FCSEQ_WRITE(0x9010,0x22);FCSEQ_WRITE(0x9030,0);
+    FCSEQ_WRITE(0x9010,0x23);FCSEQ_WRITE(0x9030,0);
+    FCSEQ_WRITE(0x9010,0x24);FCSEQ_WRITE(0x9030,0);
+    FCSEQ_WRITE(0x9010,0x25);FCSEQ_WRITE(0x9030,0);
+#elif FCSEQ_EXPANSION == 20
+    FCSEQ_WRITE(0x4080,0x80);FCSEQ_WRITE(0x4083,0x80);
+#elif FCSEQ_EXPANSION == 19
+    FCSEQ_WRITE(0xE000,0x40);
+#endif
+}
+void fcseq_tick(void) {
+    if (!fcseq_running) return;
+    if (fcseq_wait) { --fcseq_wait; return; }
+    while (fcseq_running && !fcseq_wait) {
+        fcseq_count=*fcseq_ptr++;
+        while (fcseq_count) {
+            fcseq_lo=*fcseq_ptr++;fcseq_hi=*fcseq_ptr++;fcseq_value=*fcseq_ptr++;
+            fcseq_address=(fcseq_u16)fcseq_lo+((fcseq_u16)fcseq_hi<<8);
+            FCSEQ_WRITE(fcseq_address,fcseq_value);
+            --fcseq_count;
+        }
+        fcseq_delay();
+        if (fcseq_wait==65535) {fcseq_running=0;return;}
+    }
+    if (fcseq_wait) --fcseq_wait;
+}

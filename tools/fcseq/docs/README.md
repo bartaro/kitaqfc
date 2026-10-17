@@ -1,0 +1,1 @@
+Manuals are in the parent directory: [en](../README.en.md) · [ja](../README.ja.md) · [ko](../README.ko.md) · [zh-CN](../README.zh-CN.md) · [zh-TW](../README.zh-TW.md) · [fr](../README.fr.md) · [es](../README.es.md) · [de](../README.de.md) · [pt-BR](../README.pt-BR.md)
