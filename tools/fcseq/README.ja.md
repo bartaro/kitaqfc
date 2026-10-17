@@ -8,7 +8,7 @@
 
 [downloads/](downloads/)からWindows x86_64、Linux x86_64、macOS Apple Silicon（ARM64）、macOS Intel（x86_64）の完全なZIPを選び、全体を展開してください。Windowsは`fcseq.exe`、Unixは`./fcseq`で起動します。端末用は`fcseq-cli`（Windowsでは`.exe`付き）です。[bin/](bin/)には単体実行ファイルもありますが、再配布時はライセンス類も必要です。
 
-Windows 10/11はDirect3D 12、macOSはMetal、LinuxはVulkan/OpenGL・X11/Wayland・ALSAを利用します。Linux版はUbuntu 24.04でビルドします。古いディストリビューションではソースビルドが必要な場合があります。Ubuntuの実行時ライブラリーは`sudo apt install libasound2t64 libxkbcommon0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`で導入できます。GUIには対応GPUドライバー、試聴には音声デバイスが必要です。WAV出力は音声デバイス不要です。実行ファイルは未署名、macOS版は未公証です。OSに起動を止められた場合はソースとハッシュを確認し、OS標準の許可操作を使ってください。UnixでZIP展開後に実行権限がなければ`chmod +x fcseq fcseq-cli`を実行します。
+Windows 10/11はDirect3D 12、macOSはMetal、LinuxはVulkan/OpenGL・X11/Wayland・ALSAを利用します。Linux版はUbuntu 24.04でビルドします。古いディストリビューションではソースビルドが必要な場合があります。Ubuntuの実行時ライブラリーは`sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`で導入できます。GUIには対応GPUドライバー、試聴には音声デバイスが必要です。WAV出力は音声デバイス不要です。実行ファイルは未署名、macOS版は未公証です。OSに起動を止められた場合はソースとハッシュを確認し、OS標準の許可操作を使ってください。UnixでZIP展開後に実行権限がなければ`chmod +x fcseq fcseq-cli`を実行します。
 
 ## 楽曲の作成と編集
 

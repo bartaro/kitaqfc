@@ -6,7 +6,7 @@
 
 ## 下載與啟動
 
-從 [downloads/](downloads/) 下載完整 ZIP：Windows x86_64、Linux x86_64、macOS Apple Silicon ARM64 或 Intel x86_64。請完整解壓縮，保留資源與授權文件。Windows 開啟 `fcseq.exe`，Unix 執行 `./fcseq`；命令列工具為 `fcseq-cli`（Windows 加 `.exe`）。[bin/](bin/) 也提供個別執行檔。Windows 10/11 使用 Direct3D 12，macOS 使用 Metal，Linux 使用 Vulkan/OpenGL、X11/Wayland 和 ALSA。Linux 在 Ubuntu 24.04 建置，較舊發行版可能需要自行編譯。Ubuntu 執行函式庫：`sudo apt install libasound2t64 libxkbcommon0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`。GUI 需要相容的顯示驅動程式，試聽需要音訊裝置；匯出 WAV 不需要。執行檔未簽章，macOS 版本未公證。若遭系統阻擋，請核對原始碼與雜湊，再使用系統正常的允許程序。必要時執行 `chmod +x fcseq fcseq-cli`。
+從 [downloads/](downloads/) 下載完整 ZIP：Windows x86_64、Linux x86_64、macOS Apple Silicon ARM64 或 Intel x86_64。請完整解壓縮，保留資源與授權文件。Windows 開啟 `fcseq.exe`，Unix 執行 `./fcseq`；命令列工具為 `fcseq-cli`（Windows 加 `.exe`）。[bin/](bin/) 也提供個別執行檔。Windows 10/11 使用 Direct3D 12，macOS 使用 Metal，Linux 使用 Vulkan/OpenGL、X11/Wayland 和 ALSA。Linux 在 Ubuntu 24.04 建置，較舊發行版可能需要自行編譯。Ubuntu 執行函式庫：`sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`。GUI 需要相容的顯示驅動程式，試聽需要音訊裝置；匯出 WAV 不需要。執行檔未簽章，macOS 版本未公證。若遭系統阻擋，請核對原始碼與雜湊，再使用系統正常的允許程序。必要時執行 `chmod +x fcseq fcseq-cli`。
 
 ## 作曲與編輯
 

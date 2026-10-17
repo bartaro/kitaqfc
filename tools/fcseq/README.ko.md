@@ -6,7 +6,7 @@
 
 ## 설치와 실행
 
-[downloads/](downloads/)에서 Windows x86_64, Linux x86_64, macOS Apple Silicon ARM64 또는 Intel x86_64용 전체 ZIP을 받으세요. 리소스와 라이선스를 포함해 모두 압축 해제합니다. Windows는 `fcseq.exe`, Unix는 `./fcseq`로 실행합니다. 터미널용은 `fcseq-cli`이며 Windows에서는 `.exe`를 붙입니다. [bin/](bin/)에도 개별 실행 파일이 있습니다. Windows 10/11은 Direct3D 12, macOS는 Metal, Linux는 Vulkan/OpenGL·X11/Wayland·ALSA를 사용합니다. Linux 빌드 환경은 Ubuntu 24.04이며 이전 배포판은 직접 빌드가 필요할 수 있습니다. Ubuntu: `sudo apt install libasound2t64 libxkbcommon0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`. GUI에는 호환 그래픽 드라이버, 실시간 재생에는 오디오 장치가 필요하지만 WAV 출력에는 필요 없습니다. 실행 파일은 서명되지 않았고 macOS 공증도 없습니다. 차단되면 소스와 해시를 확인한 뒤 OS의 일반 허용 절차를 사용하세요. 필요하면 `chmod +x fcseq fcseq-cli`로 실행 권한을 줍니다.
+[downloads/](downloads/)에서 Windows x86_64, Linux x86_64, macOS Apple Silicon ARM64 또는 Intel x86_64용 전체 ZIP을 받으세요. 리소스와 라이선스를 포함해 모두 압축 해제합니다. Windows는 `fcseq.exe`, Unix는 `./fcseq`로 실행합니다. 터미널용은 `fcseq-cli`이며 Windows에서는 `.exe`를 붙입니다. [bin/](bin/)에도 개별 실행 파일이 있습니다. Windows 10/11은 Direct3D 12, macOS는 Metal, Linux는 Vulkan/OpenGL·X11/Wayland·ALSA를 사용합니다. Linux 빌드 환경은 Ubuntu 24.04이며 이전 배포판은 직접 빌드가 필요할 수 있습니다. Ubuntu: `sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`. GUI에는 호환 그래픽 드라이버, 실시간 재생에는 오디오 장치가 필요하지만 WAV 출력에는 필요 없습니다. 실행 파일은 서명되지 않았고 macOS 공증도 없습니다. 차단되면 소스와 해시를 확인한 뒤 OS의 일반 허용 절차를 사용하세요. 필요하면 `chmod +x fcseq fcseq-cli`로 실행 권한을 줍니다.
 
 ## 음악 편집
 

@@ -18,3 +18,8 @@ kitaqfc-rights-name-guard --root . --denylist deny_terms.local.txt
 ZX0 accepts 1–65535 input bytes and preserves the C# encoder output. `raw`, count/value `rle`, and the nine-byte `KQA1` automatic container are supported. Equal payload sizes favor raw, then RLE, then ZX0. `--decompress` accepts a bare forward ZX0 v2 stream, with bounded output; backward streams and v1 are unsupported. The format was designed by Einar Saukas; this KITAQ implementation is MIT licensed.
 
 The asset packer reads the existing JSON manifests and emits an 8 KiB CHR image, C/header arrays, and a JSON report. Metasprites accept inline data, frames, or a JSON input. The indexed PNG builder emits planar CHR, nametable, attributes, palette and metasprite JSON; backgrounds are 256×240, sheets use 8×8 tiles, and palette groups must agree within a tile and each 16×16 background quadrant. PNG palette indices are 0–15. PNG depths 1/2/4/8 and Adam7 are supported. The missing original PNG script was reconstructed from the local specification and sample manifests; its bytes cannot be compared to an unavailable original. RGB colors map to the documented approximate NES palette. The pipeline runs both native stages internally. The name guard reads an external denylist and reports file/line locations without printing protected terms; generated directories are excluded.
+
+
+## [FCSEQ](fcseq/README.en.md)
+
+General-purpose Famicom music sequencer using plita. GUI and CLI for Windows, macOS (Apple Silicon / Intel) and Linux, Python bindings, waveform/DPCM editing and NSF/NSFe import/export. MIT — DAISUKE OBA. This tool is a separate Cargo package: build inside `tools/fcseq`, not the compiler root.

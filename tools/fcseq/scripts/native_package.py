@@ -6,6 +6,10 @@ ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser();p.add_argument('--platform',required=True);p.add_argument('--output',default='dist');a=p.parse_args()
 dest=(ROOT/a.output/a.platform).resolve();dest.mkdir(parents=True,exist_ok=True)
 proof=dest/'verification';proof.mkdir(exist_ok=True)
+for name in ['rust-tests.log','rust-tests.json']:
+    shutil.copy2(ROOT/'verification'/name,proof/name)
+rust_tests=json.loads((proof/'rust-tests.json').read_text())
+assert rust_tests['passed']>0 and rust_tests['failed']==0
 suffix='.exe' if os.name=='nt' else ''
 for name in ['fcseq','fcseq-cli']:shutil.copy2(ROOT/'target/release'/(name+suffix),dest/(name+suffix))
 library='fcseq_native.dll' if os.name=='nt' else ('libfcseq_native.dylib' if sys.platform=='darwin' else 'libfcseq_native.so')
@@ -64,7 +68,7 @@ smoke=subprocess.run([str(dest/('fcseq'+suffix)),'--ui-smoke'],cwd=dest,env=env,
 assert smoke.returncode==0,smoke.stderr.decode(errors='replace')
 assert (proof/'ui/ui_smoke.json').exists()
 commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
-record={'passed':True,'source_commit':commit,'platform':a.platform,'system':platform.platform(),'python':sys.version,'audio_tests':rows,
+record={'passed':True,'source_commit':commit,'platform':a.platform,'system':platform.platform(),'python':sys.version,'rust_tests':rust_tests,'audio_tests':rows,
         'binaries':{name:hashlib.sha256((dest/name).read_bytes()).hexdigest() for name in ['fcseq'+suffix,'fcseq-cli'+suffix,extension]},
         'native_audio_output_device_tested':False,'physical_hardware_tested':False}
 (proof/'native.json').write_text(json.dumps(record,indent=2),encoding='utf-8')

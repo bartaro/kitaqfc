@@ -18,3 +18,8 @@ kitaqfc-rights-name-guard --root . --denylist deny_terms.local.txt
 ZX0 accepte 1 à 65535 octets et conserve la sortie du codeur C#. Les formats `raw`, `rle` nombre/valeur et le conteneur automatique `KQA1` de neuf octets sont pris en charge. À égalité : raw, RLE, puis ZX0. `--decompress` décode un flux ZX0 v2 direct avec une taille bornée. Les flux inversés et v1 ne sont pas pris en charge. Einar Saukas a conçu le format ; cette implémentation KITAQ est sous licence MIT.
 
 Les manifestes JSON existants produisent une image CHR de 8 KiB, des tableaux C/en-têtes et un rapport JSON. Les métasprites acceptent data, frames ou un fichier JSON. Le convertisseur PNG indexé produit CHR, nametable, attributs, palette et JSON de métasprites. Fonds : 256×240 ; tuiles : 8×8 ; groupes de palette cohérents par tuile et quadrant de fond de 16×16. Indices 0–15, profondeurs 1/2/4/8, Adam7. Le script PNG absent a été reconstruit à partir de la spécification locale et des manifestes exemples ; aucune comparaison avec cet original indisponible n’est possible. Les RGB utilisent une palette NES approximative définie. Le pipeline exécute les deux étapes en interne. Le contrôleur de noms lit une liste externe et indique seulement fichiers/lignes, sans termes protégés, en excluant les dossiers générés.
+
+
+## [FCSEQ](fcseq/README.fr.md)
+
+Séquenceur Famicom généraliste utilisant plita. GUI/CLI Windows, macOS (Apple Silicon / Intel), Linux, bindings Python, édition d’ondes/DPCM et import/export NSF/NSFe. MIT — DAISUKE OBA. Paquet Cargo indépendant : compiler dans `tools/fcseq`, pas à la racine du compilateur.

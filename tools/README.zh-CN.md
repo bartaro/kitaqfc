@@ -18,3 +18,8 @@ kitaqfc-rights-name-guard --root . --denylist deny_terms.local.txt
 ZX0 接受 1～65535 字节并保留 C# 编码器的输出。支持 `raw`、计数/值 `rle` 和九字节 `KQA1` 自动容器；大小相同依次选择 raw、RLE、ZX0。`--decompress` 对纯正向 ZX0 v2 流进行有界解码，不支持反向流及 v1。格式由 Einar Saukas 设计，KITAQ 实现采用 MIT 许可证。
 
 读取既有 JSON 清单生成 8 KiB CHR、C 数组/头文件及 JSON 报告。元精灵支持 data、frames 和 JSON 输入。索引 PNG 转换生成 CHR、名称表、属性、调色板及元精灵 JSON。背景为 256×240，图集以 8×8 图块组成，单图块及背景 16×16 区块内调色板组须一致。色索引为 0～15，支持 1/2/4/8 位深度及 Adam7。缺失的 PNG 原脚本根据本地规格与示例清单重建，无法与原件进行字节比较。RGB 映射至定义的 NES 近似调色板。流水线在内部执行两阶段。名称检查读取外部词表，只报告文件和行号，不打印保护词，排除生成目录。
+
+
+## [FCSEQ](fcseq/README.zh-CN.md)
+
+基于 plita 的通用红白机音乐音序器。提供 Windows、macOS（Apple Silicon / Intel）、Linux GUI/CLI、Python 绑定、波形/DPCM 编辑和 NSF/NSFe 导入导出。MIT — DAISUKE OBA。这是独立 Cargo 包，请在 `tools/fcseq` 而非编译器根目录构建。

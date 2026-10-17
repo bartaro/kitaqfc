@@ -18,3 +18,8 @@ kitaqfc-rights-name-guard --root . --denylist deny_terms.local.txt
 ZX0は1～65535バイトを受け付け、C#圧縮器の出力を保持します。`raw`、個数・値の`rle`、9バイトの`KQA1`自動選択コンテナに対応します。同サイズならraw、RLE、ZX0の順に選びます。`--decompress`は裸の順方向ZX0 v2ストリームを上限付きで展開します。逆方向ストリームとv1は対象外です。形式の設計者はEinar Saukas氏で、このKITAQ実装はMITライセンスです。
 
 素材パックは既存JSONマニフェストから8 KiBのCHR、C配列・ヘッダー、JSONレポートを生成します。メタスプライトはdata・frames・JSON入力に対応します。indexed PNG変換はCHR・ネームテーブル・属性・パレット・メタスプライトJSONを生成します。背景は256×240、シートは8×8タイル単位で、タイル内と背景の16×16区画内でパレットグループを揃えます。PNGの色番号は0～15です。深度1/2/4/8とAdam7に対応します。元のPNGスクリプトが存在しないため、ローカル仕様書とサンプルマニフェストから機能を復元しました。その原本とのバイト比較はできません。RGB色は定義したNES近似パレットへ対応付けます。パイプラインは両段階を内部で実行します。名称検査は外部の禁止語リストを読み、語を表示せずファイルと行番号を報告します。生成ディレクトリは除外します。
+
+
+## [FCSEQ](fcseq/README.ja.md)
+
+plitaを使用した汎用ファミコン音楽シーケンサー。Windows・macOS（Apple Silicon / Intel）・LinuxのGUI/CLI、Python bindings、波形/DPCM編集、NSF/NSFe入出力に対応。MIT — DAISUKE OBA。独立したCargoパッケージなので、コンパイラー直下ではなく`tools/fcseq`でビルドします。

@@ -18,3 +18,8 @@ kitaqfc-rights-name-guard --root . --denylist deny_terms.local.txt
 ZX0는 1~65535바이트를 받아 C# 인코더의 출력을 유지합니다. `raw`, 개수/값 `rle`, 9바이트 `KQA1` 자동 컨테이너를 지원합니다. 크기가 같으면 raw, RLE, ZX0 순서로 선택합니다. `--decompress`는 출력 크기를 제한한 순방향 ZX0 v2 스트림을 받습니다. 역방향 스트림과 v1은 지원하지 않습니다. 형식 설계자는 Einar Saukas이며 KITAQ 구현의 라이선스는 MIT입니다.
 
 기존 JSON 매니페스트로 8 KiB CHR, C 배열/헤더와 JSON 보고서를 만듭니다. 메타스프라이트는 data, frames, JSON 입력을 지원합니다. 인덱스 PNG에서 CHR, 네임테이블, 속성, 팔레트와 프레임 JSON을 생성합니다. 배경은 256×240, 시트는 8×8 타일이며 타일 및 16×16 배경 구역 안에서 팔레트 그룹이 같아야 합니다. 색 인덱스는 0~15, 깊이는 1/2/4/8이며 Adam7을 지원합니다. 누락된 PNG 원본은 로컬 사양과 예제 매니페스트에서 복원했으므로 원본 바이트 비교는 불가능합니다. RGB는 NES 근사 팔레트로 매핑합니다. 파이프라인은 두 단계를 내부 실행합니다. 명칭 검사는 외부 목록을 읽고 단어를 노출하지 않고 파일/행만 보고하며 생성 디렉터리는 제외합니다.
+
+
+## [FCSEQ](fcseq/README.ko.md)
+
+plita 기반 범용 패미컴 음악 시퀀서. Windows·macOS(Apple Silicon / Intel)·Linux GUI/CLI, Python 바인딩, 파형/DPCM 편집, NSF/NSFe 가져오기/내보내기. MIT — DAISUKE OBA. 독립 Cargo 패키지이므로 컴파일러 루트 대신 `tools/fcseq`에서 빌드합니다.
