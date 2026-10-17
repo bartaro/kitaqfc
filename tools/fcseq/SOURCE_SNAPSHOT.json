@@ -143,6 +143,8 @@
     "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4",
     "Cargo.toml": "c0121c8f9f1ca5ea19a0b42f3ed0d7ec2623882c216613c355ae16854da73719",
     "Cargo.lock": "44cc9a639dba0f6657b95397b297b1fb0fabb854ed6183dc55a803de1342e733",
-    "build.rs": "4baac63a8d0e0cf2aeefd481ac0e5506a5e15fb1b5cc030290251df5dab8c794"
+    "build.rs": "4baac63a8d0e0cf2aeefd481ac0e5506a5e15fb1b5cc030290251df5dab8c794",
+    "fcseq.py": "c01eebbd1f4ff3a6eb273162068c4cc44e21bd6bb614572617231e9dc4b9f77f",
+    "fcseq_native.pyi": "e05076ed7926b99c421f16746b3194d8c7c5fe353628d8ccd88ca9c3fb9ff0a5"
   }
 }

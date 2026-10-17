@@ -6,7 +6,9 @@ Autor: **DAISUKE OBA**. Sequenciador musical Famicom de uso geral com **plita**.
 
 ## Instalação
 
-Baixe o ZIP completo em [downloads/](downloads/): Windows x86_64, Linux x86_64, macOS Apple Silicon ARM64 ou Intel x86_64. Extraia tudo, incluindo recursos e licenças. Execute `fcseq.exe` no Windows ou `./fcseq` no Unix; terminal: `fcseq-cli` (adicione `.exe` no Windows). Há executáveis individuais em [bin/](bin/). Windows 10/11 usa Direct3D 12; macOS, Metal; Linux, Vulkan/OpenGL, X11/Wayland e ALSA. Linux é compilado no Ubuntu 24.04; distribuições antigas podem precisar de compilação local. No Ubuntu: `sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`. GUI exige driver gráfico compatível e reprodução exige dispositivo de áudio; WAV funciona sem dispositivo. Binários não são assinados e macOS não é notarizado. Se bloqueados, confira fontes e hashes e use a autorização normal do sistema. Se necessário: `chmod +x fcseq fcseq-cli`.
+Baixe o ZIP completo em [downloads/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads): Windows x86_64, Linux x86_64, macOS Apple Silicon ARM64 ou Intel x86_64. Extraia tudo, incluindo recursos e licenças. Execute `fcseq.exe` no Windows ou `./fcseq` no Unix; terminal: `fcseq-cli` (adicione `.exe` no Windows). Há executáveis individuais em [bin/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/bin). Windows 10/11 usa Direct3D 12; macOS, Metal; Linux, Vulkan/OpenGL, X11/Wayland e ALSA. Linux é compilado no Ubuntu 24.04; distribuições antigas podem precisar de compilação local. No Ubuntu: `sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`. GUI exige driver gráfico compatível e reprodução exige dispositivo de áudio; WAV funciona sem dispositivo. Binários não são assinados e macOS não é notarizado. Se bloqueados, confira fontes e hashes e use a autorização normal do sistema. Se necessário: `chmod +x fcseq fcseq-cli`.
+
+O Windows também exige o [Redistribuível Microsoft Visual C++ x64](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) (`VCRUNTIME140.dll`). Se ausente, instale o pacote x64 atualmente compatível da Microsoft. GUI/CLI não vinculam Python; apenas os bindings e o script opcionais precisam dele.
 
 ## Edição
 
@@ -74,6 +76,7 @@ cargo build --locked --release
 cargo test --locked --release --tests
 cargo build --locked --release --no-default-features --bin fcseq-cli
 cargo build --locked --release --features python --lib
+python -c "import shutil,sys; from pathlib import Path; n={'win32':'fcseq_native.dll','darwin':'libfcseq_native.dylib'}.get(sys.platform,'libfcseq_native.so'); shutil.copy2(Path('target/release')/n,'fcseq_native.pyd' if sys.platform=='win32' else 'fcseq_native.so')"
 ```
 
 ## Licença
@@ -81,3 +84,5 @@ cargo build --locked --release --features python --lib
 FCSEQ usa MIT, Copyright (c) 2026 DAISUKE OBA. Dependências mantêm suas licenças. Redistribua LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/ e third_party_sources/. Fontes Symphonia MPL-2.0 e avisos de fontes/ícones estão incluídos. Músicas e amostras importadas têm direitos próprios.
 
 [LICENSE](LICENSE) · [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) · [LICENSE_AUDIT](LICENSE_AUDIT.json) · [VERIFICATION](VERIFICATION.md)
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)

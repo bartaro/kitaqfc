@@ -1,0 +1,6 @@
+[2m2026-10-17T18:57:49.787318Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m window created [3mtitle[0m[2m=[0mFCSEQ - plita Famicom Sequencer [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mscale_factor[0m[2m=[0m1.0
+[2m2026-10-17T18:57:49.787467Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m creating WGPU instance [3mrequested_backends[0m[2m=[0mBackends(METAL) [3mcompiled_backends[0m[2m=[0mBackends(METAL)
+[2m2026-10-17T18:57:49.797504Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m selected GPU adapter [3mname[0m[2m=[0mApple Paravirtual device [3mbackend[0m[2m=[0mMetal [3mdevice_type[0m[2m=[0mDiscreteGpu
+[2m2026-10-17T18:57:55.560109Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m GPU renderer initialized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mformat[0m[2m=[0mBgra8UnormSrgb [3mpresent_mode[0m[2m=[0mFifo
+[2m2026-10-17T18:57:55.574242Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m renderer attached to window [3msurface_format[0m[2m=[0mBgra8UnormSrgb [3msurface_supported[0m[2m=[0mtrue
+[2m2026-10-17T18:57:55.787404Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m window resized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900

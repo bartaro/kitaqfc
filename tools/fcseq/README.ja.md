@@ -6,9 +6,11 @@
 
 ## ダウンロードと起動
 
-[downloads/](downloads/)からWindows x86_64、Linux x86_64、macOS Apple Silicon（ARM64）、macOS Intel（x86_64）の完全なZIPを選び、全体を展開してください。Windowsは`fcseq.exe`、Unixは`./fcseq`で起動します。端末用は`fcseq-cli`（Windowsでは`.exe`付き）です。[bin/](bin/)には単体実行ファイルもありますが、再配布時はライセンス類も必要です。
+[downloads/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads)からWindows x86_64、Linux x86_64、macOS Apple Silicon（ARM64）、macOS Intel（x86_64）の完全なZIPを選び、全体を展開してください。Windowsは`fcseq.exe`、Unixは`./fcseq`で起動します。端末用は`fcseq-cli`（Windowsでは`.exe`付き）です。[bin/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/bin)には単体実行ファイルもありますが、再配布時はライセンス類も必要です。
 
 Windows 10/11はDirect3D 12、macOSはMetal、LinuxはVulkan/OpenGL・X11/Wayland・ALSAを利用します。Linux版はUbuntu 24.04でビルドします。古いディストリビューションではソースビルドが必要な場合があります。Ubuntuの実行時ライブラリーは`sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`で導入できます。GUIには対応GPUドライバー、試聴には音声デバイスが必要です。WAV出力は音声デバイス不要です。実行ファイルは未署名、macOS版は未公証です。OSに起動を止められた場合はソースとハッシュを確認し、OS標準の許可操作を使ってください。UnixでZIP展開後に実行権限がなければ`chmod +x fcseq fcseq-cli`を実行します。
+
+Windowsでは[Microsoft Visual C++ x64再頒布可能パッケージ](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)も必要です（実行ファイルが`VCRUNTIME140.dll`を利用します）。不足する場合はMicrosoft公式の対応する最新版x64パッケージを導入してください。GUI/CLIはPythonにリンクしておらず、Pythonは任意のbindingsとラッパーを使う場合だけ必要です。
 
 ## 楽曲の作成と編集
 
@@ -78,6 +80,7 @@ cargo build --locked --release
 cargo test --locked --release --tests
 cargo build --locked --release --no-default-features --bin fcseq-cli
 cargo build --locked --release --features python --lib
+python -c "import shutil,sys; from pathlib import Path; n={'win32':'fcseq_native.dll','darwin':'libfcseq_native.dylib'}.get(sys.platform,'libfcseq_native.so'); shutil.copy2(Path('target/release')/n,'fcseq_native.pyd' if sys.platform=='win32' else 'fcseq_native.so')"
 ```
 
 ## ライセンス
@@ -85,3 +88,5 @@ cargo build --locked --release --features python --lib
 FCSEQ本体はMIT、Copyright (c) 2026 DAISUKE OBA。依存物には各ライセンスが適用されます。再配布時はLICENSE、THIRD_PARTY_NOTICES.md、licenses/、assets/、third_party_sources/を含めてください。MPL-2.0のSymphoniaソースを同梱し、フォント・アイコンの表記も保持しています。読み込んだ音楽・音声の権利は別です。
 
 [LICENSE](LICENSE) · [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) · [LICENSE_AUDIT](LICENSE_AUDIT.json) · [VERIFICATION](VERIFICATION.md)
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)

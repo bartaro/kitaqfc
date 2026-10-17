@@ -41,6 +41,8 @@ Redistribute LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/font notices,
 and third_party_sources/ with binary packages. Runtime system libraries
 (Windows system DLLs, Apple frameworks, Linux ALSA/X11/Wayland/graphics
 libraries) are supplied by the operating system, not bundled in this package.
+Windows binaries also use the external Microsoft Visual C++ x64 Runtime
+(VCRUNTIME140.dll), available from Microsoft; it is not bundled or relicensed here.
 Apple SDK files are not redistributed. The objc2 upstream licensing explanation
 about generated Apple bindings is retained as LICENSE.md where provided;
 macOS source builds require Xcode and its applicable SDK terms. Extra upstream

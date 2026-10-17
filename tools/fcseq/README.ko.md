@@ -6,7 +6,9 @@
 
 ## 설치와 실행
 
-[downloads/](downloads/)에서 Windows x86_64, Linux x86_64, macOS Apple Silicon ARM64 또는 Intel x86_64용 전체 ZIP을 받으세요. 리소스와 라이선스를 포함해 모두 압축 해제합니다. Windows는 `fcseq.exe`, Unix는 `./fcseq`로 실행합니다. 터미널용은 `fcseq-cli`이며 Windows에서는 `.exe`를 붙입니다. [bin/](bin/)에도 개별 실행 파일이 있습니다. Windows 10/11은 Direct3D 12, macOS는 Metal, Linux는 Vulkan/OpenGL·X11/Wayland·ALSA를 사용합니다. Linux 빌드 환경은 Ubuntu 24.04이며 이전 배포판은 직접 빌드가 필요할 수 있습니다. Ubuntu: `sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`. GUI에는 호환 그래픽 드라이버, 실시간 재생에는 오디오 장치가 필요하지만 WAV 출력에는 필요 없습니다. 실행 파일은 서명되지 않았고 macOS 공증도 없습니다. 차단되면 소스와 해시를 확인한 뒤 OS의 일반 허용 절차를 사용하세요. 필요하면 `chmod +x fcseq fcseq-cli`로 실행 권한을 줍니다.
+[downloads/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads)에서 Windows x86_64, Linux x86_64, macOS Apple Silicon ARM64 또는 Intel x86_64용 전체 ZIP을 받으세요. 리소스와 라이선스를 포함해 모두 압축 해제합니다. Windows는 `fcseq.exe`, Unix는 `./fcseq`로 실행합니다. 터미널용은 `fcseq-cli`이며 Windows에서는 `.exe`를 붙입니다. [bin/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/bin)에도 개별 실행 파일이 있습니다. Windows 10/11은 Direct3D 12, macOS는 Metal, Linux는 Vulkan/OpenGL·X11/Wayland·ALSA를 사용합니다. Linux 빌드 환경은 Ubuntu 24.04이며 이전 배포판은 직접 빌드가 필요할 수 있습니다. Ubuntu: `sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`. GUI에는 호환 그래픽 드라이버, 실시간 재생에는 오디오 장치가 필요하지만 WAV 출력에는 필요 없습니다. 실행 파일은 서명되지 않았고 macOS 공증도 없습니다. 차단되면 소스와 해시를 확인한 뒤 OS의 일반 허용 절차를 사용하세요. 필요하면 `chmod +x fcseq fcseq-cli`로 실행 권한을 줍니다.
+
+Windows에는 [Microsoft Visual C++ x64 재배포 패키지](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)도 필요합니다(`VCRUNTIME140.dll` 사용). 없으면 Microsoft의 지원되는 최신 x64 패키지를 설치하세요. GUI/CLI는 Python에 링크하지 않으며 Python은 선택적인 바인딩과 래퍼에만 필요합니다.
 
 ## 음악 편집
 
@@ -74,6 +76,7 @@ cargo build --locked --release
 cargo test --locked --release --tests
 cargo build --locked --release --no-default-features --bin fcseq-cli
 cargo build --locked --release --features python --lib
+python -c "import shutil,sys; from pathlib import Path; n={'win32':'fcseq_native.dll','darwin':'libfcseq_native.dylib'}.get(sys.platform,'libfcseq_native.so'); shutil.copy2(Path('target/release')/n,'fcseq_native.pyd' if sys.platform=='win32' else 'fcseq_native.so')"
 ```
 
 ## 라이선스
@@ -81,3 +84,5 @@ cargo build --locked --release --features python --lib
 FCSEQ는 MIT, Copyright (c) 2026 DAISUKE OBA입니다. 의존성은 각 라이선스를 유지합니다. 재배포 시 LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/, third_party_sources/를 포함하세요. MPL-2.0 Symphonia 소스와 글꼴/아이콘 표기를 포함합니다. 가져온 음악과 샘플의 권리는 별도입니다.
 
 [LICENSE](LICENSE) · [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) · [LICENSE_AUDIT](LICENSE_AUDIT.json) · [VERIFICATION](VERIFICATION.md)
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)

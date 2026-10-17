@@ -6,9 +6,11 @@ By **DAISUKE OBA**. A general-purpose Famicom music sequencer built with **plita
 
 ## Download and launch
 
-Download the complete ZIP for your platform from [downloads/](downloads/): Windows x86_64, Linux x86_64, macOS Apple Silicon (ARM64), or macOS Intel (x86_64). Extract the whole archive, retaining assets, notices and source archives. Windows: open `fcseq.exe`; Unix: run `./fcseq`. Use `fcseq-cli` for terminal commands (append `.exe` on Windows). Individual executable files are also in [bin/](bin/), but redistribution requires the accompanying notices.
+Download the complete ZIP for your platform from [downloads/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads): Windows x86_64, Linux x86_64, macOS Apple Silicon (ARM64), or macOS Intel (x86_64). Extract the whole archive, retaining assets, notices and source archives. Windows: open `fcseq.exe`; Unix: run `./fcseq`. Use `fcseq-cli` for terminal commands (append `.exe` on Windows). Individual executable files are also in [bin/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/bin), but redistribution requires the accompanying notices.
 
 Windows 10/11 uses Direct3D 12; macOS uses Metal; Linux uses Vulkan/OpenGL with X11/Wayland and ALSA. Linux binaries are built on Ubuntu 24.04; older distributions may need a source build. On Ubuntu install runtime libraries with `sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`. A compatible graphics driver is required for the GUI and an audio device for live playback. WAV export needs no audio device. Binaries are unsigned; macOS builds are not notarized. If blocked after downloading, review the source and hashes, then use the operating system's normal approval mechanism. Unix ZIP extraction may require `chmod +x fcseq fcseq-cli`.
+
+Windows also requires the [Microsoft Visual C++ x64 Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) (the executables import `VCRUNTIME140.dll`). If it is missing, install the current supported x64 package from Microsoft. GUI/CLI do not link to Python; Python is needed only for the optional bindings and wrapper.
 
 ## Create and edit a song
 
@@ -78,6 +80,7 @@ cargo build --locked --release
 cargo test --locked --release --tests
 cargo build --locked --release --no-default-features --bin fcseq-cli
 cargo build --locked --release --features python --lib
+python -c "import shutil,sys; from pathlib import Path; n={'win32':'fcseq_native.dll','darwin':'libfcseq_native.dylib'}.get(sys.platform,'libfcseq_native.so'); shutil.copy2(Path('target/release')/n,'fcseq_native.pyd' if sys.platform=='win32' else 'fcseq_native.so')"
 ```
 
 ## License
@@ -85,3 +88,5 @@ cargo build --locked --release --features python --lib
 FCSEQ is MIT, Copyright (c) 2026 DAISUKE OBA. Dependencies retain their licenses. Keep LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/ and third_party_sources/ when redistributing. MPL-2.0 Symphonia source is included; font/icon notices are retained. Imported music and samples have separate rights.
 
 [LICENSE](LICENSE) · [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) · [LICENSE_AUDIT](LICENSE_AUDIT.json) · [VERIFICATION](VERIFICATION.md)
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)

@@ -1,0 +1,18 @@
+test_atomic_history_and_redo (test_bindings.BindingTests) ... ok
+test_expansion_edit_and_save (test_bindings.BindingTests) ... ok
+test_import_process_export_and_play_dpcm (test_bindings.BindingTests) ... ok
+test_lengths_sections_and_custom_instruments (test_bindings.BindingTests) ... ok
+test_export_is_generic_and_preserves_register_stream (test_fcseq.ScoreTests) ... ok
+test_low_pulse_and_nonfinite_tempo (test_fcseq.ScoreTests) ... ok
+test_overlap_and_overrun_rejected (test_fcseq.ScoreTests) ... ok
+test_roundtrip (test_fcseq.ScoreTests) ... ok
+test_fm_parameter_updates_only_requested_bits (test_instruments.Instruments) ... ok
+test_n163_wave_history_fcq_nsf_and_wav (test_instruments.Instruments) ... ok
+test_export_import_fcq_embedded_playback_and_original_preservation (test_nsf.NsfTests) ... ok
+test_renamed_legacy_project_opens_as_fcq (test_nsf.NsfTests) ... ok
+test_section_duration_metadata_and_nsfe_playback (test_nsf.NsfTests) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.102s
+
+OK

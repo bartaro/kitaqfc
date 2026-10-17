@@ -1,9 +1,10 @@
 """FCSEQ: general-purpose Famicom sequencer. GUI, CLI and Python share the native engine."""
 from __future__ import annotations
-import argparse, json, subprocess
+import argparse, json, subprocess, sys
 from pathlib import Path
 import fcseq_native
 ROOT = Path(__file__).resolve().parent
+EXE_SUFFIX = '.exe' if sys.platform == 'win32' else ''
 FPS = 60.098813897
 
 def controller(doc=None):
@@ -56,7 +57,7 @@ def main():
     d = sub.add_parser('export-dpcm'); d.add_argument('project'); d.add_argument('sample',type=int); d.add_argument('output')
     args = p.parse_args()
     if args.command in (None,'gui'):
-        cmd=[str(ROOT/'fcseq.exe')]
+        cmd=[str(ROOT/('fcseq'+EXE_SUFFIX))]
         if getattr(args,'project',None): cmd.append(args.project)
         subprocess.run(cmd,check=True); return
     c = controller()
@@ -74,7 +75,7 @@ def main():
         elif args.command=='nsf-render': result=json.loads(c.render_wav(args.output))
         elif args.command=='play-nsf':
             info=json.loads(c.nsf_info())
-            command=[str(ROOT/'fcseq-cli.exe'),'play-nsf',str(args.project),str(info['selected_song'])]
+            command=[str(ROOT/('fcseq-cli'+EXE_SUFFIX)),'play-nsf',str(args.project),str(info['selected_song'])]
             if info.get('duration_ms') is None: command.append(str(info['seconds']))
             subprocess.run(command,check=True)
             return

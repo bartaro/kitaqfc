@@ -1,0 +1,96 @@
+{
+  "passed": true,
+  "source_commit": "bd3e8f41ceac0d472804745e9e8775741c345afe",
+  "platform": "macos-x86_64",
+  "system": "macOS-15.7.9-x86_64-i386-64bit",
+  "python": "3.10.21 (main, Aug 13 2026, 02:42:10) [Clang 17.0.0 (clang-1700.0.13.5)]",
+  "rust_tests": {
+    "passed": 37,
+    "failed": 0,
+    "suites": 6
+  },
+  "audio_tests": [
+    {
+      "chip": "none",
+      "voices": 5,
+      "native": {
+        "frames": 70443,
+        "peak_to_peak": 40540,
+        "sha256": "f381e2d9938d769c6c0c2a3cf8c5abc039bbfa2840674bf0ed1d7100d868fc40"
+      },
+      "nsf": {
+        "frames": 44100,
+        "peak_to_peak": 22798,
+        "sha256": "93672c4d6e48fdc9ac12cc83615c1669a2e97012b7607af48499fb81e4fe7dae"
+      },
+      "roundtrip": true
+    },
+    {
+      "chip": "vrc6",
+      "voices": 8,
+      "native": {
+        "frames": 70443,
+        "peak_to_peak": 41558,
+        "sha256": "e8679c179f196dbe819669ea80df46a24865576a672b6a22871b3744c2096284"
+      },
+      "nsf": {
+        "frames": 44100,
+        "peak_to_peak": 28897,
+        "sha256": "36a5b548ca6f1f52bc8dd130d8559840e071c40fd7f01d29ca3c7dc9ac7d0ddf"
+      },
+      "roundtrip": true
+    },
+    {
+      "chip": "vrc7",
+      "voices": 11,
+      "native": {
+        "frames": 70443,
+        "peak_to_peak": 43974,
+        "sha256": "9c44271dca72e14982580a705a2c6b55b985658352e2f7704813ad19d1c71afa"
+      },
+      "nsf": {
+        "frames": 44100,
+        "peak_to_peak": 23119,
+        "sha256": "52a9a7be3de61fb7c32da00a16025a496f2f4b75743d7ec1a899d14a067faf94"
+      },
+      "roundtrip": true
+    },
+    {
+      "chip": "fds",
+      "voices": 6,
+      "native": {
+        "frames": 70443,
+        "peak_to_peak": 43969,
+        "sha256": "5144b9648c9f67d12328666755dd640ecef9d95ca3cc66bbdf05e6d2b0a85b04"
+      },
+      "nsf": {
+        "frames": 44100,
+        "peak_to_peak": 25440,
+        "sha256": "1ad6c77d9f094c2fbd4aec6b14b0d088fd89d64546a0f8951ba18670f283e623"
+      },
+      "roundtrip": true
+    },
+    {
+      "chip": "n163",
+      "voices": 13,
+      "native": {
+        "frames": 70443,
+        "peak_to_peak": 59703,
+        "sha256": "54f27d507ddeeae31e6dfb1c14e8e34574927260eba103a568e7fa15f6661493"
+      },
+      "nsf": {
+        "frames": 44100,
+        "peak_to_peak": 24510,
+        "sha256": "cfbee025e81a42ea19340bf56d667d1e7a26f11a5b79971777f2104913bb03c6"
+      },
+      "roundtrip": true
+    }
+  ],
+  "binaries": {
+    "fcseq": "c3aeef05611f07f92677ef94c345860244f21ef078cbac9b4b792fcb9fb438e0",
+    "fcseq-cli": "c93f04572bdc2cf4f30fe3f166c4fe2a6f6d4ffca0c8772eca7b780cf0c2ef89",
+    "fcseq_native.so": "28e2ae4a553fc08276937628a5d042cfda390a9b1308f732fe7e5e9b25fa7d1a"
+  },
+  "native_audio_output_device_tested": false,
+  "physical_hardware_tested": false
+}

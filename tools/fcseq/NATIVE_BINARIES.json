@@ -1,0 +1,152 @@
+{
+  "version": "0.4.1",
+  "source_commit": "bd3e8f41ceac0d472804745e9e8775741c345afe",
+  "workflow_url": "https://github.com/bartaro/kitaqfc/actions/runs/39060150415",
+  "rust": "1.93.1",
+  "python_wrapper_sha256": "c01eebbd1f4ff3a6eb273162068c4cc44e21bd6bb614572617231e9dc4b9f77f",
+  "native_platforms": [
+    {
+      "platform": "windows-x86_64",
+      "binaries": {
+        "fcseq.exe": {
+          "sha256": "4ce9cea32304ff4bc9b5dcbdcf0a74b7a01fa3630ca344a48c983ed7d3f8234d",
+          "bytes": 11404288,
+          "format": "PE x86_64"
+        },
+        "fcseq-cli.exe": {
+          "sha256": "d7423d229fb971bcdeebd246b5d97bf378467c28332a218d7463a12ce1d1dda8",
+          "bytes": 1942528,
+          "format": "PE x86_64"
+        },
+        "fcseq_native.pyd": {
+          "sha256": "cbeb0bc60f723c41665f82e957163b1c469ecf1cb34404fb68e8cb8163b85fff",
+          "bytes": 1803776,
+          "format": "PE x86_64"
+        }
+      },
+      "rust_tests": 37,
+      "python_tests": 13,
+      "gui_native_startup": {
+        "channels": 5,
+        "empty_startup": true,
+        "imported_nsf": false,
+        "ticks": 16,
+        "toolkit": "plita",
+        "viewport": [
+          1360.0,
+          900.0
+        ]
+      },
+      "audio_configurations": 5,
+      "combined_voices": 43
+    },
+    {
+      "platform": "linux-x86_64",
+      "binaries": {
+        "fcseq": {
+          "sha256": "80282f67fd8966e941d7362c54c63203d32ebb61efcb06a17df7cc1b710e00e6",
+          "bytes": 17073472,
+          "format": "ELF x86_64"
+        },
+        "fcseq-cli": {
+          "sha256": "3a209a3b1e0da2acab0a74f3aae5a3b64dcfaa36bf433b3d9eb8bb9ebac16686",
+          "bytes": 2556992,
+          "format": "ELF x86_64"
+        },
+        "fcseq_native.so": {
+          "sha256": "74b9172b365eb2b97ec2d19a5ba26a5c94e3365f05730f336c5cee4af4ba3da4",
+          "bytes": 2491104,
+          "format": "ELF x86_64"
+        }
+      },
+      "rust_tests": 37,
+      "python_tests": 13,
+      "gui_native_startup": {
+        "channels": 5,
+        "empty_startup": true,
+        "imported_nsf": false,
+        "ticks": 16,
+        "toolkit": "plita",
+        "viewport": [
+          1360.0,
+          900.0
+        ]
+      },
+      "audio_configurations": 5,
+      "combined_voices": 43
+    },
+    {
+      "platform": "macos-arm64",
+      "binaries": {
+        "fcseq": {
+          "sha256": "168fb291d567b1dced908809aa6c1dcdd0856644cb7af7f5454f290842136e06",
+          "bytes": 10318720,
+          "format": "Mach-O arm64"
+        },
+        "fcseq-cli": {
+          "sha256": "04a026d7bb06af728218c56c1799851b193a5c82e23d2f0204af63d21b3f82f8",
+          "bytes": 2146688,
+          "format": "Mach-O arm64"
+        },
+        "fcseq_native.so": {
+          "sha256": "347674408ec98517afc01196d89228929519cecbcc8878bb9c030d2af5814275",
+          "bytes": 2088256,
+          "format": "Mach-O arm64"
+        }
+      },
+      "rust_tests": 37,
+      "python_tests": 13,
+      "gui_native_startup": {
+        "channels": 5,
+        "empty_startup": true,
+        "imported_nsf": false,
+        "ticks": 16,
+        "toolkit": "plita",
+        "viewport": [
+          1120.0,
+          780.0
+        ]
+      },
+      "audio_configurations": 5,
+      "combined_voices": 43
+    },
+    {
+      "platform": "macos-x86_64",
+      "binaries": {
+        "fcseq": {
+          "sha256": "c3aeef05611f07f92677ef94c345860244f21ef078cbac9b4b792fcb9fb438e0",
+          "bytes": 10629756,
+          "format": "Mach-O x86_64"
+        },
+        "fcseq-cli": {
+          "sha256": "c93f04572bdc2cf4f30fe3f166c4fe2a6f6d4ffca0c8772eca7b780cf0c2ef89",
+          "bytes": 2218832,
+          "format": "Mach-O x86_64"
+        },
+        "fcseq_native.so": {
+          "sha256": "28e2ae4a553fc08276937628a5d042cfda390a9b1308f732fe7e5e9b25fa7d1a",
+          "bytes": 2134688,
+          "format": "Mach-O x86_64"
+        }
+      },
+      "rust_tests": 37,
+      "python_tests": 13,
+      "gui_native_startup": {
+        "channels": 5,
+        "empty_startup": true,
+        "imported_nsf": false,
+        "ticks": 16,
+        "toolkit": "plita",
+        "viewport": [
+          1360.0,
+          900.0
+        ]
+      },
+      "audio_configurations": 5,
+      "combined_voices": 43
+    }
+  ],
+  "hardware_verified": false,
+  "human_input_verified": false,
+  "audio_device_verified": false
+}

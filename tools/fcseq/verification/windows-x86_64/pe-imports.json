@@ -1,0 +1,40 @@
+{
+  "fcseq-cli.exe": [
+    "api-ms-win-core-synch-l1-2-0.dll",
+    "bcryptprimitives.dll",
+    "kernel32.dll",
+    "ole32.dll",
+    "oleaut32.dll",
+    "ntdll.dll",
+    "VCRUNTIME140.dll",
+    "api-ms-win-crt-math-l1-1-0.dll",
+    "api-ms-win-crt-runtime-l1-1-0.dll",
+    "api-ms-win-crt-stdio-l1-1-0.dll",
+    "api-ms-win-crt-locale-l1-1-0.dll",
+    "api-ms-win-crt-heap-l1-1-0.dll"
+  ],
+  "fcseq.exe": [
+    "kernel32.dll",
+    "user32.dll",
+    "combase.dll",
+    "ole32.dll",
+    "shell32.dll",
+    "api-ms-win-core-synch-l1-2-0.dll",
+    "gdi32.dll",
+    "opengl32.dll",
+    "setupapi.dll",
+    "oleaut32.dll",
+    "bcryptprimitives.dll",
+    "imm32.dll",
+    "dwmapi.dll",
+    "uxtheme.dll",
+    "ntdll.dll",
+    "VCRUNTIME140.dll",
+    "api-ms-win-crt-math-l1-1-0.dll",
+    "api-ms-win-crt-string-l1-1-0.dll",
+    "api-ms-win-crt-runtime-l1-1-0.dll",
+    "api-ms-win-crt-stdio-l1-1-0.dll",
+    "api-ms-win-crt-locale-l1-1-0.dll",
+    "api-ms-win-crt-heap-l1-1-0.dll"
+  ]
+}

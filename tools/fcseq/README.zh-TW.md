@@ -6,7 +6,9 @@
 
 ## 下載與啟動
 
-從 [downloads/](downloads/) 下載完整 ZIP：Windows x86_64、Linux x86_64、macOS Apple Silicon ARM64 或 Intel x86_64。請完整解壓縮，保留資源與授權文件。Windows 開啟 `fcseq.exe`，Unix 執行 `./fcseq`；命令列工具為 `fcseq-cli`（Windows 加 `.exe`）。[bin/](bin/) 也提供個別執行檔。Windows 10/11 使用 Direct3D 12，macOS 使用 Metal，Linux 使用 Vulkan/OpenGL、X11/Wayland 和 ALSA。Linux 在 Ubuntu 24.04 建置，較舊發行版可能需要自行編譯。Ubuntu 執行函式庫：`sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`。GUI 需要相容的顯示驅動程式，試聽需要音訊裝置；匯出 WAV 不需要。執行檔未簽章，macOS 版本未公證。若遭系統阻擋，請核對原始碼與雜湊，再使用系統正常的允許程序。必要時執行 `chmod +x fcseq fcseq-cli`。
+從 [downloads/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads) 下載完整 ZIP：Windows x86_64、Linux x86_64、macOS Apple Silicon ARM64 或 Intel x86_64。請完整解壓縮，保留資源與授權文件。Windows 開啟 `fcseq.exe`，Unix 執行 `./fcseq`；命令列工具為 `fcseq-cli`（Windows 加 `.exe`）。[bin/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/bin) 也提供個別執行檔。Windows 10/11 使用 Direct3D 12，macOS 使用 Metal，Linux 使用 Vulkan/OpenGL、X11/Wayland 和 ALSA。Linux 在 Ubuntu 24.04 建置，較舊發行版可能需要自行編譯。Ubuntu 執行函式庫：`sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`。GUI 需要相容的顯示驅動程式，試聽需要音訊裝置；匯出 WAV 不需要。執行檔未簽章，macOS 版本未公證。若遭系統阻擋，請核對原始碼與雜湊，再使用系統正常的允許程序。必要時執行 `chmod +x fcseq fcseq-cli`。
+
+Windows 另需 [Microsoft Visual C++ x64 可轉散發套件](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)（程式使用 `VCRUNTIME140.dll`）。若缺少，請安裝 Microsoft 官方目前支援的 x64 版本。GUI/CLI 不連結 Python；只有選用綁定和包裝腳本需要 Python。
 
 ## 作曲與編輯
 
@@ -74,6 +76,7 @@ cargo build --locked --release
 cargo test --locked --release --tests
 cargo build --locked --release --no-default-features --bin fcseq-cli
 cargo build --locked --release --features python --lib
+python -c "import shutil,sys; from pathlib import Path; n={'win32':'fcseq_native.dll','darwin':'libfcseq_native.dylib'}.get(sys.platform,'libfcseq_native.so'); shutil.copy2(Path('target/release')/n,'fcseq_native.pyd' if sys.platform=='win32' else 'fcseq_native.so')"
 ```
 
 ## 授權
@@ -81,3 +84,5 @@ cargo build --locked --release --features python --lib
 FCSEQ 為 MIT，Copyright (c) 2026 DAISUKE OBA。相依套件保留各自授權。重新散布請包含 LICENSE、THIRD_PARTY_NOTICES.md、licenses/、assets/、third_party_sources/。已附 MPL-2.0 Symphonia 原始碼與字型/圖示聲明。匯入音樂與取樣另有其權利。
 
 [LICENSE](LICENSE) · [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) · [LICENSE_AUDIT](LICENSE_AUDIT.json) · [VERIFICATION](VERIFICATION.md)
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)
