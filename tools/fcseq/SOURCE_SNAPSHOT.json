@@ -134,13 +134,14 @@
     "vendor/plita_window/src/lib.rs": "a7dbba9cd779ece762e5a2d6002830705c282c14c42d81044e9c5ab74671a2e4",
     "vendor/plita_window/src/render_worker.rs": "e7eaff0409078b0c5eec79b675fc63604b53d6cf422cd75ebc40050a1a5967fe",
     "scripts/gui_startup.py": "f3dafa52b2ae0829b084d5ed99feb00fd226adf315f008659ac5450a13238ef7",
-    "scripts/native_package.py": "45ecfa606c266cfb7a5c01730fe57b8a9853277d3644af89da68af647fc78e0b",
+    "scripts/native_package.py": "a2b44e9ab242160c89b83d74bda2c77417720ea9aa4d5e3c355d94de49cbe535",
     "assets/fonts/.gitkeep": "0fd240b09d8cea96e918a5cbdcb73a817c157431b7b78b84e8dd709d1b2244e2",
     "assets/fonts/Roboto-OFL.txt": "061402327a96aadb0bfb694a960ed289ecd38d383e396243831ab81feb109c41",
     "assets/fonts/Roboto[wdth,wght].ttf": "d7598e12c5dbef095ff8272cfc55da0250bd07fbdecbac8a530b9b277872a134",
     "assets/fonts/RobotoMono-OFL.txt": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215",
     "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4",
     "Cargo.toml": "c0121c8f9f1ca5ea19a0b42f3ed0d7ec2623882c216613c355ae16854da73719",
-    "Cargo.lock": "44cc9a639dba0f6657b95397b297b1fb0fabb854ed6183dc55a803de1342e733"
+    "Cargo.lock": "44cc9a639dba0f6657b95397b297b1fb0fabb854ed6183dc55a803de1342e733",
+    "build.rs": "4baac63a8d0e0cf2aeefd481ac0e5506a5e15fb1b5cc030290251df5dab8c794"
   }
 }

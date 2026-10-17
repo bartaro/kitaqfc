@@ -49,6 +49,16 @@ licenses/UPSTREAM_PROVENANCE.json. The old block/dispatch crates declare MIT in
 their manifests but omit a license file; standard MIT text and manifest author
 attribution are supplied, with that distinction recorded in their NOTICE.md.
 
+## Rust standard library
+
+The executable toolchain is Rust 1.93.1. Its official
+[standard-library copyright inventory](licenses/toolchain/rust-1.93.1/COPYRIGHT-library.html)
+and referenced license texts are retained from the matching rustup distribution.
+That inventory describes the standard-library source across targets; it does not
+imply every listed component is linked into every executable. Applicable runtime
+exceptions and alternative license grants remain as stated in that inventory.
+No Rust compiler or Xcode SDK binary is included in this distribution.
+
 ## Dependency inventory
 
 | Package | Version | License expression | Notices |

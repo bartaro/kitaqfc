@@ -40,7 +40,7 @@ with tempfile.TemporaryDirectory() as tmp:
     for chip,count in [('none',5),('vrc6',8),('vrc7',11),('fds',6),('n163',13)]:
         c=fcseq_native.Controller();c.set_expansion(chip);c.set_bars(0,1);c.import_audio(str(source))
         for channel in range(count):
-            c.add_note(0,channel,0,4,15 if channel in [3,4] else 69)
+            c.add_note(0,channel,0,4,1 if channel==3 else (15 if channel==4 else 69))
         project=tmp/(chip+'.fcq');c.save_project(str(project))
         assert json.loads(run('validate',project))['valid']
         wav=tmp/(chip+'.wav');run('render-wav',project,wav,0)
