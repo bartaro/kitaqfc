@@ -77,7 +77,7 @@ From this source folder, use Rust 1.93.1 and the commands below. All local libra
 cargo build --locked --release
 cargo test --locked --release --tests
 cargo build --locked --release --no-default-features --bin fcseq-cli
-cargo build --locked --release --features python
+cargo build --locked --release --features python --lib
 ```
 
 ## License

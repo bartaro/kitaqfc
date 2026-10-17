@@ -77,7 +77,7 @@ c.render_wav('example.wav')
 cargo build --locked --release
 cargo test --locked --release --tests
 cargo build --locked --release --no-default-features --bin fcseq-cli
-cargo build --locked --release --features python
+cargo build --locked --release --features python --lib
 ```
 
 ## ライセンス

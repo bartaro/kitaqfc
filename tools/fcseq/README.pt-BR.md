@@ -73,7 +73,7 @@ Nesta pasta de fontes use Rust 1.93.1 e os comandos abaixo. Bibliotecas locais: 
 cargo build --locked --release
 cargo test --locked --release --tests
 cargo build --locked --release --no-default-features --bin fcseq-cli
-cargo build --locked --release --features python
+cargo build --locked --release --features python --lib
 ```
 
 ## Licença

@@ -43,7 +43,9 @@ jobs:
       - name: Test model and editor
         run: cargo test --locked --release --tests
       - name: Build GUI CLI and Python extension
-        run: cargo build --locked --release --features python
+        run: |
+          cargo build --locked --release --bins
+          cargo build --locked --release --features python --lib
       - name: Native functional verification and package
         run: python scripts/native_package.py --platform ${{ matrix.platform }} --output dist
       - name: GUI startup on Linux
