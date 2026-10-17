@@ -2,7 +2,26 @@
 
 [English](README.en.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Español](README.es.md) | [Português](README.pt.md) | [Français](README.fr.md) | [Deutsch](README.de.md)
 
-FCHUA édite les tuiles, tables de noms, palettes et métasprites NES 8x8 pour KITAQFC. La CLI autonome partage le moteur de l'éditeur et ne nécessite ni interface graphique, ni GPU, ni installation de PLITA, ni Python.
+FCHUA édite les tuiles, tables de noms, palettes et métasprites NES 8x8 pour KITAQFC. La CLI autonome partage le moteur de l'éditeur et ne nécessite ni interface graphique, ni GPU, ni installation de plita, ni Python.
+
+## Télécharger l'interface
+
+Téléchargez le ZIP Windows x64, extrayez-le entièrement et lancez FCHUA.exe. Conservez assets/fonts et les dossiers de licences à côté du programme. Rust et Python ne sont pas nécessaires à son exécution ; un périphérique/pilote graphique compatible avec wgpu est requis. L'interface est en anglais ; les manuels complets existent dans les neuf langues ci-dessus.
+
+[FCHUA GUI 0.1.0 - Windows x64 ZIP](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fchua/dist/FCHUA-GUI-0.1.0-windows-x86_64.zip)
+
+Commencez par File > New project ou Open project / raw. Sélectionnez une tuile et une palette, dessinez dans Tile puis placez les tuiles dans Map. La palette de la carte change par blocs de 16x16 pixels. Choisissez les tables de fond/sprites dans leurs menus. Enregistrez en .fch pour garder les données modifiables ; l'aperçu PNG n'est pas un projet. Export KITAQFC pack produit les ressources du jeu. Si la police diffère, vérifiez l'extraction complète et PLITA_UI_FONT. Si la fenêtre ne s'ouvre pas, mettez à jour le pilote graphique ou utilisez la CLI sans interface.
+
+Le code public inclut les crates plita nécessaires. Depuis tools/fchua, compilez et lancez l'interface avec ces commandes ; le chemin final du projet est facultatif. L'exécutable GUI de cette version a été vérifié sous Windows x64.
+
+La compilation de distribution, les dispositions rendues par logiciel et les tests automatiques d'entrée/état ont réussi sous Windows x64. Les clics de fenêtre et les dialogues de fichiers restent non vérifiés : l'outil de bureau a expiré en attendant l'autorisation de l'application. Voir la [vérification](VERIFICATION.md).
+
+```sh
+cd tools/fchua
+cargo run --release --locked --features gui --bin fchua_gui
+cargo run --release --locked --features gui --bin fchua_gui -- scene.fch
+cargo test --release --locked --features gui
+```
 
 ## Compilation et lancement
 
@@ -79,11 +98,11 @@ Le script est un tableau JSON. Toutes les opérations sont validées avant modif
 
 ## Interface et Python
 
-L'interface PLITA locale utilise Roboto, des menus groupés avec icônes Lucide, des états de survol/pression/relâchement et des infobulles. File propose nouveau, ouvrir, enregistrer, enregistrer sous, import PNG et exports. Ctrl+O/S/Shift+S ouvre/enregistre/enregistre sous ; Ctrl+Z/Y annule/rétablit ; Ctrl+C/V copie/colle une tuile. Changer de sélection ou d'outil ne rend pas le projet modifié. Fermer, créer ou ouvrir un autre projet demande confirmation avant d'abandonner des modifications.
+L'interface plita utilise Roboto, des menus groupés avec icônes Lucide, des états de survol/pression/relâchement et des infobulles. File propose nouveau, ouvrir, enregistrer, enregistrer sous, import PNG et exports. Ctrl+O/S/Shift+S ouvre/enregistre/enregistre sous ; Ctrl+Z/Y annule/rétablit ; Ctrl+C/V copie/colle une tuile. Changer de sélection ou d'outil ne rend pas le projet modifié. Fermer, créer ou ouvrir un autre projet demande confirmation avant d'abandonner des modifications.
 
 Map/Tile/Sprite/Check changent la vue centrale. B/E/F/L/R/I sélectionnent crayon/gomme/remplissage/ligne/rectangle/pipette ; 1..4 choisissent la couleur. Un glissement correspond à une annulation ; Escape l'annule. Utilisez Fit, le zoom, la molette et les poignées ou pistes des barres. En fenêtre étroite, Tiles/Palette change le panneau latéral. Sélectionnez une case puis une couleur NES ; zéro modifie le fond universel. Sprite place une tuile sur la grille de 8 pixels ; la pipette sélectionne et la gomme supprime. Son menu ajoute/clone des images et retourne/supprime la pièce sélectionnée. Check vérifie chaque image, pas la scène complète ni l'émulation.
 
-Le paquet CLI inclut des bindings Python optionnels (Python 3.10+), sans GUI, GPU ni PLITA. Compilez avec pip depuis tools/fchua ou installez le wheel Windows x64 fourni. Controller gère projets, PNG, lots transactionnels et export RAW/C ; GUI_AVAILABLE=False. La version PLITA locale ajoute run_editor et ButtonInteraction. Controller édite son propre document, pas une interface ouverte ; échangez des fichiers .fch. L'enregistrement Python remplace les fichiers existants, contrairement à la protection --force de la CLI.
+Le paquet CLI inclut des bindings Python optionnels (Python 3.10+), sans GUI, GPU ni plita. Compilez avec pip depuis tools/fchua ou installez le wheel Windows x64 fourni. Controller gère projets, PNG, lots transactionnels et export RAW/C ; GUI_AVAILABLE=False. La version avec les fonctions gui,python ajoute run_editor et ButtonInteraction. Controller édite son propre document, pas une interface ouverte ; échangez des fichiers .fch. L'enregistrement Python remplace les fichiers existants, contrairement à la protection --force de la CLI.
 
 ```sh
 # Standalone CLI package: build Python bindings from source (Rust required)
@@ -94,9 +113,10 @@ python -m pip install python-dist/fchua-0.1.0-cp310-abi3-win_amd64.whl
 ```
 
 ```sh
-# Local PLITA workspace
-cargo run -p kitaqfc_graphics_editor --bin fchua_gui
-python -m pip install ./examples/kitaqfc_graphics_editor
+# Optional GUI-enabled Python build, also from tools/fchua
+python -m pip install maturin
+python -m maturin build --release --locked --features gui,python --out gui-wheels
+# Install the wheel generated in gui-wheels instead of the headless wheel.
 ```
 
 ```python

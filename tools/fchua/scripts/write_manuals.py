@@ -1,0 +1,248 @@
+"""Generate the nine equivalent FCHUA manuals from reviewed local text."""
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+LANGS = {
+    "en": ["English", "Build and Run", "Workflow", "Batch Editing", "Desktop and Python", "Hardware and Files", "Safety and Errors",
+        "FCHUA edits NES tiles, nametables, palettes and 8x8 metasprite frames for KITAQFC. The standalone CLI shares the desktop editor's core and does not require a GUI, GPU, plita installation or Python.",
+        "Rust 1.92 or newer is required to build. On Windows use target/release/fchua.exe; on Linux and macOS use ./target/release/fchua. Run --help for syntax. Commands below use fchua as the executable name. Create parent output directories first.",
+        "Start with a blank project or import PNG artwork. Inspect the report and PNG preview before exporting. --auto-palette selects four NES background palettes by reducing conversion error; without it, the current project's palettes are used. --project base.fch supplies an existing palette and pattern-table configuration. Transparent pixels are composited over the current universal background color. Imports replace the nametable and selected background table, so sprite tiles sharing that table also change.",
+        "A script is a JSON array. Every operation is validated before the edited copy replaces the document. A failed batch writes nothing. --dry-run validates and reports without writing a project. Unknown operations and fields are errors. Tile IDs are absolute 0..511 for tile operations, but map and sprite IDs are local 0..255 within their selected pattern table.",
+        "The plita desktop uses Roboto, grouped menus with Lucide icons, hover/press/release feedback and tooltips. File provides New, Open, Save, Save As, PNG import and exports. Ctrl+O opens, Ctrl+S saves, Ctrl+Shift+S saves as; Ctrl+Z/Y undo/redo and Ctrl+C/V copy/paste a tile. Only content changes mark the project dirty; selecting a tile or tool does not. Closing, opening another project or creating a new one asks before discarding edits.",
+        "Map/Tile/Sprite/Check switch the center view. B/E/F/L/R/I select pencil/eraser/fill/line/rectangle/picker; 1..4 select a color. One drag is one undo step; Escape cancels it. Use Fit and zoom icons, wheel scrolling, scrollbar thumbs or tracks. In narrow windows, Tiles/Palette switch the sidebar. Click a palette swatch, then a NES color below it. Color zero edits the universal background. Sprite view places the selected tile on an 8-pixel grid; Picker selects a quad, Eraser removes it. Sprite menu adds/clones frames and flips or removes the selected quad. Check reports per-frame scanline warnings, not combined-scene or emulator validation.",
+        "The standalone package includes optional Python bindings (Python 3.10+), with no GUI, GPU or plita dependency. Install with pip from tools/fchua, or use the supplied Windows x64 wheel. Controller supports project IO, PNG conversion, transactional commands and raw/C exports. GUI_AVAILABLE is False in this build. A build with features gui,python additionally provides run_editor and ButtonInteraction. Controller edits its own document, not a running GUI; exchange .fch files. Python saves replace existing files, unlike the CLI's --force guard.",
+        "A .fch file is a versioned JSON project (format=fchua, version=1). It stores 8192 CHR bytes, 32 palette bytes, a 32x30 nametable, 64 attributes, both pattern-table selections and up to 256 metasprite frames. Legacy .kfcproject files can be migrated; hardware attributes take precedence over inconsistent legacy palette maps. PNG dimensions must be multiples of 8, from 8x8 to 256x240. One 16x16 block uses one four-color palette. One background table supports 256 tile IDs, with tile zero reserved as blank during image import; excessive unique tiles are rejected.",
+        "Export writes .chr (8192), .pal (32), .nam (960), .atr (64), metasprite JSON, all-frame C/H arrays, an asset-pack manifest and a .fch project. C arrays use KITAQFC's __prg_rom qualifier. Set PPU pattern-table registers to match the project; the pack does not configure game code. Raw import accepts whole CHR tiles up to 8192 bytes and exact lengths for the other three files. NES palette codes are 0..63. Metasprites have at most 64 quads per frame; coordinates are signed -128..127, but x=-1 is reserved for the 0xFF terminator. Only 8x8 sprite mode is supported. More than eight quads on one scanline produces a warning.",
+        "Existing output needs --force. Input and output paths must differ even with --force. Project saves use a temporary file and atomic replacement. Export --out is a directory; --force permits replacement of its named asset files, not deletion of unrelated files. --prefix must be a C identifier. Successful commands print one JSON object; errors print JSON to stderr. Exit codes are 0 success, 1 warnings under validate --strict, and 2 invalid arguments, project, conversion or IO. Back up projects before replacing exports. No network or AI-generation service is called.",
+        "Command Reference", "Original code: MIT. Dependencies keep their own licenses; see LICENSE and THIRD_PARTY_NOTICES.md."
+    ],
+    "ja": ["日本語", "ビルドと起動", "基本の流れ", "一括編集", "GUIとPython", "ハードウェア制約とファイル", "保護機能とエラー",
+        "FCHUAはKITAQFC向けのNESタイル・ネームテーブル・パレット・8×8メタスプライトを編集します。独立CLIはGUIと同じ編集コアを使い、画面・GPU・plitaのインストール・Pythonを必要としません。",
+        "ビルドにはRust 1.92以降が必要です。Windowsではtarget/release/fchua.exe、Linux・macOSでは./target/release/fchuaを実行します。--helpで構文を確認できます。以下では実行ファイルをfchuaと表記します。出力先の親ディレクトリは事前に作成してください。",
+        "空のプロジェクトを作るか、PNGを取り込みます。レポートとプレビューを確認してから出力してください。--auto-paletteは変換誤差を減らすようにNES背景パレットを4組選び、省略時はプロジェクトのパレットを使います。--project base.fchで既存パレットとパターンテーブル設定を指定できます。透明部分は現在の共通背景色に合成されます。取り込みはマップと選択中の背景テーブルを置換するため、同じテーブルを参照するスプライトの絵も変わります。",
+        "スクリプトはJSON配列です。すべての操作を検証してから編集結果を反映します。途中で失敗した場合は何も保存しません。--dry-runは検査とレポートのみ行います。不明な操作名やフィールドはエラーです。タイル操作の番号は0～511、マップ・スプライトの番号は選択中テーブル内の0～255です。",
+        "GUIはplita・Robotoを使用し、Lucideアイコン付きグループメニュー、ホバー・押下・リリース表示、ツールチップを備えます。Fileに新規・読み込み・保存・別名保存・PNG取り込み・出力があります。Ctrl+Oで開く、Ctrl+Sで保存、Ctrl+Shift+Sで別名保存、Ctrl+Z/YでUndo/Redo、Ctrl+C/Vでタイルのコピー／貼り付けです。タイルやツールの選択だけでは未保存になりません。編集後の終了・プロジェクト切り替え・新規作成時は破棄前に確認します。",
+        "Map/Tile/Sprite/Checkで中央の表示を切り替えます。B/E/F/L/R/Iは鉛筆／消しゴム／塗りつぶし／直線／矩形／スポイト、1～4は描画色です。1回のドラッグが1回のUndoになり、Escapeで取り消せます。Fit・ズームアイコン、ホイール、スクロールバーのつまみ・トラックを利用できます。狭い画面ではTiles/Paletteでサイドバーを切り替えます。パレット色を選んでから下のNES色をクリックして変更します。色0は共通背景色です。Spriteでは8ピクセル格子にタイルを置き、スポイトで部品を選択、消しゴムで削除します。Spriteメニューからフレーム追加・複製、部品の反転・削除ができます。Checkはフレーム単位の走査線警告であり、シーン全体やエミュレータでの検証ではありません。",
+        "独立CLIパッケージにもPython bindings（Python 3.10以降）を同梱します。GUI・GPU・plitaは不要です。tools/fchuaからpipでビルドするか、同梱Windows x64 wheelをインストールしてください。Controllerでプロジェクト入出力・PNG変換・一括編集・RAW/C出力が可能です。この版はGUI_AVAILABLE=Falseです。gui,python featureを有効にした版にはrun_editorとButtonInteractionもあります。Controllerは起動中GUIではなく独立文書を編集するため、.fchで受け渡してください。Pythonの保存は既存ファイルを置換します。CLIの--force保護とは異なります。",
+        ".fchはバージョン付きJSON（format=fchua、version=1）です。CHR 8192バイト、パレット32バイト、32×30マップ、属性64バイト、背景／スプライトのテーブル選択、最大256フレームを保存します。旧.kfcprojectも移行可能です。旧パレットマップに矛盾がある場合はハードウェア属性を優先します。PNGは8の倍数で8×8～256×240です。16×16ピクセルごとに4色パレットを1組使います。背景テーブルは256タイルで、PNG取り込みではタイル0を空白用に予約し、上限超過を拒否します。",
+        "出力は.chr（8192）・.pal（32）・.nam（960）・.atr（64）、メタスプライトJSON、全フレームのC/H配列、パックマニフェスト、.fchです。C配列はKITAQFCの__prg_romを使用します。PPUのパターンテーブル設定はゲーム側でプロジェクトに合わせてください。パックはゲームの設定コードを生成しません。RAW入力はCHRが16バイト単位で最大8192バイト、他の3形式は指定サイズと一致する必要があります。NES色は0～63です。部品は1フレーム64個まで、座標は符号付き-128～127ですがx=-1は終端0xFFのため使用不可です。対応するスプライトモードは8×8のみです。同一走査線の部品が8個を超えると警告します。",
+        "既存出力の置換には--forceが必要です。ただし入力と出力を同じパスにはできません。プロジェクトは一時ファイルから原子的に置換保存します。exportの--outはディレクトリで、--forceは同名の出力資産を置換しますが無関係のファイルは削除しません。--prefixにはC識別子を指定します。成功時はJSONを1件、エラー時は標準エラーへJSONを出力します。終了コードは0=成功、1=validate --strictの警告、2=引数・文書・変換・入出力エラーです。置換前にバックアップしてください。ネットワークや画像生成AIは呼び出しません。",
+        "コマンド一覧", "オリジナルコードはMITです。依存ライブラリはそれぞれのライセンスに従います。LICENSEとTHIRD_PARTY_NOTICES.mdを参照してください。"
+    ],
+    "ko": ["한국어", "빌드와 실행", "작업 순서", "일괄 편집", "GUI와 Python", "하드웨어와 파일", "보호 기능과 오류",
+        "FCHUA는 KITAQFC용 NES 타일, 네임테이블, 팔레트, 8x8 메타스프라이트를 편집합니다. 독립 CLI는 GUI와 같은 코어를 사용하며 화면, GPU, plita 설치, Python이 필요 없습니다.",
+        "빌드에는 Rust 1.92 이상이 필요합니다. Windows는 target/release/fchua.exe, Linux와 macOS는 ./target/release/fchua를 실행합니다. --help로 구문을 확인합니다. 아래 예제는 실행 파일을 fchua로 표기합니다. 출력 상위 폴더를 먼저 만드세요.",
+        "빈 프로젝트를 만들거나 PNG를 가져온 뒤 보고서와 미리보기를 확인하고 내보냅니다. --auto-palette는 변환 오차를 줄이는 NES 배경 팔레트 네 개를 선택합니다. 생략하면 현재 팔레트를 사용합니다. --project base.fch로 팔레트와 패턴 테이블 설정을 가져옵니다. 투명 픽셀은 공통 배경색과 합성됩니다. 가져오기는 맵과 선택한 배경 테이블을 교체하므로 같은 테이블의 스프라이트 그림도 바뀝니다.",
+        "스크립트는 JSON 배열입니다. 모든 명령을 검증한 뒤 문서를 갱신하며 실패하면 저장하지 않습니다. --dry-run은 검사만 합니다. 알 수 없는 명령과 필드는 오류입니다. 타일 명령은 0..511, 맵과 스프라이트는 선택한 테이블 안의 0..255를 사용합니다.",
+        "plita GUI는 Roboto와 Lucide 아이콘 메뉴, 호버·누름·놓음 표시 및 툴팁을 사용합니다. File에서 새 문서, 열기, 저장, 다른 이름으로 저장, PNG 가져오기와 내보내기를 합니다. Ctrl+O/S/Shift+S는 열기/저장/다른 이름 저장, Ctrl+Z/Y는 실행 취소/다시 실행, Ctrl+C/V는 타일 복사/붙여넣기입니다. 선택만 바꾸면 수정 상태가 되지 않습니다. 수정 후 닫기, 새 문서, 다른 문서 열기는 변경 폐기를 확인합니다.",
+        "Map/Tile/Sprite/Check로 중앙 보기를 바꿉니다. B/E/F/L/R/I는 연필/지우개/채우기/선/사각형/색 선택, 1..4는 색입니다. 한 드래그는 한 실행 취소이며 Escape로 취소합니다. Fit, 확대 아이콘, 휠, 스크롤바 손잡이와 트랙을 사용할 수 있습니다. 좁은 화면은 Tiles/Palette 탭으로 전환합니다. 팔레트 칸을 선택한 뒤 아래 NES 색을 누르세요. 색 0은 공통 배경입니다. Sprite는 8픽셀 격자에 타일을 놓고 색 선택 도구로 부품을 선택하며 지우개로 제거합니다. 메뉴에서 프레임 추가/복제와 부품 반전/삭제를 합니다. Check는 프레임별 검사이며 전체 장면이나 에뮬레이터 검증이 아닙니다.",
+        "독립 CLI 패키지에도 선택적 Python 바인딩(Python 3.10 이상)이 포함됩니다. GUI, GPU, plita 없이 tools/fchua에서 pip로 빌드하거나 제공된 Windows x64 wheel을 설치합니다. Controller는 프로젝트 입출력, PNG 변환, 일괄 명령과 RAW/C 내보내기를 지원하며 GUI_AVAILABLE=False입니다. gui,python 기능을 켠 빌드는 run_editor와 ButtonInteraction도 제공합니다. Controller는 실행 중 GUI가 아닌 독립 문서를 편집하므로 .fch로 교환합니다. Python 저장은 기존 파일을 교체하며 CLI의 --force 보호와 다릅니다.",
+        ".fch는 format=fchua, version=1인 JSON입니다. CHR 8192바이트, 팔레트 32바이트, 32x30 맵, 속성 64바이트, 두 패턴 테이블 선택과 최대 256프레임을 저장합니다. 이전 .kfcproject를 변환할 수 있으며 불일치하는 팔레트 맵보다 하드웨어 속성을 우선합니다. PNG는 8의 배수인 8x8..256x240입니다. 16x16 블록마다 4색 팔레트 하나를 사용합니다. 배경 테이블은 256타일이며 가져올 때 0번을 빈 타일로 예약하고 초과는 거부합니다.",
+        "출력은 .chr(8192), .pal(32), .nam(960), .atr(64), 메타스프라이트 JSON, 전체 프레임 C/H, 매니페스트와 .fch입니다. C 배열은 __prg_rom을 사용합니다. 게임에서 PPU 테이블을 프로젝트와 맞춰야 하며 설정 코드는 생성하지 않습니다. RAW CHR은 16바이트 단위로 최대 8192바이트, 나머지는 정확한 길이가 필요합니다. NES 색은 0..63입니다. 프레임당 최대 64부품, 좌표 -128..127이며 x=-1은 0xFF 종료 표시 때문에 금지됩니다. 8x8 스프라이트만 지원하고 한 스캔라인의 부품이 8개를 넘으면 경고합니다.",
+        "기존 출력에는 --force가 필요하지만 입력과 출력 경로는 같을 수 없습니다. 프로젝트는 임시 파일을 통해 원자적으로 교체합니다. export --out은 폴더입니다. --force는 해당 이름의 자산만 교체하며 다른 파일을 삭제하지 않습니다. --prefix는 C 식별자여야 합니다. 성공은 JSON 하나, 오류는 표준 오류에 JSON을 출력합니다. 종료 코드: 0 성공, 1 validate --strict 경고, 2 인수/문서/변환/입출력 오류. 교체 전 백업하세요. 네트워크나 AI 생성 서비스를 호출하지 않습니다.",
+        "명령 목록", "원본 코드는 MIT입니다. 종속성은 각 라이선스를 따릅니다. LICENSE와 THIRD_PARTY_NOTICES.md를 확인하세요."
+    ],
+    "zh-CN": ["简体中文", "构建与运行", "工作流程", "批量编辑", "GUI与Python", "硬件限制与文件", "保护与错误",
+        "FCHUA用于编辑KITAQFC的NES图块、名称表、调色板和8x8组合精灵。独立CLI与GUI共用编辑核心，不需要图形界面、GPU、plita安装或Python。",
+        "构建需要Rust 1.92或更高版本。Windows运行target/release/fchua.exe；Linux和macOS运行./target/release/fchua。使用--help查看语法。以下示例将程序写作fchua。请先创建输出文件的父目录。",
+        "新建空项目或导入PNG，检查报告和预览后再导出。--auto-palette以降低转换误差为目标选择四组NES背景调色板；省略时使用当前调色板。--project base.fch提供已有调色板和图案表设置。透明像素与当前公共背景色合成。导入会替换地图和选中的背景图案表，因此共用该表的精灵图形也会变化。",
+        "脚本是JSON数组。所有操作验证成功后才更新文档；批处理失败不会写入文件。--dry-run只验证并报告。不明操作和字段均报错。图块操作使用绝对编号0..511，地图和精灵使用各自图案表内的0..255。",
+        "plita GUI使用Roboto、Lucide图标分组菜单、悬停/按下/释放反馈和提示。File包含新建、打开、保存、另存为、PNG导入及导出。Ctrl+O/S/Shift+S分别打开/保存/另存为；Ctrl+Z/Y撤销/重做；Ctrl+C/V复制/粘贴图块。仅切换选区或工具不会标记为未保存。关闭、新建或切换项目时，若有编辑会先确认是否丢弃。",
+        "Map/Tile/Sprite/Check切换中央视图。B/E/F/L/R/I选择铅笔/橡皮/填充/直线/矩形/吸管，1..4选择颜色。一次拖动对应一次撤销，Escape取消。可用Fit、缩放按钮、滚轮、滚动条滑块和轨道。窄窗口用Tiles/Palette切换侧栏。先点调色板色块，再点下方NES颜色；颜色0修改公共背景。Sprite在8像素网格上放置图块，吸管选择部件，橡皮删除部件；菜单可添加/复制帧及翻转/删除选中部件。Check仅检查单帧，不代表整个场景或模拟器验证。",
+        "独立CLI包也包含可选Python绑定（Python 3.10以上），不依赖GUI、GPU或plita。在tools/fchua用pip构建，或安装附带的Windows x64 wheel。Controller支持项目读写、PNG转换、批量编辑及RAW/C导出；此版本GUI_AVAILABLE=False。启用gui,python功能的版本另外提供run_editor和ButtonInteraction。Controller编辑独立文档，不远程连接运行中的GUI；通过.fch交换。Python保存会替换已有文件，与CLI的--force保护不同。",
+        ".fch是带版本的JSON（format=fchua，version=1），保存8192字节CHR、32字节调色板、32x30地图、64字节属性、两个图案表选择和最多256帧。可以迁移旧.kfcproject；旧调色板映射不一致时以硬件属性为准。PNG尺寸必须为8的倍数，范围8x8..256x240。每个16x16块共用一组四色调色板。背景表最多256个图块；PNG导入保留0号空白块并拒绝超限图像。",
+        "导出.chr（8192）、.pal（32）、.nam（960）、.atr（64）、组合精灵JSON、所有帧的C/H数组、资源清单及.fch。C数组使用__prg_rom。游戏需自行将PPU图案表配置与项目匹配；资源包不生成配置代码。RAW CHR需为16字节整块且不超过8192字节，其他三种格式必须等于指定长度。NES颜色为0..63。每帧最多64部件；坐标-128..127，但x=-1被0xFF结束标记占用。只支持8x8精灵，同一扫描线超过8个部件会警告。",
+        "已有输出必须加--force，但输入与输出不能同路径。项目使用临时文件原子替换。export --out指定目录；--force替换同名资源，不删除无关文件。--prefix须为C标识符。成功输出一个JSON对象，错误向标准错误输出JSON。退出码0为成功，1为validate --strict发现警告，2为参数/项目/转换/读写错误。覆盖前请备份。不调用网络或AI生成服务。",
+        "命令索引", "原创代码采用MIT许可；依赖保留各自许可。参见LICENSE与THIRD_PARTY_NOTICES.md。"
+    ],
+    "zh-TW": ["繁體中文", "建置與執行", "工作流程", "批次編輯", "GUI與Python", "硬體限制與檔案", "保護與錯誤",
+        "FCHUA用於編輯KITAQFC的NES圖塊、名稱表、調色盤與8x8組合精靈。獨立CLI和GUI共用編輯核心，不需要圖形介面、GPU、安裝plita或Python。",
+        "建置需要Rust 1.92以上。Windows執行target/release/fchua.exe；Linux與macOS執行./target/release/fchua。使用--help查看語法。以下以fchua表示執行檔。請先建立輸出檔案的上層目錄。",
+        "建立空白專案或匯入PNG，檢查報告和預覽後再匯出。--auto-palette以降低轉換誤差為目標選擇四組NES背景調色盤；省略時使用目前調色盤。--project base.fch提供既有調色盤與圖案表設定。透明像素會與目前共用背景色合成。匯入會取代地圖與選取的背景圖案表，因此共用此表的精靈圖形也會改變。",
+        "腳本是JSON陣列。全部操作通過驗證才更新文件；批次失敗不寫入檔案。--dry-run只檢查和回報。不明操作或欄位均視為錯誤。圖塊操作使用絕對編號0..511；地圖與精靈使用各自圖案表內的0..255。",
+        "plita GUI使用Roboto、Lucide圖示群組選單、滑入/按下/釋放回饋與工具提示。File提供新增、開啟、儲存、另存新檔、PNG匯入及匯出。Ctrl+O/S/Shift+S為開啟/儲存/另存；Ctrl+Z/Y復原/重做；Ctrl+C/V複製/貼上圖塊。僅切換選取項或工具不會標記為未儲存。編輯後關閉、新增或切換專案會先確認是否捨棄。",
+        "Map/Tile/Sprite/Check切換中央檢視。B/E/F/L/R/I為鉛筆/橡皮擦/填滿/直線/矩形/滴管，1..4選色。一次拖曳對應一次復原，Escape取消。可用Fit、縮放按鈕、滾輪、捲軸滑塊與軌道。窄視窗以Tiles/Palette切換側欄。先點調色盤色塊，再點下方NES顏色；色0修改共用背景。Sprite在8像素格線上放圖塊，滴管選部件，橡皮擦刪除；選單可新增/複製影格及翻轉/刪除部件。Check只檢查單一影格，不代表完整場景或模擬器驗證。",
+        "獨立CLI套件也包含選用Python繫結（Python 3.10以上），不依賴GUI、GPU或plita。在tools/fchua以pip建置，或安裝附帶的Windows x64 wheel。Controller支援專案讀寫、PNG轉換、批次編輯與RAW/C匯出；此版本GUI_AVAILABLE=False。啟用gui,python功能的版本另外提供run_editor和ButtonInteraction。Controller編輯獨立文件，不遠端連線至執行中的GUI；透過.fch交換。Python儲存會取代既有檔案，與CLI的--force保護不同。",
+        ".fch為版本化JSON（format=fchua、version=1），保存8192位元組CHR、32位元組調色盤、32x30地圖、64位元組屬性、兩個圖案表選擇和最多256影格。可遷移舊.kfcproject；舊調色盤映射不一致時以硬體屬性優先。PNG尺寸須為8的倍數，範圍8x8..256x240。每個16x16區塊共用一組四色調色盤。背景表最多256圖塊，PNG匯入保留0號空白圖塊並拒絕超限影像。",
+        "匯出.chr（8192）、.pal（32）、.nam（960）、.atr（64）、組合精靈JSON、所有影格C/H陣列、資產清單及.fch。C陣列使用__prg_rom。遊戲須自行將PPU圖案表配置與專案一致；資產包不產生設定程式碼。RAW CHR須為16位元組整塊且最多8192位元組；其餘三種格式須符合精確長度。NES色碼為0..63。每影格最多64部件，座標-128..127，但x=-1保留給0xFF終止標記。僅支援8x8精靈；同一扫描線超過8部件會警告。",
+        "已有輸出需加--force，但輸入與輸出不得同一路徑。專案透過暫存檔原子取代。export --out為目錄；--force只取代同名資產，不刪除無關檔案。--prefix須為C識別字。成功輸出一個JSON物件，錯誤向標準錯誤輸出JSON。結束碼0為成功，1為validate --strict發現警告，2為參數/專案/轉換/讀寫錯誤。覆寫前請備份。不呼叫網路或AI生成服務。",
+        "命令索引", "原創程式碼採MIT授權，依賴保留各自授權。參閱LICENSE與THIRD_PARTY_NOTICES.md。"
+    ],
+    "es": ["Español", "Compilar y ejecutar", "Flujo de trabajo", "Edición por lotes", "Interfaz y Python", "Hardware y archivos", "Protección y errores",
+        "FCHUA edita tiles, tablas de nombres, paletas y metasprites NES de 8x8 para KITAQFC. La CLI independiente comparte el núcleo del editor y no requiere interfaz gráfica, GPU, plita ni Python.",
+        "Se necesita Rust 1.92 o posterior para compilar. En Windows ejecute target/release/fchua.exe; en Linux y macOS, ./target/release/fchua. Consulte --help. Los ejemplos usan el nombre fchua. Cree primero los directorios padre de salida.",
+        "Cree un proyecto vacío o importe un PNG; revise el informe y la vista previa antes de exportar. --auto-palette elige cuatro paletas NES de fondo minimizando el error; sin esa opción se usan las actuales. --project base.fch aporta paletas y selección de tablas. La transparencia se compone sobre el color universal actual. La importación sustituye el mapa y la tabla de fondo seleccionada, por lo que también cambia los sprites que comparten esa tabla.",
+        "El script es una matriz JSON. Todas las operaciones se validan antes de actualizar el documento; un lote fallido no escribe nada. --dry-run solo valida e informa. Las operaciones y campos desconocidos son errores. Los tiles usan índices absolutos 0..511; mapa y sprites usan 0..255 dentro de su tabla seleccionada.",
+        "La interfaz plita usa Roboto, menús agrupados con iconos Lucide, estados al pasar/pulsar/soltar y descripciones emergentes. File ofrece crear, abrir, guardar, guardar como, importar PNG y exportar. Ctrl+O/S/Shift+S abre/guarda/guarda como; Ctrl+Z/Y deshace/rehace; Ctrl+C/V copia/pega un tile. Cambiar selección o herramienta no marca el proyecto como modificado. Cerrar, abrir otro proyecto o crear uno pide confirmación si hay cambios.",
+        "Map/Tile/Sprite/Check cambian la vista central. B/E/F/L/R/I seleccionan lápiz/borrador/relleno/línea/rectángulo/cuentagotas; 1..4 eligen color. Cada arrastre es un paso de deshacer y Escape lo cancela. Use Fit, zoom, rueda y barras de desplazamiento arrastrables o sus pistas. En ventanas estrechas, Tiles/Palette alterna el panel. Seleccione una muestra y después un color NES; el índice cero modifica el fondo universal. Sprite coloca tiles en una cuadrícula de 8 píxeles; el cuentagotas selecciona y el borrador elimina. Su menú añade/clona fotogramas y refleja/elimina el elemento seleccionado. Check solo comprueba fotogramas individuales, no la escena completa ni un emulador.",
+        "El paquete CLI incluye enlaces Python opcionales (Python 3.10+), sin GUI, GPU ni plita. Compile con pip desde tools/fchua o instale el wheel Windows x64 incluido. Controller admite proyectos, PNG, lotes transaccionales y exportación RAW/C; GUI_AVAILABLE=False. La versión con funciones gui,python añade run_editor y ButtonInteraction. Controller edita su propio documento, no una GUI abierta; intercambie archivos .fch. El guardado Python sustituye archivos existentes, a diferencia de la protección --force de la CLI.",
+        ".fch es JSON versionado (format=fchua, version=1): CHR de 8192 bytes, paleta de 32, mapa 32x30, 64 atributos, selección de dos tablas y hasta 256 fotogramas. Puede migrar .kfcproject; los atributos de hardware prevalecen ante mapas de paleta incoherentes. El PNG debe medir múltiplos de 8 entre 8x8 y 256x240. Cada bloque 16x16 usa una paleta de cuatro colores. La tabla de fondo tiene 256 tiles; la importación reserva el cero vacío y rechaza excesos.",
+        "Exporta .chr (8192), .pal (32), .nam (960), .atr (64), JSON de metasprites, matrices C/H de todos los fotogramas, manifiesto y .fch. C usa __prg_rom de KITAQFC. Configure las tablas PPU en el juego según el proyecto; el paquete no genera esa lógica. CHR crudo admite tiles completos de 16 bytes hasta 8192; los otros tres formatos requieren longitudes exactas. Colores NES: 0..63. Máximo 64 elementos por fotograma, coordenadas -128..127 salvo x=-1, reservado al terminador 0xFF. Solo sprites 8x8; más de ocho elementos en una línea genera advertencia.",
+        "Para sustituir una salida existente use --force, pero entrada y salida deben ser distintas. El guardado reemplaza atómicamente mediante un archivo temporal. export --out es un directorio; --force sustituye los recursos con esos nombres sin borrar archivos ajenos. --prefix debe ser identificador C. El éxito produce un objeto JSON; los errores, JSON en stderr. Códigos: 0 éxito, 1 advertencias con validate --strict, 2 error de argumentos, proyecto, conversión o E/S. Haga copias antes de sustituir. No se llama a servicios de red ni de generación de IA.",
+        "Referencia de comandos", "Código original: MIT. Las dependencias conservan sus licencias; consulte LICENSE y THIRD_PARTY_NOTICES.md."
+    ],
+    "pt": ["Português", "Compilar e executar", "Fluxo de trabalho", "Edição em lote", "Interface e Python", "Hardware e arquivos", "Proteção e erros",
+        "FCHUA edita tiles, tabelas de nomes, paletas e metasprites NES de 8x8 para KITAQFC. A CLI independente compartilha o núcleo da interface e dispensa GUI, GPU, instalação do plita e Python.",
+        "A compilação exige Rust 1.92 ou superior. No Windows execute target/release/fchua.exe; no Linux e macOS, ./target/release/fchua. Consulte --help. Os exemplos usam fchua como nome do executável. Crie primeiro as pastas superiores da saída.",
+        "Crie um projeto vazio ou importe PNG; confira o relatório e a prévia antes de exportar. --auto-palette escolhe quatro paletas NES de fundo reduzindo o erro; sem a opção, usa as atuais. --project base.fch fornece paletas e tabelas. Pixels transparentes são compostos sobre o fundo universal atual. A importação substitui o mapa e a tabela de fundo selecionada, alterando também sprites que compartilhem essa tabela.",
+        "O script é uma matriz JSON. Todas as operações são validadas antes da atualização; uma falha não grava nada. --dry-run apenas valida e informa. Operações e campos desconhecidos são erros. Tiles usam índices absolutos 0..511; mapas e sprites usam 0..255 na tabela selecionada.",
+        "A GUI plita usa Roboto, menus agrupados com ícones Lucide, estados de apontar/pressionar/soltar e dicas. File oferece criar, abrir, salvar, salvar como, importar PNG e exportar. Ctrl+O/S/Shift+S abre/salva/salva como; Ctrl+Z/Y desfaz/refaz; Ctrl+C/V copia/cola um tile. Apenas selecionar tiles ou ferramentas não marca alterações. Ao fechar, criar ou abrir outro projeto, alterações pendentes exigem confirmação para descarte.",
+        "Map/Tile/Sprite/Check trocam a visualização central. B/E/F/L/R/I escolhem lápis/borracha/preenchimento/linha/retângulo/conta-gotas; 1..4 escolhem a cor. Um arrasto corresponde a um desfazer; Escape cancela. Use Fit, zoom, roda e barras com alças e trilhos. Em janelas estreitas, Tiles/Palette alterna a lateral. Escolha uma amostra e depois uma cor NES; zero altera o fundo universal. Sprite coloca tiles na grade de 8 pixels; conta-gotas seleciona e borracha remove. O menu adiciona/clona quadros e espelha/remove a peça selecionada. Check verifica quadros individuais, não a cena completa nem emuladores.",
+        "O pacote CLI inclui bindings Python opcionais (Python 3.10+), sem GUI, GPU ou plita. Compile com pip em tools/fchua ou instale o wheel Windows x64 incluído. Controller oferece projetos, PNG, comandos transacionais e exportação RAW/C; GUI_AVAILABLE=False. A versão com recursos gui,python acrescenta run_editor e ButtonInteraction. Controller edita seu próprio documento, não uma GUI aberta; troque arquivos .fch. Salvar pelo Python substitui arquivos existentes, diferente da proteção --force da CLI.",
+        ".fch é JSON versionado (format=fchua, version=1), contendo CHR de 8192 bytes, paleta de 32, mapa 32x30, 64 atributos, duas seleções de tabelas e até 256 quadros. É possível migrar .kfcproject; atributos de hardware prevalecem sobre mapas de paleta inconsistentes. PNG deve medir múltiplos de 8 entre 8x8 e 256x240. Cada bloco 16x16 usa uma paleta de quatro cores. A tabela de fundo aceita 256 tiles; a importação reserva o zero vazio e rejeita excessos.",
+        "Exporta .chr (8192), .pal (32), .nam (960), .atr (64), JSON de metasprites, matrizes C/H de todos os quadros, manifesto e .fch. C usa __prg_rom. Configure as tabelas PPU no jogo de acordo com o projeto; o pacote não gera essa lógica. CHR bruto deve conter tiles inteiros de 16 bytes até 8192; os outros formatos exigem tamanhos exatos. Cores NES: 0..63. Limite de 64 peças por quadro, coordenadas -128..127 exceto x=-1, reservado ao terminador 0xFF. Apenas sprites 8x8; mais de oito peças na mesma linha gera aviso.",
+        "Saída existente exige --force, mas entrada e saída devem ter caminhos diferentes. Projetos são substituídos atomicamente usando arquivo temporário. export --out é uma pasta; --force substitui os recursos nomeados sem apagar arquivos alheios. --prefix precisa ser identificador C. Sucesso imprime um objeto JSON; erros imprimem JSON em stderr. Códigos: 0 sucesso, 1 avisos com validate --strict, 2 erro de argumentos, projeto, conversão ou E/S. Faça backup antes de substituir. Não há chamadas de rede ou geração de IA.",
+        "Referência de comandos", "Código original: MIT. Dependências mantêm suas licenças; consulte LICENSE e THIRD_PARTY_NOTICES.md."
+    ],
+    "fr": ["Français", "Compilation et lancement", "Procédure", "Édition par lot", "Interface et Python", "Matériel et fichiers", "Protection et erreurs",
+        "FCHUA édite les tuiles, tables de noms, palettes et métasprites NES 8x8 pour KITAQFC. La CLI autonome partage le moteur de l'éditeur et ne nécessite ni interface graphique, ni GPU, ni installation de plita, ni Python.",
+        "La compilation nécessite Rust 1.92 ou ultérieur. Sous Windows : target/release/fchua.exe ; sous Linux et macOS : ./target/release/fchua. Consultez --help. Les exemples nomment l'exécutable fchua. Créez d'abord les répertoires parents de sortie.",
+        "Créez un projet vide ou importez un PNG, puis examinez rapport et aperçu avant l'export. --auto-palette choisit quatre palettes NES de fond en réduisant l'erreur ; sinon les palettes actuelles sont utilisées. --project base.fch fournit palettes et tables. Les pixels transparents sont composés sur la couleur de fond universelle actuelle. L'import remplace la carte et la table de fond choisie, modifiant aussi les sprites qui partagent cette table.",
+        "Le script est un tableau JSON. Toutes les opérations sont validées avant modification ; un lot invalide n'écrit rien. --dry-run vérifie sans sauvegarder. Opérations et champs inconnus sont refusés. Les opérations de tuile utilisent 0..511 ; cartes et sprites utilisent 0..255 dans leur table respective.",
+        "L'interface plita utilise Roboto, des menus groupés avec icônes Lucide, des états de survol/pression/relâchement et des infobulles. File propose nouveau, ouvrir, enregistrer, enregistrer sous, import PNG et exports. Ctrl+O/S/Shift+S ouvre/enregistre/enregistre sous ; Ctrl+Z/Y annule/rétablit ; Ctrl+C/V copie/colle une tuile. Changer de sélection ou d'outil ne rend pas le projet modifié. Fermer, créer ou ouvrir un autre projet demande confirmation avant d'abandonner des modifications.",
+        "Map/Tile/Sprite/Check changent la vue centrale. B/E/F/L/R/I sélectionnent crayon/gomme/remplissage/ligne/rectangle/pipette ; 1..4 choisissent la couleur. Un glissement correspond à une annulation ; Escape l'annule. Utilisez Fit, le zoom, la molette et les poignées ou pistes des barres. En fenêtre étroite, Tiles/Palette change le panneau latéral. Sélectionnez une case puis une couleur NES ; zéro modifie le fond universel. Sprite place une tuile sur la grille de 8 pixels ; la pipette sélectionne et la gomme supprime. Son menu ajoute/clone des images et retourne/supprime la pièce sélectionnée. Check vérifie chaque image, pas la scène complète ni l'émulation.",
+        "Le paquet CLI inclut des bindings Python optionnels (Python 3.10+), sans GUI, GPU ni plita. Compilez avec pip depuis tools/fchua ou installez le wheel Windows x64 fourni. Controller gère projets, PNG, lots transactionnels et export RAW/C ; GUI_AVAILABLE=False. La version avec les fonctions gui,python ajoute run_editor et ButtonInteraction. Controller édite son propre document, pas une interface ouverte ; échangez des fichiers .fch. L'enregistrement Python remplace les fichiers existants, contrairement à la protection --force de la CLI.",
+        ".fch est un JSON versionné (format=fchua, version=1) : CHR de 8192 octets, palette de 32, carte 32x30, 64 attributs, deux sélections de tables et jusqu'à 256 images. Les anciens .kfcproject sont migrables ; les attributs matériels priment sur une carte de palettes incohérente. Les dimensions PNG sont des multiples de 8 entre 8x8 et 256x240. Chaque bloc 16x16 utilise une palette de quatre couleurs. La table de fond contient 256 tuiles ; l'import réserve la tuile zéro vide et refuse les dépassements.",
+        "L'export produit .chr (8192), .pal (32), .nam (960), .atr (64), JSON de métasprites, tableaux C/H de toutes les images, manifeste et .fch. C utilise __prg_rom. Réglez les tables PPU dans le jeu selon le projet ; ce code n'est pas généré. Le CHR brut doit contenir des tuiles entières de 16 octets, maximum 8192 ; les autres formats exigent leurs tailles exactes. Couleurs NES : 0..63. Maximum 64 pièces par image, coordonnées -128..127 sauf x=-1 réservé au terminateur 0xFF. Seuls les sprites 8x8 sont pris en charge ; plus de huit pièces sur une ligne entraîne un avertissement.",
+        "Une sortie existante exige --force, mais entrée et sortie doivent rester distinctes. Les projets sont remplacés atomiquement via un fichier temporaire. export --out désigne un répertoire ; --force remplace les ressources nommées sans supprimer les autres fichiers. --prefix doit être un identifiant C. Le succès écrit un objet JSON ; les erreurs écrivent du JSON sur stderr. Codes : 0 succès, 1 avertissements avec validate --strict, 2 erreur d'arguments, projet, conversion ou E/S. Sauvegardez avant remplacement. Aucun service réseau ou de génération IA n'est appelé.",
+        "Référence des commandes", "Code original : MIT. Les dépendances conservent leurs licences ; voir LICENSE et THIRD_PARTY_NOTICES.md."
+    ],
+    "de": ["Deutsch", "Bauen und starten", "Arbeitsablauf", "Stapelbearbeitung", "Oberfläche und Python", "Hardware und Dateien", "Schutz und Fehler",
+        "FCHUA bearbeitet NES-Tiles, Nametables, Paletten und 8x8-Metasprites für KITAQFC. Die eigenständige CLI verwendet denselben Kern wie die Oberfläche und benötigt weder GUI noch GPU, plita-Installation oder Python.",
+        "Zum Bauen wird Rust ab 1.92 benötigt. Windows: target/release/fchua.exe; Linux und macOS: ./target/release/fchua. --help zeigt die Syntax. In den Beispielen heißt das Programm fchua. Übergeordnete Ausgabeordner müssen bereits existieren.",
+        "Erstellen Sie ein leeres Projekt oder importieren Sie PNG. Prüfen Sie Bericht und Vorschau vor dem Export. --auto-palette wählt vier NES-Hintergrundpaletten zur Verringerung des Konvertierungsfehlers; sonst gelten die aktuellen Paletten. --project base.fch übernimmt Paletten und Mustertabellen. Transparente Pixel werden mit der aktuellen universellen Hintergrundfarbe verrechnet. Der Import ersetzt Karte und gewählte Hintergrundtabelle; Sprites mit derselben Tabelle ändern sich ebenfalls.",
+        "Ein Skript ist ein JSON-Array. Alle Operationen werden vor der Änderung geprüft. Bei Fehlern wird nichts geschrieben. --dry-run prüft ohne Speicherung. Unbekannte Operationen und Felder sind Fehler. Tile-Operationen verwenden absolute Nummern 0..511; Karte und Sprites verwenden 0..255 innerhalb ihrer jeweiligen Tabelle.",
+        "Die plita-Oberfläche nutzt Roboto, gruppierte Menüs mit Lucide-Symbolen, Hover-/Druck-/Loslasszustände und Tooltips. File bietet Neu, Öffnen, Speichern, Speichern unter, PNG-Import und Export. Ctrl+O/S/Shift+S öffnet/speichert/speichert unter; Ctrl+Z/Y macht rückgängig/wiederholt; Ctrl+C/V kopiert/fügt ein Tile ein. Reine Auswahländerungen gelten nicht als Bearbeitung. Beim Schließen, Neuanlegen oder Öffnen eines anderen Projekts wird vor dem Verwerfen von Änderungen gefragt.",
+        "Map/Tile/Sprite/Check wechseln die Hauptansicht. B/E/F/L/R/I wählen Stift/Radierer/Füllen/Linie/Rechteck/Pipette; 1..4 wählen Farben. Ein Ziehvorgang ist ein Rückgängig-Schritt, Escape bricht ihn ab. Fit, Zoom, Mausrad und Schieberegler samt Laufleisten stehen bereit. In schmalen Fenstern wechselt Tiles/Palette die Seitenleiste. Wählen Sie ein Farbfeld und danach eine NES-Farbe; Index null ändert den universellen Hintergrund. Sprite setzt Tiles auf ein 8-Pixel-Raster; Pipette wählt Teile, Radierer löscht. Das Menü ergänzt/dupliziert Frames und spiegelt/löscht das gewählte Teil. Check prüft einzelne Frames, nicht die gesamte Szene oder einen Emulator.",
+        "Das CLI-Paket enthält optionale Python-Bindings (Python 3.10+), ohne GUI, GPU oder plita. Bauen Sie mit pip in tools/fchua oder installieren Sie das mitgelieferte Windows-x64-Wheel. Controller unterstützt Projekte, PNG, transaktionale Befehle und RAW/C-Export; GUI_AVAILABLE=False. Der Build mit den Features gui,python ergänzt run_editor und ButtonInteraction. Controller bearbeitet ein eigenes Dokument, keine laufende GUI; tauschen Sie .fch-Dateien aus. Python überschreibt vorhandene Dateien, anders als der --force-Schutz der CLI.",
+        ".fch ist versioniertes JSON (format=fchua, version=1): 8192 CHR-Bytes, 32 Palettenbytes, Karte 32x30, 64 Attribute, zwei Tabellenauswahlen und bis zu 256 Frames. Alte .kfcproject-Dateien sind migrierbar; Hardwareattribute haben Vorrang vor widersprüchlichen Palettenkarten. PNG-Abmessungen müssen Vielfache von 8 zwischen 8x8 und 256x240 sein. Jeder 16x16-Block nutzt eine Vierfarbpalette. Eine Hintergrundtabelle hat 256 Tiles; beim Import bleibt Tile null leer reserviert. Überschreitungen werden abgelehnt.",
+        "Exportiert werden .chr (8192), .pal (32), .nam (960), .atr (64), Metasprite-JSON, C/H-Arrays aller Frames, Manifest und .fch. C verwendet __prg_rom. Die PPU-Tabellen müssen im Spiel passend eingestellt werden; dieser Code wird nicht erzeugt. Roh-CHR besteht aus ganzen 16-Byte-Tiles bis 8192 Bytes; die anderen drei Formate verlangen exakte Längen. NES-Farbcodes: 0..63. Maximal 64 Teile pro Frame, Koordinaten -128..127 außer x=-1, das für den Abschluss 0xFF reserviert ist. Nur 8x8-Sprites werden unterstützt; mehr als acht Teile pro Scanline erzeugen eine Warnung.",
+        "Vorhandene Ausgaben erfordern --force; Eingabe und Ausgabe müssen trotzdem verschieden sein. Projekte werden über eine temporäre Datei atomar ersetzt. export --out bezeichnet ein Verzeichnis; --force ersetzt benannte Assets, löscht aber keine fremden Dateien. --prefix muss ein C-Bezeichner sein. Erfolg schreibt ein JSON-Objekt, Fehler schreiben JSON nach stderr. Rückgabecodes: 0 Erfolg, 1 Warnungen bei validate --strict, 2 Argument-/Projekt-/Konvertierungs-/E/A-Fehler. Vor Ersetzungen sichern. Es werden keine Netzwerk- oder KI-Generierungsdienste aufgerufen.",
+        "Befehlsreferenz", "Originalcode: MIT. Abhängigkeiten behalten ihre Lizenzen; siehe LICENSE und THIRD_PARTY_NOTICES.md."
+    ],
+}
+
+COMMANDS = """```text
+new --out FILE.fch [--demo] [--force]
+inspect FILE.fch
+validate FILE.fch [--strict]
+import-image IMAGE.png --out FILE.fch [--project BASE.fch] [--auto-palette] [--force]
+import-raw --out FILE.fch [--project BASE.fch] [--chr FILE.chr]
+           [--palette FILE.pal] [--nametable FILE.nam] [--attributes FILE.atr] [--force]
+apply INPUT.fch --script EDITS.json --out OUTPUT.fch [--dry-run] [--force]
+preview FILE.fch --out IMAGE.png [--view map|tiles|sprite|tile] [--scale 1..8] [--force]
+export FILE.fch --out DIRECTORY [--prefix C_IDENTIFIER] [--force]
+migrate OLD.kfcproject --out FILE.fch [--force]
+```
+"""
+OPS = """```json
+[
+  {"op":"pixel","tile":1,"x":2,"y":3,"color":1},
+  {"op":"fill","tile":2,"color":0},
+  {"op":"checker","tile":3,"a":1,"b":2},
+  {"op":"line","tile":4,"x0":0,"y0":0,"x1":7,"y1":7,"color":3},
+  {"op":"rect","tile":5,"x0":1,"y0":1,"x1":6,"y1":6,"color":2},
+  {"op":"mirror","tile":1,"horizontal":true,"vertical":false},
+  {"op":"rotate","tile":1},
+  {"op":"copy","source":1,"target":6},
+  {"op":"palette","index":1,"value":48},
+  {"op":"map_rect","x":0,"y":0,"width":32,"height":30,"tile":1,"palette":0},
+  {"op":"tables","background":0,"sprites":1},
+  {"op":"sprite","frame":0,"index":0,"x":-8,"y":0,"tile":1,"attr":64},
+  {"op":"clone_frame","frame":0},
+  {"op":"remove_sprite","frame":1,"index":0},
+  {"op":"shift_map","dx":2,"dy":0},
+  {"op":"dedupe"}
+]
+```
+
+`tile: 0..511; x/y (pixel): 0..7; color: 0..3; palette index: 0..31; value: 0..63`
+
+`map: 32x30; palette: 0..3; tables: 0..1; frame: 0..255; index: 0..63`
+
+`attr: palette bits 0..1, priority 0x20, flip H 0x40, flip V 0x80; reserved: 0x1c`
+
+`shift_map: dx=-32..32, dy=-30..30; dx % 2 == 0, dy % 2 == 0`
+"""
+FLOW = """```sh
+fchua new --out blank.fch
+fchua import-image artwork.png --out scene.fch --auto-palette
+fchua inspect scene.fch
+fchua validate scene.fch --strict
+fchua preview scene.fch --out preview.png --view map --scale 2
+fchua apply scene.fch --script examples/edits.json --out edited.fch
+fchua export edited.fch --out assets --prefix scene
+```
+"""
+PYTHON = """```sh
+# Standalone CLI package: build Python bindings from source (Rust required)
+cd tools/fchua
+python -m pip install .
+# Windows x64, CPython 3.10+: prebuilt wheel, no Rust required
+python -m pip install python-dist/fchua-0.1.0-cp310-abi3-win_amd64.whl
+```
+
+```sh
+# Optional GUI-enabled Python build, also from tools/fchua
+python -m pip install maturin
+python -m maturin build --release --locked --features gui,python --out gui-wheels
+# Install the wheel generated in gui-wheels instead of the headless wheel.
+```
+
+```python
+import fchua
+editor = fchua.Controller()
+editor.new_blank()
+editor.apply_commands('[{"op":"fill","tile":1,"color":2},{"op":"map_rect","x":0,"y":0,"width":32,"height":30,"tile":1,"palette":0}]')
+editor.save_project("scene.fch")
+editor.preview_png("preview.png", "map", 2)
+editor.export_raw_assets("assets", "scene")
+print(fchua.GUI_AVAILABLE, editor.snapshot().unique_tiles)
+```
+"""
+
+GUI_INSTALL = {
+    "en": ["Desktop Download", "Download the Windows x64 ZIP below, extract the entire archive, and run FCHUA.exe. Keep assets/fonts and the license folders beside the executable. Rust and Python are not needed to run it. A graphics device/driver compatible with wgpu is required. The GUI labels are English; the complete manuals are available in the nine languages above.", "Start with File > New project or Open project / raw. Select a tile and a palette, edit in Tile, then place tiles in Map. Map changes palettes in 16x16 blocks. Choose the background/sprite pattern table from the corresponding menu. Save as .fch to retain editable data; PNG previews are images, not projects. Export KITAQFC pack writes game assets. If fonts look wrong, extract the whole ZIP again and check any PLITA_UI_FONT override. If the window cannot open, update the graphics driver or use the headless CLI.", "The source checkout includes the required plita crates. From tools/fchua, the following commands build/run the GUI; the final argument is an optional project path. Only the Windows x64 GUI binary is verified in this release."],
+    "ja": ["GUI版のダウンロード", "下のWindows x64用ZIPをダウンロードし、全体を展開してFCHUA.exeを起動してください。assets/fontsとライセンスフォルダを実行ファイルと一緒に保持します。実行にRust・Pythonは不要です。wgpuに対応するGPUとドライバが必要です。GUIの表示は英語ですが、説明書は上記9言語を用意しています。", "File > New projectで新規作成、Open project / rawで読み込みます。タイルとパレットを選び、Tileで描き、Mapに配置します。マップのパレットは16×16ピクセル単位で変わります。背景／スプライトのパターンテーブルは各メニューで選択します。編集可能な状態は.fchで保存してください。PNGプレビューは画像であり、プロジェクトではありません。Export KITAQFC packでゲーム用資産を出力します。フォントが異なる場合はZIP全体の展開とPLITA_UI_FONTの設定を確認してください。起動できない場合はGPUドライバを更新するか、ヘッドレスCLIを利用してください。", "必要なplitaのクレートも公開ソースに含まれます。tools/fchuaで以下を実行するとGUIをビルド・起動できます。最後のプロジェクトパスは省略可能です。このリリースでGUI実行ファイルを検証した環境はWindows x64です。"],
+    "ko": ["GUI 다운로드", "아래 Windows x64 ZIP 전체를 풀고 FCHUA.exe를 실행하세요. assets/fonts와 라이선스 폴더를 실행 파일 옆에 유지하세요. 실행에 Rust나 Python은 필요 없으며 wgpu 호환 그래픽 장치와 드라이버가 필요합니다. GUI 표시는 영어이고 설명서는 위의 9개 언어로 제공됩니다.", "File > New project 또는 Open project / raw로 시작합니다. 타일과 팔레트를 선택하여 Tile에서 그리고 Map에 배치합니다. 맵 팔레트는 16x16픽셀 단위입니다. 각 메뉴에서 배경/스프라이트 패턴 테이블을 선택합니다. 편집 데이터는 .fch로 저장하세요. PNG 미리보기는 프로젝트가 아닌 이미지입니다. Export KITAQFC pack으로 게임 자산을 내보냅니다. 글꼴이 다르면 ZIP 전체와 PLITA_UI_FONT 설정을 확인하세요. 창이 열리지 않으면 그래픽 드라이버를 갱신하거나 CLI를 사용하세요.", "공개 소스에는 필요한 plita 크레이트가 포함됩니다. tools/fchua에서 아래 명령으로 GUI를 빌드하고 실행합니다. 마지막 프로젝트 경로는 생략 가능합니다. 이번 릴리스에서 GUI 실행 파일은 Windows x64에서 검증했습니다."],
+    "zh-CN": ["下载GUI版", "下载下面的Windows x64 ZIP，完整解压后运行FCHUA.exe。请保留程序旁的assets/fonts及许可文件夹。运行不需要Rust或Python，但需要兼容wgpu的图形设备和驱动。GUI标签为英语，完整说明书提供上述九种语言。", "通过File > New project新建，或Open project / raw打开。选择图块和调色板，在Tile绘制并在Map放置。地图调色板以16x16像素为单位变化。通过相应菜单选择背景/精灵图案表。用.fch保存可编辑数据；PNG预览是图片，不是项目。Export KITAQFC pack导出游戏资源。字体异常时请检查ZIP是否完整解压及PLITA_UI_FONT设置。无法打开窗口时请更新显卡驱动或使用无界面CLI。", "公开源码已包含所需的plita crate。在tools/fchua运行以下命令构建并启动GUI，最后的项目路径可省略。本次发布的GUI可执行文件在Windows x64验证。"],
+    "zh-TW": ["下載GUI版", "下載下方Windows x64 ZIP，完整解壓縮後執行FCHUA.exe。請保留程式旁的assets/fonts與授權資料夾。執行不需要Rust或Python，但需要相容wgpu的圖形裝置與驅動程式。GUI標籤為英語，完整說明書提供上述九種語言。", "透過File > New project新增，或Open project / raw開啟。選擇圖塊和調色盤，在Tile繪製並於Map放置。地圖調色盤以16x16像素為單位變更。透過對應選單選擇背景/精靈圖案表。以.fch儲存可編輯資料；PNG預覽是圖片而非專案。Export KITAQFC pack匯出遊戲資產。字型異常時請檢查ZIP是否完整解壓及PLITA_UI_FONT設定。無法開啟視窗時請更新顯示驅動或使用無介面CLI。", "公開原始碼已包含所需的plita crate。在tools/fchua執行以下命令建置並啟動GUI，最後的專案路徑可省略。本次發行的GUI執行檔於Windows x64驗證。"],
+    "es": ["Descarga de la interfaz", "Descargue el ZIP para Windows x64, extraiga todo y ejecute FCHUA.exe. Conserve assets/fonts y las carpetas de licencias junto al ejecutable. No necesita Rust ni Python para ejecutarlo, pero sí un dispositivo/controlador gráfico compatible con wgpu. La interfaz está en inglés; los manuales completos están en los nueve idiomas indicados.", "Empiece con File > New project u Open project / raw. Seleccione un tile y una paleta, dibuje en Tile y coloque tiles en Map. La paleta del mapa cambia por bloques de 16x16 píxeles. Seleccione las tablas de fondo/sprites en sus menús. Guarde en .fch para conservar los datos editables; la vista previa PNG no es un proyecto. Export KITAQFC pack genera recursos del juego. Si la fuente cambia, compruebe la extracción completa y PLITA_UI_FONT. Si no se abre la ventana, actualice el controlador gráfico o use la CLI sin interfaz.", "El código público incluye los crates necesarios de plita. Desde tools/fchua, compile y ejecute la interfaz con estos comandos; la ruta final del proyecto es opcional. El ejecutable GUI de esta versión se verificó en Windows x64."],
+    "pt": ["Download da interface", "Baixe o ZIP para Windows x64, extraia tudo e execute FCHUA.exe. Mantenha assets/fonts e as pastas de licenças ao lado do executável. Não é necessário Rust nem Python para executar, mas é preciso um dispositivo/driver gráfico compatível com wgpu. A interface está em inglês; os manuais completos estão nos nove idiomas acima.", "Comece por File > New project ou Open project / raw. Selecione tile e paleta, desenhe em Tile e coloque tiles em Map. A paleta do mapa muda em blocos de 16x16 pixels. Selecione as tabelas de fundo/sprites nos respectivos menus. Salve em .fch para manter os dados editáveis; a prévia PNG não é um projeto. Export KITAQFC pack gera os recursos do jogo. Se a fonte estiver diferente, confira a extração completa e PLITA_UI_FONT. Se a janela não abrir, atualize o driver gráfico ou use a CLI sem interface.", "O código público inclui os crates necessários do plita. Em tools/fchua, compile e execute a interface com os comandos abaixo; o caminho final do projeto é opcional. O executável GUI desta versão foi verificado no Windows x64."],
+    "fr": ["Télécharger l'interface", "Téléchargez le ZIP Windows x64, extrayez-le entièrement et lancez FCHUA.exe. Conservez assets/fonts et les dossiers de licences à côté du programme. Rust et Python ne sont pas nécessaires à son exécution ; un périphérique/pilote graphique compatible avec wgpu est requis. L'interface est en anglais ; les manuels complets existent dans les neuf langues ci-dessus.", "Commencez par File > New project ou Open project / raw. Sélectionnez une tuile et une palette, dessinez dans Tile puis placez les tuiles dans Map. La palette de la carte change par blocs de 16x16 pixels. Choisissez les tables de fond/sprites dans leurs menus. Enregistrez en .fch pour garder les données modifiables ; l'aperçu PNG n'est pas un projet. Export KITAQFC pack produit les ressources du jeu. Si la police diffère, vérifiez l'extraction complète et PLITA_UI_FONT. Si la fenêtre ne s'ouvre pas, mettez à jour le pilote graphique ou utilisez la CLI sans interface.", "Le code public inclut les crates plita nécessaires. Depuis tools/fchua, compilez et lancez l'interface avec ces commandes ; le chemin final du projet est facultatif. L'exécutable GUI de cette version a été vérifié sous Windows x64."],
+    "de": ["GUI herunterladen", "Laden Sie das Windows-x64-ZIP herunter, entpacken Sie es vollständig und starten Sie FCHUA.exe. Lassen Sie assets/fonts und die Lizenzordner neben der Programmdatei. Zum Ausführen sind weder Rust noch Python erforderlich, jedoch ein mit wgpu kompatibles Grafikgerät samt Treiber. Die Oberfläche ist englisch; vollständige Handbücher stehen in den neun oben genannten Sprachen bereit.", "Beginnen Sie mit File > New project oder Open project / raw. Wählen Sie Tile und Palette, zeichnen Sie in Tile und platzieren Sie Tiles in Map. Die Kartenpalette ändert sich in 16x16-Pixel-Blöcken. Wählen Sie die Hintergrund-/Sprite-Mustertabellen im jeweiligen Menü. Speichern Sie bearbeitbare Daten als .fch; die PNG-Vorschau ist kein Projekt. Export KITAQFC pack erzeugt Spielressourcen. Prüfen Sie bei falscher Schrift die vollständige ZIP-Entpackung und PLITA_UI_FONT. Öffnet sich kein Fenster, aktualisieren Sie den Grafiktreiber oder verwenden Sie die CLI ohne GUI.", "Der öffentliche Quellcode enthält die benötigten plita-Crates. Bauen und starten Sie die GUI in tools/fchua mit diesen Befehlen; der abschließende Projektpfad ist optional. Die GUI-Programmdatei dieser Version wurde unter Windows x64 geprüft."],
+}
+
+GUI_BUILD = """```sh
+cd tools/fchua
+cargo run --release --locked --features gui --bin fchua_gui
+cargo run --release --locked --features gui --bin fchua_gui -- scene.fch
+cargo test --release --locked --features gui
+```
+"""
+
+NATIVE_STATUS = {
+    "en": "Release compilation, software-rendered layouts and automated input/state tests passed on Windows x64. Native window clicks and file dialogs remain unverified because the desktop automation tool timed out awaiting app approval. See [verification details](VERIFICATION.md).",
+    "ja": "Windows x64でリリースビルド、ソフトウェア描画、入力・状態の自動テストに合格しています。デスクトップ操作ツールがアプリ承認待ちでタイムアウトしたため、実ウィンドウのクリックとファイルダイアログ操作は未検証です。[検証記録](VERIFICATION.md)を参照してください。",
+    "ko": "Windows x64에서 릴리스 빌드, 소프트웨어 렌더링과 입력/상태 자동 테스트를 통과했습니다. 데스크톱 자동화 도구가 앱 승인 대기 중 시간 초과되어 실제 창 클릭과 파일 대화상자는 미검증입니다. [검증 기록](VERIFICATION.md)을 참조하세요.",
+    "zh-CN": "Windows x64发布构建、软件渲染布局和输入/状态自动测试已通过。桌面自动化工具在等待应用授权时超时，因此实际窗口点击和文件对话框操作尚未验证。参见[验证记录](VERIFICATION.md)。",
+    "zh-TW": "Windows x64發行建置、軟體繪圖版面與輸入/狀態自動測試已通過。桌面自動化工具等待應用程式授權時逾時，因此實際視窗點擊和檔案對話框操作尚未驗證。參閱[驗證紀錄](VERIFICATION.md)。",
+    "es": "La compilación de publicación, los diseños por software y las pruebas automáticas de entrada/estado pasaron en Windows x64. Los clics en ventanas y los diálogos de archivos siguen sin verificar: la herramienta de escritorio agotó el tiempo esperando autorización de la aplicación. Consulte la [verificación](VERIFICATION.md).",
+    "pt": "A compilação de distribuição, os layouts por software e os testes automáticos de entrada/estado passaram no Windows x64. Cliques em janelas e diálogos de arquivos não foram verificados: a ferramenta de desktop excedeu o tempo aguardando autorização do aplicativo. Veja a [verificação](VERIFICATION.md).",
+    "fr": "La compilation de distribution, les dispositions rendues par logiciel et les tests automatiques d'entrée/état ont réussi sous Windows x64. Les clics de fenêtre et les dialogues de fichiers restent non vérifiés : l'outil de bureau a expiré en attendant l'autorisation de l'application. Voir la [vérification](VERIFICATION.md).",
+    "de": "Release-Build, softwaregerenderte Layouts und automatische Eingabe-/Zustandstests bestanden unter Windows x64. Native Fensterklicks und Dateidialoge sind ungeprüft: Das Desktop-Werkzeug brach beim Warten auf die App-Freigabe wegen Zeitüberschreitung ab. Siehe [Prüfbericht](VERIFICATION.md).",
+}
+
+def generate():
+    nav = " | ".join(f"[{v[0]}](README.{k}.md)" for k, v in LANGS.items())
+    for lang, s in LANGS.items():
+        g = GUI_INSTALL[lang]
+        desktop = f"## {g[0]}\n\n{g[1]}\n\n[FCHUA GUI 0.1.0 - Windows x64 ZIP](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fchua/dist/FCHUA-GUI-0.1.0-windows-x86_64.zip)\n\n{g[2]}\n\n{g[3]}\n\n{GUI_BUILD}"
+        text = f"# FCHUA\n\n{nav}\n\n{s[7]}\n\n## {s[1]}\n\n{s[8]}\n\n```sh\ncd tools/fchua\ncargo build --release --locked\ncargo test --locked\n./target/release/fchua --help\n```\n\n## {s[2]}\n\n{s[9]}\n\n{FLOW}\n## {s[17]}\n\n{COMMANDS}\n## {s[3]}\n\n{s[10]}\n\n{OPS}\n## {s[4]}\n\n{s[11]}\n\n{s[12]}\n\n{s[13]}\n\n{PYTHON}\n## {s[5]}\n\n{s[14]}\n\n{s[15]}\n\n## {s[6]}\n\n{s[16]}\n\n{s[18]}\n"
+        desktop = desktop.replace(GUI_BUILD, NATIVE_STATUS[lang] + "\n\n" + GUI_BUILD)
+        text = text.replace(f"## {s[1]}", desktop + f"\n## {s[1]}", 1)
+        (ROOT / f"README.{lang}.md").write_text(text, encoding="utf-8")
+    (ROOT / "README.md").write_text((ROOT / "README.en.md").read_text(encoding="utf-8"), encoding="utf-8")
+
+if __name__ == "__main__":
+    generate()

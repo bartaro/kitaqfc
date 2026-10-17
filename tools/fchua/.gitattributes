@@ -1,3 +1,7 @@
 * whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 licenses/** linguist-vendored=true -whitespace
+vendor/** linguist-vendored=true -whitespace
+gui-licenses/** linguist-vendored=true -whitespace
+license-overrides/** linguist-vendored=true -whitespace
+assets/fonts/*OFL.txt -whitespace
 README*.md linguist-documentation=true

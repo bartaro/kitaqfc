@@ -2,7 +2,26 @@
 
 [English](README.en.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Español](README.es.md) | [Português](README.pt.md) | [Français](README.fr.md) | [Deutsch](README.de.md)
 
-FCHUAはKITAQFC向けのNESタイル・ネームテーブル・パレット・8×8メタスプライトを編集します。独立CLIはGUIと同じ編集コアを使い、画面・GPU・PLITAのインストール・Pythonを必要としません。
+FCHUAはKITAQFC向けのNESタイル・ネームテーブル・パレット・8×8メタスプライトを編集します。独立CLIはGUIと同じ編集コアを使い、画面・GPU・plitaのインストール・Pythonを必要としません。
+
+## GUI版のダウンロード
+
+下のWindows x64用ZIPをダウンロードし、全体を展開してFCHUA.exeを起動してください。assets/fontsとライセンスフォルダを実行ファイルと一緒に保持します。実行にRust・Pythonは不要です。wgpuに対応するGPUとドライバが必要です。GUIの表示は英語ですが、説明書は上記9言語を用意しています。
+
+[FCHUA GUI 0.1.0 - Windows x64 ZIP](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fchua/dist/FCHUA-GUI-0.1.0-windows-x86_64.zip)
+
+File > New projectで新規作成、Open project / rawで読み込みます。タイルとパレットを選び、Tileで描き、Mapに配置します。マップのパレットは16×16ピクセル単位で変わります。背景／スプライトのパターンテーブルは各メニューで選択します。編集可能な状態は.fchで保存してください。PNGプレビューは画像であり、プロジェクトではありません。Export KITAQFC packでゲーム用資産を出力します。フォントが異なる場合はZIP全体の展開とPLITA_UI_FONTの設定を確認してください。起動できない場合はGPUドライバを更新するか、ヘッドレスCLIを利用してください。
+
+必要なplitaのクレートも公開ソースに含まれます。tools/fchuaで以下を実行するとGUIをビルド・起動できます。最後のプロジェクトパスは省略可能です。このリリースでGUI実行ファイルを検証した環境はWindows x64です。
+
+Windows x64でリリースビルド、ソフトウェア描画、入力・状態の自動テストに合格しています。デスクトップ操作ツールがアプリ承認待ちでタイムアウトしたため、実ウィンドウのクリックとファイルダイアログ操作は未検証です。[検証記録](VERIFICATION.md)を参照してください。
+
+```sh
+cd tools/fchua
+cargo run --release --locked --features gui --bin fchua_gui
+cargo run --release --locked --features gui --bin fchua_gui -- scene.fch
+cargo test --release --locked --features gui
+```
 
 ## ビルドと起動
 
@@ -79,11 +98,11 @@ migrate OLD.kfcproject --out FILE.fch [--force]
 
 ## GUIとPython
 
-ローカルGUIはPLITA・Robotoを使用し、Lucideアイコン付きグループメニュー、ホバー・押下・リリース表示、ツールチップを備えます。Fileに新規・読み込み・保存・別名保存・PNG取り込み・出力があります。Ctrl+Oで開く、Ctrl+Sで保存、Ctrl+Shift+Sで別名保存、Ctrl+Z/YでUndo/Redo、Ctrl+C/Vでタイルのコピー／貼り付けです。タイルやツールの選択だけでは未保存になりません。編集後の終了・プロジェクト切り替え・新規作成時は破棄前に確認します。
+GUIはplita・Robotoを使用し、Lucideアイコン付きグループメニュー、ホバー・押下・リリース表示、ツールチップを備えます。Fileに新規・読み込み・保存・別名保存・PNG取り込み・出力があります。Ctrl+Oで開く、Ctrl+Sで保存、Ctrl+Shift+Sで別名保存、Ctrl+Z/YでUndo/Redo、Ctrl+C/Vでタイルのコピー／貼り付けです。タイルやツールの選択だけでは未保存になりません。編集後の終了・プロジェクト切り替え・新規作成時は破棄前に確認します。
 
 Map/Tile/Sprite/Checkで中央の表示を切り替えます。B/E/F/L/R/Iは鉛筆／消しゴム／塗りつぶし／直線／矩形／スポイト、1～4は描画色です。1回のドラッグが1回のUndoになり、Escapeで取り消せます。Fit・ズームアイコン、ホイール、スクロールバーのつまみ・トラックを利用できます。狭い画面ではTiles/Paletteでサイドバーを切り替えます。パレット色を選んでから下のNES色をクリックして変更します。色0は共通背景色です。Spriteでは8ピクセル格子にタイルを置き、スポイトで部品を選択、消しゴムで削除します。Spriteメニューからフレーム追加・複製、部品の反転・削除ができます。Checkはフレーム単位の走査線警告であり、シーン全体やエミュレータでの検証ではありません。
 
-独立CLIパッケージにもPython bindings（Python 3.10以降）を同梱します。GUI・GPU・PLITAは不要です。tools/fchuaからpipでビルドするか、同梱Windows x64 wheelをインストールしてください。Controllerでプロジェクト入出力・PNG変換・一括編集・RAW/C出力が可能です。この版はGUI_AVAILABLE=Falseです。ローカルPLITA版にはrun_editorとButtonInteractionもあります。Controllerは起動中GUIではなく独立文書を編集するため、.fchで受け渡してください。Pythonの保存は既存ファイルを置換します。CLIの--force保護とは異なります。
+独立CLIパッケージにもPython bindings（Python 3.10以降）を同梱します。GUI・GPU・plitaは不要です。tools/fchuaからpipでビルドするか、同梱Windows x64 wheelをインストールしてください。Controllerでプロジェクト入出力・PNG変換・一括編集・RAW/C出力が可能です。この版はGUI_AVAILABLE=Falseです。gui,python featureを有効にした版にはrun_editorとButtonInteractionもあります。Controllerは起動中GUIではなく独立文書を編集するため、.fchで受け渡してください。Pythonの保存は既存ファイルを置換します。CLIの--force保護とは異なります。
 
 ```sh
 # Standalone CLI package: build Python bindings from source (Rust required)
@@ -94,9 +113,10 @@ python -m pip install python-dist/fchua-0.1.0-cp310-abi3-win_amd64.whl
 ```
 
 ```sh
-# Local PLITA workspace
-cargo run -p kitaqfc_graphics_editor --bin fchua_gui
-python -m pip install ./examples/kitaqfc_graphics_editor
+# Optional GUI-enabled Python build, also from tools/fchua
+python -m pip install maturin
+python -m maturin build --release --locked --features gui,python --out gui-wheels
+# Install the wheel generated in gui-wheels instead of the headless wheel.
 ```
 
 ```python

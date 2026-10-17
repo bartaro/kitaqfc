@@ -24,7 +24,7 @@ All successful commands emit one JSON object. Errors emit JSON to stderr.
 Exit codes: 0 success, 1 strict validation warnings, 2 invalid arguments/data/IO.
 Existing output requires --force; input files cannot be overwritten.
 Scripts are JSON arrays of operations; see examples/edits.json and the manual.
-No GUI, GPU, Python, network access, or PLITA runtime is required.
+No GUI, GPU, Python, network access, or plita runtime is required.
 "#;
 
 struct Args {

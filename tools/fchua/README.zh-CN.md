@@ -2,7 +2,26 @@
 
 [English](README.en.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Español](README.es.md) | [Português](README.pt.md) | [Français](README.fr.md) | [Deutsch](README.de.md)
 
-FCHUA用于编辑KITAQFC的NES图块、名称表、调色板和8x8组合精灵。独立CLI与GUI共用编辑核心，不需要图形界面、GPU、PLITA安装或Python。
+FCHUA用于编辑KITAQFC的NES图块、名称表、调色板和8x8组合精灵。独立CLI与GUI共用编辑核心，不需要图形界面、GPU、plita安装或Python。
+
+## 下载GUI版
+
+下载下面的Windows x64 ZIP，完整解压后运行FCHUA.exe。请保留程序旁的assets/fonts及许可文件夹。运行不需要Rust或Python，但需要兼容wgpu的图形设备和驱动。GUI标签为英语，完整说明书提供上述九种语言。
+
+[FCHUA GUI 0.1.0 - Windows x64 ZIP](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fchua/dist/FCHUA-GUI-0.1.0-windows-x86_64.zip)
+
+通过File > New project新建，或Open project / raw打开。选择图块和调色板，在Tile绘制并在Map放置。地图调色板以16x16像素为单位变化。通过相应菜单选择背景/精灵图案表。用.fch保存可编辑数据；PNG预览是图片，不是项目。Export KITAQFC pack导出游戏资源。字体异常时请检查ZIP是否完整解压及PLITA_UI_FONT设置。无法打开窗口时请更新显卡驱动或使用无界面CLI。
+
+公开源码已包含所需的plita crate。在tools/fchua运行以下命令构建并启动GUI，最后的项目路径可省略。本次发布的GUI可执行文件在Windows x64验证。
+
+Windows x64发布构建、软件渲染布局和输入/状态自动测试已通过。桌面自动化工具在等待应用授权时超时，因此实际窗口点击和文件对话框操作尚未验证。参见[验证记录](VERIFICATION.md)。
+
+```sh
+cd tools/fchua
+cargo run --release --locked --features gui --bin fchua_gui
+cargo run --release --locked --features gui --bin fchua_gui -- scene.fch
+cargo test --release --locked --features gui
+```
 
 ## 构建与运行
 
@@ -79,11 +98,11 @@ migrate OLD.kfcproject --out FILE.fch [--force]
 
 ## GUI与Python
 
-本地PLITA GUI使用Roboto、Lucide图标分组菜单、悬停/按下/释放反馈和提示。File包含新建、打开、保存、另存为、PNG导入及导出。Ctrl+O/S/Shift+S分别打开/保存/另存为；Ctrl+Z/Y撤销/重做；Ctrl+C/V复制/粘贴图块。仅切换选区或工具不会标记为未保存。关闭、新建或切换项目时，若有编辑会先确认是否丢弃。
+plita GUI使用Roboto、Lucide图标分组菜单、悬停/按下/释放反馈和提示。File包含新建、打开、保存、另存为、PNG导入及导出。Ctrl+O/S/Shift+S分别打开/保存/另存为；Ctrl+Z/Y撤销/重做；Ctrl+C/V复制/粘贴图块。仅切换选区或工具不会标记为未保存。关闭、新建或切换项目时，若有编辑会先确认是否丢弃。
 
 Map/Tile/Sprite/Check切换中央视图。B/E/F/L/R/I选择铅笔/橡皮/填充/直线/矩形/吸管，1..4选择颜色。一次拖动对应一次撤销，Escape取消。可用Fit、缩放按钮、滚轮、滚动条滑块和轨道。窄窗口用Tiles/Palette切换侧栏。先点调色板色块，再点下方NES颜色；颜色0修改公共背景。Sprite在8像素网格上放置图块，吸管选择部件，橡皮删除部件；菜单可添加/复制帧及翻转/删除选中部件。Check仅检查单帧，不代表整个场景或模拟器验证。
 
-独立CLI包也包含可选Python绑定（Python 3.10以上），不依赖GUI、GPU或PLITA。在tools/fchua用pip构建，或安装附带的Windows x64 wheel。Controller支持项目读写、PNG转换、批量编辑及RAW/C导出；此版本GUI_AVAILABLE=False。本地PLITA版另外提供run_editor和ButtonInteraction。Controller编辑独立文档，不远程连接运行中的GUI；通过.fch交换。Python保存会替换已有文件，与CLI的--force保护不同。
+独立CLI包也包含可选Python绑定（Python 3.10以上），不依赖GUI、GPU或plita。在tools/fchua用pip构建，或安装附带的Windows x64 wheel。Controller支持项目读写、PNG转换、批量编辑及RAW/C导出；此版本GUI_AVAILABLE=False。启用gui,python功能的版本另外提供run_editor和ButtonInteraction。Controller编辑独立文档，不远程连接运行中的GUI；通过.fch交换。Python保存会替换已有文件，与CLI的--force保护不同。
 
 ```sh
 # Standalone CLI package: build Python bindings from source (Rust required)
@@ -94,9 +113,10 @@ python -m pip install python-dist/fchua-0.1.0-cp310-abi3-win_amd64.whl
 ```
 
 ```sh
-# Local PLITA workspace
-cargo run -p kitaqfc_graphics_editor --bin fchua_gui
-python -m pip install ./examples/kitaqfc_graphics_editor
+# Optional GUI-enabled Python build, also from tools/fchua
+python -m pip install maturin
+python -m maturin build --release --locked --features gui,python --out gui-wheels
+# Install the wheel generated in gui-wheels instead of the headless wheel.
 ```
 
 ```python

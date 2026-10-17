@@ -1,5 +1,29 @@
 [workspace]
 resolver = "2"
+members = [".", "vendor/plita/crates/*"]
+default-members = ["."]
+
+[workspace.package]
+version = "0.0.1"
+edition = "2021"
+rust-version = "1.92"
+license = "MIT"
+authors = ["PLITA UI Contributors"]
+
+[workspace.dependencies]
+plita_app = { path = "vendor/plita/crates/plita_app" }
+plita_window = { path = "vendor/plita/crates/plita_window" }
+plita_render = { path = "vendor/plita/crates/plita_render" }
+plita_ui = { path = "vendor/plita/crates/plita_ui" }
+thiserror = "2.0"
+bytemuck = { version = "1.25", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+pollster = "0.4"
+pyo3 = { version = "0.21", features = ["abi3-py310", "extension-module"] }
+winit = "0.30.13"
+wgpu = { version = "28.0.0", default-features = false, features = ["std", "parking_lot", "dx12", "gles", "vulkan", "wgsl"] }
+vello = { version = "0.8.0", default-features = false, features = ["wgpu"] }
 
 [package]
 name = "fchua"
@@ -8,8 +32,9 @@ edition = "2021"
 rust-version = "1.92"
 license = "MIT"
 authors = ["DAISUKE OBA", "PLITA UI Contributors"]
-description = "FCHUA: headless NES tile, map, palette and metasprite tools for KITAQFC"
+description = "FCHUA: NES graphics GUI, CLI and Python tools for KITAQFC"
 default-run = "fchua"
+autobins = false
 
 [lib]
 name = "kitaqfc_graphics_editor_lib"
@@ -17,13 +42,22 @@ crate-type = ["rlib", "cdylib"]
 
 [features]
 default = []
-python = ["dep:pyo3"]
+gui = ["dep:plita", "dep:rfd"]
+gui-console = ["gui"]
+python = ["dep:pyo3", "plita?/python"]
 
 [[bin]]
 name = "fchua"
 path = "src/bin/fchua.rs"
 
+[[bin]]
+name = "fchua_gui"
+path = "src/main.rs"
+required-features = ["gui"]
+
 [dependencies]
+plita = { path = "vendor/plita/crates/plita", optional = true }
+rfd = { version = "0.17", optional = true }
 pyo3 = { version = "0.21", optional = true, features = ["abi3-py310", "extension-module"] }
 image = { version = "0.25.10", default-features = false, features = ["png"] }
 serde = { version = "1", features = ["derive"] }

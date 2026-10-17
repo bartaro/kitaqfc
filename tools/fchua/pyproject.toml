@@ -14,4 +14,8 @@ authors = [{ name = "DAISUKE OBA" }, { name = "PLITA UI Contributors" }]
 bindings = "pyo3"
 features = ["python"]
 module-name = "fchua"
-include = ["licenses/**/*", "THIRD_PARTY_NOTICES.md", "DEPENDENCIES.json"]
+include = [
+    "licenses/**/*", "THIRD_PARTY_NOTICES.md", "DEPENDENCIES.json",
+    "gui-licenses/**/*", "GUI_DEPENDENCIES.json", "vendor/plita/LICENSE",
+    "vendor/plita/crates/plita_ui/assets/lucide/LICENSE", "assets/fonts/*OFL.txt",
+]
