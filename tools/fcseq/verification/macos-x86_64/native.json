@@ -1,19 +1,20 @@
 {
   "passed": true,
-  "version": "0.4.2",
-  "source_commit": "a5f3c44f30eb764bd2a972647f006cdb0b3da61f",
+  "version": "0.5.0",
+  "source_commit": "d4aaa793d8894c1923c80dc79101e92054d4d40a",
   "platform": "macos-x86_64",
   "system": "macOS-15.7.9-x86_64-i386-64bit",
   "python": "3.10.21 (main, Aug 13 2026, 02:42:10) [Clang 17.0.0 (clang-1700.0.13.5)]",
   "rust_tests": {
-    "passed": 39,
+    "passed": 49,
     "failed": 0,
-    "suites": 6
+    "suites": 7
   },
   "audio_tests": [
     {
       "chip": "none",
       "voices": 5,
+      "tracks": 5,
       "native": {
         "frames": 70444,
         "peak_to_peak": 28208,
@@ -24,11 +25,17 @@
         "peak_to_peak": 22798,
         "sha256": "93672c4d6e48fdc9ac12cc83615c1669a2e97012b7607af48499fb81e4fe7dae"
       },
+      "nsf2": {
+        "frames": 44100,
+        "peak_to_peak": 22798,
+        "sha256": "93672c4d6e48fdc9ac12cc83615c1669a2e97012b7607af48499fb81e4fe7dae"
+      },
       "roundtrip": true
     },
     {
       "chip": "vrc6",
       "voices": 8,
+      "tracks": 8,
       "native": {
         "frames": 70444,
         "peak_to_peak": 28091,
@@ -39,11 +46,17 @@
         "peak_to_peak": 28897,
         "sha256": "36a5b548ca6f1f52bc8dd130d8559840e071c40fd7f01d29ca3c7dc9ac7d0ddf"
       },
+      "nsf2": {
+        "frames": 44100,
+        "peak_to_peak": 28897,
+        "sha256": "36a5b548ca6f1f52bc8dd130d8559840e071c40fd7f01d29ca3c7dc9ac7d0ddf"
+      },
       "roundtrip": true
     },
     {
       "chip": "vrc7",
       "voices": 11,
+      "tracks": 11,
       "native": {
         "frames": 70444,
         "peak_to_peak": 31495,
@@ -54,11 +67,17 @@
         "peak_to_peak": 23119,
         "sha256": "52a9a7be3de61fb7c32da00a16025a496f2f4b75743d7ec1a899d14a067faf94"
       },
+      "nsf2": {
+        "frames": 44100,
+        "peak_to_peak": 23119,
+        "sha256": "52a9a7be3de61fb7c32da00a16025a496f2f4b75743d7ec1a899d14a067faf94"
+      },
       "roundtrip": true
     },
     {
       "chip": "fds",
       "voices": 6,
+      "tracks": 6,
       "native": {
         "frames": 70444,
         "peak_to_peak": 31442,
@@ -69,11 +88,17 @@
         "peak_to_peak": 25440,
         "sha256": "1ad6c77d9f094c2fbd4aec6b14b0d088fd89d64546a0f8951ba18670f283e623"
       },
+      "nsf2": {
+        "frames": 44100,
+        "peak_to_peak": 25440,
+        "sha256": "1ad6c77d9f094c2fbd4aec6b14b0d088fd89d64546a0f8951ba18670f283e623"
+      },
       "roundtrip": true
     },
     {
       "chip": "n163",
       "voices": 13,
+      "tracks": 13,
       "native": {
         "frames": 70444,
         "peak_to_peak": 60608,
@@ -84,13 +109,102 @@
         "peak_to_peak": 24510,
         "sha256": "cfbee025e81a42ea19340bf56d667d1e7a26f11a5b79971777f2104913bb03c6"
       },
+      "nsf2": {
+        "frames": 44100,
+        "peak_to_peak": 24510,
+        "sha256": "cfbee025e81a42ea19340bf56d667d1e7a26f11a5b79971777f2104913bb03c6"
+      },
+      "roundtrip": true
+    },
+    {
+      "chip": "mmc5",
+      "voices": 8,
+      "tracks": 8,
+      "native": {
+        "frames": 70560,
+        "peak_to_peak": 26769,
+        "sha256": "9aec1fa21878effadb2a848b738cbcea66b4809b5004660cedc089fa023d9b18"
+      },
+      "nsf": {
+        "frames": 44100,
+        "peak_to_peak": 32933,
+        "sha256": "54fb451c20ce53018dfecc92eeaf6ee3fe42206f3e5f9c79a0a0c29cf8112d16"
+      },
+      "nsf2": {
+        "frames": 44100,
+        "peak_to_peak": 32933,
+        "sha256": "54fb451c20ce53018dfecc92eeaf6ee3fe42206f3e5f9c79a0a0c29cf8112d16"
+      },
+      "roundtrip": true
+    },
+    {
+      "chip": "sunsoft5b",
+      "voices": 8,
+      "tracks": 8,
+      "native": {
+        "frames": 70444,
+        "peak_to_peak": 28177,
+        "sha256": "d5ed3d9d0c6749f6158b6e0a99394fcdd30bb5fba5b5409595aff5d442b1ab6c"
+      },
+      "nsf": {
+        "frames": 44100,
+        "peak_to_peak": 24283,
+        "sha256": "453034c8d8087de8b459bd5b68daac7d7b0826b379787b19869829d2994cbd85"
+      },
+      "nsf2": {
+        "frames": 44100,
+        "peak_to_peak": 24283,
+        "sha256": "453034c8d8087de8b459bd5b68daac7d7b0826b379787b19869829d2994cbd85"
+      },
+      "roundtrip": true
+    },
+    {
+      "chip": "epsm",
+      "voices": 20,
+      "tracks": 20,
+      "native": {
+        "frames": 70444,
+        "peak_to_peak": 61857,
+        "sha256": "4faa26056e4428a197d3f66e6963af6e1ccff68d77128abe05de7bd38c14bee1"
+      },
+      "nsf": {
+        "frames": 44100,
+        "peak_to_peak": 49365,
+        "sha256": "eb28c0c43db5ae3876f20cb1197d0dfe27a23c29cc6157fe6b4d580a65b6ab6e"
+      },
+      "nsf2": {
+        "frames": 44100,
+        "peak_to_peak": 49365,
+        "sha256": "eb28c0c43db5ae3876f20cb1197d0dfe27a23c29cc6157fe6b4d580a65b6ab6e"
+      },
+      "roundtrip": true
+    },
+    {
+      "chip": "vt02",
+      "voices": 9,
+      "tracks": 10,
+      "native": {
+        "frames": 70560,
+        "peak_to_peak": 50566,
+        "sha256": "a703ca02709203d7127e03442a8720e8fe3c1e3a1d95270d29bf2bd43c4bc2fd"
+      },
+      "nsf": {
+        "frames": 44100,
+        "peak_to_peak": 56717,
+        "sha256": "1eb75f4b1509252c5030d693f19ffb9e98fd52c13a533318a0e129ca612d8042"
+      },
+      "nsf2": {
+        "frames": 44100,
+        "peak_to_peak": 56717,
+        "sha256": "1eb75f4b1509252c5030d693f19ffb9e98fd52c13a533318a0e129ca612d8042"
+      },
       "roundtrip": true
     }
   ],
   "binaries": {
-    "fcseq": "9186e50043dafbba3075882abf3987a095c59e8077b17287bc0311964634024a",
-    "fcseq-cli": "ad88e91412cfd4d2b711612eeaadcb95c308b853441afde7875382ebb520f7ab",
-    "fcseq_native.so": "480b994db3eecde2aa38ce5f7ebc591866cc547171d0c54ab822e39109445f27"
+    "fcseq": "ebe13c123b313301f8a9c7998ed5052eb12eb7ec7e8bc271b98c6a1547ee7a3c",
+    "fcseq-cli": "d2972a1bc98743639ad9af2b2a9e1300191f5198daba6f2a991af90a7252ec31",
+    "fcseq_native.so": "d135a465763d8bb12a7c5e634ecfd53c9fba611829c8ec1dfc7427ca9b09b23e"
   },
   "native_audio_output_device_tested": false,
   "physical_hardware_tested": false

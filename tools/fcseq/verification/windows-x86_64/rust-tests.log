@@ -4,20 +4,24 @@ running 0 tests
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
 
-running 11 tests
+running 15 tests
 test studio::tests::cancelled_playback_cannot_start_when_old_worker_finishes ... ok
+test studio::tests::clicking_or_rejected_edit_does_not_pollute_history ... ok
 test studio::tests::direct_inputs_are_transactional ... ok
 test studio::tests::empty_startup_pointer_resize_and_history ... ok
-test studio::tests::clicking_or_rejected_edit_does_not_pollute_history ... ok
+test studio::key_editor::tests::single_track_keys_drag_resize_undo_and_track_switch ... ok
+test studio::i18n::tests::japanese_labels_templates_and_unicode_input ... ok
 test studio::tests::keyboard_copy_paste_group_move_and_shortcuts ... ok
 test studio::tests::menu_buttons_have_real_icons_and_do_not_hit_when_disabled ... ok
 test studio::tests::n163_and_fds_wave_drawing_interpolates_and_undoes ... ok
+test studio::key_editor::tests::new_chip_controls_and_keyboard_stay_reachable ... ok
 test studio::tests::stopping_playback_preserves_export_completion ... ok
-test studio::tests::nsf_player_selection_duration_and_note_protection ... ok
 test studio::tests::section_delete_undo_redo_and_view_stay_valid ... ok
 test studio::tests::instrument_controls_stay_inside_small_window_and_modify_selected_voice ... ok
+test studio::wave_graph::tests::smooth_curve_hits_samples_without_overshoot ... ok
+test studio::tests::nsf_player_selection_duration_and_note_protection ... ok
 
-test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
 
 
 running 0 tests
@@ -37,7 +41,18 @@ test exported_stream_preserves_exact_event_order_and_timing ... ok
 test volume_patch_wave_and_sample_processing_change_pcm ... ok
 test every_audio_voice_produces_non_silent_pcm_and_mute_is_silent ... ok
 
-test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+
+running 6 tests
+test nsf2_timer_irq_suppressed_play_and_chunked_execution ... ok
+test nsf2_background_init_is_interrupted_by_rts_play ... ok
+test nsf2_regular_play_matches_nsf1_and_irq_deadlines_do_not_repeat ... ok
+test psg_pitch_is_a440_and_vt_raw_dma_reads_cpu_ram ... ok
+test ssg_noise_envelope_fm_parameters_and_pcm_processing_are_shared ... ok
+test every_new_expansion_voice_reaches_preview_and_nsf ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.42s
 
 
 running 7 tests
@@ -49,7 +64,7 @@ test independent_unbanked_n163_nsf_executes_ram_ports_and_sounds ... ok
 test waveform_edit_and_all_fm_fields_survive_fcq_and_change_sound ... ok
 test n163_pitch_scales_with_active_channels_and_wave_length ... ok
 
-test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.95s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.98s
 
 
 running 11 tests
@@ -65,187 +80,193 @@ test four_kib_stream_boundaries_and_delay_carries_are_playable ... ok
 test no_dpcm_preview_and_nsf_match_triangle_noise_and_expansion_balance ... ok
 test exported_nsf_replays_every_voice_and_stops_cleanly ... ok
 
-test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
 
     Updating crates.io index
  Downloading crates ...
-  Downloaded guillotiere v0.7.0
-  Downloaded thiserror-impl v1.0.69
-  Downloaded windows-strings v0.5.1
+  Downloaded rustc-hash v1.1.0
+  Downloaded windows-link v0.2.1
+  Downloaded zerocopy-derive v0.8.55
   Downloaded zmij v1.0.23
+  Downloaded windows-targets v0.52.6
   Downloaded windows-future v0.3.0
   Downloaded xml-rs v0.8.28
-  Downloaded vello v0.8.0
+  Downloaded unicode-ident v1.0.24
+  Downloaded tracing v0.1.44
   Downloaded vello_shaders v0.8.0
-  Downloaded zerocopy-derive v0.8.55
+  Downloaded symphonia-core v0.5.5
+  Downloaded typenum v1.20.1
+  Downloaded vello v0.8.0
+  Downloaded lewton v0.10.2
   Downloaded wgpu-types v28.0.0
-  Downloaded hashbrown v0.15.5
-  Downloaded glow v0.16.0
-  Downloaded libm v0.2.16
-  Downloaded ttf-parser v0.21.1
-  Downloaded wgpu v28.0.0
+  Downloaded hashbrown v0.16.1
   Downloaded tracing-subscriber v0.3.23
-  Downloaded kurbo v0.13.1
+  Downloaded hashbrown v0.17.1
   Downloaded zerocopy v0.8.55
   Downloaded skrifa v0.40.0
   Downloaded unicode-width v0.2.2
   Downloaded syn v3.0.3
   Downloaded wgpu-core v28.0.1
-  Downloaded regex-syntax v0.8.11
-  Downloaded syn v2.0.119
-  Downloaded wgpu-hal v28.0.1
-  Downloaded read-fonts v0.37.0
-  Downloaded hashbrown v0.17.1
-  Downloaded tracing v0.1.44
   Downloaded ash v0.38.0+1.3.281
-  Downloaded fontdue v0.9.3
-  Downloaded unicode-segmentation v1.13.3
-  Downloaded typenum v1.20.1
-  Downloaded serde_json v1.0.151
-  Downloaded png v0.18.1
-  Downloaded winit v0.30.13
-  Downloaded regex-automata v0.4.16
+  Downloaded wgpu v28.0.0
+  Downloaded ttf-parser v0.21.1
+  Downloaded kurbo v0.13.1
   Downloaded khronos_api v3.1.0
-  Downloaded indexmap v2.14.0
-  Downloaded cpal v0.15.3
-  Downloaded claxon v0.4.3
-  Downloaded symphonia-core v0.5.5
-  Downloaded miniz_oxide v0.8.9
-  Downloaded memchr v2.8.3
-  Downloaded futures-intrusive v0.5.0
-  Downloaded euclid v0.22.14
-  Downloaded unicode-ident v1.0.24
-  Downloaded naga v28.0.0
-  Downloaded windows_x86_64_msvc v0.52.6
-  Downloaded tinyvec v1.12.0
-  Downloaded symphonia-bundle-mp3 v0.5.5
+  Downloaded wgpu-hal v28.0.1
+  Downloaded regex-automata v0.4.16
   Downloaded libc v0.2.189
-  Downloaded serde v1.0.229
-  Downloaded lewton v0.10.2
-  Downloaded half v2.7.1
-  Downloaded gpu-allocator v0.28.0
-  Downloaded color v0.3.3
-  Downloaded windows-core v0.54.0
-  Downloaded tracing-attributes v0.1.31
-  Downloaded serde_core v1.0.229
-  Downloaded rodio v0.19.0
-  Downloaded rfd v0.17.2
-  Downloaded proc-macro2 v1.0.107
-  Downloaded parking_lot v0.12.5
-  Downloaded num-traits v0.2.19
-  Downloaded log v0.4.33
-  Downloaded litrs v1.0.0
-  Downloaded libloading v0.8.9
-  Downloaded hound v3.5.1
+  Downloaded hashbrown v0.15.5
+  Downloaded winit v0.30.13
+  Downloaded regex-syntax v0.8.11
+  Downloaded futures-intrusive v0.5.0
   Downloaded flate2 v1.1.9
-  Downloaded crc32fast v1.5.0
-  Downloaded bytemuck v1.25.2
-  Downloaded windows-core v0.62.0
-  Downloaded version_check v0.9.5
-  Downloaded tracing-log v0.2.0
-  Downloaded thiserror-impl v2.0.19
-  Downloaded thiserror v2.0.19
-  Downloaded quote v1.0.47
+  Downloaded euclid v0.22.14
+  Downloaded color v0.3.3
   Downloaded encoding_rs v0.8.35
-  Downloaded presser v0.3.1
-  Downloaded parking_lot_core v0.9.12
-  Downloaded ordered-float v5.3.0
-  Downloaded once_cell v1.21.4
-  Downloaded nu-ansi-term v0.50.3
-  Downloaded lock_api v0.4.14
-  Downloaded gl_generator v0.14.0
-  Downloaded font-types v0.11.3
-  Downloaded foldhash v0.1.5
+  Downloaded png v0.18.1
+  Downloaded miniz_oxide v0.8.9
+  Downloaded aho-corasick v1.1.4
+  Downloaded libm v0.2.16
+  Downloaded serde_json v1.0.151
+  Downloaded rodio v0.19.0
+  Downloaded gpu-allocator v0.28.0
   Downloaded fdeflate v0.3.7
   Downloaded digest v0.10.7
-  Downloaded byteorder v1.5.0
-  Downloaded bytemuck_derive v1.11.0
+  Downloaded crc32fast v1.5.0
+  Downloaded windows_x86_64_msvc v0.52.6
+  Downloaded bitflags v2.13.1
   Downloaded bitflags v1.3.2
-  Downloaded autocfg v1.5.1
-  Downloaded windows-threading v0.2.1
-  Downloaded windows-targets v0.52.6
-  Downloaded windows-result v0.4.1
-  Downloaded windows-result v0.1.2
-  Downloaded windows-collections v0.3.0
-  Downloaded wgpu-core-deps-windows-linux-android v28.0.0
-  Downloaded tracing-core v0.1.36
-  Downloaded tinyvec_macros v0.1.1
-  Downloaded thread_local v1.1.10
-  Downloaded thiserror v1.0.69
-  Downloaded symphonia v0.5.5
-  Downloaded spirv v0.3.0+sdk-1.3.268.0
-  Downloaded sharded-slab v0.1.7
-  Downloaded renderdoc-sys v1.1.0
-  Downloaded raw-window-handle v0.6.2
-  Downloaded range-alloc v0.1.5
-  Downloaded polycool v0.4.0
-  Downloaded pkg-config v0.3.33
-  Downloaded pin-project-lite v0.2.17
-  Downloaded peniko v0.6.1
-  Downloaded ogg v0.8.0
-  Downloaded khronos-egl v6.0.0
-  Downloaded itoa v1.0.18
-  Downloaded hexf-parse v0.2.1
+  Downloaded serde_derive v1.0.229
+  Downloaded parking_lot_core v0.9.12
+  Downloaded read-fonts v0.37.0
+  Downloaded num-traits v0.2.19
+  Downloaded jobserver v0.1.34
+  Downloaded hound v3.5.1
   Downloaded gpu-descriptor-types v0.2.0
-  Downloaded gpu-descriptor v0.3.2
-  Downloaded glutin_wgl_sys v0.6.1
-  Downloaded equivalent v1.0.2
   Downloaded dpi v0.1.2
-  Downloaded dasp_sample v0.11.0
-  Downloaded cfg_aliases v0.2.2
   Downloaded cfg-if v1.0.4
   Downloaded block-buffer v0.10.4
-  Downloaded bit-vec v0.8.0
-  Downloaded bit-set v0.8.0
-  Downloaded arrayvec v0.7.8
-  Downloaded allocator-api2 v0.2.21
-  Downloaded windows-numerics v0.3.0
-  Downloaded windows-link v0.2.1
-  Downloaded windows-interface v0.59.3
-  Downloaded windows-implement v0.60.2
-  Downloaded vello_encoding v0.8.0
-  Downloaded symphonia-metadata v0.5.5
-  Downloaded static_assertions v1.1.0
-  Downloaded smol_str v0.2.2
-  Downloaded smallvec v1.15.2
+  Downloaded windows-core v0.62.0
   Downloaded sha2 v0.10.9
-  Downloaded serde_derive v1.0.229
-  Downloaded scopeguard v1.2.0
-  Downloaded rustc-hash v1.1.0
-  Downloaded profiling v1.0.18
+  Downloaded serde v1.0.229
+  Downloaded rfd v0.17.2
+  Downloaded raw-window-handle v0.6.2
+  Downloaded range-alloc v0.1.5
+  Downloaded peniko v0.6.1
+  Downloaded parking_lot v0.12.5
+  Downloaded ogg v0.8.0
+  Downloaded half v2.7.1
+  Downloaded guillotiere v0.7.0
+  Downloaded fontdue v0.9.3
+  Downloaded foldhash v0.1.5
+  Downloaded find-msvc-tools v0.1.9
+  Downloaded dasp_sample v0.11.0
+  Downloaded byteorder v1.5.0
+  Downloaded allocator-api2 v0.2.21
+  Downloaded windows-collections v0.3.0
+  Downloaded naga v28.0.0
+  Downloaded wgpu-core-deps-windows-linux-android v28.0.0
+  Downloaded tracing-log v0.2.0
+  Downloaded tinyvec v1.12.0
+  Downloaded syn v2.0.119
   Downloaded pollster v0.4.0
+  Downloaded pin-project-lite v0.2.17
+  Downloaded ordered-float v5.3.0
+  Downloaded memchr v2.8.3
+  Downloaded litrs v1.0.0
+  Downloaded libloading v0.8.9
+  Downloaded indexmap v2.14.0
+  Downloaded gpu-descriptor v0.3.2
+  Downloaded glutin_wgl_sys v0.6.1
+  Downloaded cpufeatures v0.2.17
+  Downloaded cpal v0.15.3
+  Downloaded bytemuck_derive v1.11.0
+  Downloaded windows-strings v0.5.1
+  Downloaded windows-result v0.1.2
+  Downloaded windows-interface v0.59.3
+  Downloaded tracing-attributes v0.1.31
+  Downloaded thread_local v1.1.10
+  Downloaded smol_str v0.2.2
+  Downloaded simd-adler32 v0.3.10
+  Downloaded shlex v1.3.0
+  Downloaded renderdoc-sys v1.1.0
+  Downloaded presser v0.3.1
+  Downloaded lazy_static v1.5.0
+  Downloaded futures-core v0.3.33
+  Downloaded crypto-common v0.1.7
+  Downloaded codespan-reporting v0.12.0
+  Downloaded arrayvec v0.7.8
+  Downloaded windows-threading v0.2.1
+  Downloaded windows-numerics v0.3.0
+  Downloaded version_check v0.9.5
+  Downloaded unicode-segmentation v1.13.3
+  Downloaded tracing-core v0.1.36
+  Downloaded tinyvec_macros v0.1.1
+  Downloaded symphonia-bundle-mp3 v0.5.5
+  Downloaded svg_fmt v0.4.5
+  Downloaded sharded-slab v0.1.7
+  Downloaded proc-macro2 v1.0.107
+  Downloaded pkg-config v0.3.33
   Downloaded matchers v0.2.0
   Downloaded linebender_resource_handle v0.1.1
-  Downloaded windows-sys v0.61.2
-  Downloaded lazy_static v1.5.0
+  Downloaded khronos-egl v6.0.0
+  Downloaded hexf-parse v0.2.1
   Downloaded generic-array v0.14.7
-  Downloaded futures-core v0.3.33
   Downloaded foldhash v0.2.0
-  Downloaded windows-sys v0.52.0
+  Downloaded equivalent v1.0.2
   Downloaded document-features v0.2.12
+  Downloaded cfg_aliases v0.2.2
+  Downloaded autocfg v1.5.1
+  Downloaded windows-result v0.4.1
+  Downloaded windows-implement v0.60.2
+  Downloaded windows-core v0.54.0
+  Downloaded vello_encoding v0.8.0
+  Downloaded thiserror v1.0.69
+  Downloaded static_assertions v1.1.0
+  Downloaded spirv v0.3.0+sdk-1.3.268.0
+  Downloaded smallvec v1.15.2
+  Downloaded serde_core v1.0.229
+  Downloaded scopeguard v1.2.0
+  Downloaded quote v1.0.47
+  Downloaded profiling v1.0.18
+  Downloaded once_cell v1.21.4
+  Downloaded lock_api v0.4.14
+  Downloaded itoa v1.0.18
+  Downloaded gl_generator v0.14.0
+  Downloaded windows-sys v0.52.0
+  Downloaded getrandom v0.3.4
+  Downloaded font-types v0.11.3
   Downloaded cursor-icon v1.2.0
-  Downloaded crypto-common v0.1.7
-  Downloaded cpufeatures v0.2.17
-  Downloaded codespan-reporting v0.12.0
-  Downloaded aho-corasick v1.1.4
+  Downloaded bytemuck v1.25.2
+  Downloaded bit-vec v0.8.0
+  Downloaded windows-sys v0.61.2
+  Downloaded bit-set v0.8.0
   Downloaded adler2 v2.0.1
-  Downloaded svg_fmt v0.4.5
-  Downloaded simd-adler32 v0.3.10
-  Downloaded hashbrown v0.16.1
-  Downloaded bitflags v2.13.1
+  Downloaded thiserror-impl v2.0.19
+  Downloaded thiserror-impl v1.0.69
+  Downloaded thiserror v2.0.19
+  Downloaded symphonia-metadata v0.5.5
+  Downloaded symphonia v0.5.5
+  Downloaded polycool v0.4.0
+  Downloaded nu-ansi-term v0.50.3
+  Downloaded log v0.4.33
+  Downloaded glow v0.16.0
+  Downloaded claxon v0.4.3
+  Downloaded cc v1.2.62
   Downloaded windows v0.62.0
   Downloaded windows v0.54.0
    Compiling plita_ui v0.0.1 (D:\a\kitaqfc\kitaqfc\tools\fcseq\vendor\plita_ui)
-   Compiling fcseq v0.4.2 (D:\a\kitaqfc\kitaqfc\tools\fcseq)
    Compiling kurosaki-core v0.1.0 (D:\a\kitaqfc\kitaqfc\tools\fcseq\vendor\kurosaki-core)
+   Compiling fcseq v0.5.0 (D:\a\kitaqfc\kitaqfc\tools\fcseq)
    Compiling plita_render v0.0.1 (D:\a\kitaqfc\kitaqfc\tools\fcseq\vendor\plita_render)
    Compiling plita_window v0.0.1 (D:\a\kitaqfc\kitaqfc\tools\fcseq\vendor\plita_window)
    Compiling plita_app v0.0.1 (D:\a\kitaqfc\kitaqfc\tools\fcseq\vendor\plita_app)
    Compiling plita v0.0.1 (D:\a\kitaqfc\kitaqfc\tools\fcseq\vendor\plita)
-    Finished `release` profile [optimized] target(s) in 1m 11s
-     Running unittests src\lib.rs (target\release\deps\fcseq_native-5832124a4875d920.exe)
-     Running unittests src\main.rs (target\release\deps\fcseq-27daa3ed5d3404e0.exe)
-     Running unittests src\bin\fcseq-cli.rs (target\release\deps\fcseq_cli-cfe8e91643fc2b10.exe)
-     Running tests\core.rs (target\release\deps\core-193f32bad5d4a955.exe)
-     Running tests\instruments.rs (target\release\deps\instruments-baa1b3570d790bf0.exe)
-     Running tests\nsf.rs (target\release\deps\nsf-6856d763e33dcbe2.exe)
+    Finished `release` profile [optimized] target(s) in 1m 08s
+     Running unittests src\lib.rs (target\release\deps\fcseq_native-bf2d2049d79579e6.exe)
+     Running unittests src\main.rs (target\release\deps\fcseq-88f0a9d7b8fa2d32.exe)
+     Running unittests src\bin\fcseq-cli.rs (target\release\deps\fcseq_cli-56ad90c1bc7d37f2.exe)
+     Running tests\core.rs (target\release\deps\core-0f6d292524319231.exe)
+     Running tests\expansion.rs (target\release\deps\expansion-1178c20d29656b7c.exe)
+     Running tests\instruments.rs (target\release\deps\instruments-05c844f56dfa65ec.exe)
+     Running tests\nsf.rs (target\release\deps\nsf-a60f664dcd4d176f.exe)

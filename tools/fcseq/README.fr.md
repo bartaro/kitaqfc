@@ -73,3 +73,5 @@ Python 3.10 ou ultérieur peut charger l'extension fournie pour le même systèm
 Pour compiler, utilisez Rust 1.93.1 et un compilateur C++14 : `cargo build --locked --release`, puis `cargo test --locked --tests`. La CLI seule utilise `--no-default-features --bin fcseq-cli` ; l'extension Python, `--features python --lib`. Windows nécessite MSVC Build Tools, macOS les Xcode Command Line Tools. Les paquets Linux sont indiqués dans `.github/workflows/fcseq.yml`.
 
 Le code de FCSEQ est sous licence MIT, Copyright (c) 2026 DAISUKE OBA. Les dépendances gardent leurs licences, dont BSD-3-Clause pour ymfm, MPL-2.0 pour Symphonia et OFL pour les polices. Conservez LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/ et third_party_sources/ lors d'une redistribution. Aucune ROM de jeu, aucun BIOS FDS ni aucune ROM commerciale de timbres n'est inclus. Les musiques et échantillons importés conservent leurs droits. Consultez [les notices](THIRD_PARTY_NOTICES.md), [l'audit](LICENSE_AUDIT.json) et [les vérifications](VERIFICATION.md).
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)

@@ -105,3 +105,5 @@ c.render_wav('example.wav')
 Rust 1.93.1とC++14対応コンパイラを使用します。`cargo build --locked --release`でビルドし、`cargo test --locked --tests`でテストします。CLIのみの場合は`--no-default-features --bin fcseq-cli`、Python拡張は`--features python --lib`を指定します。WindowsにはMSVC Build Tools、macOSにはXcode Command Line Tools、Linuxにはリポジトリの`.github/workflows/fcseq.yml`に記載された開発用ライブラリが必要です。
 
 FCSEQのアプリケーション部分はMITライセンスです。Copyright (c) 2026 DAISUKE OBA。依存ライブラリとフォントにはそれぞれのライセンスが適用されます。ymfmはBSD-3-Clause、SymphoniaはMPL-2.0、同梱フォントはOFLです。再配布時はLICENSE、THIRD_PARTY_NOTICES.md、licenses/、assets/、third_party_sources/を同梱してください。ゲームROM、FDS BIOS、市販音源のROMダンプは含みません。読み込んだ楽曲やサンプルの権利は別途確認してください。[第三者表記](THIRD_PARTY_NOTICES.md)、[ライセンス調査記録](LICENSE_AUDIT.json)、[検証記録](VERIFICATION.md)も参照できます。
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)

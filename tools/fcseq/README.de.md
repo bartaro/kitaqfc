@@ -73,3 +73,5 @@ Die mitgelieferte Erweiterung benötigt Python 3.10 oder neuer für dasselbe Bet
 Zum Bauen benötigen Sie Rust 1.93.1 und einen C++14-Compiler. Verwenden Sie `cargo build --locked --release` und `cargo test --locked --tests`. Nur die CLI bauen Sie mit `--no-default-features --bin fcseq-cli`, Python mit `--features python --lib`. Windows benötigt MSVC Build Tools, macOS die Xcode Command Line Tools. Linux-Pakete stehen in `.github/workflows/fcseq.yml`.
 
 FCSEQ steht unter MIT, Copyright (c) 2026 DAISUKE OBA. Abhängigkeiten behalten ihre Lizenzen, darunter BSD-3-Clause für ymfm, MPL-2.0 für Symphonia und OFL für Schriftarten. Geben Sie LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/ und third_party_sources/ mit weiter. Spiel-ROMs, FDS-BIOS und kommerzielle Instrument-ROMs sind nicht enthalten. Importierte Musik und Samples behalten ihre eigenen Rechte. Siehe [Hinweise](THIRD_PARTY_NOTICES.md), [Lizenzprüfung](LICENSE_AUDIT.json) und [Verifikation](VERIFICATION.md).
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)

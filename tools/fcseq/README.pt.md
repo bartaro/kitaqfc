@@ -73,3 +73,5 @@ A extensão incluída funciona com Python 3.10 ou posterior no mesmo sistema e a
 Para compilar, use Rust 1.93.1 e um compilador C++14: `cargo build --locked --release`, seguido de `cargo test --locked --tests`. Só a CLI usa `--no-default-features --bin fcseq-cli`; Python usa `--features python --lib`. O Windows precisa de MSVC Build Tools; o macOS, de Xcode Command Line Tools. Os pacotes Linux estão em `.github/workflows/fcseq.yml`.
 
 O código do FCSEQ usa a licença MIT, Copyright (c) 2026 DAISUKE OBA. As dependências mantêm suas licenças, incluindo BSD-3-Clause no ymfm, MPL-2.0 no Symphonia e OFL nas fontes. Ao redistribuir, mantenha LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/ e third_party_sources/. Não há ROM de jogo, BIOS FDS ou ROM comercial de timbres incluída. Músicas e amostras importadas mantêm seus próprios direitos. Veja [avisos](THIRD_PARTY_NOTICES.md), [auditoria](LICENSE_AUDIT.json) e [verificação](VERIFICATION.md).
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)

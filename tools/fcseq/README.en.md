@@ -105,3 +105,5 @@ c.render_wav('example.wav')
 Use Rust 1.93.1 and a C++14 compiler. Build with `cargo build --locked --release`; run `cargo test --locked --tests` to test. The command-line-only build uses `--no-default-features --bin fcseq-cli`. Build the Python extension with `--features python --lib`. Windows needs MSVC Build Tools, macOS needs Xcode Command Line Tools, and Linux needs the development libraries listed in the repository's `.github/workflows/fcseq.yml`.
 
 FCSEQ's application code is MIT-licensed, Copyright (c) 2026 DAISUKE OBA. Libraries and fonts retain their own licences, including BSD-3-Clause ymfm, MPL-2.0 Symphonia and OFL fonts. Keep LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/ and third_party_sources/ when redistributing. No game ROM, FDS BIOS or commercial instrument-ROM dump is included. Imported songs and samples retain their own rights. See [notices](THIRD_PARTY_NOTICES.md), [licence audit](LICENSE_AUDIT.json) and [verification](VERIFICATION.md).
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)

@@ -85,3 +85,5 @@ Python 3.10 及以上可加载同包中与系统、CPU 匹配的原生扩展。G
 构建需要 Rust 1.93.1 和 C++14 编译器。运行 `cargo build --locked --release`，测试使用 `cargo test --locked --tests`。只构建 CLI 时加 `--no-default-features --bin fcseq-cli`，Python 扩展用 `--features python --lib`。Windows 需要 MSVC Build Tools，macOS 需要 Xcode Command Line Tools；Linux 开发库见仓库的 `.github/workflows/fcseq.yml`。
 
 FCSEQ 应用代码采用 MIT 许可证，Copyright (c) 2026 DAISUKE OBA。ymfm（BSD-3-Clause）、Symphonia（MPL-2.0）和字体（OFL）保留各自许可证。再分发时请保留 LICENSE、THIRD_PARTY_NOTICES.md、licenses/、assets/ 和 third_party_sources/。不含游戏 ROM、FDS BIOS 或商业音源 ROM 转储。导入的音乐与采样另有权利归属。参见[第三方声明](THIRD_PARTY_NOTICES.md)和[验证记录](VERIFICATION.md)。
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)

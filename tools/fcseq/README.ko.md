@@ -85,3 +85,5 @@ Python 3.10 이상에서 운영체제와 CPU에 맞는 네이티브 모듈을 �
 Rust 1.93.1과 C++14 컴파일러로 `cargo build --locked --release`, `cargo test --locked --tests`를 실행합니다. CLI 전용은 `--no-default-features --bin fcseq-cli`, Python 확장은 `--features python --lib`을 사용합니다. Windows는 MSVC Build Tools, macOS는 Xcode Command Line Tools, Linux는 저장소의 `.github/workflows/fcseq.yml`에 있는 개발 라이브러리가 필요합니다.
 
 FCSEQ 애플리케이션 코드는 MIT 라이선스이며 Copyright (c) 2026 DAISUKE OBA입니다. ymfm(BSD-3-Clause), Symphonia(MPL-2.0), 글꼴(OFL)은 각 라이선스를 유지합니다. 재배포할 때 LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/, third_party_sources/를 포함하세요. 게임 ROM·FDS BIOS·상용 음원 ROM 덤프는 포함하지 않습니다. 가져온 곡과 샘플의 권리는 별도입니다. [고지](THIRD_PARTY_NOTICES.md)와 [검증 기록](VERIFICATION.md)을 참고하세요.
+
+[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)
