@@ -205,12 +205,16 @@ impl Controller {
         note: u8,
     ) -> PyResult<()> {
         self.edit(|s| {
+            let mut added = Note::new(row, length, note);
+            if s.expansion.kind(channel) == Voice::Pcm {
+                added.sound = Some(Sound { instrument: 0, ..Sound::default() });
+            }
             s.sections
                 .get_mut(section)
                 .and_then(|x| x.tracks.get_mut(channel))
                 .ok_or("Track out of range")?
                 .notes
-                .push(Note::new(row, length, note));
+                .push(added);
             Ok(())
         })
     }

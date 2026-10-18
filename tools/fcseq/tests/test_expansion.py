@@ -1,8 +1,23 @@
-import json, tempfile, unittest
+import json, tempfile, unittest, math, struct, wave
 from pathlib import Path
 import fcseq_native
 
 class ExpansionTests(unittest.TestCase):
+    def test_pcm_note_uses_first_imported_sample(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source=Path(directory)/'sine.wav'
+            with wave.open(str(source),'wb') as f:
+                f.setparams((1,2,22050,0,'NONE','not compressed'))
+                f.writeframes(b''.join(struct.pack('<h',int(12000*math.sin(i*2*math.pi*440/22050))) for i in range(2205)))
+            for chip,ch in [('mmc5',7),('vt02',9)]:
+                c=fcseq_native.Controller();c.set_expansion(chip);c.set_bars(0,1);c.import_audio(str(source))
+                c.add_note(0,ch,0,4,60)
+                self.assertEqual(json.loads(c.project_json())['sections'][0]['tracks'][ch]['notes'][0]['sound']['instrument'],0)
+                out=Path(directory)/(chip+'.wav');c.render_wav(str(out))
+                with wave.open(str(out)) as f:
+                    samples=struct.unpack('<'+'h'*f.getnframes(),f.readframes(f.getnframes()))
+                self.assertGreater(max(samples)-min(samples),1000)
+
     def test_new_chips_nsf2_roundtrip_and_parameter_history(self):
         with tempfile.TemporaryDirectory() as directory:
             for chip, count in [('mmc5',8),('sunsoft5b',8),('epsm',20),('vt02',10)]:
