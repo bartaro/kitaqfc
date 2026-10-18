@@ -2,7 +2,7 @@ name: FCSEQ native distributions
 on:
   workflow_dispatch:
   push:
-    paths: ['tools/fcseq/src/**', 'tools/fcseq/vendor/**', 'tools/fcseq/tests/**', 'tools/fcseq/scripts/**', 'tools/fcseq/build.rs', 'tools/fcseq/Cargo.*', '.github/workflows/fcseq.yml']
+    paths: ['tools/fcseq/src/**', 'tools/fcseq/vendor/**', 'tools/fcseq/tests/**', 'tools/fcseq/scripts/**', 'tools/fcseq/build.rs', 'tools/fcseq/fcseq.py', 'tools/fcseq/fcseq_native.pyi', 'tools/fcseq/Cargo.*', '.github/workflows/fcseq.yml']
 permissions:
   contents: read
 jobs:
@@ -40,6 +40,7 @@ jobs:
         with:
           path: tools/fcseq/target
           key: fcseq-${{ matrix.platform }}-rust1931-${{ hashFiles('tools/fcseq/Cargo.lock') }}
+          restore-keys: fcseq-${{ matrix.platform }}-rust1931-
       - name: Test model and editor
         run: python scripts/rust_tests.py
       - name: Build GUI CLI and Python extension

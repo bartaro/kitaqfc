@@ -1,8 +1,10 @@
-# FCSEQ 0.4.1 — user manual
+# FCSEQ 0.4.2 — user manual
 
 [en](README.en.md) · [ja](README.ja.md) · [ko](README.ko.md) · [zh-CN](README.zh-CN.md) · [zh-TW](README.zh-TW.md) · [fr](README.fr.md) · [es](README.es.md) · [de](README.de.md) · [pt-BR](README.pt-BR.md)
 
 By **DAISUKE OBA**. A general-purpose Famicom music sequencer built with **plita**. GUI, CLI and Python bindings share the same project model, audio renderer and exporters. The GUI starts with an empty project. No game ROM or BIOS is required. The interface uses English labels; this manual is available in nine languages.
+
+**0.4.2** — Preview, C export and NSF initialize the DMC DAC to 64 consistently. Preview capture starts after the DAC/filter settles, fixing triangle/noise balance without DPCM samples and preventing startup transients in silent passages. Individual DPCM sample levels still override the baseline. FCQ/NSF/NSFe formats are unchanged.
 
 ## Download and launch
 

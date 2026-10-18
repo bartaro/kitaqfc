@@ -1,8 +1,10 @@
-# FCSEQ 0.4.1 — 説明書
+# FCSEQ 0.4.2 — 説明書
 
 [en](README.en.md) · [ja](README.ja.md) · [ko](README.ko.md) · [zh-CN](README.zh-CN.md) · [zh-TW](README.zh-TW.md) · [fr](README.fr.md) · [es](README.es.md) · [de](README.de.md) · [pt-BR](README.pt-BR.md)
 
 作者 **DAISUKE OBA**。**plita**を使用した汎用ファミコン音楽シーケンサーです。GUI・CLI・Python bindingsは編集モデル・音声・出力処理を共有します。空のプロジェクトから起動し、ゲームROMやBIOSは不要です。画面のラベルは英語で、説明書は9言語あります。
+
+**0.4.2** — プレビュー・C出力・NSFのDMC DAC初期値を64に統一しました。DACとフィルターが安定してからプレビューを記録し、DPCM未使用時の三角波／ノイズの音量差と無音区間の立ち上がりノイズを修正しています。DPCM音色ごとの初期レベルは引き続き優先されます。FCQ・NSF・NSFeの形式変更はありません。
 
 ## ダウンロードと起動
 

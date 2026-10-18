@@ -205,11 +205,10 @@ fn driver(starts: &[(u8, u16)], init: &[services::Write]) -> Result<(Vec<u8>, u1
         a.emit(&[0xa9, 0x7f, 0x8d, 0, 0xf8, 0xa9, 0, 0x8d, 0, 0x48]);
     }
     for w in init {
-        let value = if w.address == 0x4011 { 64 } else { w.value };
-        a.emit(&[0xa9, value, 0x8d, w.address as u8, (w.address >> 8) as u8]);
+        a.emit(&[0xa9, w.value, 0x8d, w.address as u8, (w.address >> 8) as u8]);
     }
     // Allow the primed DMC DAC/filter to settle before capture begins.
-    a.emit(&[0xa2, 64]);
+    a.emit(&[0xa2, services::DAC_SETTLE_LOOPS]);
     a.label("settle_outer");
     a.emit(&[0xa0, 0]);
     a.label("settle_inner");

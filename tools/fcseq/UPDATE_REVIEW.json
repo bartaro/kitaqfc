@@ -1,0 +1,24 @@
+{
+  "version": "0.4.2",
+  "repository_base_commit": "84a1cc905dce23ca256e7576d044d66e83c9f558",
+  "previous_fcseq_release_commit": "3b11f9b4cf1e73c480983ab30836cb4e49c376d9",
+  "synchronized_local_files": [
+    {
+      "path": "src/services.rs",
+      "sha256": "527b729382eee3d281bb8af4cafde77bc38b3d41a45ce8e535707b4225f1e576"
+    },
+    {
+      "path": "src/nsf.rs",
+      "sha256": "5ba54b9a287ba904c2371603c0728a3ca6defa6c8af58717711e6260c3820484"
+    },
+    {
+      "path": "tests/nsf.rs",
+      "sha256": "b43be16cb07891599789273cc568b2964b2b8f0932dc17adba16b5476a7c56df"
+    }
+  ],
+  "regression_tests_added": 2,
+  "dependency_versions_changed": false,
+  "license_inventory_packages": 279,
+  "project_and_nsf_formats_changed": false,
+  "public_portability_and_plita_branding_preserved": true
+}

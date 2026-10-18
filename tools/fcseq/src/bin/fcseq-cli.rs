@@ -132,8 +132,8 @@ fn run() -> Result<(), String> {
             serde_json::json!({"selection":selected,"output":get(2)?})
         }
         "help" | "--help" | "-h" => {
-            println!("FCSEQ 0.4.1\nnew OUTPUT.fcq [none|vrc6|vrc7|fds|n163]\nvalidate PROJECT\nrender-wav PROJECT OUTPUT.wav [SECTION]\nexport-kitaqfc PROJECT DIRECTORY\nexport-nsf PROJECT OUTPUT.nsf
-export-nsfe PROJECT OUTPUT.nsfe\nimport-nsf INPUT.nsf OUTPUT.fcq [SONG] [SECONDS]\nnsf-info INPUT\nnsf-render INPUT OUTPUT.wav [SONG] [SECONDS]\nplay-nsf INPUT [SONG] [SECONDS]\nimport-audio PROJECT AUDIO OUTPUT.fcq\nexport-dpcm PROJECT SAMPLE OUTPUT.dmc\nedit PROJECT OUTPUT SECTION CHANNEL INDICES OPERATION [VALUE]\n  Operations: move, transpose, resize, quantize, duplicate, delete\nNSF song numbers start at 1; other indexes start at 0. Audio: WAV, FLAC, Ogg Vorbis, MP3.");
+            println!("FCSEQ {}\nnew OUTPUT.fcq [none|vrc6|vrc7|fds|n163]\nvalidate PROJECT\nrender-wav PROJECT OUTPUT.wav [SECTION]\nexport-kitaqfc PROJECT DIRECTORY\nexport-nsf PROJECT OUTPUT.nsf
+export-nsfe PROJECT OUTPUT.nsfe\nimport-nsf INPUT.nsf OUTPUT.fcq [SONG] [SECONDS]\nnsf-info INPUT\nnsf-render INPUT OUTPUT.wav [SONG] [SECONDS]\nplay-nsf INPUT [SONG] [SECONDS]\nimport-audio PROJECT AUDIO OUTPUT.fcq\nexport-dpcm PROJECT SAMPLE OUTPUT.dmc\nedit PROJECT OUTPUT SECTION CHANNEL INDICES OPERATION [VALUE]\n  Operations: move, transpose, resize, quantize, duplicate, delete\nNSF song numbers start at 1; other indexes start at 0. Audio: WAV, FLAC, Ogg Vorbis, MP3.", env!("CARGO_PKG_VERSION"));
             return Ok(());
         }
         _ => return Err("Unknown command; run fcseq-cli help".into()),

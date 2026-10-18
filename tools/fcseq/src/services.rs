@@ -13,6 +13,12 @@ use std::{
     sync::atomic::{AtomicBool, Ordering},
 };
 pub const CPU: f64 = 1_789_773.0;
+/// The DMC's held DAC level affects triangle/noise gain even without samples.
+/// Use the same baseline in preview, C streams and the NSF INIT routine.
+pub const INITIAL_DMC_DAC: u8 = 64;
+pub const DAC_SETTLE_LOOPS: u8 = 64;
+// LDX #loops; (LDY #0; 256 * DEY/BNE; DEX/BNE), excluding the final RTS.
+const DAC_SETTLE_CYCLES: u64 = 1 + 1286 * DAC_SETTLE_LOOPS as u64;
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Write {
     pub address: u16,
@@ -101,7 +107,7 @@ pub fn compile(score: &Score, part: usize) -> Result<Stream, String> {
         (0x4004, 0x30),
         (0x4008, 0x80),
         (0x400c, 0x30),
-        (0x4011, 0),
+        (0x4011, INITIAL_DMC_DAC),
     ] {
         emit(&mut events, 0, a, v);
     }
@@ -418,6 +424,41 @@ pub fn render_stream(stream: &Stream, cancel: Option<&AtomicBool>) -> Result<Vec
     };
     let mut sink = TraceSink::default();
     let cfg = TraceConfig::none();
+    let init = stream
+        .events
+        .first()
+        .filter(|e| e.frame == 0)
+        .map(|e| &e.writes[..stream.init_writes.min(e.writes.len())])
+        .unwrap_or(&[]);
+    for w in init {
+        if w.address <= 0x4017 {
+            apu.write_register(w.address, w.value, 0, 0, cfg, &mut sink);
+        } else {
+            mapper.write_prg(w.address, w.value, 0, 0, cfg, &mut sink);
+        }
+    }
+    // NSF runs hardware setup and lets its DAC/filter settle during INIT,
+    // before capture. Do that here too, without starting notes or advancing
+    // the score, so silent projects do not acquire a DC startup transient.
+    if !init.is_empty() {
+        let mut settled = 0;
+        while settled < DAC_SETTLE_CYCLES {
+            let step = (DAC_SETTLE_CYCLES - settled).min(16);
+            apu.clock_cpu_cycles_with_timed_expansion(
+                step,
+                0,
+                settled,
+                cfg,
+                &mut sink,
+                |cycles, rate| {
+                    mapper.clock_expansion_audio(cycles);
+                    rate.map_or(0, |rate| mapper.expansion_audio_sample(rate))
+                },
+            );
+            settled += step;
+        }
+        apu.sample_buffer.clear();
+    }
     let mut cycle = 0u64;
     let mut event = 0usize;
     for frame in 0..=stream.frames {
@@ -425,7 +466,8 @@ pub fn render_stream(stream: &Stream, cancel: Option<&AtomicBool>) -> Result<Vec
             return Err("Cancelled".into());
         }
         while event < stream.events.len() && stream.events[event].frame == frame {
-            for w in &stream.events[event].writes {
+            let skip = if event == 0 { init.len() } else { 0 };
+            for w in stream.events[event].writes.iter().skip(skip) {
                 if w.address <= 0x4017 {
                     apu.write_register(w.address, w.value, frame as u64, cycle, cfg, &mut sink);
                 } else {

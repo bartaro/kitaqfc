@@ -1,8 +1,10 @@
-# FCSEQ 0.4.1 — 사용 설명서
+# FCSEQ 0.4.2 — 사용 설명서
 
 [en](README.en.md) · [ja](README.ja.md) · [ko](README.ko.md) · [zh-CN](README.zh-CN.md) · [zh-TW](README.zh-TW.md) · [fr](README.fr.md) · [es](README.es.md) · [de](README.de.md) · [pt-BR](README.pt-BR.md)
 
 제작자 **DAISUKE OBA**. **plita** 기반의 범용 패미컴 음악 시퀀서입니다. GUI·CLI·Python 바인딩은 프로젝트 모델, 음성 생성 및 내보내기를 공유합니다. 빈 프로젝트로 시작하며 게임 ROM이나 BIOS가 필요하지 않습니다. 화면은 영어이며 설명서는 9개 언어로 제공됩니다.
+
+**0.4.2** — 미리 듣기·C 출력·NSF의 DMC DAC 초기값을 64로 통일했습니다. DAC와 필터가 안정된 뒤 미리 듣기를 기록하여 DPCM 미사용 시 Triangle/Noise 음량 차이와 무음 구간의 시작 잡음을 수정했습니다. 개별 DPCM 샘플의 초기 레벨은 계속 우선합니다. FCQ/NSF/NSFe 형식은 그대로입니다.
 
 ## 설치와 실행
 

@@ -1,4 +1,4 @@
-# Third-party notices — FCSEQ 0.4.1
+# Third-party notices — FCSEQ 0.4.2
 
 FCSEQ application: Copyright (c) 2026 DAISUKE OBA. [MIT License](LICENSE).
 Third-party components retain their original copyrights and license terms.

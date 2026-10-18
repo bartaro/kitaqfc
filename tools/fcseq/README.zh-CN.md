@@ -1,8 +1,10 @@
-# FCSEQ 0.4.1 — 使用说明
+# FCSEQ 0.4.2 — 使用说明
 
 [en](README.en.md) · [ja](README.ja.md) · [ko](README.ko.md) · [zh-CN](README.zh-CN.md) · [zh-TW](README.zh-TW.md) · [fr](README.fr.md) · [es](README.es.md) · [de](README.de.md) · [pt-BR](README.pt-BR.md)
 
 作者 **DAISUKE OBA**。基于 **plita** 的通用红白机音乐音序器。GUI、CLI、Python 绑定共用项目模型、音频生成和导出功能。启动时是空项目，不需要游戏 ROM 或 BIOS。界面标签为英语，说明书提供九种语言。
+
+**0.4.2** — 预览、C 导出和 NSF 的 DMC DAC 初值统一为 64。预览在 DAC/滤波器稳定后开始采集，修复未使用 DPCM 样本时 Triangle/Noise 的音量差和无声片段的起始瞬态。各 DPCM 样本的初始电平仍优先。FCQ/NSF/NSFe 格式不变。
 
 ## 下载与启动
 

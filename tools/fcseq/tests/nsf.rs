@@ -57,6 +57,83 @@ fn rms(pcm: &[i16]) -> f64 {
 }
 
 #[test]
+fn no_dpcm_preview_and_nsf_match_triangle_noise_and_expansion_balance() {
+    // N163-only tests cannot detect the DMC DAC's effect on the stock TND
+    // mixer. Exercise triangle/noise alone and with an expansion voice.
+    for (chip, voices) in [
+        (Expansion::None, vec![2]),
+        (Expansion::None, vec![3]),
+        (Expansion::N163, vec![5]),
+        (Expansion::N163, vec![2, 3, 5]),
+    ] {
+        let mut s = Score::empty();
+        s.set_expansion(chip).unwrap();
+        s.sections[0].rows = 32;
+        s.n163_channels = 4;
+        for ch in voices {
+            // Different pitches prevent oscillator phase differences between
+            // event playback and the 6502 driver from cancelling a unison.
+            let pitch = match ch {
+                3 => 2,
+                5 => 74,
+                _ => 57,
+            };
+            let mut note = Note::new(0, 20, pitch);
+            note.sound = Some(Sound {
+                instrument: 0,
+                noise_period: if ch == 3 { Some(8) } else { None },
+                ..Sound::default()
+            });
+            s.sections[0].tracks[ch].notes.push(note);
+        }
+        let preview = services::render(&s, 0, None).unwrap();
+        let exported = render(nsf::export_bytes(&s).unwrap(), 0, 2);
+        let window = 13230..48510;
+        assert!(rms(&preview[window.clone()]) > 100.0);
+        assert!(rms(&exported[window.clone()]) > 100.0);
+        let delta_db = 20.0 * (rms(&preview[window.clone()]) / rms(&exported[window])).log10();
+        assert!(
+            delta_db.abs() < 0.3,
+            "{chip:?}: preview/NSF differ by {delta_db} dB"
+        );
+    }
+}
+
+#[test]
+fn dac_setup_settles_before_capture_and_sample_levels_still_override_it() {
+    let mut s = Score::empty();
+    s.sections[0].rows = 16;
+    let quiet = services::render(&s, 0, None).unwrap();
+    assert!(
+        peak(&quiet) < 5,
+        "DAC initialization leaked into silent preview"
+    );
+    s.sections[0].tracks[2].notes.push(Note::new(8, 4, 57));
+    let delayed = services::render(&s, 0, None).unwrap();
+    assert!(
+        peak(&delayed[..30000]) < 5,
+        "DAC initialization leaked before first note"
+    );
+    s.samples.push(Sample {
+        initial_level: 24,
+        ..sine()
+    });
+    s.sections[0].tracks[4].notes.push(Note::new(8, 2, 12));
+    let stream = services::compile(&s, 0).unwrap();
+    assert!(stream.events[0].writes[..stream.init_writes]
+        .iter()
+        .any(|w| w.address == 0x4011 && w.value == services::INITIAL_DMC_DAC));
+    assert!(stream
+        .events
+        .iter()
+        .find(|e| e.frame == 48)
+        .unwrap()
+        .writes
+        .iter()
+        .any(|w| w.address == 0x4011 && w.value == 24));
+}
+
+#[test]
 fn mixed_dpcm_n163_nsf_uses_the_same_pcm_as_kurosaki() {
     let data = nsf::export_bytes(&source(Expansion::N163)).unwrap();
     let actual = render(data.clone(), 0, 1);

@@ -1,8 +1,9 @@
 """Build a portable native package and exercise its actual CLI/Python binaries."""
 from pathlib import Path
-import argparse, hashlib, json, math, os, platform, shutil, struct, subprocess, sys, tempfile, wave
+import argparse, hashlib, json, math, os, platform, re, shutil, struct, subprocess, sys, tempfile, wave
 
 ROOT=Path(__file__).resolve().parents[1]
+VERSION=re.search(r'^version = "([^"]+)"',(ROOT/'Cargo.toml').read_text(),re.M).group(1)
 p=argparse.ArgumentParser();p.add_argument('--platform',required=True);p.add_argument('--output',default='dist');a=p.parse_args()
 dest=(ROOT/a.output/a.platform).resolve();dest.mkdir(parents=True,exist_ok=True)
 proof=dest/'verification';proof.mkdir(exist_ok=True)
@@ -15,7 +16,7 @@ for name in ['fcseq','fcseq-cli']:shutil.copy2(ROOT/'target/release'/(name+suffi
 library='fcseq_native.dll' if os.name=='nt' else ('libfcseq_native.dylib' if sys.platform=='darwin' else 'libfcseq_native.so')
 extension='fcseq_native.pyd' if os.name=='nt' else 'fcseq_native.so'
 shutil.copy2(ROOT/'target/release'/library,dest/extension)
-for name in ['LICENSE','THIRD_PARTY_NOTICES.md','LICENSE_AUDIT.json','VERIFICATION.md','fcseq.py','fcseq_native.pyi']:
+for name in ['LICENSE','THIRD_PARTY_NOTICES.md','LICENSE_AUDIT.json','VERIFICATION.md','CHANGELOG.md','UPDATE_REVIEW.json','SOURCE_SNAPSHOT.json','fcseq.py','fcseq_native.pyi']:
     shutil.copy2(ROOT/name,dest/name)
 for name in ['licenses','third_party_sources','assets']:
     shutil.copytree(ROOT/name,dest/name,dirs_exist_ok=True)
@@ -36,6 +37,9 @@ def audio(path):
         peak=max(samples)-min(samples);assert peak>0,(path,peak)
         return {'frames':len(samples),'peak_to_peak':peak,'sha256':hashlib.sha256(data).hexdigest()}
 rows=[]
+assert run('help').splitlines()[0]=='FCSEQ '+VERSION
+gui_version=subprocess.run([str(dest/('fcseq'+suffix)),'--version'],capture_output=True,text=True,encoding='utf-8',timeout=30)
+assert gui_version.returncode==0 and ('FCSEQ '+VERSION) in gui_version.stdout
 with tempfile.TemporaryDirectory() as tmp:
     tmp=Path(tmp);source=tmp/'sample.wav'
     with wave.open(str(source),'wb') as w:
@@ -68,7 +72,7 @@ smoke=subprocess.run([str(dest/('fcseq'+suffix)),'--ui-smoke'],cwd=dest,env=env,
 assert smoke.returncode==0,smoke.stderr.decode(errors='replace')
 assert (proof/'ui/ui_smoke.json').exists()
 commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
-record={'passed':True,'source_commit':commit,'platform':a.platform,'system':platform.platform(),'python':sys.version,'rust_tests':rust_tests,'audio_tests':rows,
+record={'passed':True,'version':VERSION,'source_commit':commit,'platform':a.platform,'system':platform.platform(),'python':sys.version,'rust_tests':rust_tests,'audio_tests':rows,
         'binaries':{name:hashlib.sha256((dest/name).read_bytes()).hexdigest() for name in ['fcseq'+suffix,'fcseq-cli'+suffix,extension]},
         'native_audio_output_device_tested':False,'physical_hardware_tested':False}
 (proof/'native.json').write_text(json.dumps(record,indent=2),encoding='utf-8')

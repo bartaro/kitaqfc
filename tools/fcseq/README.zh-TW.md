@@ -1,8 +1,10 @@
-# FCSEQ 0.4.1 — 使用說明
+# FCSEQ 0.4.2 — 使用說明
 
 [en](README.en.md) · [ja](README.ja.md) · [ko](README.ko.md) · [zh-CN](README.zh-CN.md) · [zh-TW](README.zh-TW.md) · [fr](README.fr.md) · [es](README.es.md) · [de](README.de.md) · [pt-BR](README.pt-BR.md)
 
 作者 **DAISUKE OBA**。使用 **plita** 的通用紅白機音樂編曲器。GUI、CLI、Python 綁定共用專案模型、音訊產生及匯出功能。啟動時為空白專案，不需要遊戲 ROM 或 BIOS。介面標籤是英文，說明書提供九種語言。
+
+**0.4.2** — 預覽、C 匯出和 NSF 的 DMC DAC 初值統一為 64。預覽在 DAC/濾波器穩定後開始擷取，修正未使用 DPCM 取樣時 Triangle/Noise 的音量差及無聲片段的起始暫態。各 DPCM 取樣的初始電位仍優先。FCQ/NSF/NSFe 格式不變。
 
 ## 下載與啟動
 
