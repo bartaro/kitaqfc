@@ -10,7 +10,9 @@ are included. Rust and Python identifiers, environment variables and historical
 copyright-holder strings are unchanged. Product-name prose, default titles and
 crate descriptions use the official lowercase name `plita`.
 
-Roboto and Roboto Mono are distributed in ../assets/fonts with their OFL texts.
+Roboto, Roboto Mono and Noto Sans JP are distributed in ../assets/fonts with
+their OFL texts. Noto Sans JP supplies Japanese glyphs; its upstream provenance
+and file hashes are retained beside the font.
 The plita MIT notice is in plita/LICENSE; Lucide's ISC/MIT notices are in
 plita/crates/plita_ui/assets/lucide/LICENSE. FCHUA's executable-relative font
 lookup is implemented in ../src/gui.rs, outside the vendored foundation.

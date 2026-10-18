@@ -6,7 +6,7 @@ FCHUA edits NES tiles, nametables, palettes and 8x8 metasprite frames for KITAQF
 
 ## Desktop Download
 
-Download the Windows x64 ZIP below, extract the entire archive, and run FCHUA.exe. Keep assets/fonts and the license folders beside the executable. Rust and Python are not needed to run it. A graphics device/driver compatible with wgpu is required. The GUI labels are English; the complete manuals are available in the nine languages above.
+Download the Windows x64 ZIP below, extract the entire archive, and run FCHUA.exe. Keep assets/fonts and the license folders beside the executable. Rust and Python are not needed to run it. A graphics device/driver compatible with wgpu is required. The GUI supports Japanese and English; complete manuals are available in the nine languages above.
 
 [FCHUA GUI 0.1.0 - Windows x64 ZIP](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fchua/dist/FCHUA-GUI-0.1.0-windows-x86_64.zip)
 
@@ -14,7 +14,9 @@ Start with File > New project or Open project / raw. Select a tile and a palette
 
 The source checkout includes the required plita crates. From tools/fchua, the following commands build/run the GUI; the final argument is an optional project path. Only the Windows x64 GUI binary is verified in this release.
 
-Release compilation, software-rendered layouts and automated input/state tests passed on Windows x64. Native window clicks and file dialogs remain unverified because the desktop automation tool timed out awaiting app approval. See [verification details](VERIFICATION.md).
+Use the language icon at the upper right or Edit > 日本語 / English to switch immediately. The selection is saved for the next launch. On first launch the OS language is used; Japanese systems start in Japanese. FCHUA_LANGUAGE=ja or en overrides the saved choice. Windows stores language.txt in %APPDATA%/FCHUA, macOS in ~/Library/Application Support/FCHUA, and Linux in $XDG_CONFIG_HOME/fchua (or ~/.config/fchua). FCHUA_CONFIG_DIR overrides this folder. Roboto remains the primary font; the bundled Noto Sans JP supplies Japanese glyphs. PLITA_UI_FONT_FALLBACK can override it. Switching language preserves the project and undo history. CLI commands and Python API names remain unchanged.
+
+Release compilation, software-rendered layouts and automated input/state tests passed on Windows x64. The native FCHUA window was created, but screen capture timed out on both attempts. Native rendered contents, clicks and file dialogs remain unverified. See [verification details](VERIFICATION.md).
 
 ```sh
 cd tools/fchua

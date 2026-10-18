@@ -3,6 +3,10 @@ use plita::{prelude::*, DrawCommand};
 use rfd::{FileDialog, MessageButtons, MessageDialog, MessageDialogResult, MessageLevel};
 use std::result::Result;
 
+#[path = "i18n.rs"]
+mod i18n;
+use i18n::Language;
+
 const BG: Color = Color::rgb8(26, 28, 31);
 const PANEL: Color = Color::rgb8(34, 37, 41);
 const LINE: Color = Color::rgb8(64, 69, 75);
@@ -38,6 +42,7 @@ enum Tool {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Action {
     Menu(Menu),
+    Language,
     New,
     Open,
     Save,
@@ -114,6 +119,8 @@ struct Layout {
 
 pub struct Editor {
     size: Size,
+    language: Language,
+    language_path: Option<PathBuf>,
     doc: KitaqfcGraphicsDocument,
     saved: KitaqfcGraphicsDocument,
     path: Option<PathBuf>,
@@ -137,8 +144,20 @@ pub struct Editor {
 impl Editor {
     fn new(size: Size) -> Self {
         let doc = KitaqfcGraphicsDocument::new_demo();
+        let language_path = if cfg!(test) {
+            None
+        } else {
+            i18n::preference_path()
+        };
+        let language = if cfg!(test) {
+            Language::English
+        } else {
+            Language::detect(language_path.as_deref())
+        };
         Self {
             size,
+            language,
+            language_path,
             saved: doc.clone(),
             doc,
             path: None,
@@ -212,7 +231,10 @@ impl Editor {
             View::Check => (360.0, 460.0),
         };
         if self.view == View::Check {
-            return Size::new(base.0, base.1);
+            return Size::new(
+                440.0,
+                (self.check_rows().len() as f32 * 26.0 + 32.0).max(460.0),
+            );
         }
         let area = self.layout().canvas;
         let fit = ((area.width - 16.0) / base.0)
@@ -269,6 +291,7 @@ impl Editor {
                 (Action::Redo, "Redo  Ctrl+Y", "redo-2"),
                 (Action::CopyTile, "Copy tile  Ctrl+C", "copy"),
                 (Action::PasteTile, "Paste tile  Ctrl+V", "clipboard-paste"),
+                (Action::Language, "日本語 / English", "settings"),
             ],
             Some(Menu::Tile) => vec![
                 (Action::Tool(Tool::Pencil), "Pencil  B", "pencil"),
@@ -314,16 +337,21 @@ impl Editor {
     }
     fn menu_rect(&self) -> Option<Rect> {
         let menu = self.menu?;
-        let i = match menu {
-            Menu::File => 0,
-            Menu::Edit => 1,
-            Menu::Tile => 2,
-            Menu::Map => 3,
-            Menu::Sprite => 4,
-        };
-        let w = 248.0_f32.min(self.size.width);
+        let header = self
+            .menu_controls()
+            .into_iter()
+            .find(|c| c.action == Action::Menu(menu))?;
+        let w = self
+            .menu_items()
+            .iter()
+            .map(|(_, label, _)| {
+                let text = self.language.translate(label);
+                measure_text_width(&text, text_scale(&text, 1.05)) + 56.0
+            })
+            .fold(248.0_f32, f32::max)
+            .min(self.size.width);
         Some(Rect::new(
-            (112.0 + i as f32 * 76.0).min((self.size.width - w).max(0.0)),
+            header.rect.x.min((self.size.width - w).max(0.0)),
             46.0,
             w,
             (self.menu_items().len() as f32 * 32.0)
@@ -331,9 +359,33 @@ impl Editor {
                 .min(288.0),
         ))
     }
+    fn menu_controls(&self) -> Vec<Control> {
+        let mut x = 112.0;
+        [
+            (Menu::File, "File"),
+            (Menu::Edit, "Edit"),
+            (Menu::Tile, "Tile"),
+            (Menu::Map, "Map"),
+            (Menu::Sprite, "Sprite"),
+        ]
+        .into_iter()
+        .map(|(menu, label)| {
+            let text = self.language.translate(label);
+            let width = (measure_text_width(&text, text_scale(&text, 1.1)) + 30.0).max(72.0);
+            let control = Control {
+                action: Action::Menu(menu),
+                rect: Rect::new(x, 9.0, width, 32.0),
+                label,
+                icon: None,
+            };
+            x += width + 4.0;
+            control
+        })
+        .collect()
+    }
     fn controls(&self) -> Vec<Control> {
         let l = self.layout();
-        let mut out = Vec::new();
+        let mut out = self.menu_controls();
         let mut add = |action, rect, label, icon| {
             out.push(Control {
                 action,
@@ -342,24 +394,8 @@ impl Editor {
                 icon,
             })
         };
-        for (i, (m, label)) in [
-            (Menu::File, "File"),
-            (Menu::Edit, "Edit"),
-            (Menu::Tile, "Tile"),
-            (Menu::Map, "Map"),
-            (Menu::Sprite, "Sprite"),
-        ]
-        .into_iter()
-        .enumerate()
-        {
-            add(
-                Action::Menu(m),
-                Rect::new(112.0 + i as f32 * 76.0, 9.0, 72.0, 32.0),
-                label,
-                None,
-            );
-        }
         for (i, (a, label, icon)) in [
+            (Action::Language, "日本語 / English", "settings"),
             (Action::Open, "Open  Ctrl+O", "folder-open"),
             (Action::Save, "Save  Ctrl+S", "save"),
         ]
@@ -368,26 +404,29 @@ impl Editor {
         {
             add(
                 a,
-                Rect::new(self.size.width - 78.0 + i as f32 * 36.0, 9.0, 32.0, 32.0),
+                Rect::new(self.size.width - 114.0 + i as f32 * 36.0, 9.0, 32.0, 32.0),
                 label,
                 Some(icon),
             );
         }
-        for (i, (v, label)) in [
+        let mut tab_x = l.main.x + 8.0;
+        for (v, label) in [
             (View::Map, "Map"),
             (View::Tile, "Tile"),
             (View::Sprite, "Sprite"),
             (View::Check, "Check"),
         ]
         .into_iter()
-        .enumerate()
         {
+            let text = self.language.translate(label);
+            let width = (measure_text_width(&text, text_scale(&text, 1.1)) + 16.0).max(66.0);
             add(
                 Action::View(v),
-                Rect::new(l.main.x + 8.0 + i as f32 * 70.0, 58.0, 66.0, 28.0),
+                Rect::new(tab_x, 58.0, width, 28.0),
                 label,
                 None,
             );
+            tab_x += width + 4.0;
         }
         for (i, (t, label, icon)) in [
             (Tool::Pencil, "Pencil (B)", "pencil"),
@@ -508,6 +547,7 @@ impl Editor {
     }
     fn active(&self, a: Action) -> bool {
         match a {
+            Action::Language => self.language == Language::Japanese,
             Action::Menu(m) => self.menu == Some(m),
             Action::View(v) => self.view == v,
             Action::Tool(t) => self.tool == t,
@@ -529,19 +569,26 @@ impl Editor {
         }
     }
     fn confirm_discard(&self) -> bool {
-        !self.dirty()
-            || MessageDialog::new()
-                .set_title("FCHUA")
-                .set_description("Discard unsaved changes?")
-                .set_level(MessageLevel::Warning)
-                .set_buttons(MessageButtons::OkCancel)
-                .show()
-                == MessageDialogResult::Ok
+        !self.dirty() || self.confirm("Discard unsaved changes?", "Discard")
+    }
+    fn confirm(&self, question: &str, verb: &str) -> bool {
+        let verb = self.language.translate(verb).into_owned();
+        let result = MessageDialog::new()
+            .set_title("FCHUA")
+            .set_description(self.language.translate(question))
+            .set_level(MessageLevel::Warning)
+            .set_buttons(MessageButtons::OkCancelCustom(
+                verb.clone(),
+                self.language.translate("Cancel").into_owned(),
+            ))
+            .show();
+        confirmation_accepted(result, &verb)
     }
     fn save(&mut self, save_as: bool) {
         let path = if save_as || self.path.is_none() {
             FileDialog::new()
-                .add_filter("FCHUA project", &["fch"])
+                .set_title(self.language.translate("Save as..."))
+                .add_filter(self.language.translate("FCHUA project"), &["fch"])
                 .set_file_name("graphics.fch")
                 .save_file()
                 .map(|p| p.with_extension("fch"))
@@ -615,6 +662,21 @@ impl Editor {
         self.menu = None;
         let before = self.doc.clone();
         match a {
+            Action::Language => {
+                self.language = self.language.toggle();
+                self.status = if self
+                    .language_path
+                    .as_ref()
+                    .is_some_and(|p| self.language.save(p).is_ok())
+                {
+                    "Display language changed"
+                } else {
+                    "Language changed for this session; preference could not be saved"
+                }
+                .into();
+                self.clamp_scrolls();
+                return;
+            }
             Action::New => {
                 if self.confirm_discard() {
                     self.doc = KitaqfcGraphicsDocument::new_blank();
@@ -627,8 +689,9 @@ impl Editor {
             }
             Action::Open => {
                 if let Some(p) = FileDialog::new()
+                    .set_title(self.language.translate("Open project / raw..."))
                     .add_filter(
-                        "FCHUA / graphics",
+                        self.language.translate("FCHUA / graphics"),
                         &["fch", "kfcproject", "chr", "pal", "nam", "atr"],
                     )
                     .pick_file()
@@ -648,7 +711,11 @@ impl Editor {
                 return;
             }
             Action::Import => {
-                if let Some(p) = FileDialog::new().add_filter("PNG", &["png"]).pick_file() {
+                if let Some(p) = FileDialog::new()
+                    .set_title(self.language.translate("Import PNG..."))
+                    .add_filter("PNG", &["png"])
+                    .pick_file()
+                {
                     if let Err(e) = self.load(&p) {
                         self.status = e;
                     }
@@ -656,7 +723,10 @@ impl Editor {
                 return;
             }
             Action::Export => {
-                if let Some(p) = FileDialog::new().pick_folder() {
+                if let Some(p) = FileDialog::new()
+                    .set_title(self.language.translate("Export KITAQFC pack..."))
+                    .pick_folder()
+                {
                     let existing = [
                         "scene.chr",
                         "scene.pal",
@@ -671,12 +741,10 @@ impl Editor {
                     .iter()
                     .any(|name| p.join(name).exists());
                     if existing
-                        && MessageDialog::new()
-                            .set_title("FCHUA")
-                            .set_description("Replace existing scene asset files in this folder?")
-                            .set_buttons(MessageButtons::OkCancel)
-                            .show()
-                            != MessageDialogResult::Ok
+                        && !self.confirm(
+                            "Replace existing scene asset files in this folder?",
+                            "Replace",
+                        )
                     {
                         return;
                     }
@@ -689,6 +757,7 @@ impl Editor {
             }
             Action::Preview => {
                 if let Some(p) = FileDialog::new()
+                    .set_title(self.language.translate("Export preview PNG..."))
                     .add_filter("PNG", &["png"])
                     .set_file_name("preview.png")
                     .save_file()
@@ -1114,6 +1183,9 @@ impl Editor {
     }
 }
 impl PlitaProgram for Editor {
+    fn minimum_window_size(&self) -> Option<Size> {
+        Some(Size::new(720.0, 480.0))
+    }
     fn close_requested(&mut self) -> bool {
         self.end_stroke(false);
         self.confirm_discard()
@@ -1206,7 +1278,7 @@ impl Editor {
             list.stroke_rect(r, 1.0, LINE);
         }
         if l.right.is_some() {
-            draw_text(&mut list, 12.0, 66.0, "CHR TILES", 1.2, TEXT);
+            self.text(&mut list, 12.0, 66.0, "CHR TILES", 1.2, TEXT);
         }
         draw_text(
             &mut list,
@@ -1217,8 +1289,8 @@ impl Editor {
             MUTED,
         );
         if let Some(r) = l.right {
-            draw_text(&mut list, r.x + 12.0, 66.0, "TILE / PALETTE", 1.2, TEXT);
-            draw_text(
+            self.text(&mut list, r.x + 12.0, 66.0, "TILE / PALETTE", 1.2, TEXT);
+            self.text(
                 &mut list,
                 r.x + 12.0,
                 105.0,
@@ -1265,7 +1337,7 @@ impl Editor {
                 self.grid,
             );
             list.image_rgba8(tile, w as u32, h as u32, data);
-            draw_text(
+            self.text(
                 &mut list,
                 p.x,
                 p.y + tile.height + 13.0,
@@ -1286,7 +1358,7 @@ impl Editor {
                     MUTED,
                 );
             }
-            draw_text(
+            self.text(
                 &mut list,
                 p.x,
                 p.y + tile.height + 273.0,
@@ -1307,32 +1379,14 @@ impl Editor {
         list.push_clip(l.canvas);
         let r = self.canvas_rect();
         if self.view == View::Check {
-            let report = self.doc.analysis_report();
-            let mut rows = vec![
-                format!("CHR: {} bytes / 512 tiles", report.chr_bytes),
-                format!("Unique patterns: {}", report.unique_tiles),
-                format!("Duplicate patterns: {}", report.duplicate_tiles),
-                format!("Blank tiles: {}", report.empty_tiles),
-                format!("Map tile IDs: {}", report.nametable_used_tiles),
-                format!(
-                    "Frames: {}   Max OAM: {}",
-                    self.doc.metasprites.len(),
-                    report.metasprite_max_quads
-                ),
-            ];
-            if report.warnings.is_empty() {
-                rows.push("Hardware checks: no warnings".into());
-            } else {
-                rows.extend(report.warnings);
-            }
-            for (i, row) in rows.iter().enumerate() {
+            for (i, (row, color)) in self.check_rows().iter().enumerate() {
                 draw_text(
                     &mut list,
                     r.x + 12.0,
-                    r.y + 16.0 + i as f32 * 30.0,
+                    r.y + 16.0 + i as f32 * 26.0,
                     row,
-                    1.15,
-                    if i > 5 { WARN } else { TEXT },
+                    text_scale(row, 1.15),
+                    *color,
                 );
             }
         } else {
@@ -1414,24 +1468,28 @@ impl Editor {
             .and_then(|p| p.file_name())
             .and_then(|s| s.to_str())
             .unwrap_or("Untitled.fch");
+        let status = format!(
+            "{}{}  |  {}  |  {}  |  {}",
+            if self.dirty() { "* " } else { "" },
+            name,
+            if self.zoom == 0 {
+                self.language.translate("Fit").into_owned()
+            } else {
+                format!("{}x", self.zoom)
+            },
+            self.language.translate(&format!(
+                "Frame {}/{}",
+                self.doc.current_frame + 1,
+                self.doc.metasprites.len()
+            )),
+            self.language.translate(&self.status)
+        );
         draw_text(
             &mut list,
             10.0,
-            l.status.y + 7.0,
-            &format!(
-                "{}{}  |  {}  |  Frame {}/{}  |  {}",
-                if self.dirty() { "* " } else { "" },
-                name,
-                if self.zoom == 0 {
-                    "Fit".to_string()
-                } else {
-                    format!("{}x", self.zoom)
-                },
-                self.doc.current_frame + 1,
-                self.doc.metasprites.len(),
-                self.status
-            ),
-            1.0,
+            l.status.y + 6.0,
+            &status,
+            text_scale(&status, 1.0),
             MUTED,
         );
         list.pop_clip();
@@ -1461,20 +1519,55 @@ impl Editor {
                     .into_iter()
                     .find(|c| c.rect.contains(p) && c.icon.is_some())
                 {
-                    let w = measure_text_width(c.label, 1.05) + 20.0;
+                    let label = self.language.translate(c.label);
+                    let w = (measure_text_width(&label, text_scale(&label, 1.05)) + 20.0)
+                        .min(self.size.width - 8.0);
                     let r = Rect::new(
                         c.rect.x.min((self.size.width - w - 4.0).max(0.0)),
                         c.rect.bottom() + 5.0,
                         w,
-                        28.0,
+                        32.0,
                     );
                     list.fill_rect(r, PANEL);
                     list.stroke_rect(r, 1.0, LINE);
-                    draw_text(&mut list, r.x + 10.0, r.y + 8.0, c.label, 1.05, TEXT);
+                    self.text(&mut list, r.x + 10.0, r.y + 8.0, c.label, 1.05, TEXT);
                 }
             }
         }
         list
+    }
+    fn text(&self, list: &mut DrawList, x: f32, y: f32, text: &str, scale: f32, color: Color) {
+        let text = self.language.translate(text);
+        draw_text(list, x, y, &text, text_scale(&text, scale), color);
+    }
+    fn check_rows(&self) -> Vec<(String, Color)> {
+        let report = self.doc.analysis_report();
+        let mut rows = vec![
+            format!("CHR: {} bytes / 512 tiles", report.chr_bytes),
+            format!("Unique patterns: {}", report.unique_tiles),
+            format!("Duplicate patterns: {}", report.duplicate_tiles),
+            format!("Blank tiles: {}", report.empty_tiles),
+            format!("Map tile IDs: {}", report.nametable_used_tiles),
+            format!(
+                "Frames: {}   Max OAM: {}",
+                self.doc.metasprites.len(),
+                report.metasprite_max_quads
+            ),
+        ];
+        if report.warnings.is_empty() {
+            rows.push("Hardware checks: no warnings".into());
+        } else {
+            rows.extend(report.warnings);
+        }
+        rows.iter()
+            .enumerate()
+            .flat_map(|(i, row)| {
+                let text = self.language.translate(row);
+                wrap_text(&text, 416.0, text_scale(&text, 1.15))
+                    .into_iter()
+                    .map(move |line| (line, if i > 5 { WARN } else { TEXT }))
+            })
+            .collect()
     }
     fn draw_control(&self, list: &mut DrawList, c: Control) {
         let visual = self.buttons.visual_state(&c.action, self.active(c.action));
@@ -1520,10 +1613,10 @@ impl Editor {
                 TEXT,
             );
             if c.rect.width > 40.0 {
-                draw_text(list, c.rect.x + 34.0, c.rect.y + 10.0, c.label, 1.05, TEXT);
+                self.text(list, c.rect.x + 34.0, c.rect.y + 9.0, c.label, 1.05, TEXT);
             }
         } else {
-            draw_text(list, c.rect.x + 8.0, c.rect.y + 9.0, c.label, 1.1, TEXT);
+            self.text(list, c.rect.x + 8.0, c.rect.y + 8.0, c.label, 1.1, TEXT);
             if matches!(c.action, Action::Menu(_)) {
                 draw_lucide_icon(
                     list,
@@ -1534,6 +1627,35 @@ impl Editor {
             }
         }
     }
+}
+fn text_scale(text: &str, scale: f32) -> f32 {
+    if text.is_ascii() {
+        scale
+    } else {
+        scale.max(1.3)
+    }
+}
+
+fn confirmation_accepted(result: MessageDialogResult, verb: &str) -> bool {
+    // rfd's standard Windows dialog returns Ok even with custom button labels.
+    result == MessageDialogResult::Ok || result == MessageDialogResult::Custom(verb.to_owned())
+}
+
+fn wrap_text(text: &str, width: f32, scale: f32) -> Vec<String> {
+    let mut rows = Vec::new();
+    let mut line = String::new();
+    for ch in text.chars() {
+        let mut next = line.clone();
+        next.push(ch);
+        if !line.is_empty() && measure_text_width(&next, scale) > width {
+            rows.push(std::mem::take(&mut line));
+        }
+        line.push(ch);
+    }
+    if !line.is_empty() {
+        rows.push(line);
+    }
+    rows
 }
 fn grid_line(a: (usize, usize), b: (usize, usize)) -> Vec<(usize, usize)> {
     let (mut x, mut y) = (a.0 as i32, a.1 as i32);
@@ -1612,6 +1734,7 @@ fn configure_portable_fonts() {
     for (variable, file) in [
         ("PLITA_UI_FONT", "Roboto[wdth,wght].ttf"),
         ("PLITA_MEMORY_FONT", "RobotoMono-Regular.ttf"),
+        ("PLITA_UI_FONT_FALLBACK", "NotoSansJP-Regular.otf"),
     ] {
         if env::var_os(variable).is_some() {
             continue;
@@ -1629,7 +1752,7 @@ fn configure_portable_fonts() {
 pub fn run_editor_with_initial_asset(initial: Option<PathBuf>) -> plita::Result<()> {
     configure_portable_fonts();
     App::new()
-        .title("FCHUA - KITAQFC Graphics Editor")
+        .title("FCHUA - KITAQFC")
         .window_size(1360, 820)
         .continuous_redraw(false)
         .run_program(move |size| {
@@ -1653,6 +1776,22 @@ mod snapshot;
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn localized_confirmation_accepts_native_ok_but_never_cancel() {
+        for verb in ["Discard", "破棄", "Replace", "上書き"] {
+            assert!(confirmation_accepted(MessageDialogResult::Ok, verb));
+            assert!(confirmation_accepted(
+                MessageDialogResult::Custom(verb.into()),
+                verb
+            ));
+            assert!(!confirmation_accepted(MessageDialogResult::Cancel, verb));
+            assert!(!confirmation_accepted(
+                MessageDialogResult::Custom("キャンセル".into()),
+                verb
+            ));
+            assert!(!confirmation_accepted(MessageDialogResult::No, verb));
+        }
+    }
     #[test]
     fn portable_fonts_prefer_executable_assets_and_fall_back_to_source() {
         let temp = tempfile::tempdir().unwrap();
@@ -1729,6 +1868,190 @@ mod tests {
         assert_eq!(a.undo.len(), 1);
         a.action(Action::Undo);
         assert!(!a.dirty());
+    }
+    #[test]
+    fn language_button_persists_without_changing_project_or_undo() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("config/language.txt");
+        let mut a = Editor::new(Size::new(900.0, 600.0));
+        a.language_path = Some(path.clone());
+        a.action(Action::Invert);
+        let doc = a.doc.clone();
+        let saved = a.saved.clone();
+        let undo = a.undo.clone();
+        click(&mut a, Action::Language);
+        assert_eq!(a.language, Language::Japanese);
+        assert_eq!(fs::read_to_string(&path).unwrap(), "ja\n");
+        assert_eq!(a.doc, doc);
+        assert_eq!(a.saved, saved);
+        assert_eq!(a.undo, undo);
+        a.action(Action::Menu(Menu::Edit));
+        let r = a.menu_rect().unwrap();
+        let p = Point::new(r.x + 40.0, r.y + 4.0 * 32.0 + 16.0);
+        assert_eq!(a.hit(p), Some(Action::Language));
+        a.pointer_down(p);
+        a.handle_event(UiEvent::PointerUp {
+            position: p,
+            button: PointerButton::Primary,
+        });
+        assert_eq!(a.language, Language::English);
+        assert_eq!(fs::read_to_string(&path).unwrap(), "en\n");
+        a.language_path = Some(path.join("invalid-child"));
+        click(&mut a, Action::Language);
+        assert_eq!(a.language, Language::Japanese);
+        assert_eq!(
+            a.status,
+            "Language changed for this session; preference could not be saved"
+        );
+    }
+
+    #[test]
+    fn japanese_glyphs_and_long_warning_scroll_extent() {
+        let pixels = |text: &str| {
+            let mut list = DrawList::new(BG);
+            draw_text(&mut list, 0.0, 0.0, text, 1.3, TEXT);
+            list.commands()
+                .iter()
+                .filter_map(|c| match c {
+                    DrawCommand::ImageRgba { pixels, .. } => Some(pixels.to_vec()),
+                    _ => None,
+                })
+                .collect::<Vec<_>>()
+        };
+        let japanese = pixels("日本語");
+        assert!(!japanese.is_empty());
+        assert_ne!(
+            japanese,
+            pixels("保存先"),
+            "Japanese must not render as identical missing-glyph boxes"
+        );
+        let mut a = Editor::new(Size::new(900.0, 600.0));
+        a.language = Language::Japanese;
+        a.view = View::Check;
+        a.doc.chr.fill(255);
+        a.doc.metasprites[0].quads = vec![
+            MetaSpriteQuad {
+                dx: 0,
+                dy: 0,
+                tile: 0,
+                attr: 0
+            };
+            9
+        ];
+        a.doc.metasprites = vec![a.doc.metasprites[0].clone(); 30];
+        let rows = a.check_rows();
+        assert!(rows.iter().any(|(r, _)| r.contains("走査線")));
+        assert!(rows
+            .iter()
+            .all(|(r, _)| measure_text_width(r, text_scale(r, 1.15)) <= 416.01));
+        let (r, content) = a.area(Target::Canvas).unwrap();
+        assert!(content.height > r.height);
+        assert!(content.height >= rows.len() as f32 * 26.0 + 32.0);
+        a.handle_event(UiEvent::PointerWheel {
+            position: Point::new(r.x + 30.0, r.y + 30.0),
+            delta_x: 0.0,
+            delta_y: -10000.0,
+        });
+        assert!(a.scrolls[2].offset().y > 0.0);
+        a.action(Action::Language);
+        let (viewport, content) = a.area(Target::Canvas).unwrap();
+        assert!(a.scrolls[2].offset().y <= (content.height - viewport.height).max(0.0) + 16.0);
+    }
+
+    #[test]
+    fn localized_controls_fit_and_all_menus_are_translated() {
+        let path = env::var_os("FCHUA_UI_SNAPSHOTS").map(PathBuf::from);
+        if let Some(p) = &path {
+            fs::create_dir_all(p).unwrap();
+        }
+        for language in [Language::English, Language::Japanese] {
+            for (w, h) in [
+                (720.0, 480.0),
+                (900.0, 600.0),
+                (1024.0, 600.0),
+                (1360.0, 820.0),
+                (1920.0, 1080.0),
+            ] {
+                let mut a = Editor::new(Size::new(w, h));
+                a.language = language;
+                for control in a.controls() {
+                    let label = language.translate(control.label);
+                    if language == Language::Japanese && control.label.is_ascii() {
+                        assert_ne!(
+                            label, control.label,
+                            "missing translation: {}",
+                            control.label
+                        );
+                    }
+                    if control.icon.is_none()
+                        && !matches!(control.action, Action::Swatch(..) | Action::NesColor(_))
+                    {
+                        let padding = if matches!(control.action, Action::Menu(_)) {
+                            30.0
+                        } else {
+                            16.0
+                        };
+                        assert!(
+                            measure_text_width(&label, text_scale(&label, 1.1)) + padding
+                                <= control.rect.width + 0.01,
+                            "{}",
+                            control.label
+                        );
+                    }
+                }
+                let header = a.menu_controls();
+                assert!(header.last().unwrap().rect.right() < w - 114.0);
+                for menu in [Menu::File, Menu::Edit, Menu::Tile, Menu::Map, Menu::Sprite] {
+                    a.menu = Some(menu);
+                    let rect = a.menu_rect().unwrap();
+                    assert!(rect.right() <= w);
+                    for (_, label, icon) in a.menu_items() {
+                        assert!(lucide_icon_names().any(|i| i == icon), "{icon}");
+                        let translated = language.translate(label);
+                        if language == Language::Japanese && label.is_ascii() {
+                            assert_ne!(translated, label, "{label}");
+                        }
+                        assert!(
+                            measure_text_width(&translated, text_scale(&translated, 1.05)) + 56.0
+                                <= rect.width + 0.01,
+                            "{label}"
+                        );
+                    }
+                    if language == Language::Japanese && (w == 900.0 || w == 1360.0) {
+                        if let Some(p) = &path {
+                            snapshot::save(
+                                &a.draw_srgb(),
+                                a.size,
+                                &p.join(format!("ja-{w}-{menu:?}.png")),
+                            )
+                            .unwrap();
+                        }
+                    }
+                }
+                a.menu = None;
+                if let Some(p) = &path {
+                    snapshot::save(
+                        &a.draw_srgb(),
+                        a.size,
+                        &p.join(format!("{language:?}-{w}-{h}.png")),
+                    )
+                    .unwrap();
+                    if language == Language::Japanese && w == 900.0 {
+                        a.palette_tab = true;
+                        a.view = View::Check;
+                        snapshot::save(&a.draw_srgb(), a.size, &p.join("ja-900-check-palette.png"))
+                            .unwrap();
+                        a.pointer = Some(Point::new(w - 100.0, 20.0));
+                        snapshot::save(
+                            &a.draw_srgb(),
+                            a.size,
+                            &p.join("ja-900-language-tooltip.png"),
+                        )
+                        .unwrap();
+                    }
+                }
+            }
+        }
     }
     #[test]
     fn layout_and_icons_and_snapshots() {

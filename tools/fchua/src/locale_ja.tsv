@@ -1,0 +1,99 @@
+File	ファイル
+Edit	編集
+Tile	タイル
+Map	マップ
+Sprite	スプライト
+Check	検査
+Tiles	タイル
+Palette	パレット
+New project	新規作成
+Open project / raw...	プロジェクト・素材を開く...
+Save  Ctrl+S	保存  Ctrl+S
+Save as...	名前を付けて保存...
+Import PNG...	PNGを取り込む...
+Export KITAQFC pack...	KITAQFC素材パックを書き出す...
+Export preview PNG...	プレビューPNGを書き出す...
+Undo  Ctrl+Z	元に戻す  Ctrl+Z
+Redo  Ctrl+Y	やり直す  Ctrl+Y
+Copy tile  Ctrl+C	タイルをコピー  Ctrl+C
+Paste tile  Ctrl+V	タイルを貼り付け  Ctrl+V
+Pencil  B	鉛筆  B
+Eraser  E	消しゴム  E
+Flood fill  F	塗りつぶし  F
+Line  L	直線  L
+Rectangle  R	矩形  R
+Pick color  I	色を取得  I
+Mirror horizontal	左右反転
+Mirror vertical	上下反転
+Rotate clockwise	右に90度回転
+Invert indices	色番号を反転
+Remap duplicate tiles	重複タイルの参照を統合
+Background table 0 / 1	背景テーブル 0 / 1
+Toggle grid	グリッドの表示切り替え
+Shift left 16px	左へ16pxずらす
+Shift right 16px	右へ16pxずらす
+Shift up 16px	上へ16pxずらす
+Shift down 16px	下へ16pxずらす
+Sprite table 0 / 1	スプライトテーブル 0 / 1
+Previous frame	前のフレーム
+Next frame	次のフレーム
+New frame	フレームを追加
+Duplicate frame	フレームを複製
+Remove selected quad	選択スプライトを削除
+Flip selected quad H	選択スプライトを左右反転
+Flip selected quad V	選択スプライトを上下反転
+Open  Ctrl+O	開く  Ctrl+O
+Pencil (B)	鉛筆 (B)
+Eraser (E)	消しゴム (E)
+Flood fill (F)	塗りつぶし (F)
+Line (L)	直線 (L)
+Rectangle (R)	矩形 (R)
+Picker (I)	スポイト (I)
+Zoom out	縮小
+Fit canvas	キャンバスに合わせる
+Zoom in	拡大
+Previous tile	前のタイル
+Next tile	次のタイル
+Select palette color	パレットの描画色を選択
+Set NES color	NESの色を設定
+CHR TILES	CHRタイル
+TILE / PALETTE	タイル・パレット
+BG {}   SPR {}	背景 {}   スプライト {}
+Tile {}  /  Color {}	タイル {}  /  色 {}
+NES COLOR	NESカラー
+CHR: {} bytes / 512 tiles	CHR: {}バイト / 512タイル
+Unique patterns: {}	固有パターン: {}
+Duplicate patterns: {}	重複パターン: {}
+Blank tiles: {}	空白タイル: {}
+Map tile IDs: {}	マップの使用タイル数: {}
+Frames: {}   Max OAM: {}	フレーム数: {}   最大OAM: {}
+Hardware checks: no warnings	ハードウェア検査: 警告なし
+frame {}: {} sprites on one scanline (NES limit: 8)	フレーム {}: 同一走査線に{}個のスプライト (上限8個)
+frame {}: reserved metasprite offset or attribute bits	フレーム {}: 予約済みの座標または属性ビットがあります
+metasprite frame exceeds NES OAM capacity	メタスプライトがNESのOAM容量を超えています
+nametable uses many unique BG tiles; check CHR budget	マップの固有背景タイルが多いため、CHR容量を確認してください
+CHR bank is almost full; reserve blank tiles for streaming	CHRバンクの空きが不足しています。転送用の空白タイルを確保してください
+Ready	準備完了
+Fit	全体表示
+Frame {}/{}	フレーム {}/{}
+Saved {}	保存しました: {}
+Loaded {}	読み込みました: {}
+Exported {}	書き出しました: {}
+Tile copied	タイルをコピーしました
+PNG: {} tiles, MSE {}	PNG: {}タイル、平均二乗誤差 {}
+{} duplicate tile references remapped	重複タイルの参照を{}件統合しました
+Display language changed	表示言語を変更しました
+Language changed for this session; preference could not be saved	言語変更済み (設定の保存に失敗)
+FCHUA project	FCHUAプロジェクト
+FCHUA / graphics	FCHUAプロジェクト・グラフィック素材
+Discard unsaved changes?	保存していない変更を破棄しますか？
+Replace existing scene asset files in this folder?	このフォルダにある既存のscene素材ファイルを上書きしますか？
+Discard	破棄
+Replace	上書き
+Cancel	キャンセル
+Unsupported file or invalid raw length	未対応のファイル、または素材データの長さが不正です
+Invalid FCHUA project	FCHUAプロジェクトの形式またはデータが不正です
+Project exceeds 16 MiB	プロジェクトが16 MiBを超えています
+CHR must contain whole 16-byte tiles and fit one 8 KiB bank; open each mapper bank separately	CHRは16バイト単位、8 KiB以内にしてください。各バンクは個別に開いてください
+PNG dimensions must be multiples of 8 within 8x8..256x240	PNGの幅と高さは8の倍数で、8x8から256x240の範囲にしてください
+PNG needs more than 255 nonblank tiles in one background pattern table	PNGに必要なタイルが背景テーブルの上限 (空白を除き255個) を超えています

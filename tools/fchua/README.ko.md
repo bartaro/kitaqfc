@@ -6,7 +6,7 @@ FCHUA는 KITAQFC용 NES 타일, 네임테이블, 팔레트, 8x8 메타스프라�
 
 ## GUI 다운로드
 
-아래 Windows x64 ZIP 전체를 풀고 FCHUA.exe를 실행하세요. assets/fonts와 라이선스 폴더를 실행 파일 옆에 유지하세요. 실행에 Rust나 Python은 필요 없으며 wgpu 호환 그래픽 장치와 드라이버가 필요합니다. GUI 표시는 영어이고 설명서는 위의 9개 언어로 제공됩니다.
+아래 Windows x64 ZIP 전체를 풀고 FCHUA.exe를 실행하세요. assets/fonts와 라이선스 폴더를 실행 파일 옆에 유지하세요. 실행에 Rust나 Python은 필요 없으며 wgpu 호환 그래픽 장치와 드라이버가 필요합니다. GUI는 일본어와 영어를 지원하며 설명서는 위의 9개 언어로 제공됩니다.
 
 [FCHUA GUI 0.1.0 - Windows x64 ZIP](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fchua/dist/FCHUA-GUI-0.1.0-windows-x86_64.zip)
 
@@ -14,7 +14,9 @@ File > New project 또는 Open project / raw로 시작합니다. 타일과 팔�
 
 공개 소스에는 필요한 plita 크레이트가 포함됩니다. tools/fchua에서 아래 명령으로 GUI를 빌드하고 실행합니다. 마지막 프로젝트 경로는 생략 가능합니다. 이번 릴리스에서 GUI 실행 파일은 Windows x64에서 검증했습니다.
 
-Windows x64에서 릴리스 빌드, 소프트웨어 렌더링과 입력/상태 자동 테스트를 통과했습니다. 데스크톱 자동화 도구가 앱 승인 대기 중 시간 초과되어 실제 창 클릭과 파일 대화상자는 미검증입니다. [검증 기록](VERIFICATION.md)을 참조하세요.
+오른쪽 위의 언어 아이콘 또는 Edit > 日本語 / English로 즉시 전환하며 선택은 다음 실행에도 유지됩니다. 첫 실행은 OS 언어를 따르며 일본어 환경에서는 일본어로 시작합니다. FCHUA_LANGUAGE=ja 또는 en은 저장된 선택보다 우선합니다. language.txt는 Windows의 %APPDATA%/FCHUA, macOS의 ~/Library/Application Support/FCHUA, Linux의 $XDG_CONFIG_HOME/fchua (미설정 시 ~/.config/fchua)에 저장됩니다. FCHUA_CONFIG_DIR로 폴더를 바꿀 수 있습니다. 기본 글꼴은 Roboto이며 일본어는 동봉된 Noto Sans JP로 표시합니다. PLITA_UI_FONT_FALLBACK으로 대체할 수 있습니다. 전환 시 프로젝트와 실행 취소 기록은 유지되며 CLI 명령과 Python API 이름은 바뀌지 않습니다.
+
+Windows x64에서 릴리스 빌드, 소프트웨어 렌더링과 입력/상태 자동 테스트를 통과했습니다. 실제 FCHUA 창 생성은 확인했지만 화면 캡처가 두 번 모두 시간 초과되었습니다. 실제 화면 내용, 클릭과 파일 대화상자는 미검증입니다. [검증 기록](VERIFICATION.md)을 참조하세요.
 
 ```sh
 cd tools/fchua

@@ -6,7 +6,7 @@ FCHUA édite les tuiles, tables de noms, palettes et métasprites NES 8x8 pour K
 
 ## Télécharger l'interface
 
-Téléchargez le ZIP Windows x64, extrayez-le entièrement et lancez FCHUA.exe. Conservez assets/fonts et les dossiers de licences à côté du programme. Rust et Python ne sont pas nécessaires à son exécution ; un périphérique/pilote graphique compatible avec wgpu est requis. L'interface est en anglais ; les manuels complets existent dans les neuf langues ci-dessus.
+Téléchargez le ZIP Windows x64, extrayez-le entièrement et lancez FCHUA.exe. Conservez assets/fonts et les dossiers de licences à côté du programme. Rust et Python ne sont pas nécessaires à son exécution ; un périphérique/pilote graphique compatible avec wgpu est requis. L'interface propose le japonais et l'anglais ; les manuels complets existent dans les neuf langues ci-dessus.
 
 [FCHUA GUI 0.1.0 - Windows x64 ZIP](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fchua/dist/FCHUA-GUI-0.1.0-windows-x86_64.zip)
 
@@ -14,7 +14,9 @@ Commencez par File > New project ou Open project / raw. Sélectionnez une tuile 
 
 Le code public inclut les crates plita nécessaires. Depuis tools/fchua, compilez et lancez l'interface avec ces commandes ; le chemin final du projet est facultatif. L'exécutable GUI de cette version a été vérifié sous Windows x64.
 
-La compilation de distribution, les dispositions rendues par logiciel et les tests automatiques d'entrée/état ont réussi sous Windows x64. Les clics de fenêtre et les dialogues de fichiers restent non vérifiés : l'outil de bureau a expiré en attendant l'autorisation de l'application. Voir la [vérification](VERIFICATION.md).
+Basculez immédiatement avec l'icône de langue en haut à droite ou Edit > 日本語 / English. Le choix est conservé au prochain lancement. Le premier lancement suit la langue du système ; les systèmes japonais démarrent en japonais. FCHUA_LANGUAGE=ja ou en prime sur le choix enregistré. language.txt est enregistré dans %APPDATA%/FCHUA sous Windows, ~/Library/Application Support/FCHUA sous macOS et $XDG_CONFIG_HOME/fchua (ou ~/.config/fchua) sous Linux. FCHUA_CONFIG_DIR remplace ce dossier. Roboto reste la police principale et Noto Sans JP, incluse, fournit les caractères japonais ; PLITA_UI_FONT_FALLBACK permet de la remplacer. Le projet et l'historique d'annulation sont conservés. Les commandes CLI et les noms de l'API Python ne changent pas.
+
+La compilation de distribution, les dispositions rendues par logiciel et les tests automatiques d'entrée/état ont réussi sous Windows x64. La fenêtre native de FCHUA a été créée, mais la capture d'écran a expiré lors des deux tentatives. Le contenu natif, les clics et les dialogues de fichiers restent non vérifiés. Voir la [vérification](VERIFICATION.md).
 
 ```sh
 cd tools/fchua

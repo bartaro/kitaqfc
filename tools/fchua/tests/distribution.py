@@ -16,7 +16,8 @@ class DistributionTests(unittest.TestCase):
         for language in LANGUAGES:
             text = (ROOT / f"README.{language}.md").read_text(encoding="utf-8")
             for required in [ARCHIVE.name, "FCHUA.exe", "assets/fonts", "plita",
-                             "--features gui", "--features gui,python", "GUI_AVAILABLE=False"]:
+                             "--features gui", "--features gui,python", "GUI_AVAILABLE=False",
+                             "FCHUA_LANGUAGE", "FCHUA_CONFIG_DIR", "Noto Sans JP", "日本語 / English"]:
                 if language == "en" and required == "GUI_AVAILABLE=False":
                     required = "GUI_AVAILABLE is False"
                 self.assertIn(required, text, language)
@@ -51,7 +52,8 @@ class DistributionTests(unittest.TestCase):
             for language in LANGUAGES:
                 self.assertEqual(archive.read(f"README.{language}.md"),
                                  (ROOT / f"README.{language}.md").read_bytes())
-            for font in ["Roboto[wdth,wght].ttf", "RobotoMono-Regular.ttf"]:
+            for font in ["Roboto[wdth,wght].ttf", "RobotoMono-Regular.ttf", "NotoSansJP-Regular.otf",
+                         "NotoSansJP-Regular-OFL.txt", "NotoSansJP-Regular-PROVENANCE.json"]:
                 self.assertEqual(archive.read("assets/fonts/" + font),
                                  (ROOT / "assets/fonts" / font).read_bytes())
             self.assertIn("vendor/plita/crates/plita_ui/assets/lucide/LICENSE", names)
@@ -65,6 +67,14 @@ class DistributionTests(unittest.TestCase):
                 self.assertEqual(hashlib.sha256(archive.read(name)).hexdigest(), checksum, name)
                 hashed.add(name)
             self.assertEqual(hashed, names - {"SHA256SUMS"})
+
+    def test_japanese_font_provenance(self):
+        fonts = ROOT / "assets/fonts"
+        provenance = json.loads((fonts / "NotoSansJP-Regular-PROVENANCE.json").read_text(encoding="utf-8"))
+        for name, entry in provenance["files"].items():
+            data = (fonts / name).read_bytes()
+            self.assertEqual(len(data), entry["bytes"])
+            self.assertEqual(hashlib.sha256(data).hexdigest(), entry["sha256"])
 
     def test_published_artifact_hashes(self):
         for line in (ROOT / "SHA256SUMS").read_text().splitlines():

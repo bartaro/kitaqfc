@@ -1,6 +1,53 @@
 # FCHUA 0.1.0 Verification
 
-## GUI Publication: 2026-10-18
+## Japanese UI Update: 2026-10-19
+
+The GUI now switches between Japanese and English through the top-right settings
+icon or Edit > 日本語 / English. Menu labels, tooltips, dialog titles/prompts,
+status messages and hardware reports are translated. Native system-dialog
+controls may follow the OS language. User filenames and document data are not
+translated. The initial language follows the locale; the saved preference is
+restored, with FCHUA_LANGUAGE taking precedence. FCHUA_CONFIG_DIR can select
+the preference directory. Preferences are written atomically outside projects.
+
+Roboto remains primary, with the bundled, unmodified Noto Sans JP as its CJK
+fallback. The font, original OFL and pinned upstream provenance are included.
+Menus and tabs use measured text widths. The minimum window size is 720x480;
+long report rows wrap and the scrollbar range follows the number of rows.
+
+- Windows x64 GUI-only release build passed with the static C runtime.
+- 26 core/GUI tests and 5 CLI integration tests passed with the `gui` feature.
+  New coverage includes locale precedence, preference persistence and failures,
+  both language controls, preserving edits/undo across switching, native-dialog
+  confirmation results, Japanese glyph rasterization, translated menu coverage,
+  label bounds and scrolling long warnings after a language change.
+- English/Japanese DrawList snapshots were generated at 720x480, 900x600,
+  1024x600, 1360x820 and 1920x1080. Japanese menu variants at 900/1360 widths,
+  the palette/check view and the language tooltip were also generated. The
+  720px English/Japanese, 1360px Japanese File menu, and 900px Japanese check/
+  palette/tooltip images were visually inspected. These are CPU renders.
+- The 5 distribution checks cover all nine updated manuals, notices, Japanese
+  font provenance, archived font/manual contents, ZIP integrity and SHA256.
+- The editor core and Cargo.lock are byte-identical to the previous release.
+  The supplied headless CLI and Python wheel are unchanged.
+
+GUI-only executable SHA256:
+`a4e8c49e09c778ee86383c4ffdac141931e0c51d5360e68eed6821fc94db6edb`.
+Use the current SHA256SUMS for the updated ZIP; the previous ZIP digest below
+is historical. Reproduction commands are in the previous publication section;
+set PLITA_UI_FONT_FALLBACK to assets/fonts/NotoSansJP-Regular.otf when testing
+from a working directory outside tools/fchua.
+
+The native executable was launched and a window titled `FCHUA - KITAQFC` was
+returned by the desktop tool. Capture failed with `FrameArrived timed out:
+timed out waiting on channel`; after selecting the window again and activating
+it, the retry failed with `window capture timed out: timed out waiting on
+channel`. No click or file-dialog automation was attempted without a captured
+screen. Native rendered contents and interactive operation remain unverified.
+All nine manuals disclose this boundary. Local evidence is retained in
+verification/fchua_i18n_20261019 (tests.log, build.log, screenshots, native.json).
+
+## Previous GUI Publication: 2026-10-18
 
 The public package now includes the plita-based GUI source, the five required
 plita foundation crates, Roboto/Roboto Mono fonts, and a Windows x64 GUI ZIP.

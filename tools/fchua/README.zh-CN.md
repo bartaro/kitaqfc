@@ -6,7 +6,7 @@ FCHUA用于编辑KITAQFC的NES图块、名称表、调色板和8x8组合精灵�
 
 ## 下载GUI版
 
-下载下面的Windows x64 ZIP，完整解压后运行FCHUA.exe。请保留程序旁的assets/fonts及许可文件夹。运行不需要Rust或Python，但需要兼容wgpu的图形设备和驱动。GUI标签为英语，完整说明书提供上述九种语言。
+下载下面的Windows x64 ZIP，完整解压后运行FCHUA.exe。请保留程序旁的assets/fonts及许可文件夹。运行不需要Rust或Python，但需要兼容wgpu的图形设备和驱动。GUI支持日语和英语切换，完整说明书提供上述九种语言。
 
 [FCHUA GUI 0.1.0 - Windows x64 ZIP](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fchua/dist/FCHUA-GUI-0.1.0-windows-x86_64.zip)
 
@@ -14,7 +14,9 @@ FCHUA用于编辑KITAQFC的NES图块、名称表、调色板和8x8组合精灵�
 
 公开源码已包含所需的plita crate。在tools/fchua运行以下命令构建并启动GUI，最后的项目路径可省略。本次发布的GUI可执行文件在Windows x64验证。
 
-Windows x64发布构建、软件渲染布局和输入/状态自动测试已通过。桌面自动化工具在等待应用授权时超时，因此实际窗口点击和文件对话框操作尚未验证。参见[验证记录](VERIFICATION.md)。
+点击右上角的语言图标或Edit > 日本語 / English即可立即切换，下次启动会恢复选择。首次启动遵循系统语言，日语系统默认显示日语。FCHUA_LANGUAGE=ja或en优先于已保存的选择。language.txt保存在Windows的%APPDATA%/FCHUA、macOS的~/Library/Application Support/FCHUA、Linux的$XDG_CONFIG_HOME/fchua (未设置时为~/.config/fchua)。FCHUA_CONFIG_DIR可覆盖此目录。主字体仍为Roboto，日语字形使用附带的Noto Sans JP；可用PLITA_UI_FONT_FALLBACK指定替代字体。切换保留项目和撤销历史，CLI命令及Python API名称不变。
+
+Windows x64发布构建、软件渲染布局和输入/状态自动测试已通过。已确认创建FCHUA实际窗口，但两次屏幕捕获均超时，因此实际画面内容、点击和文件对话框操作尚未验证。参见[验证记录](VERIFICATION.md)。
 
 ```sh
 cd tools/fchua

@@ -28,6 +28,8 @@ for path in (root / "vendor/plita/crates/plita_ui/assets/lucide").rglob("*"):
         files[path.relative_to(root).as_posix()] = path
 required = ["assets/fonts/Roboto[wdth,wght].ttf", "assets/fonts/Roboto-OFL.txt",
             "assets/fonts/RobotoMono-Regular.ttf", "assets/fonts/RobotoMono-OFL.txt",
+            "assets/fonts/NotoSansJP-Regular.otf", "assets/fonts/NotoSansJP-Regular-OFL.txt",
+            "assets/fonts/NotoSansJP-Regular-PROVENANCE.json",
             "GUI_DEPENDENCIES.json", "README.ja.md"]
 if any(name not in files for name in required):
     raise RuntimeError("Missing fonts, notices or manuals")
@@ -42,7 +44,7 @@ with zipfile.ZipFile(destination, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as
     checksums = []
     for name, path in sorted(files.items()):
         data = path.read_bytes()
-        info = zipfile.ZipInfo(name, (2026, 10, 18, 0, 0, 0))
+        info = zipfile.ZipInfo(name, (2026, 10, 19, 0, 0, 0))
         info.compress_type = zipfile.ZIP_DEFLATED
         archive.writestr(info, data)
         checksums.append(f"{hashlib.sha256(data).hexdigest()}  {name}")
