@@ -1,11 +1,12 @@
 {
   "passed": true,
-  "source_commit": "bd3e8f41ceac0d472804745e9e8775741c345afe",
+  "version": "0.4.2",
+  "source_commit": "a5f3c44f30eb764bd2a972647f006cdb0b3da61f",
   "platform": "windows-x86_64",
   "system": "Windows-10-10.0.26100-SP0",
   "python": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
   "rust_tests": {
-    "passed": 37,
+    "passed": 39,
     "failed": 0,
     "suites": 6
   },
@@ -14,9 +15,9 @@
       "chip": "none",
       "voices": 5,
       "native": {
-        "frames": 70443,
-        "peak_to_peak": 40540,
-        "sha256": "f381e2d9938d769c6c0c2a3cf8c5abc039bbfa2840674bf0ed1d7100d868fc40"
+        "frames": 70444,
+        "peak_to_peak": 28208,
+        "sha256": "722f84cf5491f7357ba83d5a37cadfe7f768eb49c0465e81600746fab2151d8f"
       },
       "nsf": {
         "frames": 44100,
@@ -29,9 +30,9 @@
       "chip": "vrc6",
       "voices": 8,
       "native": {
-        "frames": 70443,
-        "peak_to_peak": 41558,
-        "sha256": "e8679c179f196dbe819669ea80df46a24865576a672b6a22871b3744c2096284"
+        "frames": 70444,
+        "peak_to_peak": 28091,
+        "sha256": "557d5052bfcc745f09ef315ecc6627fd5a3853750f9284199d7c4c8a8412c845"
       },
       "nsf": {
         "frames": 44100,
@@ -44,9 +45,9 @@
       "chip": "vrc7",
       "voices": 11,
       "native": {
-        "frames": 70443,
-        "peak_to_peak": 43974,
-        "sha256": "9c44271dca72e14982580a705a2c6b55b985658352e2f7704813ad19d1c71afa"
+        "frames": 70444,
+        "peak_to_peak": 31495,
+        "sha256": "95e5348c292170c9c0a24a2e7ecd4d8c487cd36ec854d1156a3809d4b0c5d73c"
       },
       "nsf": {
         "frames": 44100,
@@ -59,9 +60,9 @@
       "chip": "fds",
       "voices": 6,
       "native": {
-        "frames": 70443,
-        "peak_to_peak": 43969,
-        "sha256": "5144b9648c9f67d12328666755dd640ecef9d95ca3cc66bbdf05e6d2b0a85b04"
+        "frames": 70444,
+        "peak_to_peak": 31442,
+        "sha256": "be2d7179ac3c2aa36f7598b0a46ecb4311bd91e01ac52baf65d92a67b737d59b"
       },
       "nsf": {
         "frames": 44100,
@@ -74,9 +75,9 @@
       "chip": "n163",
       "voices": 13,
       "native": {
-        "frames": 70443,
-        "peak_to_peak": 59703,
-        "sha256": "54f27d507ddeeae31e6dfb1c14e8e34574927260eba103a568e7fa15f6661493"
+        "frames": 70444,
+        "peak_to_peak": 60608,
+        "sha256": "6e1f5f28b54412f294030b39c55692e92e504a235f4b3b33aae97002af0ec22b"
       },
       "nsf": {
         "frames": 44100,
@@ -87,9 +88,9 @@
     }
   ],
   "binaries": {
-    "fcseq.exe": "4ce9cea32304ff4bc9b5dcbdcf0a74b7a01fa3630ca344a48c983ed7d3f8234d",
-    "fcseq-cli.exe": "d7423d229fb971bcdeebd246b5d97bf378467c28332a218d7463a12ce1d1dda8",
-    "fcseq_native.pyd": "cbeb0bc60f723c41665f82e957163b1c469ecf1cb34404fb68e8cb8163b85fff"
+    "fcseq.exe": "84f3dd41dc756a15c5468869c744e269db6346b6611b47fd03c334f9ecd026bd",
+    "fcseq-cli.exe": "66013adfbd01ae862908765af5e51975533f315491492be98f86273bf99c3871",
+    "fcseq_native.pyd": "615dd787ad240fbcc0d0da50e35803ed210f21bdfb61b10d28dbd8260956b638"
   },
   "native_audio_output_device_tested": false,
   "physical_hardware_tested": false

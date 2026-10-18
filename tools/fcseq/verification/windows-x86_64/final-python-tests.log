@@ -13,6 +13,6 @@ test_renamed_legacy_project_opens_as_fcq (test_nsf.NsfTests) ... ok
 test_section_duration_metadata_and_nsfe_playback (test_nsf.NsfTests) ... ok
 
 ----------------------------------------------------------------------
-Ran 13 tests in 0.431s
+Ran 13 tests in 0.531s
 
 OK

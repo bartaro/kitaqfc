@@ -1,13 +1,13 @@
-[2m2026-10-17T18:57:06.441365Z[0m [33m WARN[0m [2mwinit::platform_impl::linux::x11::xdisplay[0m[2m:[0m error setting XSETTINGS; Xft options won't reload automatically
-[2m2026-10-17T18:57:06.546872Z[0m [33m WARN[0m [2mwinit::platform_impl::linux::x11::util::randr[0m[2m:[0m XRandR reported that the display's 0mm in size, which is certifiably insane
-[2m2026-10-17T18:57:06.546907Z[0m [32m INFO[0m [2mwinit::platform_impl::linux::x11::window[0m[2m:[0m Guessed window scale factor: 1
-[2m2026-10-17T18:57:06.547145Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m window created [3mtitle[0m[2m=[0mFCSEQ - plita Famicom Sequencer [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mscale_factor[0m[2m=[0m1.0
-[2m2026-10-17T18:57:06.547180Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m creating WGPU instance [3mrequested_backends[0m[2m=[0mBackends(VULKAN | GL) [3mcompiled_backends[0m[2m=[0mBackends(VULKAN | GL)
-[2m2026-10-17T18:57:07.737326Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m selected GPU adapter [3mname[0m[2m=[0mllvmpipe (LLVM 20.1.2, 256 bits) [3mbackend[0m[2m=[0mVulkan [3mdevice_type[0m[2m=[0mCpu
-[2m2026-10-17T18:57:07.755394Z[0m [32m INFO[0m [2mvello::wgpu_engine[0m[2m:[0m Initialising shader modules in parallel using 2 threads
-[2m2026-10-17T18:57:07.886978Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m GPU renderer initialized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mformat[0m[2m=[0mBgra8UnormSrgb [3mpresent_mode[0m[2m=[0mFifo
-[2m2026-10-17T18:57:07.892062Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m renderer attached to window [3msurface_format[0m[2m=[0mBgra8UnormSrgb [3msurface_supported[0m[2m=[0mtrue
-[2m2026-10-17T18:57:07.892251Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m IME disabled
-[2m2026-10-17T18:57:07.892258Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m IME enabled
+[2m2026-10-18T14:13:24.443291Z[0m [33m WARN[0m [2mwinit::platform_impl::linux::x11::xdisplay[0m[2m:[0m error setting XSETTINGS; Xft options won't reload automatically
+[2m2026-10-18T14:13:24.604911Z[0m [33m WARN[0m [2mwinit::platform_impl::linux::x11::util::randr[0m[2m:[0m XRandR reported that the display's 0mm in size, which is certifiably insane
+[2m2026-10-18T14:13:24.604971Z[0m [32m INFO[0m [2mwinit::platform_impl::linux::x11::window[0m[2m:[0m Guessed window scale factor: 1
+[2m2026-10-18T14:13:24.605361Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m window created [3mtitle[0m[2m=[0mFCSEQ - plita Famicom Sequencer [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mscale_factor[0m[2m=[0m1.0
+[2m2026-10-18T14:13:24.605406Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m creating WGPU instance [3mrequested_backends[0m[2m=[0mBackends(VULKAN | GL) [3mcompiled_backends[0m[2m=[0mBackends(VULKAN | GL)
+[2m2026-10-18T14:13:25.961469Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m selected GPU adapter [3mname[0m[2m=[0mllvmpipe (LLVM 20.1.2, 256 bits) [3mbackend[0m[2m=[0mVulkan [3mdevice_type[0m[2m=[0mCpu
+[2m2026-10-18T14:13:25.985304Z[0m [32m INFO[0m [2mvello::wgpu_engine[0m[2m:[0m Initialising shader modules in parallel using 2 threads
+[2m2026-10-18T14:13:26.161112Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m GPU renderer initialized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mformat[0m[2m=[0mBgra8UnormSrgb [3mpresent_mode[0m[2m=[0mFifo
+[2m2026-10-18T14:13:26.168050Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m renderer attached to window [3msurface_format[0m[2m=[0mBgra8UnormSrgb [3msurface_supported[0m[2m=[0mtrue
+[2m2026-10-18T14:13:26.168301Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m IME disabled
+[2m2026-10-18T14:13:26.168312Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m IME enabled
 libEGL warning: DRI3 error: Could not get DRI3 device
 libEGL warning: Ensure your X server supports DRI3 to get accelerated rendering

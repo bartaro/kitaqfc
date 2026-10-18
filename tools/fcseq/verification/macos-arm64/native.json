@@ -1,11 +1,12 @@
 {
   "passed": true,
-  "source_commit": "bd3e8f41ceac0d472804745e9e8775741c345afe",
+  "version": "0.4.2",
+  "source_commit": "a5f3c44f30eb764bd2a972647f006cdb0b3da61f",
   "platform": "macos-arm64",
   "system": "macOS-15.7.9-arm64-arm-64bit",
   "python": "3.10.11 (v3.10.11:7d4cc5aa85, Apr  4 2023, 19:05:19) [Clang 13.0.0 (clang-1300.0.29.30)]",
   "rust_tests": {
-    "passed": 37,
+    "passed": 39,
     "failed": 0,
     "suites": 6
   },
@@ -14,9 +15,9 @@
       "chip": "none",
       "voices": 5,
       "native": {
-        "frames": 70443,
-        "peak_to_peak": 40540,
-        "sha256": "f381e2d9938d769c6c0c2a3cf8c5abc039bbfa2840674bf0ed1d7100d868fc40"
+        "frames": 70444,
+        "peak_to_peak": 28208,
+        "sha256": "722f84cf5491f7357ba83d5a37cadfe7f768eb49c0465e81600746fab2151d8f"
       },
       "nsf": {
         "frames": 44100,
@@ -29,9 +30,9 @@
       "chip": "vrc6",
       "voices": 8,
       "native": {
-        "frames": 70443,
-        "peak_to_peak": 41558,
-        "sha256": "e8679c179f196dbe819669ea80df46a24865576a672b6a22871b3744c2096284"
+        "frames": 70444,
+        "peak_to_peak": 28091,
+        "sha256": "557d5052bfcc745f09ef315ecc6627fd5a3853750f9284199d7c4c8a8412c845"
       },
       "nsf": {
         "frames": 44100,
@@ -44,9 +45,9 @@
       "chip": "vrc7",
       "voices": 11,
       "native": {
-        "frames": 70443,
-        "peak_to_peak": 43974,
-        "sha256": "9c44271dca72e14982580a705a2c6b55b985658352e2f7704813ad19d1c71afa"
+        "frames": 70444,
+        "peak_to_peak": 31495,
+        "sha256": "95e5348c292170c9c0a24a2e7ecd4d8c487cd36ec854d1156a3809d4b0c5d73c"
       },
       "nsf": {
         "frames": 44100,
@@ -59,9 +60,9 @@
       "chip": "fds",
       "voices": 6,
       "native": {
-        "frames": 70443,
-        "peak_to_peak": 43969,
-        "sha256": "5144b9648c9f67d12328666755dd640ecef9d95ca3cc66bbdf05e6d2b0a85b04"
+        "frames": 70444,
+        "peak_to_peak": 31442,
+        "sha256": "be2d7179ac3c2aa36f7598b0a46ecb4311bd91e01ac52baf65d92a67b737d59b"
       },
       "nsf": {
         "frames": 44100,
@@ -74,9 +75,9 @@
       "chip": "n163",
       "voices": 13,
       "native": {
-        "frames": 70443,
-        "peak_to_peak": 59703,
-        "sha256": "54f27d507ddeeae31e6dfb1c14e8e34574927260eba103a568e7fa15f6661493"
+        "frames": 70444,
+        "peak_to_peak": 60608,
+        "sha256": "6e1f5f28b54412f294030b39c55692e92e504a235f4b3b33aae97002af0ec22b"
       },
       "nsf": {
         "frames": 44100,
@@ -87,9 +88,9 @@
     }
   ],
   "binaries": {
-    "fcseq": "168fb291d567b1dced908809aa6c1dcdd0856644cb7af7f5454f290842136e06",
-    "fcseq-cli": "04a026d7bb06af728218c56c1799851b193a5c82e23d2f0204af63d21b3f82f8",
-    "fcseq_native.so": "347674408ec98517afc01196d89228929519cecbcc8878bb9c030d2af5814275"
+    "fcseq": "aa55b6657bcb7eb271286bc435d4facd82d91a1a7902b391aa9e838fd54a75c0",
+    "fcseq-cli": "ad2c35359754c1b98f2624a56218e9fb056c18d88d6e447f1be2651f173b5b00",
+    "fcseq_native.so": "ef0bc49ae6e1920747331963fb63d33821df87ba8a5c6e064d316776bd241f54"
   },
   "native_audio_output_device_tested": false,
   "physical_hardware_tested": false

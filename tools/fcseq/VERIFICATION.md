@@ -1,16 +1,16 @@
-# FCSEQ 0.4.1 verification
+# FCSEQ 0.4.2 verification
 
-All four native builds and verification jobs passed: [GitHub Actions run](https://github.com/bartaro/kitaqfc/actions/runs/39060150415).
-Binary source commit: `bd3e8f41ceac0d472804745e9e8775741c345afe`. Toolchain: Rust 1.93.1, CPython 3.10 abi3.
+All four native builds and verification jobs passed: [GitHub Actions run](https://github.com/bartaro/kitaqfc/actions/runs/39134900265).
+Binary source commit: `a5f3c44f30eb764bd2a972647f006cdb0b3da61f`. Toolchain: Rust 1.93.1, CPython 3.10 abi3.
 GUI and CLI are built without the Python feature; the optional extension is built separately.
 The following counts come from execution on the stated native operating system.
 
 | Platform | Rust tests | Python tests | Audio configurations / combined voices | Native GUI startup |
 |---|---:|---:|---|---|
-| windows-x86_64 | 37 | 13 | 5 / 43 | passed |
-| linux-x86_64 | 37 | 13 | 5 / 43 | passed |
-| macos-arm64 | 37 | 13 | 5 / 43 | passed |
-| macos-x86_64 | 37 | 13 | 5 / 43 | passed |
+| windows-x86_64 | 39 | 13 | 5 / 43 | passed |
+| linux-x86_64 | 39 | 13 | 5 / 43 | passed |
+| macos-arm64 | 39 | 13 | 5 / 43 | passed |
+| macos-x86_64 | 39 | 13 | 5 / 43 | passed |
 
 Rust coverage includes editor selection/history, model validation, waveform/FM
 parameters, every exported voice, NSF/NSFe timing, malformed input and bounded
@@ -38,6 +38,14 @@ font/icon attribution and the matching Rust standard-library license inventory.
 FCSEQ application copyright is (c) 2026 DAISUKE OBA under MIT. Third-party licenses
 remain applicable; this audit is not a legal warranty.
 
-The original local Windows release build ran out of disk space and was excluded
-from passing evidence. Earlier CI failures in the macOS Python linker setup and
-the smoke-test Noise fixture were corrected before the successful run above.
+The 0.4.2 regression suite also verifies triangle/noise and expansion balance
+between direct preview and NSF without DPCM samples (within 0.3 dB), quiet
+startup/delayed-note passages, and per-sample DAC overrides. See CHANGELOG.md
+and UPDATE_REVIEW.json for the reviewed source delta from 0.4.1.
+
+The Windows 0.4.1 and 0.4.2 release CLIs were also compared using three original
+synthetic scores (triangle, noise, and a 2A03/N163 mix). All updated preview/NSF
+level differences stayed below 0.3 dB, and the exported NSF/NSFe files remained
+byte-identical between versions. See the
+[comparison receipt](https://github.com/bartaro/kitaqfc/blob/main/tools/fcseq/verification/windows-x86_64/update-audio-comparison.json)
+for measurements; the Windows ZIP also includes `verification/update-audio-comparison.json`.

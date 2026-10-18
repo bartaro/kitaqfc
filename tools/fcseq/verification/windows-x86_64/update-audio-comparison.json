@@ -1,0 +1,75 @@
+{
+  "passed": true,
+  "previous": "0.4.1",
+  "updated": "0.4.2",
+  "new_binary_source_commit": "a5f3c44f30eb764bd2a972647f006cdb0b3da61f",
+  "sample_window": [
+    13230,
+    48510
+  ],
+  "sample_rate": 44100,
+  "dpcm_samples": 0,
+  "cases": [
+    {
+      "case": "triangle",
+      "levels": {
+        "previous": {
+          "preview_rms": 3368.0568898877596,
+          "nsf_rms": 2120.042751047686,
+          "preview_vs_nsf_db": 4.020695998367884
+        },
+        "updated": {
+          "preview_rms": 2120.030383230862,
+          "nsf_rms": 2120.042751047686,
+          "preview_vs_nsf_db": -5.0671527871613435e-05
+        }
+      },
+      "nsf_nsfe_bytes_unchanged": true,
+      "container_sha256": {
+        "nsf": "3577d6a3025db4f1823504dfdcbbcafaa2eb48edd59aa732271ae9580d93347b",
+        "nsfe": "32af1b8e86401d6319e1a60a9b814b826ac0e1bac13605601caa7d3c1f92f8ec"
+      }
+    },
+    {
+      "case": "noise",
+      "levels": {
+        "previous": {
+          "preview_rms": 3199.6567058275787,
+          "nsf_rms": 1983.509464668261,
+          "preview_vs_nsf_db": 4.153382156562602
+        },
+        "updated": {
+          "preview_rms": 1983.5027982965742,
+          "nsf_rms": 1983.509464668261,
+          "preview_vs_nsf_db": -2.919243244991362e-05
+        }
+      },
+      "nsf_nsfe_bytes_unchanged": true,
+      "container_sha256": {
+        "nsf": "1ca5f73723c5fb0bde0747b9210b9bd9c3860ae8d5000f86117ec8c1f093d79b",
+        "nsfe": "0b366128ee5b6a5a5b0a4576d37aca95f774192cbf9f7009a74e50f4c376e4a9"
+      }
+    },
+    {
+      "case": "apu_n163_mix",
+      "levels": {
+        "previous": {
+          "preview_rms": 5724.306476054782,
+          "nsf_rms": 4868.5407477905355,
+          "preview_vs_nsf_db": 1.406481367041717
+        },
+        "updated": {
+          "preview_rms": 4783.374446468175,
+          "nsf_rms": 4868.5407477905355,
+          "preview_vs_nsf_db": -0.15328860205876538
+        }
+      },
+      "nsf_nsfe_bytes_unchanged": true,
+      "container_sha256": {
+        "nsf": "d9dd065eed1a6b9f7744cd5d682b478c3fa63e44e2e802f3cdf12abf2715890d",
+        "nsfe": "adec8b66f1a7b42d91108076eaf040bc62f05a97ad3cc2b5dcf47d034a673b01"
+      }
+    }
+  ],
+  "hardware_tested": false
+}
