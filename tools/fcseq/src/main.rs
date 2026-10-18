@@ -4,8 +4,14 @@ use plita::prelude::*;
 use std::path::PathBuf;
 fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    if matches!(args.first().map(String::as_str), Some("--version" | "--help")) {
-        println!("FCSEQ {} - GUI sequencer; fcseq [project.fcq|music.nsf|music.nsfe]", env!("CARGO_PKG_VERSION"));
+    if matches!(
+        args.first().map(String::as_str),
+        Some("--version" | "--help")
+    ) {
+        println!(
+            "FCSEQ {} - GUI sequencer; fcseq [project.fcq|music.nsf|music.nsfe]",
+            env!("CARGO_PKG_VERSION")
+        );
         return Ok(());
     }
     if args.first().map(String::as_str) == Some("--ui-smoke") {

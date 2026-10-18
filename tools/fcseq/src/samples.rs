@@ -22,6 +22,68 @@ pub struct Sample {
     pub initial_level: u8,
 }
 impl Sample {
+    pub fn pcm8_length(&self, rate: f64) -> usize {
+        ((self.end - self.start) as f64 / self.sample_rate as f64 * rate).ceil() as usize
+    }
+    pub fn pcm8(&self, rate: f64) -> Result<Vec<u8>, String> {
+        self.validate()?;
+        if !rate.is_finite() || !(500.0..=32000.0).contains(&rate) {
+            return Err("PCM resampling rate must be 500..32000 Hz".into());
+        }
+        let mut pcm: Vec<f64> = self.pcm[self.start as usize..self.end as usize]
+            .iter()
+            .map(|s| f64::from(*s) / 32768.0)
+            .collect();
+        if self.reverse {
+            pcm.reverse()
+        }
+        let mean = pcm.iter().sum::<f64>() / pcm.len() as f64;
+        for v in &mut pcm {
+            *v -= mean;
+        }
+        let peak = pcm.iter().fold(0f64, |m, v| m.max(v.abs()));
+        let gain = f64::from(self.gain)
+            * if self.normalize && peak > 1e-8 {
+                0.9 / peak
+            } else {
+                1.0
+            };
+        let ratio = self.sample_rate as f64 / rate;
+        let cutoff = (1.0 / ratio).min(1.0) * 0.9;
+        Ok((0..self.pcm8_length(rate))
+            .map(|i| {
+                let pos = i as f64 * ratio;
+                let center = pos.floor() as i64;
+                let mut sum = 0.0;
+                let mut weight = 0.0;
+                for tap in -16..=16 {
+                    let idx = center + tap;
+                    if idx < 0 || idx >= pcm.len() as i64 {
+                        continue;
+                    }
+                    let x = (idx as f64 - pos) * cutoff;
+                    let sinc = if x.abs() < 1e-8 {
+                        1.0
+                    } else {
+                        (std::f64::consts::PI * x).sin() / (std::f64::consts::PI * x)
+                    };
+                    let w = sinc
+                        * (0.5 + 0.5 * (std::f64::consts::PI * (idx as f64 - pos) / 17.0).cos())
+                        * cutoff;
+                    sum += pcm[idx as usize] * w;
+                    weight += w;
+                }
+                (128.0
+                    + if weight.abs() > 1e-8 {
+                        sum / weight * gain * 127.0
+                    } else {
+                        0.0
+                    })
+                .round()
+                .clamp(1.0, 255.0) as u8
+            })
+            .collect())
+    }
     pub fn import(path: &Path) -> Result<Self, String> {
         let decoder = rodio::Decoder::new(BufReader::new(
             std::fs::File::open(path).map_err(|e| e.to_string())?,

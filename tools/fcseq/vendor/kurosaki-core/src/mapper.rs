@@ -71,6 +71,7 @@ pub struct MapperDebugState {
 }
 
 pub trait Mapper: Send {
+    fn observe_cpu_read(&mut self, _addr: u16, _value: u8) {}
     fn mapper_id(&self) -> u16;
     fn mapper_name(&self) -> &'static str;
     /// Returns the physical 8 KiB PRG-ROM bank currently visible at a CPU

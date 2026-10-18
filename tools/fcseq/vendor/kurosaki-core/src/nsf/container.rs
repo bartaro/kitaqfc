@@ -51,6 +51,9 @@ pub(super) fn read_metadata(data: &[u8], h: &mut NsfHeader) -> Result<()> {
                     }
                 }
             }
+            b"RATE" if payload.len() >= 2 => {
+                h.ntsc_period_us = u16::from_le_bytes([payload[0], payload[1]]).max(1)
+            }
             b"NEND" => break,
             _ if name[0].is_ascii_uppercase() => {
                 return Err(invalid("unsupported required NSFe metadata chunk"))
@@ -106,7 +109,13 @@ pub(super) fn from_nsfe(data: &[u8]) -> Result<NsfFile> {
                     header[120..122].copy_from_slice(&payload[2..4]);
                 }
             }
-            b"NSF2" => return Err(invalid("NSF2 execution features are not supported")),
+            b"NSF2" => {
+                if payload.len() != 1 {
+                    return Err(invalid("NSFe NSF2 chunk must contain one flag byte"));
+                }
+                header[5] = 2;
+                header[124] = payload[0];
+            }
             _ => append(&mut metadata, name, payload),
         }
     }
@@ -164,6 +173,9 @@ pub(super) fn write_nsfe(file: &NsfFile) -> Result<Vec<u8>> {
     }
     info.extend_from_slice(&[h.region, h.expansion_bits, h.songs, h.starting_song - 1]);
     append(&mut out, b"INFO", &info);
+    if h.version == 2 || h.nsf2_flags != 0 {
+        append(&mut out, b"NSF2", &[h.nsf2_flags]);
+    }
     if h.banked {
         append(&mut out, b"BANK", &h.banks);
     }
@@ -181,7 +193,16 @@ pub(super) fn write_nsfe(file: &NsfFile) -> Result<Vec<u8>> {
 pub(super) fn write_nsf(file: &NsfFile) -> Result<Vec<u8>> {
     let h = &file.header;
     let mut out = vec![0; 128];
-    out[..8].copy_from_slice(&[b'N', b'E', b'S', b'M', 0x1a, 1, h.songs, h.starting_song]);
+    out[..8].copy_from_slice(&[
+        b'N',
+        b'E',
+        b'S',
+        b'M',
+        0x1a,
+        h.version,
+        h.songs,
+        h.starting_song,
+    ]);
     for (at, value) in [
         (8, h.load_address),
         (10, h.init_address),
@@ -201,6 +222,7 @@ pub(super) fn write_nsf(file: &NsfFile) -> Result<Vec<u8>> {
     out[112..120].copy_from_slice(&h.banks);
     out[122] = h.region;
     out[123] = h.expansion_bits;
+    out[124] = h.nsf2_flags;
     out[125..128].copy_from_slice(&(file.data.len() as u32).to_le_bytes()[..3]);
     out.extend_from_slice(&file.data);
     out.extend(metadata(h)?);

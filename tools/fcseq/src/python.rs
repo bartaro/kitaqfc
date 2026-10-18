@@ -274,6 +274,13 @@ impl Controller {
             "quantize" => Edit::Quantize(u16::try_from(value).map_err(err)?),
             "duplicate" => Edit::Duplicate,
             "delete" => Edit::Delete,
+            "volume" => Edit::Volume(i16::try_from(value).map_err(err)?),
+            "tone" => Edit::Tone,
+            "noise" => Edit::PsgNoise,
+            "envelope" => Edit::Envelope,
+            "envelope-shape" => Edit::EnvelopeShape(i16::try_from(value).map_err(err)?),
+            "envelope-period" => Edit::EnvelopePeriod(value),
+            "pan" => Edit::Pan(i16::try_from(value).map_err(err)?),
             _ => return Err(err("Unknown operation")),
         };
         let mut out = vec![];
@@ -310,7 +317,9 @@ impl Controller {
             sample.normalize = normalize;
             sample.reverse = reverse;
             sample.rate = rate;
-            sample.encode()?;
+            // PCM instruments retain full processed audio; DPCM encoding is
+            // validated when the sample is used on the DPCM track or exported.
+            sample.validate()?;
             Ok(())
         })
     }
@@ -359,6 +368,25 @@ impl Controller {
         self.edit(|s| {
             s.vrc7_patch = patch;
             Ok(())
+        })
+    }
+    fn set_epsm_patch(&mut self, index: usize, values: Vec<u8>) -> PyResult<()> {
+        self.edit(|s| {
+            *s.epsm_patches
+                .get_mut(index)
+                .ok_or("EPSM patch index must be 0..15")? = values;
+            Ok(())
+        })
+    }
+    fn set_epsm_parameter(&mut self, patch: usize, index: usize, value: u8) -> PyResult<()> {
+        self.edit(|s| {
+            crate::instruments::set_epsm_parameter(
+                s.epsm_patches
+                    .get_mut(patch)
+                    .ok_or("EPSM patch index must be 0..15")?,
+                index,
+                value,
+            )
         })
     }
     fn undo(&mut self) -> bool {

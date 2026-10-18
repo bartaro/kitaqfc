@@ -10258,7 +10258,9 @@ fn load_memory_font() -> Option<RichFontRasterizer> {
 fn candidate_font_paths() -> Vec<PathBuf> {
     let mut paths = Vec::new();
     if let Ok(exe) = std::env::current_exe() {
-        if let Some(dir) = exe.parent() { paths.push(dir.join("assets/fonts/Roboto[wdth,wght].ttf")); }
+        if let Some(dir) = exe.parent() {
+            paths.push(dir.join("assets/fonts/Roboto[wdth,wght].ttf"));
+        }
     }
 
     if let Some(path) = std::env::var_os("PLITA_UI_FONT") {
@@ -10322,6 +10324,14 @@ fn candidate_cjk_font_paths() -> Vec<PathBuf> {
     if let Some(path) = std::env::var_os("PLITA_UI_FONT_FALLBACK") {
         paths.push(PathBuf::from(path));
     }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            paths.push(dir.join("assets/fonts/NotoSansJP-Regular.otf"));
+        }
+    }
+    paths.push(
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../assets/fonts/NotoSansJP-Regular.otf"),
+    );
 
     for candidate in [
         "assets/fonts/NotoSansJP-Regular.ttf",
@@ -10354,7 +10364,9 @@ fn candidate_cjk_font_paths() -> Vec<PathBuf> {
 fn candidate_memory_font_paths() -> Vec<PathBuf> {
     let mut paths = Vec::new();
     if let Ok(exe) = std::env::current_exe() {
-        if let Some(dir) = exe.parent() { paths.push(dir.join("assets/fonts/RobotoMono-Regular.ttf")); }
+        if let Some(dir) = exe.parent() {
+            paths.push(dir.join("assets/fonts/RobotoMono-Regular.ttf"));
+        }
     }
 
     if let Some(path) = std::env::var_os("PLITA_MEMORY_FONT") {

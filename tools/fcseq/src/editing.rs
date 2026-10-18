@@ -16,6 +16,12 @@ pub enum Edit {
     Instrument(i16),
     NoisePeriod(i16),
     NoiseMode,
+    Tone,
+    PsgNoise,
+    Envelope,
+    EnvelopeShape(i16),
+    EnvelopePeriod(i32),
+    Pan(i16),
 }
 pub fn transaction(
     score: &mut Score,
@@ -122,7 +128,7 @@ pub fn edit_notes(
                             Edit::Instrument(d) => {
                                 sound.instrument = (sound.instrument as i16 + d).clamp(
                                     0,
-                                    if c == 4 {
+                                    if matches!(exp.kind(c), Voice::Dpcm | Voice::Pcm) {
                                         sample_max
                                     } else if exp.kind(c) == Voice::N163 {
                                         wave_max
@@ -138,10 +144,25 @@ pub fn edit_notes(
                                         .unwrap_or([13, 8, 2, 3][(n.note.clamp(1, 4) - 1) as usize])
                                         as i16
                                         + d)
-                                        .clamp(0, 15) as u8,
+                                        .clamp(0, if exp.kind(c) == Voice::Psg { 31 } else { 15 })
+                                        as u8,
                                 )
                             }
                             Edit::NoiseMode => sound.noise_short = !sound.noise_short,
+                            Edit::Tone => sound.tone = !sound.tone,
+                            Edit::PsgNoise => sound.noise = !sound.noise,
+                            Edit::Envelope => sound.envelope = !sound.envelope,
+                            Edit::EnvelopeShape(d) => {
+                                sound.envelope_shape =
+                                    (i16::from(sound.envelope_shape) + d).clamp(0, 15) as u8
+                            }
+                            Edit::EnvelopePeriod(d) => {
+                                sound.envelope_period =
+                                    (i32::from(sound.envelope_period) + d).clamp(0, 65535) as u16
+                            }
+                            Edit::Pan(d) => {
+                                sound.pan = (i16::from(sound.pan) + d).clamp(0, 3) as u8
+                            }
                             _ => {}
                         }
                         n.sound = Some(sound);

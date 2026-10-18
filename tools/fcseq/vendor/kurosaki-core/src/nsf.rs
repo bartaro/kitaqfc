@@ -1,10 +1,11 @@
-//! NSF1/NSFe NTSC host. Format reference: https://www.nesdev.org/wiki/NSF
+//! NSF1/NSF2/NSFe NTSC host. Format reference: https://www.nesdev.org/wiki/NSF2
 //! Executes INIT/PLAY on KUROSAKI's CPU, APU/DPCM and expansion sound cores.
 //! No ROM conversion, external player, or GUI dependency is required.
 use crate::{
     bus::Bus,
     cpu::CpuState,
     error::{KurosakiError, Result},
+    expansion_audio::ExpansionAudio,
     mapper::{FdsMapper, Mapper, MapperDebugState, NromMapper},
     mapper_scaffolds::VrcFamilyMapper,
     namco163::Namco163Mapper,
@@ -29,6 +30,8 @@ pub struct NsfTrack {
 #[derive(Debug, Clone, Serialize)]
 pub struct NsfHeader {
     pub format: &'static str,
+    pub version: u8,
+    pub nsf2_flags: u8,
     pub region: u8,
     pub tracks: Vec<NsfTrack>,
     pub title: String,
@@ -77,21 +80,18 @@ impl NsfFile {
                 "expected an NSF1 header and 1 byte..1 MiB of music data",
             ));
         }
-        if data[5] != 1 {
-            return Err(invalid(
-                "only NSF1/NSFe are supported; NSF2 execution features are not supported",
-            ));
+        if ![1, 2].contains(&data[5]) {
+            return Err(invalid("expected NSF version 1 or 2"));
         }
         if data[122] & 3 == 1 {
             return Err(invalid("PAL-only NSF is not supported by the NTSC core"));
         }
-        if data[123] & !0x17 != 0 {
-            return Err(invalid(
-                "unsupported expansion chip; supported: 2A03/DPCM, N163, VRC6, VRC7, FDS",
-            ));
+        let flags = if data[5] == 2 { data[124] } else { 0 };
+        if flags & 15 != 0 {
+            return Err(invalid("reserved NSF2 feature bits must be zero"));
         }
-        if data[124] != 0 {
-            return Err(invalid("NSF2 execution flags are not supported"));
+        if flags & 0x10 != 0 && data[123] & 0x80 != 0 {
+            return Err(invalid("NSF2 timer IRQ registers conflict with EPSM ports $401C/$401D; use EPSM timers or an NSF2 file without the timer-IRQ flag"));
         }
         let declared =
             usize::from(data[125]) | usize::from(data[126]) << 8 | usize::from(data[127]) << 16;
@@ -120,7 +120,7 @@ impl NsfFile {
             || data[7] > data[6]
             || load < 0x6000
             || word(10) < 0x6000
-            || word(12) < 0x6000
+            || (flags & 0x40 == 0 && word(12) < 0x6000)
         {
             return Err(invalid("invalid song count, starting song, or load/init/play address (expected $6000..$FFFF)"));
         }
@@ -133,14 +133,25 @@ impl NsfFile {
         if banked && load < 0x8000 && data[123] & 4 == 0 {
             return Err(invalid("banked non-FDS NSF must load at $8000 or above"));
         }
-        let expansion_chips = [(1, "VRC6"), (2, "VRC7"), (4, "FDS"), (16, "N163")]
-            .iter()
-            .filter(|(bit, _)| data[123] & bit != 0)
-            .map(|(_, name)| name.to_string())
-            .collect();
+        let expansion_chips = [
+            (1, "VRC6"),
+            (2, "VRC7"),
+            (4, "FDS"),
+            (8, "MMC5"),
+            (16, "N163"),
+            (32, "SUNSOFT 5B"),
+            (64, "VT02"),
+            (128, "EPSM"),
+        ]
+        .iter()
+        .filter(|(bit, _)| data[123] & bit != 0)
+        .map(|(_, name)| name.to_string())
+        .collect();
         let mut file = Self {
             header: NsfHeader {
-                format: "nsf-1",
+                format: if data[5] == 2 { "nsf-2" } else { "nsf-1" },
+                version: data[5],
+                nsf2_flags: flags,
                 region: data[122],
                 tracks: vec![NsfTrack::default(); data[6] as usize],
                 title: string(14),
@@ -161,6 +172,10 @@ impl NsfFile {
         };
         if end < data.len() {
             container::read_metadata(&data[end..], &mut file.header)?;
+        } else if flags & 0x80 != 0 {
+            return Err(invalid(
+                "NSF2 requires appended metadata but none was supplied",
+            ));
         }
         Ok(file)
     }
@@ -171,6 +186,11 @@ impl NsfFile {
     pub fn to_nsf_bytes(&self) -> Result<Vec<u8>> {
         container::write_nsf(self)
     }
+    pub fn to_nsf2_bytes(&self) -> Result<Vec<u8>> {
+        let mut file = self.clone();
+        file.header.version = 2;
+        container::write_nsf(&file)
+    }
 }
 
 struct NsfMapper {
@@ -180,6 +200,12 @@ struct NsfMapper {
     banked: bool,
     fds: bool,
     chips: Vec<(u8, Box<dyn Mapper>)>,
+    flags: u8,
+    vector: [u8; 6],
+    timer_reload: u16,
+    timer_counter: u32,
+    timer_active: bool,
+    timer_irq: bool,
 }
 impl NsfMapper {
     fn new(file: &NsfFile) -> Self {
@@ -218,14 +244,33 @@ impl NsfMapper {
             chip.use_averaged_audio();
             chips.push((16, Box::new(chip)));
         }
-        Self {
+        for bit in [8, 32, 64, 128] {
+            if h.expansion_bits & bit != 0 {
+                chips.push((bit, Box::new(ExpansionAudio::new(bit))))
+            }
+        }
+        let mut result = Self {
             memory,
             image,
             banks,
             banked: h.banked,
             fds: h.expansion_bits & 4 != 0,
             chips,
+            flags: h.nsf2_flags,
+            vector: [0; 6],
+            timer_reload: 0,
+            timer_counter: 0,
+            timer_active: false,
+            timer_irq: false,
+        };
+        for i in 0..6 {
+            let a = 0xfffa + i as u16;
+            result.vector[i] = match result.bank_offset(a) {
+                Some(o) => result.image.get(o).copied().unwrap_or(0),
+                None => result.memory[a as usize],
+            };
         }
+        result
     }
     fn bank_offset(&self, addr: u16) -> Option<usize> {
         (self.banked && (addr >= 0x8000 || self.fds && addr >= 0x6000)).then(|| {
@@ -237,7 +282,11 @@ impl NsfMapper {
             1 => matches!(addr, 0x9000..=0x9003 | 0xa000..=0xa002 | 0xb000..=0xb002),
             2 => matches!(addr, 0x9010 | 0x9030 | 0xe000),
             4 => matches!(addr, 0x4023 | 0x4040..=0x4092),
+            8 => matches!(addr,0x5000..=0x5015|0x5205..=0x5206),
             16 => matches!(addr, 0x4800..=0x4fff | 0xe000..=0xe7ff | 0xf800..=0xffff),
+            32 => matches!(addr, 0xc000 | 0xe000),
+            64 => matches!(addr, 0x4020..=0x402f | 0x4030 | 0x4031 | 0x4035),
+            128 => matches!(addr, 0x401c..=0x401f),
             _ => false,
         }
     }
@@ -257,15 +306,43 @@ impl Mapper for NsfMapper {
         cfg: TraceConfig,
         sink: &mut TraceSink,
     ) -> u8 {
+        if self.flags & 0x30 != 0 && addr >= 0xfffa {
+            return self.vector[(addr - 0xfffa) as usize];
+        }
+        if self.flags & 0x10 != 0 {
+            match addr {
+                0x401b => return self.timer_reload as u8,
+                0x401c => return (self.timer_reload >> 8) as u8,
+                0x401d => {
+                    let v = (self.timer_active as u8) | if self.timer_irq { 128 } else { 0 };
+                    self.timer_irq = false;
+                    return v;
+                }
+                _ => {}
+            }
+        }
         for (bit, chip) in &mut self.chips {
-            if matches!((*bit, addr), (16, 0x4800..=0x4fff) | (4, 0x4040..=0x4092)) {
+            if matches!(
+                (*bit, addr),
+                (16, 0x4800..=0x4fff)
+                    | (4, 0x4040..=0x4092)
+                    | (8, 0x5010 | 0x5015 | 0x5205 | 0x5206)
+                    | (64, 0x4035)
+                    | (128, 0x401c..=0x401f)
+            ) {
                 return chip.read_prg(addr, frame, cycle, cfg, sink);
             }
         }
-        match self.bank_offset(addr) {
+        let value = match self.bank_offset(addr) {
             Some(offset) => self.image.get(offset).copied().unwrap_or(0),
             None => self.memory[addr as usize],
+        };
+        for (bit, chip) in &mut self.chips {
+            if *bit == 8 {
+                chip.observe_cpu_read(addr, value)
+            }
         }
+        value
     }
     fn write_prg(
         &mut self,
@@ -276,6 +353,29 @@ impl Mapper for NsfMapper {
         cfg: TraceConfig,
         sink: &mut TraceSink,
     ) {
+        if self.flags & 0x30 != 0 && addr >= 0xfffa {
+            if addr >= 0xfffe {
+                self.vector[(addr - 0xfffa) as usize] = value
+            }
+            return;
+        }
+        if self.flags & 0x10 != 0 {
+            match addr {
+                0x401b => {
+                    self.timer_reload = (self.timer_reload & 0xff00) | u16::from(value);
+                    return;
+                }
+                0x401c => {
+                    self.timer_reload = (self.timer_reload & 255) | (u16::from(value) << 8);
+                    return;
+                }
+                0x401d => {
+                    self.timer_active = value & 1 != 0;
+                    return;
+                }
+                _ => {}
+            }
+        }
         if self.banked
             && ((0x5ff8..=0x5fff).contains(&addr) || self.fds && (0x5ff6..=0x5ff7).contains(&addr))
         {
@@ -290,7 +390,11 @@ impl Mapper for NsfMapper {
             }
         }
         // Multi-chip register writes must not corrupt FDS code/data RAM.
-        if !audio_write && ((0x6000..=0x7fff).contains(&addr) || self.fds && addr >= 0x8000) {
+        if !audio_write
+            && ((0x6000..=0x7fff).contains(&addr)
+                || self.fds && addr >= 0x8000
+                || (0x5c00..=0x5ff5).contains(&addr) && self.chips.iter().any(|(b, _)| *b == 8))
+        {
             if let Some(offset) = self.bank_offset(addr) {
                 if let Some(v) = self.image.get_mut(offset) {
                     *v = value;
@@ -305,6 +409,18 @@ impl Mapper for NsfMapper {
     }
     fn write_chr(&mut self, _: u16, _: u8) {}
     fn clock_expansion_audio(&mut self, cycles: u64) {
+        if self.timer_active {
+            if cycles > u64::from(self.timer_counter) {
+                self.timer_irq = true;
+                let remaining = (cycles - u64::from(self.timer_counter) - 1)
+                    % (u64::from(self.timer_reload) + 1);
+                self.timer_counter = u32::from(self.timer_reload) - remaining as u32;
+            } else {
+                self.timer_counter -= cycles as u32;
+            }
+        } else {
+            self.timer_counter = u32::from(self.timer_reload);
+        }
         for (_, chip) in &mut self.chips {
             chip.clock_expansion_audio(cycles);
         }
@@ -315,6 +431,9 @@ impl Mapper for NsfMapper {
             .map(|(_, chip)| chip.expansion_audio_sample(rate) as i32)
             .sum::<i32>()
             .clamp(-32768, 32767) as i16
+    }
+    fn irq_pending(&self) -> bool {
+        self.timer_irq || self.chips.iter().any(|(_, c)| c.irq_pending())
     }
     fn debug_state(&self) -> MapperDebugState {
         let mut state =
@@ -339,6 +458,9 @@ pub struct NsfPlayer {
     trace_config: TraceConfig,
     origin: u64,
     next_tick: u64,
+    background: bool,
+    nmi_context: Option<CpuState>,
+    routine_start: u64,
 }
 impl NsfPlayer {
     pub fn new(
@@ -365,7 +487,11 @@ impl NsfPlayer {
             trace_config,
             origin: 0,
             next_tick: 0,
+            background: file.header.nsf2_flags & 0x20 != 0,
+            nmi_context: None,
+            routine_start: 0,
         };
+        player.bus.apu.vt02 = file.header.expansion_bits & 64 != 0;
         player.bus.apu.sample_rate = sample_rate;
         player.bus.apu.capture_full_audio = true;
         for addr in 0x4000..=0x4013 {
@@ -380,9 +506,17 @@ impl NsfPlayer {
         }
         player.cpu.a = song - 1; // NSF INIT uses zero-based song indices.
         player.cpu.x = 0; // NTSC
+        player.cpu.y = if player.background { 0x80 } else { 0 };
         player.call(file.header.init_address, CPU_HZ as u64 * 2)?;
         player.bus.apu.sample_buffer.clear();
         player.origin = player.cpu.cycles;
+        if player.background {
+            player.cpu.a = song - 1;
+            player.cpu.x = 0;
+            player.cpu.y = 0x81;
+            player.begin_call(file.header.init_address);
+            player.next_tick = 1;
+        }
         Ok(player)
     }
     fn clock(&mut self, cycles: u64, start: u64) {
@@ -399,32 +533,73 @@ impl NsfPlayer {
             elapsed += step;
         }
     }
-    fn call(&mut self, addr: u16, budget: u64) -> Result<()> {
+    fn begin_call(&mut self, addr: u16) {
         self.cpu.pc = addr;
         self.cpu.sp = 0xfd;
         // Synthetic JSR return address; no host instructions occupy NSF memory.
         self.bus.ram[0x1fe] = 0xfe;
         self.bus.ram[0x1ff] = 0x4f;
+        self.routine_start = self.cpu.cycles;
+    }
+    fn step_cpu(&mut self) -> Result<()> {
+        let before = self.cpu.cycles;
+        self.cpu.step(
+            &mut self.bus,
+            self.play_calls,
+            self.trace_config,
+            &mut self.trace,
+        )?;
+        self.clock(self.cpu.cycles - before, before);
+        while self.bus.dma_stall_cycles != 0 {
+            let stall = std::mem::take(&mut self.bus.dma_stall_cycles);
+            self.clock(stall, self.cpu.cycles);
+            self.cpu.cycles += stall;
+        }
+        Ok(())
+    }
+    fn call(&mut self, addr: u16, budget: u64) -> Result<()> {
+        self.begin_call(addr);
         let start = self.cpu.cycles;
         while self.cpu.pc != 0x4fff {
             if self.cpu.cycles - start >= budget {
                 return Err(invalid(format!("routine ${addr:04X} did not return within {budget} CPU cycles; non-returning INIT/PLAY is unsupported")));
             }
-            let before = self.cpu.cycles;
-            self.cpu.step(
-                &mut self.bus,
-                self.play_calls,
-                self.trace_config,
-                &mut self.trace,
-            )?;
-            self.clock(self.cpu.cycles - before, before);
-            while self.bus.dma_stall_cycles != 0 {
-                let stall = std::mem::take(&mut self.bus.dma_stall_cycles);
-                self.clock(stall, self.cpu.cycles);
-                self.cpu.cycles += stall;
-            }
+            self.step_cpu()?;
         }
         Ok(())
+    }
+    fn begin_nmi_play(&mut self) {
+        let saved = self.cpu;
+        // Host NMI wrapper saves A/X/Y, calls PLAY with RTS, then restores the
+        // interrupted context as RTI would. Its stack footprint is observable.
+        let values = [
+            (saved.pc >> 8) as u8,
+            saved.pc as u8,
+            saved.p & !0x10,
+            saved.a,
+            saved.x,
+            saved.y,
+            0x4f,
+            0xfe,
+        ];
+        for v in values {
+            self.bus.ram[0x100 + usize::from(self.cpu.sp)] = v;
+            self.cpu.sp = self.cpu.sp.wrapping_sub(1);
+        }
+        self.cpu.p |= 4;
+        self.cpu.pc = self.header.play_address;
+        self.clock(26, self.cpu.cycles);
+        self.cpu.cycles += 26;
+        self.nmi_context = Some(saved);
+    }
+    fn finish_nmi_play(&mut self) {
+        if let Some(saved) = self.nmi_context.take() {
+            let cycles = self.cpu.cycles;
+            self.cpu = saved;
+            self.cpu.cycles = cycles;
+            self.clock(22, cycles);
+            self.cpu.cycles += 22;
+        }
     }
     /// Render an exact number of mono PCM16 samples, preserving CPU/chip state
     /// between chunks. Caller controls real-time pacing and audio device output.
@@ -433,6 +608,62 @@ impl NsfPlayer {
             return Err(invalid("one render request is limited to 600 seconds"));
         }
         let interval = CPU_HZ * self.header.ntsc_period_us as f64 / 1_000_000.0;
+        if self.header.nsf2_flags & 0x70 != 0 {
+            while self.bus.apu.sample_buffer.len() < count {
+                if self.cpu.pc == 0x4fff && self.nmi_context.is_some() {
+                    self.finish_nmi_play();
+                }
+                let due = self.origin + (self.next_tick as f64 * interval).round() as u64;
+                if self.header.nsf2_flags & 0x40 == 0
+                    && self.cpu.cycles >= due
+                    && self.nmi_context.is_none()
+                    && (self.background || self.cpu.pc == 0x4fff)
+                {
+                    if self.background {
+                        self.begin_nmi_play()
+                    } else {
+                        self.begin_call(self.header.play_address)
+                    }
+                    self.play_calls += 1;
+                    // A rounded deadline may be slightly below its floating-point
+                    // time. Always consume this tick before skipping overdue ones.
+                    self.next_tick = (self.next_tick + 1).max(
+                        ((self.cpu.cycles - self.origin) as f64 / interval).floor() as u64 + 1,
+                    );
+                }
+                if self.cpu.pc != 0x4fff {
+                    if !self.background && self.cpu.cycles - self.routine_start > CPU_HZ as u64 * 2
+                    {
+                        return Err(invalid("NSF2 PLAY did not return within two seconds"));
+                    }
+                    self.step_cpu()?;
+                } else {
+                    if self.header.nsf2_flags & 0x10 != 0
+                        && self.cpu.p & 4 == 0
+                        && (self.bus.mapper.irq_pending() || self.bus.apu.irq_pending())
+                    {
+                        let before = self.cpu.cycles;
+                        self.cpu.service_irq(
+                            &mut self.bus,
+                            self.play_calls,
+                            self.trace_config,
+                            &mut self.trace,
+                        );
+                        self.clock(self.cpu.cycles - before, before);
+                    } else {
+                        let cycles = if self.header.nsf2_flags & 0x40 == 0 {
+                            due.saturating_sub(self.cpu.cycles).clamp(1, 16)
+                        } else {
+                            16
+                        };
+                        self.clock(cycles, self.cpu.cycles);
+                        self.cpu.cycles += cycles;
+                        self.bus.dma_stall_cycles = 0;
+                    }
+                }
+            }
+            return Ok(self.bus.apu.sample_buffer.drain(..count).collect());
+        }
         while self.bus.apu.sample_buffer.len() < count {
             let due = self.origin + (self.next_tick as f64 * interval).round() as u64;
             if self.cpu.cycles >= due {

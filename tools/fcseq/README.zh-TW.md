@@ -1,90 +1,87 @@
-# FCSEQ 0.4.2 — 使用說明
+# FCSEQ 0.5.0
 
-[en](README.en.md) · [ja](README.ja.md) · [ko](README.ko.md) · [zh-CN](README.zh-CN.md) · [zh-TW](README.zh-TW.md) · [fr](README.fr.md) · [es](README.es.md) · [de](README.de.md) · [pt-BR](README.pt-BR.md)
+[English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt-BR.md)
 
-作者 **DAISUKE OBA**。使用 **plita** 的通用紅白機音樂編曲器。GUI、CLI、Python 綁定共用專案模型、音訊產生及匯出功能。啟動時為空白專案，不需要遊戲 ROM 或 BIOS。介面標籤是英文，說明書提供九種語言。
+FCSEQ 是一款使用紅白機音源創作音樂的編輯器。你可以在 plita 介面中編寫音符、調整音色和波形，並隨時試聽。GUI、CLI 與 Python bindings 共用同一種專案格式和音訊引擎。程式從空白專案開始，不依賴特定遊戲或 ROM。
 
-**0.4.2** — 預覽、C 匯出和 NSF 的 DMC DAC 初值統一為 64。預覽在 DAC/濾波器穩定後開始擷取，修正未使用 DPCM 取樣時 Triangle/Noise 的音量差及無聲片段的起始暫態。各 DPCM 取樣的初始電位仍優先。FCQ/NSF/NSFe 格式不變。
+## 安裝與介面語言
 
-## 下載與啟動
+從 [downloads](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads) 下載適合電腦的 ZIP，並完整解壓縮。Windows、Linux 提供 x86_64 版本，macOS 提供 Apple Silicon 與 Intel 版本。Windows 執行 `fcseq.exe`，Linux 與 macOS 執行 `./fcseq`。若缺少執行權限，可使用 `chmod +x fcseq fcseq-cli`。請一併保留字型與授權文件。
 
-從 [downloads/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads) 下載完整 ZIP：Windows x86_64、Linux x86_64、macOS Apple Silicon ARM64 或 Intel x86_64。請完整解壓縮，保留資源與授權文件。Windows 開啟 `fcseq.exe`，Unix 執行 `./fcseq`；命令列工具為 `fcseq-cli`（Windows 加 `.exe`）。[bin/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/bin) 也提供個別執行檔。Windows 10/11 使用 Direct3D 12，macOS 使用 Metal，Linux 使用 Vulkan/OpenGL、X11/Wayland 和 ALSA。Linux 在 Ubuntu 24.04 建置，較舊發行版可能需要自行編譯。Ubuntu 執行函式庫：`sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`。GUI 需要相容的顯示驅動程式，試聽需要音訊裝置；匯出 WAV 不需要。執行檔未簽章，macOS 版本未公證。若遭系統阻擋，請核對原始碼與雜湊，再使用系統正常的允許程序。必要時執行 `chmod +x fcseq fcseq-cli`。
+介面支援英文和日文。選擇 **SOUND → 日本語 / English** 即可切換，程式會記住設定；NSF 播放器的工具列也有相同按鈕。首次啟動會依系統語言選擇，也可用 `FCSEQ_LANGUAGE=ja` 或 `en` 指定。套件內含 Noto Sans JP，讓各系統都能顯示日文。
 
-Windows 另需 [Microsoft Visual C++ x64 可轉散發套件](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)（程式使用 `VCRUNTIME140.dll`）。若缺少，請安裝 Microsoft 官方目前支援的 x64 版本。GUI/CLI 不連結 Python；只有選用綁定和包裝腳本需要 Python。
+Windows 需要 Direct3D 12 驅動程式和 Microsoft Visual C++ x64 執行階段；macOS 使用 Metal。Linux 版本在 Ubuntu 24.04 建置，使用 ALSA、X11/Wayland 與 Vulkan/OpenGL，較舊的發行版可能需要自行編譯。即時播放需要音訊裝置，但匯出 WAV 不需要。執行檔沒有數位簽章，macOS 版本也未經公證。
 
-## 作曲與編輯
+## 編寫音符與鍵盤編輯器
 
-SOUND 可選 2A03（Pulse 1/2、Triangle、Noise、DPCM，共5聲）、VRC6（增加2個 Pulse 和 Saw，共8聲）、VRC7（增加6個 FM，共11聲）、FDS（增加1個波形聲部，共6聲）、N163（增加1~8個波形聲部，最多13聲）。每個專案只能用一種擴充配置；造成音符遺失的切換或減少聲部會被拒絕。
+先在 **SOUND** 選擇音源，再於音軌空白處按兩下即可新增音符。拖曳音符本體可改變位置及音高，拖曳右端可改變長度。每條音軌對應一個硬體聲道，因此不能放置重疊的音符。
 
-雙擊新增音符，拖曳本體移動/移調，拖曳右緣改長度。Ctrl/Shift 點擊或框選多選，Ctrl+A 選取目前音軌。Ctrl+C/X/V 複製/剪下/在游標貼上；Ctrl+D 複製副本；Delete 刪除；Ctrl+Z/Y 復原/重做。方向鍵移動/移調，Shift+上下改八度。G 格線、Q 量化、F 全景、Home 起點、+/- 縮放、Shift+滾輪移動時間、UP/DOWN 捲動聲部。Space 播放/停止、LOOP 循環、AUDITION 試聽選取音符。MUTE/SOLO 也影響匯出。SONG 管理最多16段、每段256小節；點擊名稱、BPM、小節數修改。Ctrl+N/O/S/Shift+S 新建/開啟/儲存/另存。無效批次編輯整體取消。復原檔位於執行檔旁 `out/recovery_<process-id>.fcq`，開啟後另存即可。
+在音軌名稱上按兩下，或按 **E**，即可單獨開啟該音軌。鍵盤編輯器左側有鋼琴鍵盤，縱向每格是一個半音，橫向是時間。點選琴鍵可以試聽。滾輪移動音域，鍵盤旁的 −/+ 調整顯示音域，Shift+滾輪移動時間位置。音軌箭頭可切換至其他音軌，再按 E 回到全部音軌。雜訊、DPCM 與節奏音軌會顯示適用的聲音或播放速率範圍。
 
-## 音色與波形
+按住 Ctrl/Shift 點選，或在空白處拖曳選取框，可選取多個音符。Ctrl+A 選取目前音軌；Ctrl+C/X/V 複製、剪下或貼到游標處；Ctrl+D 複製一份；Delete 刪除。Ctrl+Z/Y 復原或重做。方向鍵移動或移調，Shift+上/下移動一個八度。G 改變格線，Q 將音符對齊格線，F 顯示整個樂段，Home 回到開頭，+/− 縮放時間軸。
 
-開啟 SOUND > Instrument / waveform editor，選取該聲部音符後調整，使用 AUDITION/UNDO/REDO。Pulse 工作週期4級，VRC6 Pulse 8級；Triangle 為固定32級波形；Noise 有16個週期及長/短模式。Pulse/Noise 音量0~15，衰減0維持固定音量。VRC6 Saw 累加增量0~63，溢位也改變音色。這些音源沒有自由繪圖用波形 RAM。
+Space 控制播放與停止。LOOP 重複目前樂段，AUDITION 試聽選取的音符。靜音和獨奏也會影響匯出。在 SONG 中可以新增、命名及調整樂段順序，每個專案最多 16 個樂段，每段最多 256 小節。點選速度或小節數即可修改。Ctrl+N/O/S/Shift+S 分別是新增、開啟、儲存、另存新檔。復原檔案位於程式旁的 `out/recovery_<process-id>.fcq`；需要時開啟並另存新檔。
 
-FDS 有共用64取樣點、6位元波形。N163 為4位元波形，初始4×32點，各音符選擇波形編號，長度須為4的倍數。共用容量 `256 - 16 × 啟用聲部數` 點（8聲為128點）；延長前先縮短其他波形或減少聲部。支援拖曳繪圖、SINE/PULSE/SAW/TRIANGLE、反轉與旋轉，並檢查音高/RAM/聲部限制。VRC7 自訂音色0可編輯24個參數（倍頻、ADSR、回授、音量、鍵盤縮放、顫音/顫頻、正弦/半波）或8位元組。預設1~15是獨立合成的近似音色，不是音色 ROM 傾印。沒有 FDS 調變表/硬體包絡專用編輯器。模擬音質不保證與實機類比輸出一致。
+## 音源與音色
 
-## DPCM
+基本 2A03 有兩路脈衝波、三角波、雜訊與 DPCM，共 5 條音軌。每個專案可選一種擴充音源。
 
-SAMPLES 或 SOUND > Import audio file 匯入 WAV/FLAC/Ogg Vorbis/MP3，也可拖放。設定 START/END（毫秒）、GAIN、NORMALIZE、REVERSE、RATE 0~15，以 AUDITION DPCM 試聽，EXPORT .DMC 儲存。向 DPCM 音軌加入音符，在檢查器選 SAMPLE 與播放 RATE。保留原始 PCM 供還原；輸入最多60秒，立體聲轉單聲道，轉換時移除直流並低通重新取樣。每個音色 `16n+1` 位元組、最多4081位元組，最多64音色，整庫16320位元組（FDS 8192）。超限操作拒絕。轉換取樣率與音符播放速率不同。沒有音色內部循環或自動音高校正。
+| 擴充音源 | 增加的聲音 | 總音軌數 |
+|---|---|---:|
+| VRC6 | 兩路脈衝波、鋸齒波 | 8 |
+| VRC7 | 6 路 FM | 11 |
+| FDS | 1 路波表 | 6 |
+| N163 | 最多 8 路波表 | 13 |
+| MMC5 | 兩路脈衝波、PCM | 8 |
+| SUNSOFT 5B | 3 路 SSG，共用雜訊與包絡 | 8 |
+| EPSM | 3 路 SSG、6 路 FM、6 路節奏 | 20 |
+| VT02 | 兩路脈衝波、三角波、雜訊、PCM | 10 |
 
-## 檔案與匯出
+若更換音源或減少聲道會遺失音符，程式會拒絕變更。請先清空相關音軌，或建立新專案。
 
-專案儲存為 `.fcq`，舊 `.fcseq` 可改名讀取。音符專案為 `fcseq-2` JSON，也支援 `fcseq-1`；NSF 播放文件為 `fcseq-3`。透過 Import NSF、OPEN、拖放或啟動參數開啟 NSF/NSFe。PREV/NEXT 或曲號選曲，PLAY/STOP、LOOP、1~600秒控制播放。有曲長資訊時採用，否則預設30秒。播放前音訊產生可取消。FCQ 內嵌原檔、選曲、時間；不會自動轉成音符。重新匯出保留原容器位元組。
+選取音符後開啟 **INSTRUMENT / WAVEFORM**。脈衝波可調整工作週期，雜訊可調整週期及長短模式，VRC6 鋸齒波可調整累加速率。這些聲道使用固定波形，不能任意重畫。
 
-Export NSF 將各段轉為子曲，含音源和 DPCM，並產生帶曲長及淡出0的 NSFe。播放器忽略 NSF 曲長時請用 NSFe。段落結束即停止，編輯器 LOOP 獨立運作。輸入支援 NSF v1/NSFe、NTSC 或相容 NTSC 的雙區、無分庫或4KiB分庫、2A03/DPCM、VRC6/VRC7/FDS/N163。拒絕 PAL 專用、NSF2 執行擴充、MMC5、Sunsoft 5B、VT02；不返回的 INIT/PLAY 有執行時間限制。
+FDS 提供一條共用的 64 點、6 位元波形。N163 使用 4 位元波形，可為音符選擇波形槽。你可以拖曳圖形繪製，也能從正弦波、脈衝波、鋸齒波或三角波預設開始，再反轉或循環位移。**CURVE / LINE** 可切換平滑曲線與折線。圖上的編輯點才是儲存至音源的值，曲線只是顯示用的內插。這樣既能看清正弦波的平滑走勢，也能精確編輯量化後的取樣值。將指標移近編輯點可查看編號和值。
 
-Export C + DPCM 輸出 `score.c`、`fcseq_score.h`、`fcseq_player.c`、段落二進位、`.dmc`、`dpcm_bank.bin`、`fcseq_export.json`。不自動建立完整遊戲 ROM；需自行配置 mapper 與 CPU 可存取的程式碼/資料/DPCM 位址。VRC6 假設 mapper 24（26需轉換位址線）、VRC7 85、N163 19，或 FDS。KITAQFC 中在 include 前定義 `FCSEQ_KITAQFC`；`FCSEQ_WRITE(address, value)` 可接上自訂暫存器寫入函式。
+N163 波形長度必須是 4 的倍數。所有聲道共用 `256 − 16 × 啟用聲道數` 個取樣值的記憶體，8 聲道時可用 128 個。空間不足時，可以縮短其他波形或減少聲道。尚未提供 FDS 調變表與硬體包絡編輯。
 
-## CLI 與 Python
+VRC7 自訂音色 0 可編輯運算子與包絡等參數；1～15 是合成的近似預設。EPSM 提供 16 個可編輯 FM 音色，每個音色有 4 個運算子，以及演算法、回授、包絡與調變設定。修改會套用到使用同一音色的所有音符。FM 與節奏還可設定聲像。目前試聽與 WAV 為單聲道，但匯出的暫存器資料會保留聲像設定。EPSM 節奏試聽使用自行合成的打擊樂，不包含 Yamaha ROM 傾印；實際 EPSM 裝置會播放內建的節奏音。
 
-以下範例在解壓縮目錄執行。段落/聲部/音符/樣本編號從0開始，NSF 曲號從1開始。附帶 Python 3.10+ abi3 擴充，須配合 OS/CPU 並從同目錄載入。GUI/CLI 不需要 Python。完整 API 見 `fcseq_native.pyi`。CLI 支援音符移動、移調、改長度、量化、複製、刪除；波形由 GUI/Python 編輯。
+5B 與 EPSM 的 SSG 可組合音調、雜訊與包絡。三個 SSG 聲道共用雜訊週期與包絡產生器，因此後寫入的設定也會影響其他使用該產生器的音符。
+
+## 把音訊用作樂器
+
+在 SAMPLES 匯入 WAV、FLAC、Ogg Vorbis 或 MP3，也可以把檔案拖入視窗。調整起點、終點、增益、正規化與反向播放。原始音訊會保留，因此處理可以重新調整。來源音訊最長 60 秒，立體聲會混合為單聲道。
+
+在 DPCM 音軌新增音符並選擇取樣與播放速率。AUDITION DPCM 試聽轉換結果，EXPORT .DMC 儲存資料。轉換時會移除直流成分，並透過低通濾波重新取樣。單一取樣最多 4081 位元組，共用取樣區最多 16320 位元組，FDS 則為 8192 位元組。超過時請縮短範圍或降低轉換速率。取樣的轉換速率和音符的播放速率是兩個獨立設定。
+
+MMC5、VT02 的 PCM 音軌也使用同一份音訊與處理設定。它們以 4 kHz 串流播放 8 位元 PCM，音符音高控制播放速度，不受 DPCM 位元組限制。VT02 的 DPCM 與 PCM 共用取樣播放單元，因此同一樂段只能使用其中一種模式。尚未提供取樣循環與自動音高校正。
+
+## 專案、NSF 與匯出
+
+可編輯專案儲存為 `.fcq`。舊 `.fcseq` 可改副檔名為 `.fcq` 後開啟。音符專案沿用 `fcseq-2` JSON，也能讀取 `fcseq-1`。包含匯入音樂的播放專案使用 `fcseq-3`。
+
+開啟 NSF、NSF2 或 NSFe 後，選擇曲目與時長即可播放。有時間中繼資料時依其播放，否則預設為 30 秒，可改成 1～600 秒。存為 FCQ 會嵌入原始音樂和播放設定。匯入是為了播放，不會把任意 NSF 自動轉成可編輯音符。再次匯出為同一容器時會保留原始位元組。
+
+匯出時選擇 `.nsf`、`.nsf2` 或 `.nsfe`，每個樂段會成為一首曲目。匯出 NSF、NSF2 時也會產生帶曲目時長與零淡出的 NSFe。曲目在樂段結尾停止，與編輯器的 LOOP 分開。播放器支援 NTSC、可用 NTSC 播放的雙區域檔案、4 KiB 分頁和上表音源，也支援 NSF2 的計時器 IRQ、持續執行 INIT 和停止呼叫 PLAY。PAL 專用檔案不支援。EPSM 與 NSF2 計時器連接埠重疊，因此會拒絕同時使用 EPSM 和 NSF2 計時器 IRQ 旗標的檔案。詳見[音訊格式說明](docs/AUDIO_FORMATS.md)。
+
+C + DPCM 匯出包含 C 驅動程式、標頭檔、暫存器串流、取樣區與配置說明，不會產生完整遊戲 ROM。你需要設定目標映射器，讓 CPU 能持續存取程式碼與資料。依 `FCSEQ_TICK_RATE_HZ` 呼叫 `fcseq_tick`：通常為 NTSC 畫面更新率，使用 PCM 的專案為 4000 Hz。KITAQFC 使用時定義 `FCSEQ_KITAQFC`，也可透過 `FCSEQ_WRITE(address, value)` 替換暫存器寫入操作。
+
+## CLI、Python 與建置
+
+執行 `fcseq-cli help` 可查看命令；Windows 檔名加上 `.exe`。樂段、聲道、音符、音色及取樣索引從 0 開始，NSF 曲目從 1 開始。
 
 ```sh
-./fcseq-cli new song.fcq n163
+./fcseq-cli new song.fcq epsm
 ./fcseq-cli validate song.fcq
 ./fcseq-cli render-wav song.fcq song.wav 0
-./fcseq-cli export-nsf song.fcq song.nsf
-./fcseq-cli export-nsfe song.fcq song.nsfe
-./fcseq-cli import-nsf song.nsf imported.fcq 1 60
-./fcseq-cli nsf-info song.nsfe
-./fcseq-cli nsf-render song.nsfe preview.wav 1 10
-./fcseq-cli play-nsf song.nsfe 1 30
-./fcseq-cli import-audio song.fcq voice.wav with_voice.fcq
-./fcseq-cli export-dpcm with_voice.fcq 0 voice.dmc
-./fcseq-cli edit song.fcq edited.fcq 0 0 0 transpose 12
-./fcseq-cli export-kitaqfc song.fcq export
-python fcseq.py nsf-render song.nsf preview.wav --song 1 --seconds 10
+./fcseq-cli export-nsf2 song.fcq song.nsf2
+./fcseq-cli nsf-render song.nsf2 preview.wav 1 10
+./fcseq-cli set-epsm-parameter song.fcq edited.fcq 0 44 4
 ```
 
-```python
-import fcseq_native
-c = fcseq_native.Controller()
-c.set_expansion('n163')
-c.set_n163_channels(8)
-c.set_n163_wave(0, [i // 2 for i in range(32)])
-c.add_note(0, 5, 0, 8, 69)
-c.save_project('example.fcq')
-c.export_nsf('example.nsf')
-c.render_wav('example.wav')
-```
+Python 3.10 以上可載入套件中符合系統、CPU 的原生擴充模組。GUI、CLI 不需要 Python。[API 清單](fcseq_native.pyi)包含 `Controller`、`set_sound`、`set_epsm_parameter`、波形編輯與匯出。依序呼叫 `c.set_expansion('epsm')`、`c.add_note(0, 8, 0, 8, 69)`、`c.export_nsf('song.nsf2')`，即可建立 FM 音符並匯出。
 
-## 建置與驗證
+建置需要 Rust 1.93.1 與 C++14 編譯器。使用 `cargo build --locked --release` 建置，`cargo test --locked --tests` 測試。僅建置 CLI 加上 `--no-default-features --bin fcseq-cli`；Python 擴充模組用 `--features python --lib`。Windows 需要 MSVC Build Tools，macOS 需要 Xcode Command Line Tools，Linux 開發函式庫請參考儲存庫的 `.github/workflows/fcseq.yml`。
 
-在此原始碼目錄使用 Rust 1.93.1 及以下指令。本地函式庫原始碼位於 vendor/。Linux 開發套件見儲存庫根目錄 `.github/workflows/fcseq.yml`；macOS 需要 Xcode Command Line Tools，Windows 需要 MSVC Build Tools。Python 為選用。腳本驗證原生 CLI/Python、WAV、NSF/NSFe 往返及 GUI 啟動。結果與範圍見 VERIFICATION.md；不認證人工滑鼠/鍵盤操作或實機聆聽。
-
-```sh
-cargo build --locked --release
-cargo test --locked --release --tests
-cargo build --locked --release --no-default-features --bin fcseq-cli
-cargo build --locked --release --features python --lib
-python -c "import shutil,sys; from pathlib import Path; n={'win32':'fcseq_native.dll','darwin':'libfcseq_native.dylib'}.get(sys.platform,'libfcseq_native.so'); shutil.copy2(Path('target/release')/n,'fcseq_native.pyd' if sys.platform=='win32' else 'fcseq_native.so')"
-```
-
-## 授權
-
-FCSEQ 為 MIT，Copyright (c) 2026 DAISUKE OBA。相依套件保留各自授權。重新散布請包含 LICENSE、THIRD_PARTY_NOTICES.md、licenses/、assets/、third_party_sources/。已附 MPL-2.0 Symphonia 原始碼與字型/圖示聲明。匯入音樂與取樣另有其權利。
-
-[LICENSE](LICENSE) · [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) · [LICENSE_AUDIT](LICENSE_AUDIT.json) · [VERIFICATION](VERIFICATION.md)
-
-[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)
+FCSEQ 應用程式碼採 MIT 授權，Copyright (c) 2026 DAISUKE OBA。ymfm（BSD-3-Clause）、Symphonia（MPL-2.0）與字型（OFL）保留各自授權。重新散布時請保留 LICENSE、THIRD_PARTY_NOTICES.md、licenses/、assets/ 與 third_party_sources/。不含遊戲 ROM、FDS BIOS 或商業音源 ROM 傾印。匯入的音樂與取樣另有權利歸屬。請參閱[第三方聲明](THIRD_PARTY_NOTICES.md)和[驗證紀錄](VERIFICATION.md)。

@@ -23,11 +23,13 @@ def validate(doc):
     c = controller(doc); c.validate(); doc = json.loads(c.project_json())
     if doc.get('nsf'):
         return json.loads(c.nsf_info())
-    fpr = int(FPS * 15 / doc['bpm'] + .5)
+    pcm_channel={'mmc5':7,'vt02':9}.get(doc['expansion'])
+    tick_rate=4000.0 if pcm_channel is not None and any(s['tracks'][pcm_channel]['notes'] for s in doc['sections']) else FPS
+    fpr = int(tick_rate * 15 / doc['bpm'] + .5)
     return dict(sections=len(doc['sections']), channels=len(doc['sections'][0]['tracks']),
                 expansion=doc['expansion'], notes=sum(len(t['notes']) for s in doc['sections'] for t in s['tracks']),
-                frames_per_row=fpr, requested_bpm=doc['bpm'], actual_bpm=FPS * 15 / fpr,
-                duration_seconds=sum(s['rows'] for s in doc['sections']) * fpr / FPS)
+                frames_per_row=fpr, requested_bpm=doc['bpm'], actual_bpm=tick_rate * 15 / fpr, tick_rate_hz=tick_rate,
+                duration_seconds=sum(s['rows'] for s in doc['sections']) * fpr / tick_rate)
 
 def export_kitaqfc(doc, directory, header='fcseq_score.h'):
     return json.loads(controller(doc).export_kitaqfc(str(directory), header))
@@ -42,10 +44,11 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest='command')
     g = sub.add_parser('gui'); g.add_argument('project', nargs='?')
-    n = sub.add_parser('new'); n.add_argument('output'); n.add_argument('--chip', choices=['none','vrc6','vrc7','fds','n163'], default='none')
+    n = sub.add_parser('new'); n.add_argument('output'); n.add_argument('--chip', choices=['none','vrc6','vrc7','fds','n163','mmc5','sunsoft5b','epsm','vt02'], default='none')
     v = sub.add_parser('validate'); v.add_argument('project')
     e = sub.add_parser('export-kitaqfc'); e.add_argument('project'); e.add_argument('output')
     x = sub.add_parser('export-nsf'); x.add_argument('project'); x.add_argument('output')
+    x = sub.add_parser('export-nsf2'); x.add_argument('project'); x.add_argument('output')
     x = sub.add_parser('export-nsfe'); x.add_argument('project'); x.add_argument('output')
     x = sub.add_parser('import-nsf'); x.add_argument('project'); x.add_argument('output')
     for name in ('nsf-info','nsf-render','play-nsf'):
@@ -68,7 +71,10 @@ def main():
         if getattr(args,'song',None) is not None: c.set_nsf_song(args.song)
         if getattr(args,'seconds',None) is not None: c.set_nsf_seconds(args.seconds)
         if args.command=='validate': result=validate(json.loads(c.project_json()))
-        elif args.command in ('export-nsf','export-nsfe'): result=json.loads(c.export_nsf(args.output))
+        elif args.command in ('export-nsf','export-nsfe','export-nsf2'):
+            path=Path(args.output)
+            if args.command!='export-nsf': path=path.with_suffix('.'+args.command.removeprefix('export-'))
+            result=json.loads(c.export_nsf(str(path)))
         elif args.command=='import-nsf':
             result=json.loads(c.nsf_info()); c.save_project(args.output)
         elif args.command=='nsf-info': result=json.loads(c.nsf_info())

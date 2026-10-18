@@ -22,6 +22,7 @@ pub mod diagnostics;
 pub mod disasm;
 pub mod emulator;
 pub mod error;
+pub mod expansion_audio;
 pub mod fds;
 pub mod hash;
 pub mod kitaqfc;

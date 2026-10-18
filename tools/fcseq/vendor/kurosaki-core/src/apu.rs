@@ -55,6 +55,12 @@ struct EnvelopeState {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ApuState {
+    #[serde(default)]
+    pub vt02: bool,
+    #[serde(default)]
+    pub vt_control: u8,
+    #[serde(default)]
+    vt_pcm: u8,
     /// Raw $4000-$4017 register mirror. This stays public because existing JSON
     /// snapshots and diagnostics consume it directly.
     pub regs: Vec<u8>,
@@ -123,6 +129,9 @@ pub struct ApuState {
 impl Default for ApuState {
     fn default() -> Self {
         Self {
+            vt02: false,
+            vt_control: 0,
+            vt_pcm: 128,
             regs: vec![0; 0x18],
             frame_counter: 0,
             write_count: 0,
@@ -258,8 +267,8 @@ impl ApuState {
                     }
                 }
                 0x4011 => self.dmc_output_level = value & 0x7F,
-                0x4012 => self.dmc_sample_addr = 0xC000u16.wrapping_add((value as u16) << 6),
-                0x4013 => self.dmc_sample_length = ((value as u16) << 4).wrapping_add(1),
+                0x4012 => self.dmc_sample_addr = self.dmc_address(value),
+                0x4013 => self.dmc_sample_length = self.dmc_length(value),
                 0x4015 => {
                     self.dmc_irq_flag = false;
                     let was_dmc_enabled = self.dmc_enabled;
@@ -667,8 +676,22 @@ impl ApuState {
             0.0
         };
         let mono = (pulse_out + tnd_out) * APU_PCM_SCALE;
+        let mono = if self.vt02 && self.vt_control & 4 != 0 {
+            0.0
+        } else if self.vt02 && self.vt_control & 64 != 0 {
+            mono * 0.5
+        } else {
+            mono
+        };
         let nes = self.dc_block(mono);
-        let mixed = nes + expansion as f64;
+        let raw = if self.vt02 && self.vt_control & 8 != 0 {
+            (f64::from(self.vt_pcm) - 128.0)
+                * 70.0
+                * if self.vt_control & 128 != 0 { 0.5 } else { 1.0 }
+        } else {
+            0.0
+        };
+        let mixed = nes + raw + expansion as f64;
         mixed.clamp(i16::MIN as f64, i16::MAX as f64) as i16
     }
 
@@ -719,7 +742,14 @@ impl ApuState {
         }
         let base = channel * 4;
         let control = self.regs[base];
-        let duty = ((control >> 6) & 0x03) as usize;
+        let mut duty = ((control >> 6) & 0x03) as usize;
+        if self.vt02 {
+            duty = match duty {
+                1 => 2,
+                2 => 1,
+                _ => duty,
+            };
+        }
         let volume = self.envelope_volume_units(channel, control);
         if volume <= 0.0 {
             return 0.0;
@@ -794,7 +824,7 @@ impl ApuState {
         self.dmc_sample_buffer = Some(value);
         self.dmc_sample_fetches = self.dmc_sample_fetches.saturating_add(1);
         self.dmc_dma_stall_cycles = self.dmc_dma_stall_cycles.saturating_add(4);
-        self.dmc_current_addr = if self.dmc_current_addr == 0xFFFF {
+        self.dmc_current_addr = if self.dmc_current_addr == 0xFFFF && !self.vt02 {
             0x8000
         } else {
             self.dmc_current_addr.wrapping_add(1)
@@ -823,6 +853,34 @@ impl ApuState {
         }
     }
 
+    fn dmc_address(&self, value: u8) -> u16 {
+        let high = if self.vt02 {
+            u16::from((!self.vt_control) & 3) << 14
+        } else {
+            0xc000
+        };
+        high | u16::from(value) << 6
+    }
+    fn dmc_length(&self, value: u8) -> u16 {
+        if self.vt02 && self.vt_control & 32 != 0 {
+            (u16::from(value) + 1) * 16
+        } else {
+            u16::from(value) * 16 + 1
+        }
+    }
+    pub fn write_vt_register(&mut self, addr: u16, value: u8) {
+        if !self.vt02 {
+            return;
+        }
+        if addr == 0x4030 {
+            self.vt_control = value;
+            self.dmc_sample_addr = self.dmc_address(self.regs[0x12]);
+            self.dmc_sample_length = self.dmc_length(self.regs[0x13]);
+        }
+        if addr == 0x4031 {
+            self.vt_pcm = value;
+        }
+    }
     fn restart_dmc_sample(&mut self) {
         self.dmc_current_addr = self.dmc_sample_addr;
         self.dmc_bytes_remaining = self.dmc_sample_length.max(1);
@@ -836,6 +894,13 @@ impl ApuState {
         self.dmc_timer_accum += cpu_cycles as f64;
         while self.dmc_timer_accum >= period {
             self.dmc_timer_accum -= period;
+            if self.vt02 && self.vt_control & 16 != 0 {
+                if let Some(value) = self.dmc_sample_buffer.take() {
+                    self.vt_pcm = value;
+                    self.dmc_bits_output += 8;
+                }
+                continue;
+            }
 
             // The output unit reloads the shifter when its 8-bit shift register is
             // exhausted. The previous implementation waited through an initial

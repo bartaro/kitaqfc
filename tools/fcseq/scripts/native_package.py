@@ -45,10 +45,13 @@ with tempfile.TemporaryDirectory() as tmp:
     with wave.open(str(source),'wb') as w:
         w.setparams((1,2,22050,0,'NONE','not compressed'))
         w.writeframes(b''.join(struct.pack('<h',int(16000*math.sin(i*2*math.pi*440/22050))) for i in range(2205)))
-    for chip,count in [('none',5),('vrc6',8),('vrc7',11),('fds',6),('n163',13)]:
+    for chip,count in [('none',5),('vrc6',8),('vrc7',11),('fds',6),('n163',13),('mmc5',8),('sunsoft5b',8),('epsm',20),('vt02',10)]:
         c=fcseq_native.Controller();c.set_expansion(chip);c.set_bars(0,1);c.import_audio(str(source))
         for channel in range(count):
-            c.add_note(0,channel,0,4,1 if channel==3 else (15 if channel==4 else 69))
+            # VT02 DPCM and PCM share a unit: the combined fixture uses PCM.
+            if chip=='vt02' and channel==4:continue
+            pitch=1 if channel==3 or (chip=='vt02' and channel==8) else (15 if channel==4 else (60 if chip=='epsm' and channel>=14 else 69))
+            c.add_note(0,channel,0,4,pitch)
         project=tmp/(chip+'.fcq');c.save_project(str(project))
         assert json.loads(run('validate',project))['valid']
         wav=tmp/(chip+'.wav');run('render-wav',project,wav,0)
@@ -59,7 +62,14 @@ with tempfile.TemporaryDirectory() as tmp:
         imported=tmp/'import.fcq';run('import-nsf',nsf,imported,1,1)
         restored=tmp/'roundtrip.nsf';run('export-nsf',imported,restored)
         assert nsf.read_bytes()==restored.read_bytes()
-        rows.append({'chip':chip,'voices':count,'native':native,'nsf':exported,'roundtrip':True})
+        nsf2=tmp/(chip+'.nsf2');run('export-nsf2',project,nsf2)
+        assert nsf2.read_bytes()[:6]==b'NESM\x1a\x02'
+        run('nsf-render',nsf2,wav,1,1);exported2=audio(wav)
+        assert exported2['sha256']==exported['sha256']
+        run('import-nsf',nsf2,imported,1,1)
+        restored2=tmp/'roundtrip.nsf2';run('export-nsf2',imported,restored2)
+        assert nsf2.read_bytes()==restored2.read_bytes()
+        rows.append({'chip':chip,'voices':count-(1 if chip=='vt02' else 0),'tracks':count,'native':native,'nsf':exported,'nsf2':exported2,'roundtrip':True})
     c=fcseq_native.Controller();c.set_expansion('n163');c.set_n163_channels(8);c.set_n163_wave(0,[i//2 for i in range(32)])
     c.set_expansion('vrc7');c.set_vrc7_parameter(0,3)
 env=dict(os.environ,PYTHONPATH=str(dest),PYTHONUTF8='1')

@@ -23,8 +23,17 @@ const LINE: Color = Color::rgb8(46, 61, 78);
 const TEXT: Color = Color::rgb8(223, 233, 244);
 const MUTED: Color = Color::rgb8(138, 159, 181);
 const ACCENT: Color = Color::rgb8(79, 211, 205);
+#[path = "epsm_ui.rs"]
+mod epsm_ui;
+#[path = "i18n.rs"]
+mod i18n;
 #[path = "instrument_ui.rs"]
 mod instrument_ui;
+#[path = "key_editor.rs"]
+mod key_editor;
+#[path = "wave_graph.rs"]
+mod wave_graph;
+use i18n::Language;
 fn color(ch: usize) -> Color {
     [
         ACCENT,
@@ -42,11 +51,7 @@ fn root() -> PathBuf {
         .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")))
 }
 fn short(s: &str, n: usize) -> String {
-    let v: String = s
-        .chars()
-        .take(n)
-        .map(|c| if c.is_ascii() { c } else { '?' })
-        .collect();
+    let v: String = s.chars().take(n).collect();
     if s.chars().count() > n {
         format!("{v}..")
     } else {
@@ -68,6 +73,8 @@ enum Field {
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum Action {
+    Language,
+    WaveCurve,
     Menu(u8),
     New,
     Open,
@@ -97,6 +104,9 @@ enum Action {
     Page(i8),
     Grid,
     TrackPage(i8),
+    KeyEditor,
+    KeyTrack(i8),
+    KeyZoom(i8),
     Section(i8),
     AddSection,
     CloneSection,
@@ -136,6 +146,9 @@ enum Action {
     WaveRotate(i8),
     N163Channels(i8),
     FmParam(usize, i16),
+    EpsmParam(usize, i16),
+    EpsmPatch(i8),
+    EpsmOperator(i8),
     Timbre(u8, i16),
     Help,
     CloseModal,
@@ -177,6 +190,8 @@ enum JobOutput {
     Done(String),
 }
 pub struct Studio {
+    language: Language,
+    wave_curve: bool,
     size: Size,
     score: Score,
     saved: Score,
@@ -185,6 +200,9 @@ pub struct Studio {
     page: u16,
     visible: u16,
     first_track: usize,
+    key_editor: bool,
+    key_low: u8,
+    key_rows: u8,
     track: usize,
     cursor: u16,
     snap: u16,
@@ -198,6 +216,8 @@ pub struct Studio {
     wave_last: Option<(usize, u8)>,
     instrument_track: usize,
     wave_slot: usize,
+    epsm_slot: usize,
+    epsm_operator: usize,
     scroll_drag: bool,
     pressed: Option<Action>,
     hover: Point,
@@ -241,8 +261,11 @@ impl Studio {
             Score::empty()
         };
         let imported = accepted.as_ref().is_some_and(|p| {
-            p.extension()
-                .is_some_and(|e| e.eq_ignore_ascii_case("nsf") || e.eq_ignore_ascii_case("nsfe"))
+            p.extension().is_some_and(|e| {
+                e.eq_ignore_ascii_case("nsf")
+                    || e.eq_ignore_ascii_case("nsfe")
+                    || e.eq_ignore_ascii_case("nsf2")
+            })
         });
         if imported {
             accepted = None;
@@ -263,6 +286,11 @@ impl Studio {
             page: 0,
             visible: 64,
             first_track: 0,
+            language: Language::detect(),
+            wave_curve: true,
+            key_editor: false,
+            key_low: 48,
+            key_rows: 24,
             track: 0,
             cursor: 0,
             snap: 1,
@@ -276,6 +304,8 @@ impl Studio {
             wave_last: None,
             instrument_track: 0,
             wave_slot: 0,
+            epsm_slot: 0,
+            epsm_operator: 0,
             scroll_drag: false,
             pressed: None,
             hover: Point::new(-1.0, -1.0),
@@ -314,11 +344,17 @@ impl Studio {
         )
     }
     fn lane_count(&self) -> usize {
+        if self.key_editor {
+            return 1;
+        }
         ((self.grid().height / 108.0).floor() as usize)
             .clamp(4, 8)
             .min(self.score.expansion.channels())
     }
     fn lane(&self, ch: usize) -> Rect {
+        if self.key_editor {
+            return self.grid();
+        }
         let g = self.grid();
         Rect::new(
             g.x,
@@ -334,6 +370,9 @@ impl Studio {
         self.size.width - 256.0
     }
     fn note_rect(&self, ch: usize, n: &Note) -> Rect {
+        if self.key_editor {
+            return self.key_note_rect(n);
+        }
         let l = self.lane(ch);
         let (lo, hi) = self.score.expansion.kind(ch).bounds();
         let y =
@@ -366,6 +405,9 @@ impl Studio {
         None
     }
     fn point_track(&self, p: Point) -> usize {
+        if self.key_editor {
+            return self.track;
+        }
         (self.first_track
             + ((p.y - self.grid().y).max(0.0) / (self.grid().height / self.lane_count() as f32))
                 as usize)
@@ -395,6 +437,10 @@ impl Studio {
         );
         self.cursor = self.cursor.min(self.score.sections[self.part].rows - 1);
         self.sample = self.sample.min(self.score.samples.len().saturating_sub(1));
+        if self.key_editor {
+            self.first_track = self.track;
+            self.clamp_key_range();
+        }
     }
     fn remember(&mut self, before: Score) {
         if before != self.score {
@@ -456,10 +502,13 @@ impl Studio {
         let row = self.point_row(p);
         let (lo, hi) = self.score.expansion.kind(ch).bounds();
         let lane = self.lane(ch);
-        let pitch = (lo as f32
-            + (lane.bottom() - 17.0 - p.y) / (lane.height - 38.0) * (hi - lo) as f32)
-            .round()
-            .clamp(lo as f32, hi as f32) as u8;
+        let pitch = if self.key_editor {
+            self.key_pitch(p.y)
+        } else {
+            (lo as f32 + (lane.bottom() - 17.0 - p.y) / (lane.height - 38.0) * (hi - lo) as f32)
+                .round()
+                .clamp(lo as f32, hi as f32) as u8
+        };
         let length = self.snap.min(self.score.sections[self.part].rows - row);
         let mut note = Note::new(row, length, pitch);
         if self.score.expansion.kind(ch) == Voice::N163 {
@@ -468,13 +517,25 @@ impl Studio {
                 ..Sound::default()
             });
         }
-        if ch == 4 {
+        if self.score.expansion.kind(ch) == Voice::Pcm {
+            note.sound = Some(Sound {
+                instrument: self.sample as u8,
+                ..Sound::default()
+            });
+        }
+        if ch == 4 && !self.key_editor {
             note.note = self
                 .score
                 .samples
                 .get(self.sample)
                 .map(|s| s.rate)
                 .unwrap_or(15);
+            note.sound = Some(Sound {
+                instrument: self.sample as u8,
+                ..Sound::default()
+            });
+        }
+        if ch == 4 {
             note.sound = Some(Sound {
                 instrument: self.sample as u8,
                 ..Sound::default()
@@ -565,8 +626,29 @@ impl Studio {
                     "N163 (up to 13 channels)",
                     "volume-2",
                 ),
+                (
+                    Action::SetChip(Expansion::Mmc5),
+                    "MMC5 (8 channels)",
+                    "volume-2",
+                ),
+                (
+                    Action::SetChip(Expansion::Sunsoft5b),
+                    "SUNSOFT 5B (8 channels)",
+                    "volume-2",
+                ),
+                (
+                    Action::SetChip(Expansion::Epsm),
+                    "EPSM (20 channels)",
+                    "volume-2",
+                ),
+                (
+                    Action::SetChip(Expansion::Vt02),
+                    "VT02 (10 channels)",
+                    "volume-2",
+                ),
                 (Action::Wave, "Instrument / waveform editor", "settings"),
                 (Action::Help, "Keyboard / mouse help", "ellipsis"),
+                (Action::Language, "日本語 / English", "settings"),
             ],
         };
         items
@@ -623,6 +705,18 @@ impl Studio {
         ] {
             b.push(Button::new(a, x, 66.0, w, label, Some(icon)));
         }
+        b.push(Button::new(
+            Action::KeyEditor,
+            852.0,
+            66.0,
+            168.0,
+            if self.key_editor {
+                "ALL TRACKS  [E]"
+            } else {
+                "KEY EDITOR  [E]"
+            },
+            None,
+        ));
         b.push(Button::new(
             Action::Input(Field::Bpm),
             self.size.width - 236.0,
@@ -683,6 +777,9 @@ impl Studio {
         ));
         for ch in self.first_track..self.first_track + self.lane_count() {
             let l = self.lane(ch);
+            if self.key_editor {
+                continue;
+            }
             b.push(Button::new(
                 Action::Mute(ch),
                 24.0,
@@ -700,22 +797,61 @@ impl Studio {
                 None,
             ));
         }
-        b.push(Button::new(
-            Action::TrackPage(-1),
-            22.0,
-            self.grid().bottom() + 10.0,
-            56.0,
-            "UP",
-            None,
-        ));
-        b.push(Button::new(
-            Action::TrackPage(1),
-            84.0,
-            self.grid().bottom() + 10.0,
-            56.0,
-            "DOWN",
-            None,
-        ));
+        if self.key_editor {
+            for (a, x, label) in [
+                (Action::KeyTrack(-1), 16.0, "<"),
+                (Action::KeyTrack(1), 54.0, ">"),
+                (Action::Mute(self.track), 92.0, "M"),
+                (Action::Solo(self.track), 130.0, "S"),
+            ] {
+                b.push(Button::new(
+                    a,
+                    x,
+                    self.grid().bottom() + 10.0,
+                    32.0,
+                    label,
+                    None,
+                ));
+            }
+            b.push(Button::new(
+                Action::KeyZoom(-1),
+                self.rx(),
+                68.0,
+                30.0,
+                "-",
+                None,
+            ));
+            b.push(Button::new(
+                Action::KeyZoom(1),
+                self.rx() + 196.0,
+                68.0,
+                30.0,
+                "+",
+                None,
+            ));
+            // Key-editor toggle occupies this row; vertical zoom uses the left
+            // keyboard header instead, preserving the transport layout.
+            let len = b.len();
+            b[len - 2].rect = Rect::new(16.0, 146.0, 28.0, 24.0);
+            b[len - 1].rect = Rect::new(138.0, 146.0, 28.0, 24.0);
+        } else {
+            b.push(Button::new(
+                Action::TrackPage(-1),
+                22.0,
+                self.grid().bottom() + 10.0,
+                56.0,
+                "UP",
+                None,
+            ));
+            b.push(Button::new(
+                Action::TrackPage(1),
+                84.0,
+                self.grid().bottom() + 10.0,
+                56.0,
+                "DOWN",
+                None,
+            ));
+        }
         if let Some(&(ch, _)) = self.selection.first() {
             let rx = self.rx();
             let kind = self.score.expansion.kind(ch);
@@ -724,18 +860,25 @@ impl Studio {
                 (Action::Length(-1), Action::Length(1)),
                 (Action::Row(-1), Action::Row(1)),
             ];
-            if !matches!(kind, Voice::Triangle | Voice::Dpcm) {
+            if !matches!(
+                kind,
+                Voice::Triangle | Voice::Dpcm | Voice::VtTriangle | Voice::Pcm
+            ) {
                 if kind != Voice::Saw {
                     specs.push((Action::Volume(-1), Action::Volume(1)));
                 }
                 specs.push((Action::Decay(-1), Action::Decay(1)));
             }
             match kind {
-                Voice::Pulse | Voice::VrcPulse => specs.push((Action::Duty(-1), Action::Duty(1))),
-                Voice::Fm | Voice::Dpcm | Voice::N163 => {
+                Voice::Pulse | Voice::VrcPulse | Voice::MmcPulse | Voice::VtPulse => {
+                    specs.push((Action::Duty(-1), Action::Duty(1)))
+                }
+                Voice::Fm | Voice::Dpcm | Voice::N163 | Voice::EpsmFm | Voice::Pcm => {
                     specs.push((Action::Instrument(-1), Action::Instrument(1)))
                 }
-                Voice::Noise => specs.push((Action::NoisePeriod(-1), Action::NoisePeriod(1))),
+                Voice::Noise | Voice::VtNoise => {
+                    specs.push((Action::NoisePeriod(-1), Action::NoisePeriod(1)))
+                }
                 Voice::Saw => specs.push((Action::SawRate(-1), Action::SawRate(1))),
                 _ => {}
             }
@@ -785,6 +928,7 @@ impl Studio {
     fn enabled(&self, a: Action) -> bool {
         if let Some(source) = &self.score.nsf {
             return match a {
+                Action::Language => true,
                 Action::Menu(0)
                 | Action::New
                 | Action::Open
@@ -873,8 +1017,11 @@ impl Studio {
             return true;
         }
         match rfd::MessageDialog::new()
-            .set_title("Unsaved FCSEQ project")
-            .set_description("Save your changes before continuing?")
+            .set_title(self.language.translate("Unsaved FCSEQ project"))
+            .set_description(
+                self.language
+                    .translate("Save your changes before continuing?"),
+            )
             .set_buttons(rfd::MessageButtons::YesNoCancel)
             .show()
         {
@@ -892,7 +1039,9 @@ impl Studio {
                 self.stop();
                 self.score = score;
                 let imported = path.extension().is_some_and(|e| {
-                    e.eq_ignore_ascii_case("nsf") || e.eq_ignore_ascii_case("nsfe")
+                    e.eq_ignore_ascii_case("nsf")
+                        || e.eq_ignore_ascii_case("nsfe")
+                        || e.eq_ignore_ascii_case("nsf2")
                 });
                 self.saved = if imported {
                     Score::empty()
@@ -1020,7 +1169,7 @@ impl Studio {
                         }
                         _ => sample.gain = v as f32,
                     }
-                    sample.encode()?;
+                    sample.validate()?;
                 }
             }
             Ok(())
@@ -1054,7 +1203,10 @@ impl Studio {
             }
             Action::Open => {
                 if let Some(p) = rfd::FileDialog::new()
-                    .add_filter("FCSEQ project / NSF / NSFe", &["fcq", "nsf", "nsfe"])
+                    .add_filter(
+                        "FCSEQ project / NSF / NSFe",
+                        &["fcq", "nsf", "nsf2", "nsfe"],
+                    )
                     .pick_file()
                 {
                     self.open(p)
@@ -1065,7 +1217,7 @@ impl Studio {
             }
             Action::ImportNsf => {
                 if let Some(p) = rfd::FileDialog::new()
-                    .add_filter("NSF / NSFe music", &["nsf", "nsfe"])
+                    .add_filter("NSF / NSFe music", &["nsf", "nsf2", "nsfe"])
                     .pick_file()
                 {
                     self.open(p);
@@ -1074,6 +1226,7 @@ impl Studio {
             Action::ExportNsf => {
                 if let Some(path) = rfd::FileDialog::new()
                     .add_filter("NSFe music (with track lengths)", &["nsfe"])
+                    .add_filter("NSF2 music (+ NSFe companion)", &["nsf2"])
                     .add_filter("NSF music (+ NSFe companion)", &["nsf"])
                     .set_file_name("song.nsfe")
                     .save_file()
@@ -1247,17 +1400,34 @@ impl Studio {
                 self.part = other;
             }
             Action::Input(f) => self.begin_input(f),
+            Action::KeyEditor => {
+                self.key_editor = !self.key_editor;
+                if self.key_editor {
+                    self.open_key_track(self.track)
+                } else {
+                    self.first_track = self.track.saturating_sub(1);
+                    self.clamp_view();
+                }
+            }
+            Action::KeyTrack(d) => {
+                let track = (self.track as i32 + d as i32)
+                    .rem_euclid(self.score.expansion.channels() as i32)
+                    as usize;
+                self.open_key_track(track);
+            }
+            Action::KeyZoom(d) => {
+                self.key_rows = (self.key_rows as i16 - d as i16 * 12).clamp(12, 60) as u8;
+                self.clamp_key_range();
+            }
             Action::Chip | Action::SetChip(_) => {
                 let chip = if let Action::SetChip(chip) = a {
                     chip
                 } else {
-                    match self.score.expansion {
-                        Expansion::None => Expansion::Vrc6,
-                        Expansion::Vrc6 => Expansion::Vrc7,
-                        Expansion::Vrc7 => Expansion::Fds,
-                        Expansion::Fds => Expansion::N163,
-                        Expansion::N163 => Expansion::None,
-                    }
+                    let index = Expansion::ALL
+                        .iter()
+                        .position(|c| *c == self.score.expansion)
+                        .unwrap_or(0);
+                    Expansion::ALL[(index + 1) % Expansion::ALL.len()]
                 };
                 self.change(|s| s.set_expansion(chip));
                 self.selection.clear();
@@ -1286,9 +1456,12 @@ impl Studio {
                 self.instrument_track = self.selection.first().map(|v| v.0).unwrap_or(self.track);
                 self.wave_slot =
                     self.instrument_sound().instrument as usize % self.score.n163_waves.len();
+                self.epsm_slot = self.instrument_sound().instrument.min(15) as usize;
                 self.modal = Some(1);
             }
             Action::Help => self.modal = Some(2),
+            Action::Language => self.toggle_language(),
+            Action::WaveCurve => self.wave_curve = !self.wave_curve,
             Action::CloseModal => {
                 self.modal = None;
                 self.input = None;
@@ -1333,7 +1506,7 @@ impl Studio {
                         Action::Normalize => sample.normalize = !sample.normalize,
                         _ => sample.reverse = !sample.reverse,
                     };
-                    sample.encode()?;
+                    sample.validate()?;
                     Ok(())
                 });
             }
@@ -1388,6 +1561,9 @@ impl Studio {
             | Action::WaveInvert
             | Action::WaveRotate(_)
             | Action::N163Channels(_)
+            | Action::EpsmParam(_, _)
+            | Action::EpsmPatch(_)
+            | Action::EpsmOperator(_)
             | Action::FmParam(_, _)
             | Action::Timbre(_, _) => self.instrument_action(a),
         }
@@ -1410,7 +1586,7 @@ impl Studio {
         self.stop();
         if !path
             .extension()
-            .is_some_and(|ext| ext.eq_ignore_ascii_case("nsfe"))
+            .is_some_and(|ext| ext.eq_ignore_ascii_case("nsfe") || ext.eq_ignore_ascii_case("nsf2"))
         {
             path.set_extension("nsf");
         }
@@ -1520,6 +1696,14 @@ impl Studio {
                 Some("volume-2"),
             ),
         ];
+        buttons.push(Button::new(
+            Action::Language,
+            self.size.width - 200.0,
+            66.0,
+            184.0,
+            "日本語 / English",
+            None,
+        ));
         buttons.extend(self.menu_buttons());
         buttons
     }
@@ -1532,8 +1716,8 @@ impl Studio {
             return d;
         };
         d.fill_rect(Rect::new(0.0, 0.0, self.size.width, 58.0), PANEL);
-        draw_text(&mut d, 20.0, 17.0, "FCSEQ", 1.7, ACCENT);
-        draw_text(
+        self.text(&mut d, 20.0, 17.0, "FCSEQ", 1.7, ACCENT);
+        self.text(
             &mut d,
             166.0,
             18.0,
@@ -1545,7 +1729,7 @@ impl Studio {
             1.0,
             TEXT,
         );
-        draw_text(
+        self.text(
             &mut d,
             166.0,
             40.0,
@@ -1554,7 +1738,7 @@ impl Studio {
             MUTED,
         );
         d.fill_rect(Rect::new(24.0, 130.0, self.size.width - 48.0, 555.0), PANEL);
-        draw_text(&mut d, 48.0, 154.0, "NSF MUSIC PLAYER", 1.4, ACCENT);
+        self.text(&mut d, 48.0, 154.0, "NSF MUSIC PLAYER", 1.4, ACCENT);
         for (i, (label, value)) in [
             ("TITLE", short(&h.title, 90)),
             ("ARTIST", short(&h.artist, 90)),
@@ -1563,7 +1747,8 @@ impl Studio {
             (
                 "FORMAT",
                 format!(
-                    "NSF1 / NTSC / {} us per PLAY / {} bytes",
+                    "NSF{} / NTSC / {} us per PLAY / {} bytes",
+                    h.version,
                     h.period_us,
                     source.data.len()
                 ),
@@ -1583,8 +1768,8 @@ impl Studio {
         .enumerate()
         {
             let y = 276.0 + i as f32 * 42.0;
-            draw_text(&mut d, 48.0, y, label, 0.9, MUTED);
-            draw_text(&mut d, 180.0, y, &value, 1.0, TEXT);
+            self.text(&mut d, 48.0, y, label, 0.9, MUTED);
+            self.text(&mut d, 180.0, y, &value, 1.0, TEXT);
         }
         let elapsed = self
             .started
@@ -1606,7 +1791,7 @@ impl Studio {
             ),
             ACCENT,
         );
-        draw_text(
+        self.text(
             &mut d,
             48.0,
             570.0,
@@ -1620,7 +1805,7 @@ impl Studio {
             0.9,
             TEXT,
         );
-        draw_text(
+        self.text(
             &mut d,
             48.0,
             696.0,
@@ -1628,7 +1813,7 @@ impl Studio {
             0.95,
             TEXT,
         );
-        draw_text(&mut d,48.0,728.0,"NSF import preserves playback data. Note editing is available in new sequencer projects.",0.9,MUTED);
+        self.text(&mut d,48.0,728.0,"NSF import preserves playback data. Note editing is available in new sequencer projects.",0.9,MUTED);
         for b in self.nsf_buttons() {
             self.draw_button(&mut d, &b);
         }
@@ -1637,7 +1822,7 @@ impl Studio {
             Rect::new(0.0, self.size.height - 36.0, self.size.width, 36.0),
             PANEL,
         );
-        draw_text(
+        self.text(
             &mut d,
             18.0,
             self.size.height - 24.0,
@@ -1907,12 +2092,16 @@ impl Studio {
                 text,
             );
         }
+        let label = self.language.translate(&b.label);
+        let available = b.rect.width - if b.icon.is_some() { 39.0 } else { 16.0 };
+        let base_scale=if label.is_ascii(){0.85}else{1.25};
+        let scale = base_scale * (available / measure_text_width(&label, base_scale).max(1.0)).min(1.0);
         draw_text(
             d,
             b.rect.x + if b.icon.is_some() { 31.0 } else { 8.0 },
             b.rect.y + 9.0,
-            &b.label,
-            0.85,
+            &label,
+            scale,
             text,
         );
     }
@@ -1924,7 +2113,7 @@ impl Studio {
         );
         d.fill_rect(m, PANEL);
         d.stroke_rect(m, 1.0, LINE);
-        draw_text(
+        self.text(
             d,
             m.x + 28.0,
             m.y + 25.0,
@@ -1941,7 +2130,7 @@ impl Studio {
                 let r = self.wave_rect();
                 d.fill_rect(r, BG);
                 if let Some(s) = self.score.samples.get(self.sample) {
-                    draw_text(
+                    self.text(
                         d,
                         m.x + 280.0,
                         m.y + 73.0,
@@ -1992,9 +2181,9 @@ impl Studio {
                         ),
                         (540.0, format!("{:.2} x", s.gain)),
                     ] {
-                        draw_text(d, m.x + x, m.y + 378.0, &value, 1.0, TEXT);
+                        self.text(d, m.x + x, m.y + 378.0, &value, 1.0, TEXT);
                     }
-                    draw_text(
+                    self.text(
                         d,
                         m.x + 86.0,
                         m.y + 426.0,
@@ -2002,7 +2191,7 @@ impl Studio {
                         0.85,
                         TEXT,
                     );
-                    draw_text(
+                    self.text(
                         d,
                         m.x + 28.0,
                         m.y + 474.0,
@@ -2021,7 +2210,7 @@ impl Studio {
                         },
                     );
                 } else {
-                    draw_text(
+                    self.text(
                         d,
                         r.x + 24.0,
                         r.y + 72.0,
@@ -2030,11 +2219,11 @@ impl Studio {
                         TEXT,
                     );
                 }
-                draw_text(d,m.x+28.0,m.y+578.0,"Original PCM is retained. Audition plays the encoded DPCM through the 2A03 core.",0.72,MUTED);
+                self.text(d,m.x+28.0,m.y+578.0,"Original PCM is retained. Audition plays the encoded DPCM through the 2A03 core.",0.72,MUTED);
             }
             Some(1) => self.draw_instrument(d),
             _ => {
-                for(i,text)in["Double-click an empty lane: insert. Drag body: move. Drag right edge: resize.","Ctrl/Shift-click: toggle selection. Drag empty space: box select.","Ctrl+A: select lane. Ctrl+C / X / V: copy / cut / paste at cursor.","Ctrl+D: duplicate. Delete: remove selection. Ctrl+Z / Y: undo / redo.","Arrows: move / transpose. Shift+Up/Down: octave. Q: quantize. G: grid.","F: fit section. Home: start. +/-: zoom. Wheel: lanes; Shift+wheel: timeline.","Space: play/stop. LOOP repeats the selected section. AUDITION plays selection.","Ctrl+N / O / S / Shift+S: new / open / save / save as.","SOUND: choose 2A03, VRC6, VRC7, FDS or N163. Existing expansion notes are protected.","DPCM: import audio, trim/process, then double-click the DPCM lane.","C export includes a generic driver and mapper/DPCM placement instructions."].iter().enumerate(){draw_text(d,m.x+28.0,m.y+88.0+i as f32*41.0,text,0.75,TEXT);}
+                for(i,text)in["Double-click an empty lane: insert. Drag body: move. Drag right edge: resize.","Ctrl/Shift-click: toggle selection. Drag empty space: box select.","Ctrl+A: select lane. Ctrl+C / X / V: copy / cut / paste at cursor.","Ctrl+D: duplicate. Delete: remove selection. Ctrl+Z / Y: undo / redo.","Arrows: move / transpose. Shift+Up/Down: octave. Q: quantize. G: grid.","F: fit section. Home: start. +/-: zoom. Wheel: lanes; Shift+wheel: timeline.","Space: play/stop. LOOP repeats the selected section. AUDITION plays selection.","Ctrl+N / O / S / Shift+S: new / open / save / save as.","E: open/close Key Editor. Double-click a track header to edit it with a piano keyboard.","DPCM: import audio, trim/process, then double-click the DPCM lane.","C export includes a generic driver and mapper/DPCM placement instructions."].iter().enumerate(){self.text(d,m.x+28.0,m.y+88.0+i as f32*41.0,text,0.75,TEXT);}
             }
         }
         for b in self.modal_buttons() {
@@ -2052,7 +2241,7 @@ impl Studio {
             );
             d.fill_rect(Rect::new(x, y, w, 146.0), PANEL);
             d.stroke_rect(Rect::new(x, y, w, 146.0), 2.0, ACCENT);
-            draw_text(
+            self.text(
                 d,
                 x + 22.0,
                 y + 20.0,
@@ -2060,7 +2249,7 @@ impl Studio {
                 0.8,
                 ACCENT,
             );
-            draw_text(
+            self.text(
                 d,
                 x + 22.0,
                 y + 60.0,
@@ -2068,7 +2257,7 @@ impl Studio {
                 1.0,
                 TEXT,
             );
-            draw_text(
+            self.text(
                 d,
                 x + 22.0,
                 y + 112.0,
@@ -2112,7 +2301,9 @@ impl PlitaProgram for Studio {
         if let Some(n) = self.smoke_ticks.as_mut() {
             *n += 1;
             if *n == 16 {
-                let out = std::env::var_os("FCSEQ_SMOKE_DIR").map(PathBuf::from).unwrap_or_else(|| root().join("verification/ui"));
+                let out = std::env::var_os("FCSEQ_SMOKE_DIR")
+                    .map(PathBuf::from)
+                    .unwrap_or_else(|| root().join("verification/ui"));
                 let _ = std::fs::create_dir_all(&out);
                 let _=std::fs::write(out.join("native_event_loop.json"),serde_json::to_vec_pretty(&serde_json::json!({"toolkit":"plita","ticks":16,"empty_startup":self.score.sections[0].tracks.iter().all(|t|t.notes.is_empty()),"imported_nsf":self.score.nsf.is_some(),"channels":self.score.expansion.channels(),"viewport":[self.size.width,self.size.height]})).unwrap());
                 std::process::exit(0);
@@ -2122,7 +2313,7 @@ impl PlitaProgram for Studio {
         self.poll();
         if let Some(start) = self.started {
             let mut row =
-                (start.elapsed().as_secs_f64() * FPS / self.score.frames_per_row() as f64) as u32;
+                (start.elapsed().as_secs_f64() * self.score.tick_rate() / self.score.ticks_per_row() as f64) as u32;
             if self.playing_loop {
                 row %= self.play_rows as u32;
             }
@@ -2221,6 +2412,10 @@ impl PlitaProgram for Studio {
                 if self.modal.is_some() {
                     return UiResponse::redraw();
                 }
+                if self.key_editor && self.keyboard_rect().contains(position) {
+                    self.audition_key(self.key_pitch(position.y));
+                    return UiResponse::redraw();
+                }
                 if self.scrollbar().contains(position) {
                     self.scroll_drag = true;
                     self.set_scroll(position);
@@ -2294,10 +2489,13 @@ impl PlitaProgram for Studio {
                         editing::edit_notes(&mut candidate, self.part, &drag.selection, edit);
                     if moved.is_ok() && !drag.resize {
                         let (lo, hi) = self.score.expansion.kind(drag.ch).bounds();
-                        let delta = (-(position.y - drag.origin.y)
-                            / (self.lane(drag.ch).height - 38.0)
-                            * (hi - lo) as f32)
-                            .round() as i16;
+                        let delta = if self.key_editor {
+                            (-(position.y - drag.origin.y) / self.key_height()).round() as i16
+                        } else {
+                            (-(position.y - drag.origin.y) / (self.lane(drag.ch).height - 38.0)
+                                * (hi - lo) as f32)
+                                .round() as i16
+                        };
                         if let Err(e) = editing::edit_notes(
                             &mut candidate,
                             self.part,
@@ -2358,6 +2556,17 @@ impl PlitaProgram for Studio {
                 position,
                 button: PointerButton::Primary,
             } => {
+                if !self.key_editor
+                    && self.score.nsf.is_none()
+                    && self.modal.is_none()
+                    && self.menu.is_none()
+                    && position.x < 178.0
+                    && position.y >= self.grid().y
+                    && position.y < self.grid().bottom()
+                {
+                    self.open_key_track(self.point_track(position));
+                    return UiResponse::redraw();
+                }
                 if self.score.nsf.is_none()
                     && self.modal.is_none()
                     && self.menu.is_none()
@@ -2377,6 +2586,10 @@ impl PlitaProgram for Studio {
                         let d = if delta_x != 0.0 { delta_x } else { delta_y };
                         self.page = (self.page as i32 - d.signum() as i32 * 16).max(0) as u16;
                         self.clamp_view();
+                    } else if self.key_editor {
+                        self.key_low =
+                            (self.key_low as i16 + delta_y.signum() as i16 * 3).clamp(0, 127) as u8;
+                        self.clamp_key_range();
                     } else {
                         self.first_track =
                             (self.first_track as i32 - delta_y.signum() as i32).max(0) as usize;
@@ -2390,6 +2603,10 @@ impl PlitaProgram for Studio {
                 self.modifier = ctrl || shift;
                 self.shift = shift;
                 let k = key.split('|').next().unwrap_or(&key).to_uppercase();
+                if k == "E" && !ctrl && self.modal.is_none() && self.score.nsf.is_none() {
+                    self.apply(Action::KeyEditor);
+                    return UiResponse::redraw();
+                }
                 if k == "ESCAPE" {
                     self.menu = None;
                     self.modal = None;
@@ -2501,8 +2718,8 @@ impl PlitaProgram for Studio {
         }
         let mut d = DrawList::new(BG);
         d.fill_rect(Rect::new(0.0, 0.0, self.size.width, 58.0), PANEL);
-        draw_text(&mut d, 20.0, 17.0, "FCSEQ", 1.7, ACCENT);
-        draw_text(
+        self.text(&mut d, 20.0, 17.0, "FCSEQ", 1.7, ACCENT);
+        self.text(
             &mut d,
             166.0,
             18.0,
@@ -2514,52 +2731,56 @@ impl PlitaProgram for Studio {
             0.98,
             TEXT,
         );
-        draw_text(&mut d, 166.0, 40.0, "FAMICOM MUSIC STUDIO", 0.52, MUTED);
+        self.text(&mut d, 166.0, 40.0, "FAMICOM MUSIC STUDIO", 0.52, MUTED);
         let g = self.grid();
         let rx = self.rx();
         d.fill_rect(Rect::new(rx - 12.0, g.y, 260.0, g.height + 40.0), PANEL);
-        for ch in self.first_track..self.first_track + self.lane_count() {
-            let l = self.lane(ch);
-            d.fill_rect(
-                Rect::new(16.0, l.y, 150.0, l.height - 2.0),
-                if ch == self.track {
-                    Color::rgb8(31, 44, 58)
-                } else {
-                    PANEL
-                },
-            );
-            draw_text(
-                &mut d,
-                26.0,
-                l.y + 15.0,
-                &self.score.expansion.channel_name(ch),
-                0.95,
-                color(ch),
-            );
-            draw_text(
-                &mut d,
-                26.0,
-                l.y + 37.0,
-                &format!(
-                    "{} NOTES",
-                    self.score.sections[self.part].tracks[ch].notes.len()
-                ),
-                0.6,
-                MUTED,
-            );
-            d.fill_rect(
-                l,
-                if ch % 2 == 0 {
-                    Color::rgb8(16, 24, 34)
-                } else {
-                    Color::rgb8(20, 29, 40)
-                },
-            );
-            for k in 1..4 {
+        if self.key_editor {
+            self.draw_keyboard(&mut d);
+        } else {
+            for ch in self.first_track..self.first_track + self.lane_count() {
+                let l = self.lane(ch);
                 d.fill_rect(
-                    Rect::new(l.x, l.y + k as f32 * l.height / 4.0, l.width, 1.0),
-                    Color::rgb8(28, 39, 51),
+                    Rect::new(16.0, l.y, 150.0, l.height - 2.0),
+                    if ch == self.track {
+                        Color::rgb8(31, 44, 58)
+                    } else {
+                        PANEL
+                    },
                 );
+                self.text(
+                    &mut d,
+                    26.0,
+                    l.y + 15.0,
+                    &self.score.expansion.channel_name(ch),
+                    0.95,
+                    color(ch),
+                );
+                self.text(
+                    &mut d,
+                    26.0,
+                    l.y + 37.0,
+                    &format!(
+                        "{} NOTES",
+                        self.score.sections[self.part].tracks[ch].notes.len()
+                    ),
+                    0.6,
+                    MUTED,
+                );
+                d.fill_rect(
+                    l,
+                    if ch % 2 == 0 {
+                        Color::rgb8(16, 24, 34)
+                    } else {
+                        Color::rgb8(20, 29, 40)
+                    },
+                );
+                for k in 1..4 {
+                    d.fill_rect(
+                        Rect::new(l.x, l.y + k as f32 * l.height / 4.0, l.width, 1.0),
+                        Color::rgb8(28, 39, 51),
+                    );
+                }
             }
         }
         d.push_clip(g);
@@ -2615,11 +2836,11 @@ impl PlitaProgram for Studio {
                     BG.with_alpha(0.5),
                 );
                 if r.width > 32.0 {
-                    draw_text(
+                    self.text(
                         &mut d,
                         r.x + 3.0,
                         r.y + 3.0,
-                        &note_name(n.note, ch),
+                        &self.score.expansion.pitch_name(n.note, ch),
                         0.5,
                         BG,
                     );
@@ -2627,7 +2848,7 @@ impl PlitaProgram for Studio {
             }
         }
         let row = if let Some(start) = self.started {
-            let r = start.elapsed().as_secs_f32() * FPS as f32 / self.score.frames_per_row() as f32;
+            let r = start.elapsed().as_secs_f32() * self.score.tick_rate() as f32 / self.score.ticks_per_row() as f32;
             if self.playing_loop {
                 r % self.play_rows as f32
             } else {
@@ -2665,7 +2886,7 @@ impl PlitaProgram for Studio {
         } else {
             16
         }) {
-            draw_text(
+            self.text(
                 &mut d,
                 g.x + j as f32 * self.step() + 3.0,
                 155.0,
@@ -2686,18 +2907,18 @@ impl PlitaProgram for Studio {
             ),
             LINE,
         );
-        draw_text(&mut d, rx, 194.0, "NOTE INSPECTOR", 0.93, ACCENT);
+        self.text(&mut d, rx, 194.0, "NOTE INSPECTOR", 0.93, ACCENT);
         if let Some(&(ch, i)) = self.selection.first() {
             let n = &self.score.sections[self.part].tracks[ch].notes[i];
             let sound = n.sound(ch);
             let kind = self.score.expansion.kind(ch);
-            draw_text(
+            self.text(
                 &mut d,
                 rx,
                 226.0,
                 &format!(
                     "{}  /  {} SELECTED",
-                    note_name(n.note, ch),
+                    self.score.expansion.pitch_name(n.note, ch),
                     self.selection.len()
                 ),
                 0.91,
@@ -2708,22 +2929,27 @@ impl PlitaProgram for Studio {
                 format!("LENGTH {}", n.length),
                 format!("ROW {}", n.row),
             ];
-            if !matches!(kind, Voice::Triangle | Voice::Dpcm) {
+            if !matches!(
+                kind,
+                Voice::Triangle | Voice::Dpcm | Voice::VtTriangle | Voice::Pcm
+            ) {
                 if kind != Voice::Saw {
                     values.push(format!("VOLUME {}", sound.volume));
                 }
                 values.push(format!("DECAY {} FR", sound.decay));
             }
             match kind {
-                Voice::Pulse | Voice::VrcPulse => values.push(format!("DUTY {}", sound.duty)),
-                Voice::Fm => values.push(format!("FM PATCH {}", sound.instrument)),
+                Voice::Pulse | Voice::VrcPulse | Voice::MmcPulse | Voice::VtPulse => {
+                    values.push(format!("DUTY {}", sound.duty))
+                }
+                Voice::Fm | Voice::EpsmFm => values.push(format!("FM PATCH {}", sound.instrument)),
                 Voice::N163 => values.push(format!("WAVE {}", sound.instrument + 1)),
                 Voice::Saw => values.push(format!(
                     "SAW RATE {}",
                     sound.saw_rate.unwrap_or(sound.volume * 2)
                 )),
-                Voice::Dpcm => values.push(format!("SAMPLE {}", sound.instrument + 1)),
-                Voice::Noise => values.push(format!(
+                Voice::Dpcm | Voice::Pcm => values.push(format!("SAMPLE {}", sound.instrument + 1)),
+                Voice::Noise | Voice::VtNoise => values.push(format!(
                     "PERIOD {}",
                     sound
                         .noise_period
@@ -2732,7 +2958,7 @@ impl PlitaProgram for Studio {
                 _ => {}
             }
             for (i, value) in values.iter().enumerate() {
-                draw_text(
+                self.text(
                     &mut d,
                     rx + 42.0,
                     289.0 + i as f32 * 44.0,
@@ -2743,7 +2969,7 @@ impl PlitaProgram for Studio {
             }
             if kind == Voice::Dpcm {
                 if let Some(sample) = self.score.samples.get(sound.instrument as usize) {
-                    draw_text(&mut d, rx, 494.0, &short(&sample.name, 24), 0.8, MUTED);
+                    self.text(&mut d, rx, 494.0, &short(&sample.name, 24), 0.8, MUTED);
                 }
             }
         } else {
@@ -2761,7 +2987,7 @@ impl PlitaProgram for Studio {
             .iter()
             .enumerate()
             {
-                draw_text(
+                self.text(
                     &mut d,
                     rx,
                     242.0 + i as f32 * 33.0,
@@ -2771,14 +2997,14 @@ impl PlitaProgram for Studio {
                 );
             }
         }
-        draw_text(
+        self.text(
             &mut d,
             rx,
             g.bottom() + 10.0,
             &format!(
-                "NTSC {:.2} BPM / {} FR",
-                FPS * 15.0 / self.score.frames_per_row() as f64,
-                self.score.frames_per_row()
+                "NTSC {:.2} BPM / {} TICKS",
+                self.score.tick_rate() * 15.0 / self.score.ticks_per_row() as f64,
+                self.score.ticks_per_row()
             ),
             0.65,
             MUTED,
@@ -2816,7 +3042,7 @@ impl PlitaProgram for Studio {
             Rect::new(0.0, self.size.height - 36.0, self.size.width, 36.0),
             PANEL,
         );
-        draw_text(
+        self.text(
             &mut d,
             18.0,
             self.size.height - 24.0,
@@ -2876,7 +3102,9 @@ pub fn smoke() -> Result<(), Box<dyn std::error::Error>> {
     app.undo(false);
     assert_eq!(app.score, before);
     app.selection = vec![(0, 0)];
-    let out = std::env::var_os("FCSEQ_SMOKE_DIR").map(PathBuf::from).unwrap_or_else(|| root().join("verification/ui"));
+    let out = std::env::var_os("FCSEQ_SMOKE_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| root().join("verification/ui"));
     std::fs::create_dir_all(&out)?;
     app.score.save(&out.join("ui_fixture.fcq"))?;
     let base_score = app.score.clone();
@@ -2895,15 +3123,31 @@ pub fn smoke() -> Result<(), Box<dyn std::error::Error>> {
         ("noise", Some(1), None),
         ("n163_small", Some(1), None),
         ("nsf_player", None, None),
+        ("key_editor", None, None),
+        ("key_editor_small", None, None),
+        ("epsm_fm", Some(1), None),
+        ("epsm_ssg", Some(1), None),
+        ("key_editor_ja", None, None),
+        ("fds_wave_ja", Some(1), None),
+        ("epsm_fm_ja", Some(1), None),
+        ("help_ja", Some(2), None),
     ] {
         app.score = base_score.clone();
+        app.key_editor = false;
+        app.language = if name.ends_with("_ja") {
+            Language::Japanese
+        } else {
+            Language::English
+        };
         app.size = Size::new(1360.0, 900.0);
         app.instrument_track = 0;
         app.selection = vec![(0, 0)];
         app.wave_slot = 0;
         let instrument = match name {
+            "epsm_fm" | "epsm_fm_ja" => Some((Expansion::Epsm, 8)),
+            "epsm_ssg" => Some((Expansion::Epsm, 5)),
             "n163_wave" | "n163_small" => Some((Expansion::N163, 5)),
-            "fds_wave" => Some((Expansion::Fds, 5)),
+            "fds_wave" | "fds_wave_ja" => Some((Expansion::Fds, 5)),
             "vrc7_patch" => Some((Expansion::Vrc7, 5)),
             "vrc6_pulse" => Some((Expansion::Vrc6, 5)),
             "vrc6_saw" => Some((Expansion::Vrc6, 7)),
@@ -2927,6 +3171,12 @@ pub fn smoke() -> Result<(), Box<dyn std::error::Error>> {
                 app.size = Size::new(1120.0, 780.0);
             }
             app.score.save(&out.join(format!("{name}.fcq")))?;
+        }
+        if name.starts_with("key_editor") {
+            app.open_key_track(0);
+            if name.ends_with("small") {
+                app.size = Size::new(1120.0, 780.0);
+            }
         }
         if name == "nsf_player" {
             let mut second = app.score.sections[0].clone();
@@ -2960,7 +3210,7 @@ pub fn smoke() -> Result<(), Box<dyn std::error::Error>> {
     std::fs::write(
         out.join("ui_smoke.json"),
         serde_json::to_vec_pretty(
-            &serde_json::json!({"empty_startup":true,"edit_undo":true,"draw_screens":14}),
+            &serde_json::json!({"empty_startup":true,"edit_undo":true,"draw_screens":22}),
         )?,
     )?;
     Ok(())

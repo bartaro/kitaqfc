@@ -1,4 +1,4 @@
-# Third-party notices — FCSEQ 0.4.2
+# Third-party notices — FCSEQ 0.5.0
 
 FCSEQ application: Copyright (c) 2026 DAISUKE OBA. [MIT License](LICENSE).
 Third-party components retain their original copyrights and license terms.
@@ -50,6 +50,28 @@ license downloads and their pinned revisions are recorded in
 licenses/UPSTREAM_PROVENANCE.json. The old block/dispatch crates declare MIT in
 their manifests but omit a license file; standard MIT text and manifest author
 attribution are supplied, with that distinction recorded in their NOTICE.md.
+
+## Additional audio engine and Japanese fonts
+
+ymfm, Copyright (c) 2021, Aaron Giles, is used under BSD-3-Clause for the
+YMF288 and YM2149 engines. The unmodified sources are pinned at
+`81aec25ccbb98f4873a255f7551ac4dadac59b4a` from
+https://github.com/aaronsgiles/ymfm . The full copyright, conditions and
+disclaimer are in [licenses/dependencies/ymfm/LICENSE](licenses/dependencies/ymfm/LICENSE).
+Source hashes are recorded in UPSTREAM.json beside that notice and the vendored
+source. FCSEQ's original adapter and synthesized rhythm data are MIT-licensed.
+No Yamaha instrument-ROM dump is included. The BSD notice must accompany binary
+redistributions; the names of copyright holders do not endorse FCSEQ.
+
+Unmodified Noto Sans JP Regular and variable font files are distributed under
+SIL OFL 1.1. Their full original copyright/Reserved Font Name statements and
+licence texts are preserved in assets/fonts/NotoSansJP-Regular-OFL.txt and
+assets/fonts/NotoSansJP-OFL.txt and copied to licenses/assets. The static Regular
+font is preferred for readable Japanese UI text; the variable file is a fallback.
+Pinned upstream files and SHA-256 hashes are recorded in the two NotoSansJP
+provenance JSON files in licenses/assets. Sources:
+https://github.com/notofonts/noto-cjk and https://github.com/google/fonts .
+These font files have not been modified or relicensed under MIT.
 
 ## Rust standard library
 

@@ -1,4 +1,4 @@
-/* Generic NTSC FCSEQ register stream player. Keep data/driver mapped while active.
+/* FCSEQ register stream player. Call at FCSEQ_TICK_RATE_HZ. Keep data/driver mapped while active.
    Place dpcm_bank.bin at $C000 as described by fcseq_export.json.
    Define FCSEQ_WRITE(addr,value) for a host harness; default writes hardware. */
 #include "fcseq_score.h"
@@ -38,6 +38,22 @@ void fcseq_stop(void) {
     FCSEQ_WRITE(0x9010,0x25);FCSEQ_WRITE(0x9030,0);
 #elif FCSEQ_EXPANSION == 20
     FCSEQ_WRITE(0x4080,0x80);FCSEQ_WRITE(0x4083,0x80);
+#elif FCSEQ_EXPANSION == 5
+    FCSEQ_WRITE(0x5015,0);FCSEQ_WRITE(0x5011,128);
+#elif FCSEQ_EXPANSION == 69
+    FCSEQ_WRITE(0xC000,8);FCSEQ_WRITE(0xE000,0);
+    FCSEQ_WRITE(0xC000,9);FCSEQ_WRITE(0xE000,0);
+    FCSEQ_WRITE(0xC000,10);FCSEQ_WRITE(0xE000,0);
+#elif FCSEQ_EXPANSION == 256
+    FCSEQ_WRITE(0x4035,0);FCSEQ_WRITE(0x4031,128);
+#elif FCSEQ_EXPANSION == 128
+    FCSEQ_WRITE(0x401C,8);FCSEQ_WRITE(0x401D,0);
+    FCSEQ_WRITE(0x401C,9);FCSEQ_WRITE(0x401D,0);
+    FCSEQ_WRITE(0x401C,10);FCSEQ_WRITE(0x401D,0);
+    FCSEQ_WRITE(0x401C,0x10);FCSEQ_WRITE(0x401D,0xBF);
+    FCSEQ_WRITE(0x401C,0x28);
+    FCSEQ_WRITE(0x401D,0);FCSEQ_WRITE(0x401D,1);FCSEQ_WRITE(0x401D,2);
+    FCSEQ_WRITE(0x401D,4);FCSEQ_WRITE(0x401D,5);FCSEQ_WRITE(0x401D,6);
 #elif FCSEQ_EXPANSION == 19
     FCSEQ_WRITE(0xE000,0x40);
 #endif

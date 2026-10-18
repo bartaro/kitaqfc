@@ -1,90 +1,75 @@
-# FCSEQ 0.4.2 — Handbuch
+# FCSEQ 0.5.0
 
-[en](README.en.md) · [ja](README.ja.md) · [ko](README.ko.md) · [zh-CN](README.zh-CN.md) · [zh-TW](README.zh-TW.md) · [fr](README.fr.md) · [es](README.es.md) · [de](README.de.md) · [pt-BR](README.pt-BR.md)
+[English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt-BR.md)
 
-Autor: **DAISUKE OBA**. Allgemeiner Famicom-Musiksequencer mit **plita**. GUI, CLI und Python-Bindings verwenden dasselbe Projektmodell, dieselbe Klangerzeugung und dieselben Exporte. Der Start erfolgt mit einem leeren Projekt; Spiel-ROM und BIOS sind nicht erforderlich. Die Oberfläche ist englisch, das Handbuch liegt in neun Sprachen vor.
+FCSEQ ist ein Musikeditor für die Klangchips des Famicom. In der mit plita entwickelten Oberfläche setzen Sie Noten, bearbeiten Klänge und hören das Ergebnis direkt an. Oberfläche, CLI und Python-Bindings verwenden dasselbe Projektformat und dieselbe Audio-Engine. Neue Projekte sind leer und enthalten keine Musik aus Spielen.
 
-**0.4.2** — Vorschau, C-Export und NSF initialisieren den DMC-DAC einheitlich mit 64. Die Aufnahme beginnt nach dem Einschwingen von DAC/Filter: Triangle/Noise-Pegel ohne DPCM-Samples und Einschaltimpulse in stillen Passagen sind korrigiert. Individuelle DPCM-Samplepegel haben weiterhin Vorrang. FCQ/NSF/NSFe-Formate bleiben unverändert.
+## Installation und Sprache
 
-## Installation
+Laden Sie unter [downloads](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads) das passende ZIP herunter und entpacken Sie es vollständig. Windows und Linux werden für x86_64 angeboten, macOS für Apple Silicon und Intel. Starten Sie `fcseq.exe` unter Windows oder `./fcseq` unter Linux und macOS. Fehlende Ausführungsrechte setzen Sie mit `chmod +x fcseq fcseq-cli`. Lassen Sie Schriftarten und Lizenzdateien beim Programm.
 
-Laden Sie das vollständige ZIP aus [downloads/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads): Windows x86_64, Linux x86_64, macOS Apple Silicon ARM64 oder Intel x86_64. Alle Dateien einschließlich Ressourcen und Lizenzen entpacken. Start: `fcseq.exe` unter Windows, `./fcseq` unter Unix; Terminal: `fcseq-cli` mit `.exe` unter Windows. Einzeldateien stehen auch in [bin/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/bin). Windows 10/11 nutzt Direct3D 12, macOS Metal, Linux Vulkan/OpenGL, X11/Wayland und ALSA. Linux wurde unter Ubuntu 24.04 gebaut; ältere Systeme benötigen eventuell einen eigenen Build. Ubuntu-Laufzeitpakete: `sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`. GUI benötigt einen passenden Grafiktreiber, Wiedergabe ein Audiogerät; WAV-Export funktioniert ohne Audiogerät. Programme sind unsigniert, macOS-Versionen nicht notarisiert. Bei einer Sperre Quellen und Prüfsummen prüfen und die normale Freigabe des Betriebssystems verwenden. Bei Bedarf: `chmod +x fcseq fcseq-cli`.
+Die Oberfläche ist auf Englisch und Japanisch verfügbar. **SOUND → 日本語 / English** schaltet die Sprache um; im NSF-Player gibt es dieselbe Schaltfläche. FCSEQ speichert die Auswahl. Beim ersten Start wird die Systemsprache berücksichtigt, sofern sie verfügbar ist. Mit `FCSEQ_LANGUAGE=ja` oder `en` können Sie eine Sprache vorgeben. Noto Sans JP für japanische Texte wird mitgeliefert.
 
-Windows benötigt außerdem [Microsoft Visual C++ x64 Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) (`VCRUNTIME140.dll`). Falls es fehlt, das aktuell unterstützte x64-Paket von Microsoft installieren. GUI/CLI sind nicht mit Python verknüpft; nur optionale Bindings und das Startskript benötigen Python.
+Windows benötigt Direct3D 12 und die Microsoft Visual C++ x64-Laufzeit. macOS verwendet Metal. Die Linux-Binärdateien entstehen unter Ubuntu 24.04 und verwenden ALSA, X11/Wayland und Vulkan/OpenGL. Auf älteren Distributionen kann ein eigener Build nötig sein. Die Wiedergabe benötigt ein Audiogerät, der WAV-Export nicht. Die Programme sind nicht signiert; die Mac-Versionen sind nicht notarisiert.
 
-## Bearbeitung
+## Noten und Piano-Roll
 
-SOUND wählt 2A03 mit Pulse 1/2, Triangle, Noise und DPCM (5 Stimmen), VRC6 (+2 Pulse und Saw, 8), VRC7 (+6 FM, 11), FDS (+1 Welle, 6) oder N163 (+1–8 Wellen, bis 13). Pro Projekt ist eine Erweiterung aktiv. Änderungen mit Notenverlust werden abgelehnt.
+Wählen Sie unter SOUND einen Chip. Ein Doppelklick auf eine freie Stelle der Spur legt eine Note an. Ziehen Sie den Notenkörper, um Position und Tonhöhe zu ändern, oder den rechten Rand, um die Länge anzupassen. Jede Spur entspricht einem monophonen Hardwarekanal; überlappende Noten sind nicht zulässig.
 
-Doppelklick fügt eine Note ein. Ziehen am Körper verschiebt/transponiert, am rechten Rand ändert es die Länge. Ctrl/Shift-Klick oder Auswahlrechteck markiert mehrere Noten, Ctrl+A die aktuelle Spur. Ctrl+C/X/V kopiert/schneidet/fügt am Cursor ein, Ctrl+D dupliziert, Delete löscht, Ctrl+Z/Y macht rückgängig/wiederholt. Pfeile bewegen/transponieren; Shift+hoch/runter ändert die Oktave. G: Raster, Q: Quantisierung, F: Gesamtansicht, Home: Anfang, +/-: Zoom, Shift+Mausrad: Zeit, UP/DOWN: Kanäle. Space startet/stoppt, LOOP wiederholt, AUDITION spielt die Auswahl. MUTE/SOLO wirkt auch beim Export. SONG verwaltet bis 16 Abschnitte mit je 256 Takten. Namen, BPM und Taktzahl anklicken. Ctrl+N/O/S/Shift+S: neu/öffnen/speichern/speichern unter. Ungültige Sammeländerungen werden vollständig verworfen. Wiederherstellung: `out/recovery_<process-id>.fcq` neben dem Programm öffnen und unter neuem Namen speichern.
+Ein Doppelklick auf den Spurnamen oder die Taste E öffnet die einzelne Spur mit Klaviertastatur links. Die Zeilen entsprechen Halbtönen, die waagerechte Achse der Zeit. Klicken Sie auf eine Klaviertaste, um den Ton vorzuhören. Das Mausrad verschiebt den Tonhöhenbereich; −/+ an der Tastatur verändert dessen Umfang. Umschalt+Mausrad verschiebt den Zeitausschnitt. Mit den Spurpfeilen wechseln Sie die Spur, mit E zurück zur Gesamtansicht. Rausch-, DPCM- und Rhythmusspuren zeigen ihre verfügbaren Klänge beziehungsweise Abspielraten.
 
-## Instrumente
+Mehrere Noten wählen Sie mit Strg/Umschalt+Klick oder einem Auswahlrechteck. Strg+A markiert die aktuelle Spur; Strg+C/X/V kopiert, schneidet aus und fügt am Cursor ein. Strg+D dupliziert, Entf löscht, Strg+Z/Y macht Änderungen rückgängig oder stellt sie wieder her. Pfeiltasten verschieben und transponieren; Umschalt+Auf/Ab transponiert um eine Oktave. G ändert das Raster, Q richtet Noten daran aus, F passt die Ansicht an, Pos1 springt zum Anfang und +/− zoomt die Zeitachse.
 
-SOUND > Instrument / waveform editor öffnen, Noten des Kanals auswählen und Parameter bearbeiten; AUDITION/UNDO/REDO sind verfügbar. Pulse hat 4 Tastverhältnisse, VRC6 Pulse 8; Triangle ist eine feste 32-stufige Welle. Noise: 16 Perioden, langer/kurzer Modus. Pulse/Noise-Lautstärke 0–15, Abklingen 0 hält den Pegel. VRC6 Saw: Akkumulatorzuwachs 0–63; Überlauf verändert den Klang. Diese Quellen haben keinen frei beschreibbaren Wellenspeicher.
+Die Leertaste startet oder stoppt die Wiedergabe. LOOP wiederholt den Abschnitt, AUDITION spielt die Auswahl. Stumm- und Soloschaltung wirken auch beim Export. Unter SONG verwalten Sie bis zu 16 Abschnitte mit jeweils 256 Takten. Tempo und Taktzahl lassen sich anklicken und bearbeiten. Strg+N/O/S/Umschalt+S erstellt, öffnet, speichert oder speichert unter neuem Namen. Eine Wiederherstellungsdatei liegt unter `out/recovery_<process-id>.fcq` neben dem Programm; öffnen Sie sie und wählen Sie Speichern unter.
 
-FDS: eine gemeinsame 64-Sample-Welle mit 6 Bit. N163: 4-Bit-Wellen, anfangs 4 × 32 Samples; jede Note wählt einen Platz, Längen sind Vielfache von 4. Gemeinsamer Speicher: `256 - 16 × aktive Kanäle` Samples, also 128 bei acht Stimmen. Vor einer Verlängerung andere Wellen kürzen oder Kanäle reduzieren. Zeichnen, SINE/PULSE/SAW/TRIANGLE, Invertieren und Rotieren sind möglich. Tonhöhen-, RAM- und Kanalgrenzen werden geprüft. VRC7-Patch 0 bietet 24 Parameter (Multiplikatoren, ADSR, Rückkopplung, Pegel, Tastenskalierung, Tremolo/Vibrato, Sinus/Halbsinus) oder 8 Rohbytes. Presets 1–15 sind synthetische Näherungen, keine ROM-Kopien. Kein eigener Editor für FDS-Modulation/Hardwarehüllkurven. Analoge Hardwaregleichheit ist nicht zugesichert.
+## Klangchips und Instrumente
 
-## DPCM
+Zur 2A03-Grundausstattung gehören zwei Puls-, ein Dreieck-, ein Rausch- und ein DPCM-Kanal. Eine Erweiterung kann hinzukommen: VRC6 mit drei Stimmen, VRC7 mit sechs FM-Stimmen, FDS mit einer Wellentabelle, N163 mit bis zu acht, MMC5 mit zwei Pulsstimmen und PCM, SUNSOFT 5B mit drei SSG-Stimmen, EPSM mit drei SSG-, sechs FM- und sechs Rhythmusstimmen oder VT02 mit zwei Pulsstimmen, Dreieck, Rauschen und PCM. Ein Chipwechsel wird abgelehnt, wenn dadurch Noten verloren gingen. Leeren Sie zuerst die betroffenen Spuren.
 
-SAMPLES oder SOUND > Import audio file lädt WAV/FLAC/Ogg Vorbis/MP3; Drag-and-drop ist möglich. START/END in ms, GAIN, NORMALIZE, REVERSE, RATE 0–15 einstellen; AUDITION DPCM abhören, EXPORT .DMC speichern. DPCM-Note setzen, SAMPLE und Wiedergabe-RATE wählen. Original-PCM bleibt erhalten; maximal 60 s, Stereo wird Mono, Gleichanteil wird entfernt und mit Tiefpass neu abgetastet. Samplegröße `16n+1` Bytes, höchstens 4081; maximal 64 Samples und 16320 Bankbytes (FDS 8192). Überschreitungen werden abgelehnt. Umwandlungsrate und Noten-Abspielrate sind getrennt. Keine internen Sampleschleifen oder automatische Tonhöhenkorrektur.
+Wählen Sie Noten und öffnen Sie INSTRUMENT / WAVEFORM. Pulsstimmen bieten ein Tastverhältnis, Rauschen eine Periode und einen kurzen/langen Modus. Beim VRC6-Sägezahn stellen Sie die Akkumulatorrate ein. Diese Stimmen besitzen keinen frei beschreibbaren Wellenformspeicher.
 
-## Dateien und Export
+FDS verwendet eine gemeinsame Welle aus 64 Werten mit 6 Bit. N163 bietet Wellenplätze mit 4 Bit, die pro Note gewählt werden. Zeichnen Sie mit der Maus oder beginnen Sie mit Sinus, Puls, Sägezahn oder Dreieck. Wellen lassen sich invertieren und verschieben. CURVE / LINE wechselt zwischen glatter Kurve und geraden Verbindungen. Die sichtbaren Punkte sind die tatsächlich gespeicherten Werte; die Glättung betrifft nur die Darstellung. Beim Überfahren eines Punktes erscheinen Index und Wert.
 
-Projekte als `.fcq` speichern; alte `.fcseq` umbenennen. Notenprojekte verwenden JSON `fcseq-2`, `fcseq-1` wird gelesen; NSF-Wiedergabedokumente verwenden `fcseq-3`. NSF/NSFe über Import NSF, OPEN, Dateiabwurf oder Startargument öffnen. PREV/NEXT oder Nummer wählt das Stück; PLAY/STOP, LOOP und 1–600 s steuern die Wiedergabe. Zeitmetadaten werden berücksichtigt, sonst gelten zunächst 30 s. Die vorausgehende Audioberechnung kann abgebrochen werden. FCQ bettet Original, Stückwahl und Dauer ein; es erfolgt keine automatische Notentranskription. Reexport erhält die Originalbytes.
+N163-Wellenlängen müssen durch vier teilbar sein. Alle Stimmen teilen `256 − 16 × aktive_Kanäle` Werte, also 128 bei acht Kanälen. Kürzen Sie andere Wellen oder verringern Sie die Kanalzahl, wenn der Platz nicht reicht. FDS-Modulationstabelle und Hardwarehüllkurve lassen sich derzeit nicht bearbeiten.
 
-Export NSF erzeugt pro Abschnitt ein Teilstück mit Klangdaten/DPCM und zusätzlich NSFe mit Dauer und Fade 0. NSFe verwenden, wenn der Player NSF-Zeiten ignoriert. Wiedergabe endet am Abschnittsende, unabhängig von Editor-LOOP. Eingabe: NSF v1/NSFe, NTSC oder NTSC-kompatible Doppelregion, ohne Banken oder 4-KiB-Banken; 2A03/DPCM, VRC6/VRC7/FDS/N163. Nur-PAL, NSF2-Ausführungserweiterungen, MMC5, Sunsoft 5B und VT02 werden abgelehnt; nicht zurückkehrendes INIT/PLAY wird begrenzt.
+Bei VRC7 ist der benutzerdefinierte Klang 0 editierbar; die Vorgaben 1–15 sind synthetische Annäherungen. EPSM bietet 16 FM-Klänge mit vier Operatoren, Algorithmus, Rückkopplung, Hüllkurven und Modulation. Änderungen gelten für alle Noten, die denselben Klang verwenden. FM- und Rhythmusstimmen haben Panoramaeinstellungen. Der Export erhält diese Registerwerte, während Vorschau und WAV derzeit mono sind. Die EPSM-Schlagzeugklänge werden aus eigenen Daten synthetisiert; ein Yamaha-ROM ist nicht enthalten. EPSM-Hardware verwendet ihre eigenen eingebauten Klänge.
 
-Export C + DPCM schreibt `score.c`, `fcseq_score.h`, `fcseq_player.c`, Abschnittsbinärdateien, `.dmc`, `dpcm_bank.bin`, `fcseq_export.json`. Mapper und CPU-sichtbare Code-/Daten-/DPCM-Adressen müssen integriert werden; keine vollständige Spiel-ROM. VRC6 setzt Mapper 24 voraus (26 benötigt Adressanpassung), VRC7 85, N163 19 oder FDS. Für KITAQFC vor dem Einbinden `FCSEQ_KITAQFC` definieren; `FCSEQ_WRITE(address, value)` bindet eigene Registerzugriffe an.
+Die drei SSG-Stimmen von 5B beziehungsweise EPSM teilen sich Rauschperiode und Hüllkurvengenerator. Eine spätere Einstellung verändert daher auch andere Stimmen, die denselben Generator nutzen.
 
-## CLI und Python
+## Audiodateien als Instrumente
 
-Beispiele im entpackten Ordner ausführen. Abschnitts-/Kanal-/Noten-/Sampleindizes beginnen bei 0, NSF-Stücke bei 1. Python 3.10+ nutzt die mitgelieferte abi3-Erweiterung für passendes Betriebssystem/CPU. GUI/CLI benötigen kein Python. Vollständige API: `fcseq_native.pyi`. CLI bearbeitet Noten durch Verschieben, Transponieren, Längenänderung, Quantisieren, Duplizieren und Löschen; Wellenbearbeitung erfolgt über GUI/Python.
+Importieren Sie unter SAMPLES WAV, FLAC, Ogg Vorbis oder MP3 oder ziehen Sie eine Datei ins Fenster. Anfang, Ende, Verstärkung, Normalisierung und Rückwärtswiedergabe sind einstellbar. Die Originaldaten bleiben erhalten. Stereodateien werden mono gemischt; Quelldateien dürfen bis zu 60 Sekunden lang sein.
+
+Wählen Sie bei einer DPCM-Note das Sample und die Abspielrate. AUDITION DPCM spielt das codierte Ergebnis, EXPORT .DMC speichert es. Die Umwandlung entfernt den Gleichanteil und verwendet einen Tiefpass beim Resampling. Ein Sample darf 4081 Byte, die gemeinsame Bank 16320 Byte enthalten; bei FDS sind es 8192 Byte. Kürzen Sie den Ausschnitt oder senken Sie die Umwandlungsrate. Diese Rate ist unabhängig von der Abspielrate der einzelnen Note.
+
+MMC5- und VT02-PCM nutzen dieselben Audiodaten und Bearbeitungsfunktionen, geben aber 8-Bit-PCM mit 4 kHz aus. Die Tonhöhe verändert die Abspielgeschwindigkeit. Die DPCM-Größenbegrenzung gilt dafür nicht. VT02 teilt seine Sampleeinheit zwischen DPCM und PCM; verwenden Sie pro Abschnitt nur einen dieser Modi. Sampleloops und automatische Tonhöhenkorrektur sind nicht enthalten.
+
+## Speichern und exportieren
+
+Bearbeitbare Projekte tragen `.fcq`. Alte `.fcseq`-Dateien können vor dem Öffnen umbenannt werden. Notenprojekte verwenden `fcseq-2`; `fcseq-1` wird ebenfalls gelesen. Wiedergabeprojekte mit eingebettetem NSF verwenden `fcseq-3`.
+
+NSF, NSF2 und NSFe öffnen Sie über FILE, per Drag-and-drop oder als Startargument. Wählen Sie Teilstück und Wiedergabedauer, dann PLAY. Vorhandene Zeitangaben werden übernommen; sonst gelten zunächst 30 Sekunden, einstellbar von 1 bis 600. Beim Speichern als FCQ werden Originaldaten und Einstellungen eingebettet. Der Import wandelt beliebige NSF-Dateien nicht in editierbare Noten um. Beim Export in denselben Container bleiben die ursprünglichen Bytes erhalten.
+
+Wählen Sie beim Export `.nsf`, `.nsf2` oder `.nsfe`. Jeder Abschnitt wird ein Teilstück. NSF und NSF2 erzeugen zusätzlich ein NSFe mit Längenangaben und ohne Ausblenden. Die Wiedergabe endet an der Abschnittsgrenze; LOOP im Editor wird getrennt behandelt.
+
+Unterstützt werden NTSC und Mehrregionendateien mit NTSC-Timing, 4-KiB-Banking sowie NSF2-Timer-IRQ, Hintergrund-INIT und unterdrücktes PLAY. Reine PAL-Dateien werden abgewiesen. EPSM und der NSF2-Timer belegen dieselben Ports; EPSM zusammen mit gesetztem NSF2-Timer-IRQ-Flag wird deshalb abgewiesen. Weitere Grenzen stehen in [AUDIO_FORMATS](docs/AUDIO_FORMATS.md).
+
+Export C + DPCM erzeugt Registerdaten, C-Treiber, Header, Samplebank und Platzierungsbericht. Eine vollständige Spiel-ROM entsteht damit nicht. Das Zielprogramm muss den Mapper konfigurieren und die Daten für die CPU erreichbar halten. Rufen Sie `fcseq_tick` mit `FCSEQ_TICK_RATE_HZ` auf: normalerweise NTSC-Bildrate, bei PCM 4000 Hz. `FCSEQ_KITAQFC` wählt den KITAQFC-Compiler; `FCSEQ_WRITE` bindet einen eigenen Registerzugriff ein.
+
+## CLI, Python und eigener Build
+
+`fcseq-cli help` zeigt die Befehle. Unter Windows kommt `.exe` hinzu. Indizes beginnen bei 0, NSF-Teilstücknummern bei 1.
 
 ```sh
-./fcseq-cli new song.fcq n163
+./fcseq-cli new song.fcq epsm
 ./fcseq-cli validate song.fcq
+./fcseq-cli export-nsf2 song.fcq song.nsf2
 ./fcseq-cli render-wav song.fcq song.wav 0
-./fcseq-cli export-nsf song.fcq song.nsf
-./fcseq-cli export-nsfe song.fcq song.nsfe
-./fcseq-cli import-nsf song.nsf imported.fcq 1 60
-./fcseq-cli nsf-info song.nsfe
-./fcseq-cli nsf-render song.nsfe preview.wav 1 10
-./fcseq-cli play-nsf song.nsfe 1 30
-./fcseq-cli import-audio song.fcq voice.wav with_voice.fcq
-./fcseq-cli export-dpcm with_voice.fcq 0 voice.dmc
-./fcseq-cli edit song.fcq edited.fcq 0 0 0 transpose 12
-./fcseq-cli export-kitaqfc song.fcq export
-python fcseq.py nsf-render song.nsf preview.wav --song 1 --seconds 10
+./fcseq-cli import-nsf music.nsf2 imported.fcq 1 60
 ```
 
-```python
-import fcseq_native
-c = fcseq_native.Controller()
-c.set_expansion('n163')
-c.set_n163_channels(8)
-c.set_n163_wave(0, [i // 2 for i in range(32)])
-c.add_note(0, 5, 0, 8, 69)
-c.save_project('example.fcq')
-c.export_nsf('example.nsf')
-c.render_wav('example.wav')
-```
+Die mitgelieferte Erweiterung benötigt Python 3.10 oder neuer für dasselbe Betriebssystem und dieselbe Architektur. GUI und CLI benötigen Python nicht. Die API einschließlich `set_sound` und `set_epsm_parameter` ist in [fcseq_native.pyi](fcseq_native.pyi) beschrieben.
 
-## Bauen und prüfen
+Zum Bauen benötigen Sie Rust 1.93.1 und einen C++14-Compiler. Verwenden Sie `cargo build --locked --release` und `cargo test --locked --tests`. Nur die CLI bauen Sie mit `--no-default-features --bin fcseq-cli`, Python mit `--features python --lib`. Windows benötigt MSVC Build Tools, macOS die Xcode Command Line Tools. Linux-Pakete stehen in `.github/workflows/fcseq.yml`.
 
-In diesem Quellordner Rust 1.93.1 und folgende Befehle verwenden. Lokale Bibliotheken liegen in vendor/. Linux-Entwicklungspakete: `.github/workflows/fcseq.yml` im Repository-Hauptordner; macOS: Xcode Command Line Tools; Windows: MSVC Build Tools. Python ist optional. Skripte prüfen native CLI/Python, WAV, NSF/NSFe-Rundläufe und GUI-Start. Ergebnisse/Grenzen: VERIFICATION.md. Menschliche Maus-/Tastaturbedienung und Klang echter Hardware sind nicht zertifiziert.
-
-```sh
-cargo build --locked --release
-cargo test --locked --release --tests
-cargo build --locked --release --no-default-features --bin fcseq-cli
-cargo build --locked --release --features python --lib
-python -c "import shutil,sys; from pathlib import Path; n={'win32':'fcseq_native.dll','darwin':'libfcseq_native.dylib'}.get(sys.platform,'libfcseq_native.so'); shutil.copy2(Path('target/release')/n,'fcseq_native.pyd' if sys.platform=='win32' else 'fcseq_native.so')"
-```
-
-## Lizenz
-
-FCSEQ steht unter MIT, Copyright (c) 2026 DAISUKE OBA. Abhängigkeiten behalten ihre Lizenzen. LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/ und third_party_sources/ mitverteilen. Symphonia-Quellen unter MPL-2.0 sowie Schrift-/Iconhinweise sind enthalten. Importierte Musik und Samples haben eigene Rechte.
-
-[LICENSE](LICENSE) · [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) · [LICENSE_AUDIT](LICENSE_AUDIT.json) · [VERIFICATION](VERIFICATION.md)
-
-[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)
+FCSEQ steht unter MIT, Copyright (c) 2026 DAISUKE OBA. Abhängigkeiten behalten ihre Lizenzen, darunter BSD-3-Clause für ymfm, MPL-2.0 für Symphonia und OFL für Schriftarten. Geben Sie LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/ und third_party_sources/ mit weiter. Spiel-ROMs, FDS-BIOS und kommerzielle Instrument-ROMs sind nicht enthalten. Importierte Musik und Samples behalten ihre eigenen Rechte. Siehe [Hinweise](THIRD_PARTY_NOTICES.md), [Lizenzprüfung](LICENSE_AUDIT.json) und [Verifikation](VERIFICATION.md).

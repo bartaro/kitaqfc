@@ -1,0 +1,20 @@
+{
+  "repository": "https://github.com/aaronsgiles/ymfm",
+  "commit": "81aec25ccbb98f4873a255f7551ac4dadac59b4a",
+  "license": "BSD-3-Clause",
+  "files": {
+    "LICENSE": "2d2e9213c170a9866c616fa85b6da993a6724e10befc61f468ed9bfb84c4691c",
+    "README.md": "85fa831f01bb266efe5384e56d0d1f921ca4275a4415ba0123c5226602a44a1a",
+    "src/ymfm.h": "f5ab6fed63c8669abab8403e0e93132e1dad0ae4d8e4954e7836ab9e5b228405",
+    "src/ymfm_fm.h": "1b27bfb7fa4963d7c54cb06fd9bf659450362d8ed496c6af7d487b068cac45c9",
+    "src/ymfm_fm.ipp": "4fb7fe59d4494a19e9f9c7888eb644a63d86e109fdefb27a8117bf6a5f6ab4b9",
+    "src/ymfm_opn.h": "1950990c3ea0c6d492a20f66a683a372a7367ef39f7830aa65b20a20d1bcbef5",
+    "src/ymfm_opn.cpp": "8734c6d5a6e1bf49a08eeb33d260d39c17cd1d26f5db506e5d0d3e416913b489",
+    "src/ymfm_adpcm.h": "5933691971493b853a9be443f6e6fd74f63869aa21225f66dd89fc20de20914d",
+    "src/ymfm_adpcm.cpp": "74e5ded129ea7e532112e5b637d0a7bd4e127fd83331f1fac32011723051d4e0",
+    "src/ymfm_ssg.h": "27966b0887fe98f2d06a96be2776c911107e2f2a13a64f9a349e1ffc19cf7584",
+    "src/ymfm_ssg.cpp": "73a3028a77f13f3769b7705079659eb8325431a67b8164ded25e12f324f42bfd",
+    "src/ymfm_misc.h": "90739bd270a7b8b035275689e0f61ad4f8e0b9bcfd3f203816f97d54fe539b9d",
+    "src/ymfm_misc.cpp": "a2113ec915bf55e23169d9524d9db93d6589f9b2aa000daeb495ff839b6282d9"
+  }
+}

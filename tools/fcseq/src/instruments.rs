@@ -1,4 +1,41 @@
 //! Hardware instrument parameters shared by GUI, Python and register export.
+pub fn epsm_parameter(index: usize) -> Option<(&'static str, usize, u8, u8)> {
+    const OP: [(&str, usize, u8, u8); 11] = [
+        ("MULTIPLIER", 0, 0, 15),
+        ("DETUNE", 0, 4, 7),
+        ("TOTAL LEVEL", 1, 0, 127),
+        ("RATE SCALE", 2, 6, 3),
+        ("ATTACK", 2, 0, 31),
+        ("AM ENABLE", 3, 7, 1),
+        ("DECAY", 3, 0, 31),
+        ("SUSTAIN RATE", 4, 0, 31),
+        ("SUSTAIN LEVEL", 5, 4, 15),
+        ("RELEASE", 5, 0, 15),
+        ("SSG ENVELOPE", 6, 0, 15),
+    ];
+    if index < 44 {
+        let (name, byte, shift, max) = OP[index % 11];
+        Some((name, index / 11 * 7 + byte, shift, max))
+    } else {
+        [
+            ("ALGORITHM", 28, 0, 7),
+            ("FEEDBACK", 28, 3, 7),
+            ("AM SENSITIVITY", 29, 4, 3),
+            ("PITCH SENSITIVITY", 29, 0, 7),
+        ]
+        .get(index - 44)
+        .copied()
+    }
+}
+pub fn set_epsm_parameter(patch: &mut [u8], index: usize, value: u8) -> Result<(), String> {
+    let (_, byte, shift, max) =
+        epsm_parameter(index).ok_or("EPSM parameter index must be 0..47")?;
+    if patch.len() != 30 || value > max {
+        return Err("EPSM parameter value is outside its range".into());
+    }
+    patch[byte] = (patch[byte] & !(max << shift)) | (value << shift);
+    Ok(())
+}
 pub fn wave_preset(length: usize, max: u8, shape: u8) -> Vec<u8> {
     (0..length)
         .map(|i| {

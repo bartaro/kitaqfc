@@ -30,8 +30,31 @@ fn run() -> Result<(), String> {
                 serde_json::json!({"valid":true,"expansion":s.expansion,"channels":s.expansion.channels(),"sections":s.sections.len(),"frames_per_row":s.frames_per_row()})
             }
         }
-        "export-nsf" | "export-nsfe" => {
-            nsf::export(&Score::load(Path::new(get(1)?))?, Path::new(get(2)?))?
+        "export-nsf" | "export-nsfe" | "export-nsf2" => {
+            let mut path = Path::new(get(2)?).to_owned();
+            if args[0] == "export-nsf2" {
+                path.set_extension("nsf2");
+            }
+            if args[0] == "export-nsfe" {
+                path.set_extension("nsfe");
+            }
+            nsf::export(&Score::load(Path::new(get(1)?))?, &path)?
+        }
+        "set-epsm-parameter" => {
+            let mut score = Score::load(Path::new(get(1)?))?;
+            let patch = get(3)?.parse::<usize>().map_err(|e| e.to_string())?;
+            let index = get(4)?.parse::<usize>().map_err(|e| e.to_string())?;
+            let value = get(5)?.parse::<u8>().map_err(|e| e.to_string())?;
+            fcseq_native::instruments::set_epsm_parameter(
+                score
+                    .epsm_patches
+                    .get_mut(patch)
+                    .ok_or("EPSM patch index must be 0..15")?,
+                index,
+                value,
+            )?;
+            score.save(Path::new(get(2)?))?;
+            serde_json::json!({"updated":get(2)?})
         }
         "import-nsf" | "nsf-render" | "play-nsf" | "nsf-info" => {
             let mut s = Score::load(Path::new(get(1)?))?;
@@ -132,8 +155,8 @@ fn run() -> Result<(), String> {
             serde_json::json!({"selection":selected,"output":get(2)?})
         }
         "help" | "--help" | "-h" => {
-            println!("FCSEQ {}\nnew OUTPUT.fcq [none|vrc6|vrc7|fds|n163]\nvalidate PROJECT\nrender-wav PROJECT OUTPUT.wav [SECTION]\nexport-kitaqfc PROJECT DIRECTORY\nexport-nsf PROJECT OUTPUT.nsf
-export-nsfe PROJECT OUTPUT.nsfe\nimport-nsf INPUT.nsf OUTPUT.fcq [SONG] [SECONDS]\nnsf-info INPUT\nnsf-render INPUT OUTPUT.wav [SONG] [SECONDS]\nplay-nsf INPUT [SONG] [SECONDS]\nimport-audio PROJECT AUDIO OUTPUT.fcq\nexport-dpcm PROJECT SAMPLE OUTPUT.dmc\nedit PROJECT OUTPUT SECTION CHANNEL INDICES OPERATION [VALUE]\n  Operations: move, transpose, resize, quantize, duplicate, delete\nNSF song numbers start at 1; other indexes start at 0. Audio: WAV, FLAC, Ogg Vorbis, MP3.", env!("CARGO_PKG_VERSION"));
+            println!("FCSEQ {}\nnew OUTPUT.fcq [none|vrc6|vrc7|fds|n163|mmc5|sunsoft5b|epsm|vt02]\nvalidate PROJECT\nrender-wav PROJECT OUTPUT.wav [SECTION]\nexport-kitaqfc PROJECT DIRECTORY\nexport-nsf PROJECT OUTPUT.nsf
+export-nsf2 PROJECT OUTPUT.nsf2\nset-epsm-parameter PROJECT OUTPUT PATCH PARAMETER VALUE\nexport-nsfe PROJECT OUTPUT.nsfe\nimport-nsf INPUT.nsf OUTPUT.fcq [SONG] [SECONDS]\nnsf-info INPUT\nnsf-render INPUT OUTPUT.wav [SONG] [SECONDS]\nplay-nsf INPUT [SONG] [SECONDS]\nimport-audio PROJECT AUDIO OUTPUT.fcq\nexport-dpcm PROJECT SAMPLE OUTPUT.dmc\nedit PROJECT OUTPUT SECTION CHANNEL INDICES OPERATION [VALUE]\n  Operations: move, transpose, resize, quantize, duplicate, delete\nNSF song numbers start at 1; other indexes start at 0. Audio: WAV, FLAC, Ogg Vorbis, MP3.", env!("CARGO_PKG_VERSION"));
             return Ok(());
         }
         _ => return Err("Unknown command; run fcseq-cli help".into()),

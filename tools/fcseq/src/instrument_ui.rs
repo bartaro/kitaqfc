@@ -26,18 +26,18 @@ impl Studio {
         match self.instrument_kind() {
             Voice::Fds => self.score.fds_wave.clone(),
             Voice::N163 => self.score.n163_waves[self.wave_slot].clone(),
-            Voice::Pulse | Voice::VrcPulse => {
-                let duty = if self.instrument_kind() == Voice::Pulse {
+            Voice::Pulse | Voice::VrcPulse | Voice::MmcPulse | Voice::VtPulse => {
+                let duty = if self.instrument_kind() != Voice::VrcPulse {
                     [8, 16, 32, 48][s.duty.min(3) as usize]
                 } else {
                     (s.duty + 1) as usize * 4
                 };
                 (0..64).map(|i| if i < duty { 63 } else { 0 }).collect()
             }
-            Voice::Triangle => (0..32)
+            Voice::Triangle | Voice::VtTriangle => (0..32)
                 .map(|i| if i < 16 { (15 - i) * 4 } else { (i - 16) * 4 })
                 .collect(),
-            Voice::Noise => {
+            Voice::Noise | Voice::VtNoise => {
                 let mut lfsr = 1u16;
                 (0..128)
                     .map(|_| {
@@ -78,6 +78,19 @@ impl Studio {
         add(Action::Stop, 478.0, 62.0, 70.0, "STOP".into());
         add(Action::Undo, 558.0, 62.0, 70.0, "UNDO".into());
         add(Action::Redo, 638.0, 62.0, 70.0, "REDO".into());
+        if self.instrument_kind() == Voice::EpsmFm {
+            b.extend(self.epsm_buttons());
+            return b;
+        }
+        if self.instrument_kind() == Voice::Psg {
+            for (i, (id, _, _)) in self.timbre_parameters().iter().enumerate() {
+                let x = 28.0 + (i % 2) as f32 * 414.0;
+                let y = 142.0 + (i / 2) as f32 * 44.0;
+                add(Action::Timbre(*id, -1), x, y, 30.0, "-".into());
+                add(Action::Timbre(*id, 1), x + 350.0, y, 30.0, "+".into());
+            }
+            return b;
+        }
         if self.instrument_kind() == Voice::Fm {
             for (i, p) in FM_PARAMETERS.iter().enumerate() {
                 let x = 28.0 + (i / 12) as f32 * 414.0;
@@ -138,32 +151,60 @@ impl Studio {
                 );
             }
         }
+        if !self.instrument_wave().is_empty() {
+            b.push(Button::new(
+                Action::WaveCurve,
+                m.x + 726.0,
+                m.y + 62.0,
+                116.0,
+                if self.wave_curve { "CURVE" } else { "LINE" },
+                None,
+            ));
+        }
         b
     }
-    pub(super) fn timbre_parameters(&self) -> Vec<(u8, &'static str, u8)> {
+    pub(super) fn timbre_parameters(&self) -> Vec<(u8, &'static str, u16)> {
         let s = self.instrument_sound();
+        let kind = self.instrument_kind();
         let mut p = vec![];
         if !matches!(
-            self.instrument_kind(),
-            Voice::Triangle | Voice::Dpcm | Voice::Fm
+            kind,
+            Voice::Triangle | Voice::VtTriangle | Voice::Dpcm | Voice::Fm
         ) {
-            if self.instrument_kind() != Voice::Saw {
-                p.push((0, "VOLUME", s.volume));
+            if kind != Voice::Saw {
+                p.push((0, "VOLUME", u16::from(s.volume)));
             }
-            p.push((1, "DECAY (FRAMES)", s.decay));
+            if !matches!(kind, Voice::Pcm | Voice::Psg | Voice::EpsmFm) {
+                p.push((1, "DECAY (FRAMES)", u16::from(s.decay)));
+            }
         }
-        match self.instrument_kind() {
-            Voice::Pulse | Voice::VrcPulse => p.push((2, "DUTY", s.duty)),
+        match kind {
+            Voice::Pulse | Voice::MmcPulse | Voice::VtPulse | Voice::VrcPulse => {
+                p.push((2, "DUTY", u16::from(s.duty)))
+            }
             Voice::Saw => p.push((
                 3,
-                "SAW ACCUMULATOR RATE",
-                s.saw_rate.unwrap_or(s.volume * 2),
+                "ACCUMULATOR RATE",
+                u16::from(s.saw_rate.unwrap_or(s.volume * 2)),
             )),
-            Voice::N163 => p.push((4, "NOTE WAVE (1-BASED)", s.instrument + 1)),
-            Voice::Dpcm => p.push((4, "SAMPLE (1-BASED)", s.instrument + 1)),
-            Voice::Noise => {
-                p.push((5, "NOISE PERIOD", s.noise_period.unwrap_or(8)));
-                p.push((6, "SHORT MODE", s.noise_short as u8));
+            Voice::N163 => p.push((4, "WAVE", u16::from(s.instrument) + 1)),
+            Voice::Dpcm | Voice::Pcm => p.push((4, "SAMPLE", u16::from(s.instrument) + 1)),
+            Voice::Noise | Voice::VtNoise => {
+                p.push((5, "NOISE PERIOD", u16::from(s.noise_period.unwrap_or(8))));
+                p.push((6, "SHORT MODE", u16::from(s.noise_short)));
+            }
+            Voice::Psg => {
+                p.extend([
+                    (7, "TONE", u16::from(s.tone)),
+                    (8, "NOISE", u16::from(s.noise)),
+                    (5, "NOISE PERIOD", u16::from(s.noise_period.unwrap_or(8))),
+                    (9, "ENVELOPE", u16::from(s.envelope)),
+                    (10, "ENVELOPE SHAPE", u16::from(s.envelope_shape)),
+                    (11, "ENVELOPE PERIOD", s.envelope_period),
+                ]);
+            }
+            Voice::Rhythm | Voice::EpsmFm => {
+                p.push((12, "PAN: 0 OFF / 1 R / 2 L / 3 BOTH", u16::from(s.pan)))
             }
             _ => {}
         }
@@ -171,7 +212,7 @@ impl Studio {
     }
     pub(super) fn draw_instrument(&self, d: &mut DrawList) {
         let m = self.modal_rect();
-        draw_text(
+        self.text(
             d,
             m.x + 72.0,
             m.y + 72.0,
@@ -179,6 +220,47 @@ impl Studio {
             0.85,
             ACCENT,
         );
+        if self.instrument_kind() == Voice::EpsmFm {
+            self.draw_epsm(d);
+            return;
+        }
+        if self.instrument_kind() == Voice::Psg {
+            self.text(
+                d,
+                m.x + 28.0,
+                m.y + 118.0,
+                "TONE / NOISE / ENVELOPE",
+                0.9,
+                ACCENT,
+            );
+            for (i, (_, name, value)) in self.timbre_parameters().iter().enumerate() {
+                self.text(
+                    d,
+                    m.x + 68.0 + (i % 2) as f32 * 414.0,
+                    m.y + 152.0 + (i / 2) as f32 * 44.0,
+                    &format!("{name}  {value}"),
+                    0.7,
+                    TEXT,
+                );
+            }
+            self.text(
+                d,
+                m.x + 28.0,
+                m.y + 370.0,
+                "Noise and envelope generators are shared by the three SSG channels.",
+                0.72,
+                MUTED,
+            );
+            self.text(
+                d,
+                m.x + 28.0,
+                m.y + 402.0,
+                "Select notes to edit their settings. Shape writes restart the envelope.",
+                0.72,
+                MUTED,
+            );
+            return;
+        }
         if self.instrument_kind() == Voice::Fm {
             for (i, p) in FM_PARAMETERS.iter().enumerate() {
                 let x = m.x + 68.0 + (i / 12) as f32 * 414.0;
@@ -193,9 +275,9 @@ impl Studio {
                 } else {
                     v.to_string()
                 };
-                draw_text(d, x, y, &format!("{}  {}", p.name, value), 0.76, TEXT);
+                self.text(d, x, y, &format!("{}  {}", p.name, value), 0.76, TEXT);
             }
-            draw_text(
+            self.text(
                 d,
                 m.x + 312.0,
                 m.y + 548.0,
@@ -209,7 +291,7 @@ impl Studio {
                 0.9,
                 ACCENT,
             );
-            draw_text(
+            self.text(
                 d,
                 m.x + 28.0,
                 m.y + 585.0,
@@ -226,16 +308,15 @@ impl Studio {
             } else {
                 63.0
             };
-            for (i, v) in wave.iter().enumerate() {
-                let h = *v as f32 / max * r.height;
-                d.fill_rect(
-                    Rect::new(
-                        r.x + i as f32 * r.width / wave.len() as f32,
-                        r.bottom() - h,
-                        (r.width / wave.len() as f32 - 1.0).max(1.0),
-                        h,
-                    ),
-                    ACCENT,
+            self.draw_wave_graph(d, &wave, max);
+            if self.wave_editable() {
+                self.text(
+                    d,
+                    m.x + 28.0,
+                    m.y + 352.0,
+                    "Curve is a display interpolation; the chip uses the sample points.",
+                    0.65,
+                    MUTED,
                 );
             }
             let help = match self.instrument_kind() {
@@ -250,15 +331,15 @@ impl Studio {
                 Voice::Saw => {
                     "Fixed VRC6 saw: rate 0..63 controls accumulator steps; high rates wrap."
                 }
-                Voice::Triangle => {
+                Voice::Triangle | Voice::VtTriangle => {
                     "Fixed 32-step triangle. Edit note pitch / length in the sequencer."
                 }
-                Voice::Noise => {
+                Voice::Noise | Voice::VtNoise => {
                     "Noise generator: period 0..15 and long / short mode. No editable wave RAM."
                 }
                 _ => "DPCM: import, trim, gain, normalize and reverse audio in the sample studio.",
             };
-            draw_text(d, m.x + 28.0, m.y + 418.0, help, 0.76, TEXT);
+            self.text(d, m.x + 28.0, m.y + 418.0, help, 0.76, TEXT);
             if self.instrument_kind() == Voice::N163 {
                 for (x, t) in [
                     (
@@ -272,12 +353,12 @@ impl Studio {
                     (292.0, format!("LENGTH {}", wave.len())),
                     (534.0, format!("CHANNELS {}", self.score.n163_channels)),
                 ] {
-                    draw_text(d, m.x + x, m.y + 378.0, &t, 0.8, ACCENT);
+                    self.text(d, m.x + x, m.y + 378.0, &t, 0.8, ACCENT);
                 }
-                draw_text(d,m.x+28.0,m.y+565.0,&format!("Wave RAM: {} / {} samples. Lengths are multiples of 4; channels share RAM.",self.score.n163_waves.iter().map(Vec::len).sum::<usize>(),self.score.n163_wave_capacity()),0.73,MUTED);
+                self.text(d,m.x+28.0,m.y+565.0,&format!("Wave RAM: {} / {} samples. Lengths are multiples of 4; channels share RAM.",self.score.n163_waves.iter().map(Vec::len).sum::<usize>(),self.score.n163_wave_capacity()),0.73,MUTED);
             }
             for (i, (_, label, v)) in self.timbre_parameters().iter().enumerate() {
-                draw_text(
+                self.text(
                     d,
                     m.x + 70.0 + (i % 2) as f32 * 414.0,
                     m.y + 464.0 + (i / 2) as f32 * 40.0,
@@ -286,7 +367,7 @@ impl Studio {
                     TEXT,
                 );
             }
-            draw_text(
+            self.text(
                 d,
                 m.x + 28.0,
                 m.y + 590.0,
@@ -304,6 +385,26 @@ impl Studio {
         let slot = self.wave_slot;
         let n163 = self.instrument_kind() == Voice::N163;
         match a {
+            Action::EpsmPatch(d) => {
+                self.epsm_slot = (self.epsm_slot as i32 + i32::from(d)).rem_euclid(16) as usize;
+            }
+            Action::EpsmOperator(d) => {
+                self.epsm_operator =
+                    (self.epsm_operator as i32 + i32::from(d)).rem_euclid(4) as usize;
+            }
+            Action::EpsmParam(index, d) => {
+                let slot = self.epsm_slot;
+                self.change(|s| {
+                    let (_, byte, shift, max) = fcseq_native::instruments::epsm_parameter(index)
+                        .ok_or("EPSM parameter out of range")?;
+                    let value = ((s.epsm_patches[slot][byte] >> shift) & max) as i16;
+                    fcseq_native::instruments::set_epsm_parameter(
+                        &mut s.epsm_patches[slot],
+                        index,
+                        (value + d).clamp(0, i16::from(max)) as u8,
+                    )
+                })
+            }
             Action::InstrumentTrack(d) => {
                 self.instrument_track = (self.instrument_track as i32 + d as i32)
                     .rem_euclid(self.score.expansion.channels() as i32)
@@ -361,7 +462,13 @@ impl Studio {
                     3 => Edit::SawRate(d),
                     4 => Edit::Instrument(d),
                     5 => Edit::NoisePeriod(d),
-                    _ => Edit::NoiseMode,
+                    6 => Edit::NoiseMode,
+                    7 => Edit::Tone,
+                    8 => Edit::PsgNoise,
+                    9 => Edit::Envelope,
+                    10 => Edit::EnvelopeShape(d),
+                    11 => Edit::EnvelopePeriod(i32::from(d)),
+                    _ => Edit::Pan(d),
                 };
                 self.change(|s| editing::edit_notes(s, part, &selection, edit).map(|_| ()));
             }
@@ -377,12 +484,24 @@ impl Studio {
                     score.expansion.channels(),
                 )];
                 score.sections[0].rows = 16;
-                let mut note = Note::new(0, 8, if ch == 3 { 2 } else { 60 });
+                let mut note = Note::new(
+                    0,
+                    8,
+                    if matches!(score.expansion.kind(ch), Voice::Noise | Voice::VtNoise) {
+                        2
+                    } else {
+                        60
+                    },
+                );
                 let mut sound = self.instrument_sound();
                 if n163 {
                     sound.instrument = slot as u8;
                 } else if self.instrument_kind() == Voice::Fm {
                     sound.instrument = 0;
+                } else if self.instrument_kind() == Voice::EpsmFm {
+                    sound.instrument = self.epsm_slot as u8;
+                } else if self.instrument_kind() == Voice::Pcm {
+                    sound.instrument = self.sample as u8;
                 }
                 note.sound = Some(sound);
                 score.sections[0].tracks[ch].notes.push(note);
@@ -400,9 +519,10 @@ impl Studio {
             &mut self.score.fds_wave
         };
         let max = if n163 { 15.0 } else { 63.0 };
-        let i = ((p.x - r.x) / r.width * wave.len() as f32).clamp(0.0, (wave.len() - 1) as f32)
-            as usize;
-        let v = ((r.bottom() - p.y) / r.height * max)
+        let i = ((p.x - r.x) / r.width * wave.len() as f32)
+            .round()
+            .clamp(0.0, (wave.len() - 1) as f32) as usize;
+        let v = ((r.bottom() - 3.0 - p.y) / (r.height - 6.0) * max)
             .round()
             .clamp(0.0, max) as u8;
         if let Some((last, value)) = self.wave_last {

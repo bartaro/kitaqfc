@@ -12,6 +12,10 @@ pub enum Expansion {
     Vrc7,
     Fds,
     N163,
+    Mmc5,
+    Sunsoft5b,
+    Epsm,
+    Vt02,
 }
 impl Expansion {
     pub fn channels(self) -> usize {
@@ -21,6 +25,9 @@ impl Expansion {
             Self::Vrc7 => 11,
             Self::Fds => 6,
             Self::N163 => 13,
+            Self::Mmc5 | Self::Sunsoft5b => 8,
+            Self::Epsm => 20,
+            Self::Vt02 => 10,
         }
     }
     pub fn label(self) -> &'static str {
@@ -30,6 +37,10 @@ impl Expansion {
             Self::Vrc7 => "2A03 + VRC7",
             Self::Fds => "2A03 + FDS",
             Self::N163 => "2A03 + N163",
+            Self::Mmc5 => "2A03 + MMC5",
+            Self::Sunsoft5b => "2A03 + SUNSOFT 5B",
+            Self::Epsm => "2A03 + EPSM",
+            Self::Vt02 => "VT02",
         }
     }
     pub fn parse(s: &str) -> Result<Self, String> {
@@ -39,7 +50,11 @@ impl Expansion {
             "vrc7" => Ok(Self::Vrc7),
             "fds" => Ok(Self::Fds),
             "n163" | "namco163" => Ok(Self::N163),
-            _ => Err("Choose none, vrc6, vrc7, fds or n163".into()),
+            "mmc5" => Ok(Self::Mmc5),
+            "sunsoft5b" | "sunsoft-5b" | "5b" | "s5b" => Ok(Self::Sunsoft5b),
+            "epsm" | "ymf288" => Ok(Self::Epsm),
+            "vt02" | "vt02+" => Ok(Self::Vt02),
+            _ => Err("Choose none, vrc6, vrc7, fds, n163, mmc5, sunsoft5b, epsm or vt02".into()),
         }
     }
     pub fn kind(self, ch: usize) -> Voice {
@@ -54,6 +69,18 @@ impl Expansion {
                 Self::Vrc7 => Voice::Fm,
                 Self::Fds => Voice::Fds,
                 Self::N163 => Voice::N163,
+                Self::Mmc5 if ch == 7 => Voice::Pcm,
+                Self::Mmc5 => Voice::MmcPulse,
+                Self::Sunsoft5b => Voice::Psg,
+                Self::Epsm if ch < 8 => Voice::Psg,
+                Self::Epsm if ch < 14 => Voice::EpsmFm,
+                Self::Epsm => Voice::Rhythm,
+                Self::Vt02 => match ch {
+                    5 | 6 => Voice::VtPulse,
+                    7 => Voice::VtTriangle,
+                    8 => Voice::VtNoise,
+                    _ => Voice::Pcm,
+                },
                 _ => Voice::Pulse,
             },
         }
@@ -71,8 +98,61 @@ impl Expansion {
                 Self::Vrc7 => format!("VRC7 FM {}", ch - 4),
                 Self::Fds => "FDS WAVE".into(),
                 Self::N163 => format!("N163 WAVE {}", ch - 4),
+                Self::Mmc5 if ch == 7 => "MMC5 PCM".into(),
+                Self::Mmc5 => format!("MMC5 PULSE {}", ch - 4),
+                Self::Sunsoft5b => format!("5B SSG {}", ch - 4),
+                Self::Epsm if ch < 8 => format!("EPSM SSG {}", ch - 4),
+                Self::Epsm if ch < 14 => format!("EPSM FM {}", ch - 7),
+                Self::Epsm => ["BASS DRUM", "SNARE", "CYMBAL", "HI-HAT", "TOM", "RIM SHOT"]
+                    .get(ch - 14)
+                    .unwrap_or(&"?")
+                    .to_string(),
+                Self::Vt02 => [
+                    "VT PULSE 3",
+                    "VT PULSE 4",
+                    "VT TRIANGLE 2",
+                    "VT NOISE 2",
+                    "VT PCM",
+                ]
+                .get(ch - 5)
+                .unwrap_or(&"?")
+                .to_string(),
                 _ => "?".into(),
             },
+        }
+    }
+}
+impl Expansion {
+    pub const ALL: [Self; 9] = [
+        Self::None,
+        Self::Vrc6,
+        Self::Vrc7,
+        Self::Fds,
+        Self::N163,
+        Self::Mmc5,
+        Self::Sunsoft5b,
+        Self::Epsm,
+        Self::Vt02,
+    ];
+    pub fn nsf_bits(self) -> u8 {
+        match self {
+            Self::None => 0,
+            Self::Vrc6 => 1,
+            Self::Vrc7 => 2,
+            Self::Fds => 4,
+            Self::Mmc5 => 8,
+            Self::N163 => 16,
+            Self::Sunsoft5b => 32,
+            Self::Vt02 => 64,
+            Self::Epsm => 128,
+        }
+    }
+    pub fn pitch_name(self, n: u8, ch: usize) -> String {
+        match self.kind(ch) {
+            Voice::Noise | Voice::VtNoise => note_name(n, 3),
+            Voice::Dpcm => note_name(n, 4),
+            Voice::Rhythm => self.channel_name(ch),
+            _ => note_name(n, 0),
         }
     }
 }
@@ -87,14 +167,24 @@ pub enum Voice {
     Fm,
     Fds,
     N163,
+    MmcPulse,
+    Psg,
+    EpsmFm,
+    Rhythm,
+    VtPulse,
+    VtTriangle,
+    VtNoise,
+    Pcm,
 }
 impl Voice {
     pub fn bounds(self) -> (u8, u8) {
         match self {
-            Self::Pulse => (33, 95),
-            Self::Triangle => (24, 95),
-            Self::Noise => (1, 4),
+            Self::Pulse | Self::MmcPulse | Self::VtPulse => (33, 95),
+            Self::Triangle | Self::VtTriangle => (24, 95),
+            Self::Noise | Self::VtNoise => (1, 4),
             Self::Dpcm => (0, 15),
+            Self::Rhythm => (60, 60),
+            Self::Pcm => (36, 84),
             Self::Fds => (24, 92),
             _ => (24, 95),
         }
@@ -110,6 +200,12 @@ pub struct Sound {
     pub noise_period: Option<u8>,
     pub noise_short: bool,
     pub saw_rate: Option<u8>,
+    pub tone: bool,
+    pub noise: bool,
+    pub envelope: bool,
+    pub envelope_shape: u8,
+    pub envelope_period: u16,
+    pub pan: u8,
 }
 impl Default for Sound {
     fn default() -> Self {
@@ -121,6 +217,12 @@ impl Default for Sound {
             noise_period: None,
             noise_short: false,
             saw_rate: None,
+            tone: true,
+            noise: false,
+            envelope: false,
+            envelope_shape: 9,
+            envelope_period: 1000,
+            pan: 3,
         }
     }
 }
@@ -199,6 +301,24 @@ fn default_n163_waves() -> Vec<Vec<u8>> {
         .map(|shape| crate::instruments::wave_preset(32, 15, shape))
         .collect()
 }
+fn default_epsm_patches() -> Vec<Vec<u8>> {
+    (0..16)
+        .map(|i| {
+            let mut p = vec![0; 30];
+            for op in 0..4 {
+                let b = op * 7;
+                p[b] = if op == 0 { 1 } else { (i % 4 + 1) as u8 };
+                p[b + 1] = if op == 3 { 0 } else { 28 };
+                p[b + 2] = 31;
+                p[b + 3] = 8;
+                p[b + 4] = 0;
+                p[b + 5] = 0x4f;
+            }
+            p[28] = if i == 0 { 7 } else { 4 };
+            p
+        })
+        .collect()
+}
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Score {
     pub format: String,
@@ -217,6 +337,8 @@ pub struct Score {
     pub n163_channels: u8,
     #[serde(default = "default_n163_waves")]
     pub n163_waves: Vec<Vec<u8>>,
+    #[serde(default = "default_epsm_patches")]
+    pub epsm_patches: Vec<Vec<u8>>,
     #[serde(default)]
     pub samples: Vec<crate::samples::Sample>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -235,15 +357,17 @@ impl Score {
             vrc7_patch: default_patch(),
             n163_channels: default_n163_channels(),
             n163_waves: default_n163_waves(),
+            epsm_patches: default_epsm_patches(),
             samples: vec![],
             nsf: None,
         }
     }
     pub fn load(path: &Path) -> Result<Self, String> {
-        if path
-            .extension()
-            .is_some_and(|e| e.eq_ignore_ascii_case("nsf") || e.eq_ignore_ascii_case("nsfe"))
-        {
+        if path.extension().is_some_and(|e| {
+            e.eq_ignore_ascii_case("nsf")
+                || e.eq_ignore_ascii_case("nsf2")
+                || e.eq_ignore_ascii_case("nsfe")
+        }) {
             return crate::nsf::import(path);
         }
         Self::from_json(&std::fs::read_to_string(path).map_err(|e| e.to_string())?)
@@ -267,10 +391,11 @@ impl Score {
         Ok(s)
     }
     pub fn save(&self, path: &Path) -> Result<(), String> {
-        if path
-            .extension()
-            .is_some_and(|e| e.eq_ignore_ascii_case("nsf"))
-        {
+        if path.extension().is_some_and(|e| {
+            e.eq_ignore_ascii_case("nsf")
+                || e.eq_ignore_ascii_case("nsf2")
+                || e.eq_ignore_ascii_case("nsfe")
+        }) {
             return Err("Use Export NSF for .nsf files; save projects as .fcq".into());
         }
         self.validate()?;
@@ -289,6 +414,21 @@ impl Score {
     }
     pub fn frames_per_row(&self) -> u32 {
         (FPS * 15.0 / self.bpm).round() as u32
+    }
+    pub fn ticks_per_row(&self) -> u32 {
+        (self.tick_rate() * 15.0 / self.bpm).round() as u32
+    }
+    pub fn tick_rate(&self) -> f64 {
+        if self.sections.iter().any(|s| {
+            s.tracks
+                .iter()
+                .enumerate()
+                .any(|(ch, t)| self.expansion.kind(ch) == Voice::Pcm && !t.notes.is_empty())
+        }) {
+            4000.0
+        } else {
+            FPS
+        }
     }
     pub fn set_expansion(&mut self, expansion: Expansion) -> Result<(), String> {
         if self.nsf.is_some() {
@@ -349,10 +489,27 @@ impl Score {
         if self.samples.len() > 64 {
             return Err("At most 64 DPCM samples".into());
         }
+        if self.epsm_patches.len() != 16
+            || self
+                .epsm_patches
+                .iter()
+                .any(|p| p.len() != 30 || p[28] > 63 || p[29] > 63)
+        {
+            return Err("EPSM needs 16 patches of 30 register bytes".into());
+        }
         for sample in &self.samples {
             sample.validate()?;
         }
         for (part, s) in self.sections.iter().enumerate() {
+            if self.expansion == Expansion::Vt02
+                && s.tracks.get(4).is_some_and(|t| !t.notes.is_empty())
+                && s.tracks.get(9).is_some_and(|t| !t.notes.is_empty())
+            {
+                return Err(
+                    "VT02 shares its DAC between DPCM and PCM; use one sample mode per section"
+                        .into(),
+                );
+            }
             if s.rows < 16
                 || s.rows > MAX_ROWS
                 || s.rows % 16 != 0
@@ -390,13 +547,24 @@ impl Score {
                     let sound = n.sound(ch);
                     if sound.volume > 15
                         || sound.duty > if kind == Voice::VrcPulse { 7 } else { 3 }
-                        || sound.instrument > if kind == Voice::Dpcm { 63 } else { 15 }
-                        || sound.noise_period.is_some_and(|p| p > 15)
+                        || sound.instrument
+                            > if matches!(kind, Voice::Dpcm | Voice::Pcm) {
+                                63
+                            } else {
+                                15
+                            }
+                        || sound
+                            .noise_period
+                            .is_some_and(|p| p > if kind == Voice::Psg { 31 } else { 15 })
                         || sound.saw_rate.is_some_and(|p| p > 63)
+                        || sound.envelope_shape > 15
+                        || sound.pan > 3
                     {
                         return Err("Invalid sound setting".into());
                     }
-                    if kind == Voice::Dpcm && sound.instrument as usize >= self.samples.len() {
+                    if matches!(kind, Voice::Dpcm | Voice::Pcm)
+                        && sound.instrument as usize >= self.samples.len()
+                    {
                         return Err(
                             "DPCM note references a missing sample. Import audio first.".into()
                         );

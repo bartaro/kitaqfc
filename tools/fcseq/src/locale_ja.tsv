@@ -1,0 +1,302 @@
+FILE	ファイル
+EDIT	編集
+SONG	曲構成
+SOUND	音源
+PLAY	再生
+PLAYING	再生中
+STOP	停止
+LOOP ON	ループ ON
+LOOP OFF	ループ OFF
+AUDITION	試聴
+AUDITION C4	C4で試聴
+AUDITION DPCM	DPCMを試聴
+KEY EDITOR  [E]	キーエディタ [E]
+ALL TRACKS  [E]	全トラック [E]
+KEYS	鍵盤
+SAMPLES	サンプル
+SAMPLE	サンプル
+INSTRUMENT / WAVEFORM	音色・波形
+INSTRUMENT / WAVEFORM STUDIO	音色・波形エディタ
+FAMICOM MUSIC STUDIO	ファミコン音楽制作
+New project     Ctrl+N	新規作成       Ctrl+N
+Open...         Ctrl+O	開く...        Ctrl+O
+Save            Ctrl+S	保存           Ctrl+S
+Save as...  Ctrl+Shift+S	名前を付けて保存  Ctrl+Shift+S
+Import NSF...	NSF / NSF2 / NSFeを開く...
+Export NSF...	NSF / NSF2 / NSFeを書き出す...
+Export WAV...	WAVを書き出す...
+Export C + DPCM...	CコードとDPCMを書き出す...
+Undo            Ctrl+Z	元に戻す       Ctrl+Z
+Redo            Ctrl+Y	やり直す       Ctrl+Y
+Copy            Ctrl+C	コピー         Ctrl+C
+Cut             Ctrl+X	切り取り       Ctrl+X
+Paste at cursor Ctrl+V	カーソル位置に貼り付け  Ctrl+V
+Duplicate       Ctrl+D	複製           Ctrl+D
+Select lane     Ctrl+A	トラック内を選択  Ctrl+A
+Quantize to grid     Q	グリッドに揃える       Q
+Delete selection   Del	選択ノートを削除     Del
+Add section	セクションを追加
+Duplicate section	セクションを複製
+Rename section	セクション名を変更
+Move section left	セクションを左へ
+Move section right	セクションを右へ
+Delete section	セクションを削除
+Section length (bars)	セクションの小節数
+Project name	プロジェクト名
+2A03 + DPCM (5 channels)	2A03 + DPCM（5チャンネル）
+VRC6 (8 channels)	VRC6（8チャンネル）
+VRC7 (11 channels)	VRC7（11チャンネル）
+FDS (6 channels)	FDS（6チャンネル）
+N163 (up to 13 channels)	N163（最大13チャンネル）
+MMC5 (8 channels)	MMC5（8チャンネル）
+SUNSOFT 5B (8 channels)	SUNSOFT 5B（8チャンネル）
+EPSM (20 channels)	EPSM（20チャンネル）
+VT02 (10 channels)	VT02（10チャンネル）
+DPCM sample editor	サンプルエディタ
+Import audio file...	音声ファイルを読み込む...
+Instrument / waveform editor	音色・波形エディタ
+Keyboard / mouse help	操作ガイド
+GRID 1/{}	グリッド 1/{}
+FIT	全体表示
+UP	上へ
+DOWN	下へ
+MUTE	ミュート
+SOLO	ソロ
+UNDO	元に戻す
+REDO	やり直す
+CLOSE	閉じる
+DELETE	削除
+DUPLICATE	複製
+PITCH	音程
+PITCH {}	音程 {}
+NOTE INSPECTOR	ノート設定
+SELECT OR ADD NOTES	ノートを選択または追加
+ROW {}	開始位置 {}
+LENGTH {}	長さ {}
+VOLUME {}	音量 {}
+DUTY {}	デューティ比 {}
+DECAY {} FR	減衰 {} フレーム
+SAW RATE {}	のこぎり波レート {}
+FM PATCH {}	FM音色 {}
+PERIOD {}	周期 {}
+RATE {}	レート {}
+SAMPLE {}	サンプル {}
+WAVE {}	波形 {}
+WAVE {} / {}	波形 {} / {}
+CHANNELS {}	チャンネル数 {}
+SECTION {}	セクション {}
+{} BARS	{} 小節
+{} NOTES	{} ノート
+{} notes selected	{} ノートを選択
+{}  /  {} SELECTED	{}  /  {} 選択中
+{} / {} channels	{} / {} チャンネル
+PULSE 1	矩形波 1
+PULSE 2	矩形波 2
+TRIANGLE	三角波
+NOISE	ノイズ
+VRC6 PULSE {}	VRC6 矩形波 {}
+VRC6 SAW	VRC6 のこぎり波
+FDS WAVE	FDS 波形
+N163 WAVE {}	N163 波形 {}
+MMC5 PULSE {}	MMC5 矩形波 {}
+VT PULSE {}	VT 矩形波 {}
+VT TRIANGLE 2	VT 三角波 2
+VT NOISE 2	VT ノイズ 2
+BASS DRUM	バスドラム
+SNARE	スネア
+CYMBAL	シンバル
+HI-HAT	ハイハット
+TOM	タム
+RIM SHOT	リムショット
+VOLUME	音量
+DUTY	デューティ比
+DECAY (FRAMES)	減衰（フレーム）
+ACCUMULATOR RATE	加算レート
+NOISE PERIOD	ノイズ周期
+SHORT MODE	短周期モード
+TONE	トーン
+ENVELOPE	エンベロープ
+ENVELOPE PERIOD	エンベロープ周期
+ENVELOPE SHAPE	エンベロープ形状
+TONE / NOISE / ENVELOPE	トーン・ノイズ・エンベロープ
+SINE	サイン波
+PULSE	矩形波
+SAW	のこぎり波
+HALF SINE	半波整流サイン波
+INVERT	上下反転
+SHIFT <	左へずらす
+SHIFT >	右へずらす
+CURVE	曲線表示
+LINE	直線表示
+POINT {}  VALUE {}	編集点 {}  値 {}
+Curve is a display interpolation; the chip uses the sample points.	曲線は表示用の補間です。音源には編集点の値を保存します。
+Draw the shared 64-sample FDS waveform (6-bit). Drag across the graph.	FDS共通の64サンプル波形（6ビット）をドラッグして編集できます。
+Draw 4-bit samples. Select this wave on notes using NOTE WAVE.	4ビット波形を編集できます。ノートの波形番号で使う波形を選びます。
+Fixed pulse waveform: duty 0..3 selects 12.5%, 25%, 50%, 75%.	矩形波は固定波形です。デューティ比0～3で12.5%、25%、50%、75%を選べます。
+Fixed VRC6 pulse: duty 0..7 selects 6.25%..50%. Adjust while viewing above.	VRC6の矩形波は固定波形です。デューティ比0～7で6.25%～50%を選べます。
+Fixed VRC6 saw: rate 0..63 controls accumulator steps; high rates wrap.	VRC6ののこぎり波はレート0～63で音色を変えられます。高い値では波形が折り返します。
+Fixed 32-step triangle. Edit note pitch / length in the sequencer.	三角波は32段階の固定波形です。音程と長さはノートで編集します。
+Noise generator: period 0..15 and long / short mode. No editable wave RAM.	ノイズは周期0～15と長周期・短周期を選べます。波形の直接編集はできません。
+Wave RAM: {} / {} samples. Lengths are multiples of 4; channels share RAM.	波形メモリ: {} / {} サンプル。長さは4の倍数で、全チャンネルで共有します。
+Select notes on this channel to edit note parameters. Wave edits are shared.	このトラックのノートを選ぶと音色設定を変更できます。波形は共通です。
+Note parameters apply to selected notes on this channel. Wave edits are shared.	音色設定は選択ノートに適用されます。波形を変更すると同じ波形を使うノートに反映されます。
+Noise and envelope generators are shared by the three SSG channels.	ノイズとエンベロープは3つのSSGチャンネルで共有します。
+Select notes to edit their settings. Shape writes restart the envelope.	ノートを選んで設定を変更します。形状の設定時にエンベロープが再始動します。
+PATCH {}	音色 {}
+OPERATOR {}	オペレータ {}
+NOTE PATCH  {}	ノートの音色  {}
+NOTE VOLUME  {}	ノートの音量  {}
+PAN {}: 0 OFF / 1 R / 2 L / 3 BOTH	パン {}: 0 無音 / 1 右 / 2 左 / 3 両方
+PAN: 0 OFF / 1 R / 2 L / 3 BOTH	パン: 0 無音 / 1 右 / 2 左 / 3 両方
+Patch edits affect every note using that patch.	音色の変更は、その音色を使うすべてのノートに反映されます。
+FM operators use sine waves; no editable wave RAM.	FMはサイン波を変調します。波形メモリの直接編集はありません。
+Shared custom patch: assign patch 0 to notes. Audition always uses patch 0.	共通音色を使うノートは音色0に設定してください。試聴には音色0を使います。
+ADVANCED: 8 HEX BYTES	詳細設定: 16進数8バイト
+DPCM SAMPLE STUDIO	サンプルエディタ
+OPEN DPCM SAMPLE STUDIO	サンプルエディタを開く
+IMPORT AUDIO	音声を読み込む
+REMOVE SAMPLE	サンプルを削除
+EXPORT .DMC	DMCを書き出す
+START (ms)	開始（ms）
+END (ms)	終了（ms）
+GAIN	ゲイン
+NORMALIZE	正規化
+REVERSE	逆再生
+Import WAV / FLAC / OGG / MP3 to create a DPCM instrument.	WAV・FLAC・OGG・MP3を読み込んでサンプル音色を作成できます。
+Original PCM is retained. Audition plays the encoded DPCM through the 2A03 core.	元のPCMは保持されます。DPCM試聴では変換後の音を2A03コアで再生します。
+DPCM: import, trim, gain, normalize and reverse audio in the sample studio.	サンプルエディタで読み込み、トリミング、ゲイン、正規化、逆再生を設定できます。
+TITLE	曲名
+ARTIST	アーティスト
+COPYRIGHT	著作権表記
+FORMAT	形式
+MEMORY	メモリ
+NSF MUSIC PLAYER	NSFプレイヤー
+NSF PLAYER / IMPORTED MUSIC	NSFプレイヤー / 読み込んだ曲
+NSF{} / NTSC / {} us per PLAY / {} bytes	NSF{} / NTSC / PLAY間隔 {} μs / {} バイト
+4 KiB banks	4 KiBバンク
+PREV	前の曲
+NEXT	次の曲
+SONG {} / {}	曲 {} / {}
+PLAYBACK {} SECONDS	再生時間 {} 秒
+SAVE PROJECT .FCQ	FCQとして保存
+EXPORT .NSF	NSFを書き出す
+EXPORT WAV	WAVを書き出す
+Original NSF code and samples are embedded when saving a .fcq project.	FCQとして保存すると、元のNSFのプログラムとサンプルも保存されます。
+NSF import preserves playback data. Note editing is available in new sequencer projects.	NSFは再生用データとして読み込みます。ノート編集は新規プロジェクトで行えます。
+Type a value. Enter: apply / Escape: cancel	値を入力してください。Enter: 決定 / Escape: キャンセル
+EDIT NAME	プロジェクト名を編集
+EDIT SECTIONNAME	セクション名を編集
+EDIT BPM	テンポを編集
+EDIT BARS	小節数を編集
+EDIT PATCH	音色データを編集
+EDIT SAMPLESTART	サンプルの開始位置を編集
+EDIT SAMPLEEND	サンプルの終了位置を編集
+EDIT SAMPLEGAIN	サンプルのゲインを編集
+EDIT NSFSONG	再生する曲番号を編集
+EDIT NSFSECONDS	再生時間を編集
+FCSEQ / QUICK HELP	FCSEQ / 操作ガイド
+Double-click an empty lane: insert. Drag body: move. Drag right edge: resize.	空白をダブルクリックするとノートを追加できます。本体をドラッグで移動、右端で長さを変更します。
+Ctrl/Shift-click: toggle selection. Drag empty space: box select.	Ctrl・Shiftを押しながらクリックで複数選択。空白をドラッグすると範囲選択できます。
+Ctrl+A: select lane. Ctrl+C / X / V: copy / cut / paste at cursor.	Ctrl+A: トラック内を選択。Ctrl+C / X / V: コピー / 切り取り / カーソル位置に貼り付け。
+Ctrl+D: duplicate. Delete: remove selection. Ctrl+Z / Y: undo / redo.	Ctrl+D: 複製。Delete: 選択ノートを削除。Ctrl+Z / Y: 元に戻す / やり直す。
+Arrows: move / transpose. Shift+Up/Down: octave. Q: quantize. G: grid.	矢印キー: 移動・移調。Shift+上下: オクターブ移調。Q: グリッドに揃える。G: グリッド変更。
+F: fit section. Home: start. +/-: zoom. Wheel: lanes; Shift+wheel: timeline.	F: 全体表示。Home: 先頭。+ / -: 拡大・縮小。ホイール: 上下移動。Shift+ホイール: 左右移動。
+Space: play/stop. LOOP repeats the selected section. AUDITION plays selection.	Space: 再生・停止。ループは現在のセクションを繰り返し、試聴は選択ノートを再生します。
+Ctrl+N / O / S / Shift+S: new / open / save / save as.	Ctrl+N / O / S / Shift+S: 新規作成 / 開く / 保存 / 名前を付けて保存。
+E: open/close Key Editor. Double-click a track header to edit it with a piano keyboard.	E: キーエディタの切り替え。トラック名をダブルクリックしても鍵盤付きの編集画面を開けます。
+DPCM: import audio, trim/process, then double-click the DPCM lane.	DPCM: 音声を読み込んで加工した後、DPCMトラックをダブルクリックしてノートを追加します。
+C export includes a generic driver and mapper/DPCM placement instructions.	C書き出しには汎用ドライバと、音源・DPCMデータの配置方法の説明が含まれます。
+Double-click: add	ダブルクリック: 追加
+Drag: move / resize	ドラッグ: 移動・長さ変更
+Ctrl-click: multi-select	Ctrl+クリック: 複数選択
+Box drag: select region	空白をドラッグ: 範囲選択
+Ctrl+A: select lane	Ctrl+A: トラック内を選択
+Ctrl+D: duplicate	Ctrl+D: 複製
+Q: quantize to grid	Q: グリッドに揃える
+F1: all shortcuts	F1: 操作ガイド
+Project saved	保存しました
+Project opened	プロジェクトを開きました
+Display language changed	表示言語を変更しました
+Language changed for this session; preference could not be saved	表示言語を変更しました。設定を保存できなかったため、今回の起動中のみ有効です。
+New project - double-click a lane to add notes	新規プロジェクトです。空白をダブルクリックするとノートを追加できます。
+Double-click a lane to add notes. Choose SOUND for expansion chips and samples.	空白をダブルクリックしてノートを追加します。音源メニューで拡張音源やサンプルを選べます。
+{} — drag notes to move, drag their right edge to resize; wheel scrolls pitch; E returns to all tracks	{} — ドラッグ: 移動、右端: 長さ変更、ホイール: 音域移動、E: 全トラック表示
+NSF imported. Select a song and press PLAY.	NSFを読み込みました。曲を選んで再生してください。
+NSF imported. Choose a song and press PLAY. Save as .fcq to keep it in a project.	NSFを読み込みました。曲を選んで再生してください。FCQとして保存するとプロジェクトに保持できます。
+Rendering audio... Space or STOP cancels	音声を生成中... Spaceまたは停止ボタンでキャンセルできます
+Rendering WAV...	WAVを生成中...
+Exporting NSF...	NSFを書き出し中...
+Exporting register data and driver...	レジスタデータとドライバを書き出し中...
+Export completed	書き出しが完了しました
+Exported {}	書き出しました: {}
+Playback finished	再生が終了しました
+Playing / Space to stop	再生中 / Spaceで停止
+Playback stopped; file export continues	再生を停止しました。ファイルの書き出しは続行します
+Copied {} notes; click destination, then Ctrl+V	{} ノートをコピーしました。貼り付け先をクリックしてCtrl+Vを押してください
+Import a sample first	先にサンプルを読み込んでください
+Import audio first	先に音声ファイルを読み込んでください
+Import an NSF first	先にNSFを読み込んでください
+DPCM exported	DPCMを書き出しました
+Audio imported. Process the region, then add notes in the DPCM lane.	音声を読み込みました。範囲と加工を設定し、DPCMまたはPCMトラックにノートを追加してください。
+Imported source. Initial region shortened to DPCM capacity; full source retained.	音声を読み込みました。初期範囲はDPCMの容量に合わせています。元の音声は全体を保持しています。
+No audio output device. WAV export is available.	音声出力デバイスが見つかりません。WAVの書き出しは利用できます。
+Audio device unavailable	音声出力デバイスを利用できません
+A file export is already running	ファイルの書き出しが進行中です
+Enter a number	数値を入力してください
+Enter a BPM number	テンポを数値で入力してください
+Enter 1..256 bars	小節数は1～256で入力してください
+Enter 1..600 seconds	再生時間は1～600秒で入力してください
+Enter a positive finite value	0より大きい有限の数値を入力してください
+Enter a song number starting at 1	曲番号は1から入力してください
+Song numbers start at 1	曲番号は1から始まります
+Song out of range	曲番号が範囲外です
+Too many bars	小節数が上限を超えています
+Use eight hexadecimal bytes	16進数で8バイトを入力してください
+EPSM parameter out of range	EPSMのパラメータが範囲外です
+Unsaved FCSEQ project	未保存のプロジェクト
+Save your changes before continuing?	続ける前に変更を保存しますか？
+FCSEQ project	FCSEQプロジェクト
+FCSEQ project / NSF / NSFe	FCSEQプロジェクト / NSF / NSF2 / NSFe
+NSF / NSFe music	NSF / NSF2 / NSFe
+NSF music (+ NSFe companion)	NSF（NSFeも同時に作成）
+NSFe music (with track lengths)	NSFe（曲の長さを含む）
+MULTIPLIER	周波数倍率
+DETUNE	デチューン
+TOTAL LEVEL	出力レベル
+RATE SCALE	音域による速度変化
+ATTACK	アタック
+AM ENABLE	振幅変調
+DECAY	ディケイ
+SUSTAIN RATE	サステイン速度
+SUSTAIN LEVEL	サステインレベル
+RELEASE	リリース
+SSG ENVELOPE	SSGエンベロープ
+ALGORITHM	アルゴリズム
+FEEDBACK	フィードバック
+AMS	振幅変調感度
+PMS	音程変調感度
+AM SENSITIVITY	振幅変調感度
+PITCH SENSITIVITY	音程変調感度
+MOD MULTIPLIER	変調側: 周波数倍率
+MOD ATTACK	変調側: アタック
+MOD DECAY	変調側: ディケイ
+MOD SUSTAIN LEVEL	変調側: サステインレベル
+MOD RELEASE	変調側: リリース
+MOD SUSTAIN	変調側: サステイン
+MOD KSR	変調側: 音域による速度変化
+MOD KSL	変調側: 音域によるレベル変化
+MOD LEVEL	変調側: レベル
+MOD TREMOLO	変調側: トレモロ
+MOD VIBRATO	変調側: ビブラート
+MOD WAVEFORM	変調側: 波形
+CAR MULTIPLIER	発音側: 周波数倍率
+CAR ATTACK	発音側: アタック
+CAR DECAY	発音側: ディケイ
+CAR SUSTAIN LEVEL	発音側: サステインレベル
+CAR RELEASE	発音側: リリース
+CAR SUSTAIN	発音側: サステイン
+CAR KSR	発音側: 音域による速度変化
+CAR KSL	発音側: 音域によるレベル変化
+CAR TREMOLO	発音側: トレモロ
+CAR VIBRATO	発音側: ビブラート
+CAR WAVEFORM	発音側: 波形

@@ -1,90 +1,87 @@
-# FCSEQ 0.4.2 — 사용 설명서
+# FCSEQ 0.5.0
 
-[en](README.en.md) · [ja](README.ja.md) · [ko](README.ko.md) · [zh-CN](README.zh-CN.md) · [zh-TW](README.zh-TW.md) · [fr](README.fr.md) · [es](README.es.md) · [de](README.de.md) · [pt-BR](README.pt-BR.md)
+[English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt-BR.md)
 
-제작자 **DAISUKE OBA**. **plita** 기반의 범용 패미컴 음악 시퀀서입니다. GUI·CLI·Python 바인딩은 프로젝트 모델, 음성 생성 및 내보내기를 공유합니다. 빈 프로젝트로 시작하며 게임 ROM이나 BIOS가 필요하지 않습니다. 화면은 영어이며 설명서는 9개 언어로 제공됩니다.
+FCSEQ는 패미컴 음원으로 곡을 만드는 음악 편집기입니다. plita 기반 화면에서 음표를 배치하고 음색과 파형을 다듬으며 소리를 확인할 수 있습니다. GUI, CLI, Python bindings는 같은 프로젝트 형식과 오디오 엔진을 사용합니다. 처음에는 특정 게임과 관계없는 빈 프로젝트가 열립니다.
 
-**0.4.2** — 미리 듣기·C 출력·NSF의 DMC DAC 초기값을 64로 통일했습니다. DAC와 필터가 안정된 뒤 미리 듣기를 기록하여 DPCM 미사용 시 Triangle/Noise 음량 차이와 무음 구간의 시작 잡음을 수정했습니다. 개별 DPCM 샘플의 초기 레벨은 계속 우선합니다. FCQ/NSF/NSFe 형식은 그대로입니다.
+## 설치와 표시 언어
 
-## 설치와 실행
+[downloads](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads)에서 운영체제와 CPU에 맞는 ZIP을 받아 전체를 압축 해제하세요. Windows와 Linux는 x86_64, macOS는 Apple Silicon과 Intel 버전을 제공합니다. Windows에서는 `fcseq.exe`, Linux와 macOS에서는 `./fcseq`를 실행합니다. 실행 권한이 없다면 `chmod +x fcseq fcseq-cli`를 사용하세요. 글꼴과 라이선스 파일도 프로그램과 함께 보관해야 합니다.
 
-[downloads/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/downloads)에서 Windows x86_64, Linux x86_64, macOS Apple Silicon ARM64 또는 Intel x86_64용 전체 ZIP을 받으세요. 리소스와 라이선스를 포함해 모두 압축 해제합니다. Windows는 `fcseq.exe`, Unix는 `./fcseq`로 실행합니다. 터미널용은 `fcseq-cli`이며 Windows에서는 `.exe`를 붙입니다. [bin/](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq/bin)에도 개별 실행 파일이 있습니다. Windows 10/11은 Direct3D 12, macOS는 Metal, Linux는 Vulkan/OpenGL·X11/Wayland·ALSA를 사용합니다. Linux 빌드 환경은 Ubuntu 24.04이며 이전 배포판은 직접 빌드가 필요할 수 있습니다. Ubuntu: `sudo apt install libasound2t64 libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 libx11-6 libxcursor1 libxi6 libxrandr2 libgl1`. GUI에는 호환 그래픽 드라이버, 실시간 재생에는 오디오 장치가 필요하지만 WAV 출력에는 필요 없습니다. 실행 파일은 서명되지 않았고 macOS 공증도 없습니다. 차단되면 소스와 해시를 확인한 뒤 OS의 일반 허용 절차를 사용하세요. 필요하면 `chmod +x fcseq fcseq-cli`로 실행 권한을 줍니다.
+화면은 영어와 일본어를 지원합니다. **SOUND → 日本語 / English**에서 바꾸면 다음 실행에도 유지됩니다. NSF 플레이어에는 같은 기능의 버튼이 있습니다. 첫 실행에서는 시스템 언어를 따르며, `FCSEQ_LANGUAGE=ja` 또는 `en`으로 지정할 수도 있습니다. 일본어 표시용 Noto Sans JP가 포함되어 있습니다.
 
-Windows에는 [Microsoft Visual C++ x64 재배포 패키지](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)도 필요합니다(`VCRUNTIME140.dll` 사용). 없으면 Microsoft의 지원되는 최신 x64 패키지를 설치하세요. GUI/CLI는 Python에 링크하지 않으며 Python은 선택적인 바인딩과 래퍼에만 필요합니다.
+Windows에는 Direct3D 12 드라이버와 Microsoft Visual C++ x64 런타임이 필요합니다. macOS는 Metal을 사용합니다. Linux 배포판은 Ubuntu 24.04에서 빌드하며 ALSA, X11/Wayland, Vulkan/OpenGL을 사용합니다. 오래된 배포판에서는 소스 빌드가 필요할 수 있습니다. 실시간 재생에는 오디오 장치가 필요하지만 WAV 출력에는 필요하지 않습니다. 바이너리는 서명되지 않았으며 macOS 공증도 받지 않았습니다.
 
-## 음악 편집
+## 음표 입력과 키 에디터
 
-SOUND에서 2A03(Pulse 1/2, Triangle, Noise, DPCM: 5음), VRC6(Pulse 2음과 Saw 추가: 8음), VRC7(FM 6음 추가: 11음), FDS(파형 1음 추가: 6음), N163(파형 1~8음 추가: 최대 13음)을 선택합니다. 프로젝트당 확장 구성은 하나이며 음표를 잃는 변경은 거부됩니다.
+**SOUND**에서 음원을 선택한 뒤 트랙의 빈 곳을 두 번 클릭하면 음표가 생깁니다. 음표 본체를 드래그하면 위치와 음높이가 바뀌고, 오른쪽 끝을 드래그하면 길이가 바뀝니다. 한 트랙은 하나의 하드웨어 채널이므로 음표를 겹칠 수 없습니다.
 
-더블클릭으로 음표 추가, 본체 드래그로 이동·이조, 오른쪽 끝 드래그로 길이를 변경합니다. Ctrl/Shift 클릭 또는 사각형으로 다중 선택, Ctrl+A로 현재 레인 전체 선택. Ctrl+C/X/V 복사·잘라내기·커서에 붙이기, Ctrl+D 복제, Delete 삭제, Ctrl+Z/Y 실행 취소·다시 실행. 방향키로 이동·이조, Shift+위/아래로 옥타브 변경. G 격자, Q 정렬, F 전체 보기, Home 시작, +/- 확대, Shift+휠 시간 이동, UP/DOWN 채널 이동. Space 재생·정지, LOOP 반복, AUDITION 선택 음 미리 듣기. MUTE/SOLO는 출력에도 반영됩니다. SONG에서 최대 16섹션, 각 256마디를 관리합니다. 이름·BPM·마디 수를 클릭해 편집합니다. Ctrl+N/O/S/Shift+S 새로 만들기·열기·저장·다른 이름으로 저장. 유효하지 않은 일괄 변경은 전부 취소됩니다. 복구 파일은 실행 파일 옆 `out/recovery_<process-id>.fcq`이며 열어서 다른 이름으로 저장하세요.
+트랙 이름을 두 번 클릭하거나 **E**를 누르면 왼쪽에 피아노 건반이 있는 키 에디터가 열립니다. 세로축은 반음 단위의 음높이, 가로축은 시간입니다. 건반을 클릭해 소리를 들어 보세요. 휠은 표시 음역을 옮기고, 건반 쪽 −/+ 버튼은 음역 표시를 확대·축소합니다. Shift+휠은 시간을 이동합니다. 트랙 화살표로 다른 트랙을 열 수 있으며 E를 다시 누르면 전체 트랙으로 돌아갑니다. 노이즈·DPCM·리듬 트랙은 해당 소리나 재생 속도에 맞는 범위를 표시합니다.
 
-## 음색과 파형
+Ctrl/Shift+클릭 또는 빈 공간 드래그로 여러 음표를 선택합니다. Ctrl+A는 현재 트랙 전체 선택, Ctrl+C/X/V는 복사·잘라내기·커서 위치에 붙여넣기, Ctrl+D는 복제, Delete는 삭제입니다. Ctrl+Z/Y로 실행을 취소하거나 다시 적용합니다. 방향키는 이동·이조, Shift+위/아래는 옥타브 이조입니다. G로 격자를 바꾸고 Q로 음표를 격자에 맞춥니다. F는 전체 보기, Home은 시작 위치, +/−는 시간축 확대·축소입니다.
 
-SOUND > Instrument / waveform editor에서 채널 음표를 선택해 편집하고 AUDITION/UNDO/REDO를 사용합니다. Pulse 듀티 4단계, VRC6 Pulse 8단계, Triangle 고정 32단계 파형, Noise 16주기와 긴/짧은 모드. Pulse/Noise 음량 0~15, 감쇠 0은 일정 음량. VRC6 Saw는 0~63 누산기 증가값을 바꾸며 넘침으로 음색도 변합니다. 이 음원에는 자유 파형 RAM이 없습니다.
+Space로 재생·정지합니다. LOOP는 현재 섹션을 반복하고 AUDITION은 선택 음표를 재생합니다. 음소거와 솔로는 내보내기에도 적용됩니다. SONG에서 섹션을 추가·복제·이름 변경·재배열할 수 있습니다. 최대 16개 섹션, 섹션마다 256마디를 지원합니다. 템포와 마디 수는 표시를 클릭해 바꿉니다. Ctrl+N/O/S/Shift+S는 새 프로젝트·열기·저장·다른 이름으로 저장입니다. 복구 파일은 실행 파일 옆 `out/recovery_<process-id>.fcq`에 기록됩니다. 파일을 열고 다른 이름으로 저장하세요.
 
-FDS는 공유 64샘플·6비트 파형, N163은 4비트 파형으로 초기 32샘플×4개이며 음표별 파형 번호를 선택합니다. 길이는 4의 배수, 공유 용량은 `256 - 16 × 활성 채널 수`샘플(8음에서 128)입니다. 길이를 늘리기 전에 다른 파형을 줄이거나 채널 수를 줄이세요. 드래그 그리기, SINE/PULSE/SAW/TRIANGLE, 반전·회전을 지원합니다. 음정·RAM·채널 제한을 검사합니다. VRC7 커스텀 패치 0은 24항목(배율, ADSR, 피드백, 레벨, 키 스케일, 트레몰로/비브라토, 사인/반파) 또는 8바이트로 편집합니다. 프리셋 1~15는 합성 근사 음색이며 ROM 덤프가 아닙니다. FDS 변조 테이블/하드웨어 엔벌로프 전용 편집기는 없습니다. 실기 아날로그 음질의 일치를 보장하지 않습니다.
+## 음원과 음색
 
-## DPCM
+기본 2A03은 펄스 2개, 삼각파, 노이즈, DPCM의 5개 트랙입니다. 프로젝트마다 확장 음원 하나를 추가할 수 있습니다.
 
-SAMPLES 또는 SOUND > Import audio file로 WAV/FLAC/Ogg Vorbis/MP3를 불러오거나 드롭합니다. START/END(ms), GAIN, NORMALIZE, REVERSE, RATE 0~15를 조절하고 AUDITION DPCM으로 확인, EXPORT .DMC로 저장합니다. DPCM 레인에 음표를 배치하고 SAMPLE과 재생 RATE를 선택합니다. 원본 PCM을 유지하므로 가공을 되돌릴 수 있습니다. 입력 최대 60초, 스테레오는 모노, DC 제거 및 저역통과 필터 리샘플링을 수행합니다. 음색당 `16n+1`바이트·최대 4081바이트, 최대 64음색, 전체 16320바이트(FDS 8192). 초과 변경은 거부됩니다. 변환 속도와 음표 재생 속도는 별도입니다. 내부 루프와 자동 음정 보정은 없습니다.
+| 확장 음원 | 추가 채널 | 전체 트랙 |
+|---|---|---:|
+| VRC6 | 펄스 2개, 톱니파 | 8 |
+| VRC7 | FM 6개 | 11 |
+| FDS | 웨이브테이블 1개 | 6 |
+| N163 | 웨이브테이블 최대 8개 | 13 |
+| MMC5 | 펄스 2개, PCM | 8 |
+| SUNSOFT 5B | SSG 3개, 공통 노이즈·엔벌로프 | 8 |
+| EPSM | SSG 3개, FM 6개, 리듬 6개 | 20 |
+| VT02 | 펄스 2개, 삼각파, 노이즈, PCM | 10 |
 
-## 파일과 출력
+음표가 사라지는 음원 변경이나 채널 축소는 거부됩니다. 해당 트랙을 비우거나 새 프로젝트를 만드세요.
 
-`.fcq`로 저장하며 기존 `.fcseq`는 이름을 바꿔 읽습니다. 음표 문서는 `fcseq-2` JSON, `fcseq-1`도 지원하며 NSF 재생 문서는 `fcseq-3`입니다. Import NSF, OPEN, 드롭, 실행 인수로 NSF/NSFe를 엽니다. PREV/NEXT나 번호로 곡 선택, PLAY/STOP·LOOP·1~600초를 설정합니다. 곡 길이 메타데이터를 사용하며 없으면 기본 30초입니다. 재생 전 음성 생성을 취소할 수 있습니다. FCQ에는 원본·선택 곡·시간이 포함되며 자동 채보는 하지 않습니다. 다시 내보내면 원본 바이트를 유지합니다.
+음표를 선택하고 **INSTRUMENT / WAVEFORM**을 열어 음색을 편집합니다. 펄스의 듀티 비율, 노이즈의 주기와 장·단주기 모드, VRC6 톱니파의 누산 속도를 조정할 수 있습니다. 이 채널들은 고정 파형이므로 파형을 자유롭게 그릴 수는 없습니다.
 
-Export NSF는 각 섹션을 곡 하나로 변환하여 음원·DPCM을 넣고 길이·페이드 0의 NSFe도 만듭니다. NSF 길이를 무시하는 플레이어는 NSFe를 사용하세요. 섹션 끝에서 정지하며 편집기 LOOP와 별개입니다. NSF v1/NSFe, NTSC 또는 NTSC 지원 듀얼, 비뱅크/4KiB 뱅크, 2A03/DPCM·VRC6·VRC7·FDS·N163를 지원합니다. PAL 전용, NSF2 실행 확장, MMC5, Sunsoft 5B, VT02는 거부되며 반환하지 않는 INIT/PLAY는 제한됩니다.
+FDS는 모든 음표가 공유하는 64점·6비트 파형을 제공합니다. N163은 4비트 파형을 여러 개 저장하며 음표별로 파형 슬롯을 고릅니다. 그래프를 드래그하거나 사인파·펄스·톱니파·삼각파 프리셋에서 시작하세요. 반전과 회전도 가능합니다. **CURVE / LINE**은 부드러운 곡선과 직선 연결을 전환합니다. 실제로 저장되는 값은 편집점이며, 곡선은 표시용 보간입니다. 사인파의 곡선을 보면서 각 점의 양자화된 값을 정확히 편집할 수 있습니다. 포인터를 올리면 점의 번호와 값이 나타납니다.
 
-Export C + DPCM은 `score.c`, `fcseq_score.h`, `fcseq_player.c`, 섹션 바이너리, `.dmc`, `dpcm_bank.bin`, `fcseq_export.json`을 출력합니다. 완전한 게임 ROM은 만들지 않으므로 매퍼와 CPU에서 보이는 코드·데이터·DPCM 배치를 설정해야 합니다. VRC6 매퍼 24(26은 주소 변환 필요), VRC7 85, N163 19 또는 FDS를 가정합니다. KITAQFC에서는 include 전에 `FCSEQ_KITAQFC`를 정의하고 `FCSEQ_WRITE(address, value)`로 사용자 레지스터 쓰기를 연결할 수 있습니다.
+N163 파형 길이는 4의 배수입니다. 모든 채널이 `256 − 16 × 활성 채널 수`만큼의 파형 메모리를 공유하므로 8채널에서는 128샘플을 사용할 수 있습니다. FDS 변조 테이블과 하드웨어 엔벌로프 편집은 제공하지 않습니다.
 
-## CLI와 Python
+VRC7 사용자 음색 0에서는 오퍼레이터와 엔벌로프 등을 편집합니다. 프리셋 1~15는 합성한 근사 음색입니다. EPSM은 16개의 FM 음색을 제공하며, 각 음색의 오퍼레이터 4개, 알고리즘, 피드백, 엔벌로프, 변조를 편집할 수 있습니다. 변경은 같은 음색을 쓰는 모든 음표에 적용됩니다. FM과 리듬에는 팬 설정도 있습니다. 현재 미리 듣기와 WAV는 모노지만 내보낸 레지스터에는 팬 값이 유지됩니다. EPSM 리듬 미리 듣기는 자체 합성 타악기를 사용하며 Yamaha ROM 덤프를 포함하지 않습니다. 실제 EPSM에서는 장치 내장 리듬음이 재생됩니다.
 
-아래 예제는 압축 해제한 폴더에서 실행합니다. 섹션·채널·음표·샘플은 0부터, NSF 곡은 1부터 시작합니다. Python 3.10+용 abi3 확장을 같은 OS/CPU 폴더에서 사용합니다. GUI/CLI는 Python 없이 실행됩니다. 전체 API는 `fcseq_native.pyi`. CLI는 음표 이동·이조·길이·정렬·복제·삭제, GUI/Python은 파형 편집을 제공합니다.
+5B와 EPSM의 SSG에서는 톤·노이즈·엔벌로프를 설정합니다. 노이즈 주기와 엔벌로프 발생기는 세 채널이 공유하므로 나중에 설정한 값이 다른 채널에도 영향을 줄 수 있습니다.
+
+## 오디오를 악기로 사용하기
+
+SAMPLES에서 WAV, FLAC, Ogg Vorbis, MP3를 가져오거나 창에 파일을 놓으세요. 시작·끝, 게인, 정규화, 역재생을 조정할 수 있으며 원본은 유지됩니다. 최대 60초의 원본을 지원하고 스테레오는 모노로 합칩니다.
+
+DPCM 트랙에 음표를 놓고 샘플과 재생 속도를 선택하세요. AUDITION DPCM은 변환된 소리를 들려주며 EXPORT .DMC는 파일로 저장합니다. 변환 과정에서 DC 성분을 제거하고 저역 통과 필터로 리샘플링합니다. 샘플 하나는 최대 4081바이트, 공통 뱅크는 16320바이트이며 FDS에서는 8192바이트입니다. 너무 크면 구간을 줄이거나 변환 속도를 낮추세요. 변환 속도와 음표 재생 속도는 별도 설정입니다.
+
+MMC5·VT02의 PCM 트랙도 같은 원본과 가공 설정을 사용합니다. 8비트 PCM을 4 kHz로 스트리밍하고 음높이에 따라 재생 속도를 바꿉니다. PCM에는 DPCM 바이트 제한을 적용하지 않습니다. VT02의 DPCM과 PCM은 재생 장치를 공유하므로 한 섹션에서는 둘 중 하나만 사용하세요. 샘플 루프와 자동 음정 보정은 지원하지 않습니다.
+
+## 프로젝트와 NSF
+
+편집 프로젝트는 `.fcq`로 저장합니다. 기존 `.fcseq`는 확장자를 `.fcq`로 바꿔 열 수 있습니다. 음표 프로젝트는 `fcseq-2` JSON 형식을 유지하며 `fcseq-1`도 읽습니다. 음악 데이터를 포함하는 재생 프로젝트는 `fcseq-3`입니다.
+
+NSF, NSF2, NSFe를 열고 곡 번호와 시간을 정한 뒤 재생하세요. 시간 정보가 없으면 기본 30초이며 1~600초로 바꿀 수 있습니다. FCQ로 저장하면 원본과 재생 설정을 포함합니다. 가져오기는 재생용이며 임의의 NSF를 편집 가능한 음표로 채보하지 않습니다. 같은 컨테이너로 다시 내보내면 원본 바이트가 유지됩니다.
+
+내보내기 대화상자에서 `.nsf`, `.nsf2`, `.nsfe`를 선택하면 섹션마다 하나의 곡이 됩니다. NSF·NSF2와 함께 곡 길이와 페이드 0을 넣은 NSFe도 만듭니다. 곡은 섹션 끝에서 멈추며 편집기의 LOOP와는 별개입니다. NTSC와 NTSC 재생이 가능한 양 지역 파일, 4 KiB 뱅킹, 위 음원을 지원합니다. NSF2의 타이머 IRQ, 계속 실행되는 INIT, PLAY 호출 억제도 처리합니다. PAL 전용 파일은 지원하지 않습니다. EPSM과 NSF2 타이머 포트가 겹치므로 둘을 타이머 IRQ 플래그와 함께 사용하는 파일은 거부합니다. [기술 자료](docs/AUDIO_FORMATS.md)에서 범위를 확인할 수 있습니다.
+
+C + DPCM 내보내기는 C 드라이버, 헤더, 레지스터 데이터, 샘플 뱅크, 배치 설명을 만듭니다. 완성된 게임 ROM은 아닙니다. 대상 매퍼를 설정하고 코드와 데이터를 CPU가 읽을 수 있게 배치하세요. `fcseq_tick`은 `FCSEQ_TICK_RATE_HZ`에 맞춰 호출합니다. 보통 NTSC 프레임 속도이며 PCM이 있는 프로젝트는 4000 Hz입니다. KITAQFC에서는 `FCSEQ_KITAQFC`를 정의하고, 필요하면 `FCSEQ_WRITE(address, value)`를 바꿔 사용할 수 있습니다.
+
+## CLI, Python, 빌드
+
+`fcseq-cli help`로 명령을 확인하세요. Windows에서는 `.exe`를 붙입니다. 섹션·채널·음표·음색·샘플 번호는 0부터, NSF 곡 번호는 1부터 시작합니다.
 
 ```sh
-./fcseq-cli new song.fcq n163
+./fcseq-cli new song.fcq epsm
 ./fcseq-cli validate song.fcq
 ./fcseq-cli render-wav song.fcq song.wav 0
-./fcseq-cli export-nsf song.fcq song.nsf
-./fcseq-cli export-nsfe song.fcq song.nsfe
-./fcseq-cli import-nsf song.nsf imported.fcq 1 60
-./fcseq-cli nsf-info song.nsfe
-./fcseq-cli nsf-render song.nsfe preview.wav 1 10
-./fcseq-cli play-nsf song.nsfe 1 30
-./fcseq-cli import-audio song.fcq voice.wav with_voice.fcq
-./fcseq-cli export-dpcm with_voice.fcq 0 voice.dmc
-./fcseq-cli edit song.fcq edited.fcq 0 0 0 transpose 12
-./fcseq-cli export-kitaqfc song.fcq export
-python fcseq.py nsf-render song.nsf preview.wav --song 1 --seconds 10
+./fcseq-cli export-nsf2 song.fcq song.nsf2
+./fcseq-cli nsf-render song.nsf2 preview.wav 1 10
+./fcseq-cli set-epsm-parameter song.fcq edited.fcq 0 44 4
 ```
 
-```python
-import fcseq_native
-c = fcseq_native.Controller()
-c.set_expansion('n163')
-c.set_n163_channels(8)
-c.set_n163_wave(0, [i // 2 for i in range(32)])
-c.add_note(0, 5, 0, 8, 69)
-c.save_project('example.fcq')
-c.export_nsf('example.nsf')
-c.render_wav('example.wav')
-```
+Python 3.10 이상에서 운영체제와 CPU에 맞는 네이티브 모듈을 사용합니다. GUI·CLI에는 Python이 필요하지 않습니다. [API 목록](fcseq_native.pyi)에서 `Controller`, `set_sound`, `set_epsm_parameter`, 파형 편집과 내보내기를 확인할 수 있습니다. 예를 들어 `c.set_expansion('epsm')`, `c.add_note(0, 8, 0, 8, 69)`, `c.export_nsf('song.nsf2')`로 FM 음표를 만들어 내보낼 수 있습니다.
 
-## 빌드 및 검증
+Rust 1.93.1과 C++14 컴파일러로 `cargo build --locked --release`, `cargo test --locked --tests`를 실행합니다. CLI 전용은 `--no-default-features --bin fcseq-cli`, Python 확장은 `--features python --lib`을 사용합니다. Windows는 MSVC Build Tools, macOS는 Xcode Command Line Tools, Linux는 저장소의 `.github/workflows/fcseq.yml`에 있는 개발 라이브러리가 필요합니다.
 
-이 소스 폴더에서 Rust 1.93.1과 아래 명령을 사용합니다. 로컬 라이브러리는 vendor/에 포함됩니다. Linux 개발 패키지는 저장소 루트 `.github/workflows/fcseq.yml`, macOS는 Xcode Command Line Tools, Windows는 MSVC Build Tools가 필요합니다. Python은 선택 사항입니다. 스크립트로 네이티브 CLI/Python, WAV, NSF/NSFe 왕복, GUI 시작을 확인합니다. 결과/범위는 VERIFICATION.md에 있으며 사람의 마우스/키보드 조작이나 실기 청취 인증은 아닙니다.
-
-```sh
-cargo build --locked --release
-cargo test --locked --release --tests
-cargo build --locked --release --no-default-features --bin fcseq-cli
-cargo build --locked --release --features python --lib
-python -c "import shutil,sys; from pathlib import Path; n={'win32':'fcseq_native.dll','darwin':'libfcseq_native.dylib'}.get(sys.platform,'libfcseq_native.so'); shutil.copy2(Path('target/release')/n,'fcseq_native.pyd' if sys.platform=='win32' else 'fcseq_native.so')"
-```
-
-## 라이선스
-
-FCSEQ는 MIT, Copyright (c) 2026 DAISUKE OBA입니다. 의존성은 각 라이선스를 유지합니다. 재배포 시 LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/, third_party_sources/를 포함하세요. MPL-2.0 Symphonia 소스와 글꼴/아이콘 표기를 포함합니다. 가져온 음악과 샘플의 권리는 별도입니다.
-
-[LICENSE](LICENSE) · [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.md) · [LICENSE_AUDIT](LICENSE_AUDIT.json) · [VERIFICATION](VERIFICATION.md)
-
-[Source](https://github.com/bartaro/kitaqfc/tree/main/tools/fcseq)
+FCSEQ 애플리케이션 코드는 MIT 라이선스이며 Copyright (c) 2026 DAISUKE OBA입니다. ymfm(BSD-3-Clause), Symphonia(MPL-2.0), 글꼴(OFL)은 각 라이선스를 유지합니다. 재배포할 때 LICENSE, THIRD_PARTY_NOTICES.md, licenses/, assets/, third_party_sources/를 포함하세요. 게임 ROM·FDS BIOS·상용 음원 ROM 덤프는 포함하지 않습니다. 가져온 곡과 샘플의 권리는 별도입니다. [고지](THIRD_PARTY_NOTICES.md)와 [검증 기록](VERIFICATION.md)을 참고하세요.

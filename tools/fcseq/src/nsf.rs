@@ -7,6 +7,8 @@ use std::{collections::BTreeMap, path::Path};
 pub const MAX_FILE: usize = kurosaki_core::nsf::MAX_NSF_BYTES;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Header {
+    pub version: u8,
+    pub nsf2_flags: u8,
     pub title: String,
     pub artist: String,
     pub copyright: String,
@@ -26,6 +28,8 @@ impl Header {
             .map_err(|e| e.to_string())?
             .header;
         Ok(Self {
+            version: h.version,
+            nsf2_flags: h.nsf2_flags,
             title: h.title,
             artist: h.artist,
             copyright: h.copyright,
@@ -52,6 +56,8 @@ impl Header {
             (8, "MMC5"),
             (16, "N163"),
             (32, "Sunsoft 5B"),
+            (64, "VT02"),
+            (128, "EPSM"),
         ] {
             if self.chips & bit != 0 {
                 names.push(name);
@@ -334,7 +340,12 @@ pub fn export_bytes(score: &Score) -> Result<Vec<u8>, String> {
     data[12..14].copy_from_slice(&play.to_le_bytes());
     text(&mut data, 14, &score.name);
     text(&mut data, 46, "FCSEQ");
-    data[110..112].copy_from_slice(&16639u16.to_le_bytes());
+    let period = if score.tick_rate() == FPS {
+        16639u16
+    } else {
+        250u16
+    };
+    data[110..112].copy_from_slice(&period.to_le_bytes());
     data[120..122].copy_from_slice(&19997u16.to_le_bytes());
     data[112..120].copy_from_slice(&[
         0,
@@ -346,13 +357,7 @@ pub fn export_bytes(score: &Score) -> Result<Vec<u8>, String> {
         (sample_bank + 2) as u8,
         (sample_bank + 3) as u8,
     ]);
-    data[123] = match score.expansion {
-        Expansion::None => 0,
-        Expansion::Vrc6 => 1,
-        Expansion::Vrc7 => 2,
-        Expansion::Fds => 4,
-        Expansion::N163 => 16,
-    };
+    data[123] = score.expansion.nsf_bits();
     data.extend(code);
     data.extend(music);
     data.extend(samples);
@@ -365,7 +370,7 @@ pub fn export_bytes(score: &Score) -> Result<Vec<u8>, String> {
         .zip(&score.sections)
     {
         track.name = section.name.clone();
-        track.time_ms = Some((stream.frames as u64 * 16639 / 1000) as u32);
+        track.time_ms = Some((stream.frames as u64 * u64::from(period) / 1000) as u32);
         track.fade_ms = Some(0);
     }
     file.to_nsf_bytes().map_err(|e| e.to_string())
@@ -376,11 +381,18 @@ pub fn export(score: &Score, path: &Path) -> Result<serde_json::Value, String> {
     let nsfe = path
         .extension()
         .is_some_and(|ext| ext.eq_ignore_ascii_case("nsfe"));
-    let original_preserved = score.nsf.is_some() && original.starts_with(b"NSFE") == nsfe;
+    let nsf2 = path
+        .extension()
+        .is_some_and(|ext| ext.eq_ignore_ascii_case("nsf2"));
+    let original_preserved = score.nsf.is_some()
+        && original.starts_with(b"NSFE") == nsfe
+        && (!nsf2 || file.header.version == 2);
     let data = if original_preserved {
         original
     } else if nsfe {
         file.to_nsfe_bytes().map_err(|e| e.to_string())?
+    } else if nsf2 {
+        file.to_nsf2_bytes().map_err(|e| e.to_string())?
     } else if original.starts_with(b"NSFE") {
         file.to_nsf_bytes().map_err(|e| e.to_string())?
     } else {
@@ -390,13 +402,18 @@ pub fn export(score: &Score, path: &Path) -> Result<serde_json::Value, String> {
     std::fs::write(path, &data).map_err(|e| e.to_string())?;
     let companion = if !nsfe && score.nsf.is_none() {
         let companion = path.with_extension("nsfe");
-        std::fs::write(&companion, file.to_nsfe_bytes().map_err(|e| e.to_string())?)
-            .map_err(|e| e.to_string())?;
+        let companion_file =
+            kurosaki_core::nsf::NsfFile::from_bytes(&data).map_err(|e| e.to_string())?;
+        std::fs::write(
+            &companion,
+            companion_file.to_nsfe_bytes().map_err(|e| e.to_string())?,
+        )
+        .map_err(|e| e.to_string())?;
         Some(companion)
     } else {
         None
     };
     Ok(
-        serde_json::json!({"format":if nsfe {"nsfe"} else {"nsf-1"},"songs":h.songs,"bytes":data.len(),"chips":h.chip_names(),"original_preserved":original_preserved,"tracks":h.tracks,"nsfe_companion":companion}),
+        serde_json::json!({"format":if nsfe {"nsfe"} else if h.version==2{"nsf-2"}else{"nsf-1"},"songs":h.songs,"bytes":data.len(),"chips":h.chip_names(),"original_preserved":original_preserved,"tracks":h.tracks,"nsfe_companion":companion}),
     )
 }

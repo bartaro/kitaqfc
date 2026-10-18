@@ -268,16 +268,7 @@ fn malformed_files_cancellation_and_runaway_code_return_errors() {
         assert!(nsf::Header::parse(&data).is_err());
     }
     let mut data = nsf::export_bytes(&source(Expansion::None)).unwrap();
-    for (offset, value) in [
-        (5, 2),
-        (6, 0),
-        (7, 0),
-        (7, 2),
-        (122, 1),
-        (123, 128),
-        (123, 8),
-        (123, 32),
-    ] {
+    for (offset, value) in [(5, 3), (6, 0), (7, 0), (7, 2), (122, 1)] {
         let old = data[offset];
         data[offset] = value;
         assert!(nsf::Header::parse(&data).is_err(), "{offset}");

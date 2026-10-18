@@ -178,7 +178,10 @@ impl Bus {
                     sink.push(event);
                 }
             }
-            0x4018..=0x5FFF => self.mapper.write_prg(addr, value, frame, cycle, cfg, sink),
+            0x4018..=0x5FFF => {
+                self.apu.write_vt_register(addr, value);
+                self.mapper.write_prg(addr, value, frame, cycle, cfg, sink)
+            }
             0x6000..=0xFFFF => self.mapper.write_prg(addr, value, frame, cycle, cfg, sink),
         }
         if cfg.mem_write {

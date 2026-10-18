@@ -1,5 +1,5 @@
 {
-  "application": "FCSEQ 0.4.2",
+  "application": "FCSEQ 0.5.0",
   "license": "MIT",
   "author": "DAISUKE OBA",
   "platforms": {
@@ -3840,5 +3840,37 @@
       "source_archive": null
     }
   ],
-  "missing_notices": []
+  "missing_notices": [],
+  "additional_components": [
+    {
+      "name": "ymfm",
+      "revision": "81aec25ccbb98f4873a255f7551ac4dadac59b4a",
+      "license": "BSD-3-Clause",
+      "notices": [
+        "licenses/dependencies/ymfm/LICENSE"
+      ],
+      "provenance": "licenses/dependencies/ymfm/UPSTREAM.json",
+      "source": "vendor/kurosaki-core/vendor/ymfm",
+      "modified": false
+    }
+  ],
+  "font_additions": [
+    {
+      "name": "Noto Sans JP",
+      "license": "OFL-1.1",
+      "modified": false,
+      "files": [
+        "assets/fonts/NotoSansJP-Regular.otf",
+        "assets/fonts/NotoSansJP[wght].ttf"
+      ],
+      "notices": [
+        "assets/fonts/NotoSansJP-Regular-OFL.txt",
+        "assets/fonts/NotoSansJP-OFL.txt"
+      ],
+      "provenance": [
+        "licenses/assets/NotoSansJP-Regular-PROVENANCE.json",
+        "licenses/assets/NotoSansJP-PROVENANCE.json"
+      ]
+    }
+  ]
 }
