@@ -99,6 +99,9 @@ fn ssg_noise_envelope_fm_parameters_and_pcm_processing_are_shared() {
         base != services::render(&s, 0, None).unwrap(),
         "unchanged EPSM FM sound"
     );
+    let mut modulated = score(Expansion::Epsm, 8);
+    fcseq_native::instruments::set_epsm_parameter(&mut modulated.epsm_patches[0], 47, 4).unwrap();
+    assert!(base != services::render(&modulated, 0, None).unwrap(), "EPSM pitch modulation must reach the running LFO");
     let mut s = score(Expansion::Mmc5, 7);
     let base = services::render(&s, 0, None).unwrap();
     s.samples[0].gain = 0.0;

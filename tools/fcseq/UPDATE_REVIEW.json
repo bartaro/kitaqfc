@@ -20,7 +20,7 @@
     },
     {
       "path": "src/extra_audio.rs",
-      "sha256": "944ca6f4ee290a77386e16f242b8584337e2b938744914016b117eba0b598b94",
+      "sha256": "96a6eace4691a650bd46a0914a44b40c7a0cde43b4cc97bfe5592567891edfe0",
       "change": "added"
     },
     {
@@ -100,7 +100,7 @@
     },
     {
       "path": "tests/expansion.rs",
-      "sha256": "d7b85b99e0ad2c2f84e8908dcd064a032682d8b5c4385e0d842989eb1897850b",
+      "sha256": "e8b55fa2f2791120234a76bbaa6c45cbb35f2252352ca9d38581c588b6f12fe8",
       "change": "added"
     },
     {
@@ -295,7 +295,7 @@
     },
     {
       "path": "docs/AUDIO_FORMATS.md",
-      "sha256": "9ab7c544195a499a1ecee4055396cbc364f82470da3215c4362579a424393941",
+      "sha256": "284a0db0067842748bd9a8206ce3d030738001c2e09959d74838c5f4a0bbc96f",
       "change": "added"
     },
     {
@@ -320,12 +320,12 @@
     },
     {
       "path": "LICENSE_AUDIT.json",
-      "sha256": "2dd74ac66a809b654bef6f60d547fb5fcc3dba091a0c54973bffcdd964c6342d",
+      "sha256": "a7f49d133140579206a6acac4cf31d53acdbeb8ed40d0b1f4bd416d1f176a481",
       "change": "modified"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "sha256": "b520da91ffda4bac780c4c68580583df88b3d75254b1c7dba7989940a597b620",
+      "sha256": "c53d02283b9d310e44ba0afdad40d6400296537a45488792af6fb34f071ac50a",
       "change": "modified"
     },
     {
@@ -335,7 +335,7 @@
     },
     {
       "path": "SOURCE_SNAPSHOT.json",
-      "sha256": "6e88e56e6d02f75954c4307a492f98b5195f99513f9a2e3423d89ac79bf12b3a",
+      "sha256": "2fdc9567ae114d91fd83de10d8549c1644667705a9789e51bdd66a8ab6b54001",
       "change": "modified"
     },
     {
@@ -345,7 +345,7 @@
     },
     {
       "path": "README.en.md",
-      "sha256": "589ff752a66693ac89479588157eec8fcfd6b2f05af3c8a65f22bb8a0d1107d2",
+      "sha256": "2acc368343dfcbc1aa572528f9b674ab972d5cc973e9708e4e635da93be41725",
       "change": "modified"
     },
     {
@@ -360,7 +360,7 @@
     },
     {
       "path": "README.ja.md",
-      "sha256": "b4304366ae828cc0b520b494584bfd3bf9f037351a242c5d6b2ec4c11cc0bdc0",
+      "sha256": "f20be55bbfff344aba844554eaea083754eddbffc68bb9e6a2dcf79f38b695b0",
       "change": "modified"
     },
     {
@@ -370,7 +370,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "589ff752a66693ac89479588157eec8fcfd6b2f05af3c8a65f22bb8a0d1107d2",
+      "sha256": "2acc368343dfcbc1aa572528f9b674ab972d5cc973e9708e4e635da93be41725",
       "change": "modified"
     },
     {

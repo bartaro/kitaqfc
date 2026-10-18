@@ -94,6 +94,7 @@ c = fcseq_native.Controller()
 c.set_expansion('epsm')
 c.set_epsm_parameter(0, 44, 4)  # patch 0, algorithm 4
 c.add_note(0, 8, 0, 8, 69)    # first EPSM FM track
+c.set_sound(0, 8, 0, '{"instrument": 0}')
 c.save_project('example.fcq')
 c.export_nsf('example.nsf2')
 c.render_wav('example.wav')

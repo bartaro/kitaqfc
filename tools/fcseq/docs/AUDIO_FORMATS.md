@@ -27,7 +27,10 @@ timer and memory callbacks. 5B uses half the NTSC CPU clock; EPSM uses 8 MHz.
 SSG channels share a noise period and envelope generator. Register writes from a
 later note update those shared generators. EPSM patch slots contain the four
 operators plus algorithm/feedback/modulation fields. Preview and WAV are mono;
-pan bits remain in the exported stream.
+pan bits remain in the exported stream. Modulation uses the chip's shared LFO
+at rate index 4. AM/PM sensitivity is editable per patch; the global LFO rate
+does not currently have an editor control. Zero sensitivity disables modulation
+for that patch.
 
 EPSM percussion is synthesized from original formulas in `ymfm_bridge.cpp`, then
 encoded into an ADPCM bank. No commercial Yamaha ROM data is distributed. These

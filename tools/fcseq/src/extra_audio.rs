@@ -38,7 +38,8 @@ pub fn init(score: &Score) -> Vec<Write> {
             if score.expansion == Expansion::Epsm {
                 for (r, v) in [
                     (0x20, 2),
-                    (0x22, 0),
+                    // Shared LFO at rate 4; zero AM/PM sensitivity stays unmodulated.
+                    (0x22, 0x0c),
                     (0x27, 0),
                     (0x29, 0x80),
                     (0x11, 63),

@@ -3872,5 +3872,19 @@
         "licenses/assets/NotoSansJP-PROVENANCE.json"
       ]
     }
-  ]
+  ],
+  "native_system_runtimes": {
+    "bundled": false,
+    "linux": [
+      "libstdc++.so.6 (GPL-3.0 with GCC Runtime Library Exception 3.1)",
+      "libgcc_s.so.1 (GCC Runtime Library Exception)"
+    ],
+    "macos": [
+      "/usr/lib/libc++.1.dylib (system supplied)"
+    ],
+    "windows": [
+      "Microsoft Visual C++ x64 Runtime (system supplied)"
+    ],
+    "reference": "https://gcc.gnu.org/onlinedocs/libstdc++/manual/license.html"
+  }
 }

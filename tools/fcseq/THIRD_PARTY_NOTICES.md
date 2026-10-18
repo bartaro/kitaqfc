@@ -73,6 +73,16 @@ provenance JSON files in licenses/assets. Sources:
 https://github.com/notofonts/noto-cjk and https://github.com/google/fonts .
 These font files have not been modified or relicensed under MIT.
 
+The native C++ adapter uses system C++ runtimes: Linux links libstdc++.so.6
+and libgcc_s.so.1, macOS links /usr/lib/libc++.1.dylib, and Windows uses the
+Microsoft Visual C++ runtime (including VCRUNTIME140_1.dll). Those runtime
+libraries are not copied into the packages. GNU libstdc++ uses GPLv3 with the
+GCC Runtime Library Exception 3.1; its eligible-compilation permission permits
+independent modules to retain their own distribution terms. See the
+[GNU libstdc++ licence explanation](https://gcc.gnu.org/onlinedocs/libstdc++/manual/license.html)
+and the retained [exception text](licenses/toolchain/rust-1.93.1/licenses/GCC-exception-3.1.txt).
+This does not relicense the system libraries under MIT.
+
 ## Rust standard library
 
 The executable toolchain is Rust 1.93.1. Its official
