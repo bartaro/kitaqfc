@@ -1,6 +1,6 @@
 {
-  "version": "0.5.0",
-  "date": "2026-10-19",
+  "version": "0.5.1",
+  "date": "2026-10-21",
   "files": {
     "src/bin/fcseq-cli.rs": "7dfb5118e81444d6cf3c09aa41b07f93cf801a5fb89c51a8cbe4adac308d44a3",
     "src/editing.rs": "1bbf0bd20742edc8e678862d9a737095bc4c9ca138a01f43d16c833410786f89",
@@ -9,7 +9,7 @@
     "src/i18n.rs": "ee0b8cba30858ed0227722584cd34142ca38d87e2ab8d42cc84434ca8006453b",
     "src/instrument_ui.rs": "d5611da026598d39fa6f238f9ad5d4868514c1ea5bc650fddbf77c6d3c057733",
     "src/instruments.rs": "6f2b9a5ea57094afaf4404a507c75089bd6473d9cfd5b69e63fe819f824d2c4e",
-    "src/key_editor.rs": "23ffe18e313f963c138fd8b9553896088f9e050bd9589c4c83b851869676fbcc",
+    "src/key_editor.rs": "bced6d7610536a576504d626c44f2c682151186fe5e64bfe7583b914793a3dbd",
     "src/lib.rs": "ce3286bbbac21472f6e1e24f165b1f73673517fdbb3b4e8eba94ce1388882d40",
     "src/locale_ja.tsv": "c29ae415d15e87cdf06ff3bbd2e3ee39fd898ca28c83357570c8a51a54b27755",
     "src/main.rs": "3d3498cc899b1e6faa1cec49a8e9e66e8ebf3c8650f12f16d77b57cfcbb4c130",
@@ -21,7 +21,7 @@
     "src/python.rs": "5b1aa8ca8da64adcb93e065a14747615f014a577695709a157f92234c9baca23",
     "src/samples.rs": "e3849d23763fbddf09f37131ab4a989732828c2882df14e4c6267c5128c2c9d9",
     "src/services.rs": "a518496c52023f6842ce4b7950061a34bfbe4bd7c14c02620fcd33b4aa513bc6",
-    "src/studio.rs": "986c35cfe1879cab2ece50155bc2403a2f2c9e480009d18752f2440553f360b2",
+    "src/studio.rs": "8c05813e7a9a299818bb5209fb820fecf249b9fdb4e64ae24d62433b1d667e5a",
     "src/wave_graph.rs": "b0666f0bdec1b22634f9be83aabf55dfb89caa9b55b04220915460ac47df382b",
     "tests/core.rs": "d7a218853586c7de5537370b70050f81bef777fff77e899fce417427394cdaab",
     "tests/expansion.rs": "e8b55fa2f2791120234a76bbaa6c45cbb35f2252352ca9d38581c588b6f12fe8",
@@ -170,8 +170,8 @@
     "assets/fonts/Roboto[wdth,wght].ttf": "d7598e12c5dbef095ff8272cfc55da0250bd07fbdecbac8a530b9b277872a134",
     "assets/fonts/RobotoMono-OFL.txt": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215",
     "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4",
-    "Cargo.toml": "5c9aa9442427b60a503ba022f5cafcc0bca1c52f1a52663544e8fdc3cbdcb87b",
-    "Cargo.lock": "b6f0ad43624e71a4c2ffa00a846e8f227824661774bdc254fe69ab59714d2e3c",
+    "Cargo.toml": "e0e5e2ba656e7abdb2bc2e14fd7c06e909ec41fd5c56e48c6897d7d277e56c7b",
+    "Cargo.lock": "98a659893a7d06407a01244242489dcbcfb2b2ef60cc3db7a4e9375708d3180a",
     "build.rs": "4baac63a8d0e0cf2aeefd481ac0e5506a5e15fb1b5cc030290251df5dab8c794",
     "fcseq.py": "ae22b630b9adaa69fec76a944e5e705c244c5a381829411eb0bbecb933a623a9",
     "fcseq_native.pyi": "f671d7cd605c822cea93b124e32a16029ad1bf5a7e00470f3a3fe661db8c4162"

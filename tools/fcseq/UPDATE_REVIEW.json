@@ -1,404 +1,99 @@
 {
-  "version": "0.5.0",
-  "repository_base_commit": "c80a588f807c03b58a0f592f5ef6e855ac174b28",
-  "previous_fcseq_release_commit": "c80a588f807c03b58a0f592f5ef6e855ac174b28",
+  "version": "0.5.1",
+  "repository_base_commit": "65de41085f88a1132af8200661052143259def9f",
+  "previous_fcseq_release_commit": "4040cfddeebe8c78b2ec106f38b9163c973ec874",
   "synchronized_local_files": [
     {
-      "path": "src/bin/fcseq-cli.rs",
-      "sha256": "7dfb5118e81444d6cf3c09aa41b07f93cf801a5fb89c51a8cbe4adac308d44a3",
-      "change": "modified"
-    },
-    {
-      "path": "src/editing.rs",
-      "sha256": "1bbf0bd20742edc8e678862d9a737095bc4c9ca138a01f43d16c833410786f89",
-      "change": "modified"
-    },
-    {
-      "path": "src/epsm_ui.rs",
-      "sha256": "5fb4b3a89ae123028a63d4751fabb973eff0727bdb7300e4e2e7b4560375d963",
-      "change": "added"
-    },
-    {
-      "path": "src/extra_audio.rs",
-      "sha256": "96a6eace4691a650bd46a0914a44b40c7a0cde43b4cc97bfe5592567891edfe0",
-      "change": "added"
-    },
-    {
-      "path": "src/i18n.rs",
-      "sha256": "ee0b8cba30858ed0227722584cd34142ca38d87e2ab8d42cc84434ca8006453b",
-      "change": "added"
-    },
-    {
-      "path": "src/instrument_ui.rs",
-      "sha256": "d5611da026598d39fa6f238f9ad5d4868514c1ea5bc650fddbf77c6d3c057733",
-      "change": "modified"
-    },
-    {
-      "path": "src/instruments.rs",
-      "sha256": "6f2b9a5ea57094afaf4404a507c75089bd6473d9cfd5b69e63fe819f824d2c4e",
+      "path": "src/studio.rs",
+      "sha256": "8c05813e7a9a299818bb5209fb820fecf249b9fdb4e64ae24d62433b1d667e5a",
       "change": "modified"
     },
     {
       "path": "src/key_editor.rs",
-      "sha256": "23ffe18e313f963c138fd8b9553896088f9e050bd9589c4c83b851869676fbcc",
-      "change": "added"
-    },
-    {
-      "path": "src/lib.rs",
-      "sha256": "ce3286bbbac21472f6e1e24f165b1f73673517fdbb3b4e8eba94ce1388882d40",
+      "sha256": "bced6d7610536a576504d626c44f2c682151186fe5e64bfe7583b914793a3dbd",
       "change": "modified"
-    },
-    {
-      "path": "src/locale_ja.tsv",
-      "sha256": "c29ae415d15e87cdf06ff3bbd2e3ee39fd898ca28c83357570c8a51a54b27755",
-      "change": "added"
-    },
-    {
-      "path": "src/main.rs",
-      "sha256": "3d3498cc899b1e6faa1cec49a8e9e66e8ebf3c8650f12f16d77b57cfcbb4c130",
-      "change": "modified"
-    },
-    {
-      "path": "src/model.rs",
-      "sha256": "25b271b284d530ab55c4966237879d7d77dbe54dc54e6e6060885366318bf48a",
-      "change": "modified"
-    },
-    {
-      "path": "src/nsf.rs",
-      "sha256": "b8cec83bb8bf621525deed32390ee7c71093a796ea221ba82599bf08fb147d44",
-      "change": "modified"
-    },
-    {
-      "path": "src/player.c.txt",
-      "sha256": "e4c18d7d30eb553d795e5ac3db05ab1393bbc059147230a891ec83c065794892",
-      "change": "modified"
-    },
-    {
-      "path": "src/python.rs",
-      "sha256": "5b1aa8ca8da64adcb93e065a14747615f014a577695709a157f92234c9baca23",
-      "change": "modified"
-    },
-    {
-      "path": "src/samples.rs",
-      "sha256": "e3849d23763fbddf09f37131ab4a989732828c2882df14e4c6267c5128c2c9d9",
-      "change": "modified"
-    },
-    {
-      "path": "src/services.rs",
-      "sha256": "a518496c52023f6842ce4b7950061a34bfbe4bd7c14c02620fcd33b4aa513bc6",
-      "change": "modified"
-    },
-    {
-      "path": "src/studio.rs",
-      "sha256": "986c35cfe1879cab2ece50155bc2403a2f2c9e480009d18752f2440553f360b2",
-      "change": "modified"
-    },
-    {
-      "path": "src/wave_graph.rs",
-      "sha256": "b0666f0bdec1b22634f9be83aabf55dfb89caa9b55b04220915460ac47df382b",
-      "change": "added"
-    },
-    {
-      "path": "tests/expansion.rs",
-      "sha256": "e8b55fa2f2791120234a76bbaa6c45cbb35f2252352ca9d38581c588b6f12fe8",
-      "change": "added"
-    },
-    {
-      "path": "tests/nsf.rs",
-      "sha256": "0430f0ecac143e801a8fc15fb515e0a25d10e6d93c0ed227c0c9901faa4126a2",
-      "change": "modified"
-    },
-    {
-      "path": "tests/test_expansion.py",
-      "sha256": "35ebdb689e790d4378a9a8372e4bcd070911f68ee2cc6a42bebcd6dbbd4c373e",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/build.rs",
-      "sha256": "25b582bb7141e1b8ae332720037d71534a96925c5c97ba0c7f0bd2010ca21c68",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/Cargo.toml",
-      "sha256": "19e63ca6395d85b3426092667516ae4a7e645556d43c64003ddddbf3d86cc40d",
-      "change": "modified"
-    },
-    {
-      "path": "vendor/kurosaki-core/src/apu.rs",
-      "sha256": "6d4fd9d6013df5cbac49c080f4b6cd04717e7f728f7673b3fa7c5d6572be57c8",
-      "change": "modified"
-    },
-    {
-      "path": "vendor/kurosaki-core/src/bus.rs",
-      "sha256": "f795e3cf7d5286dc7124139aecddae721325bd88520a81dea6dd8d851a3ee027",
-      "change": "modified"
-    },
-    {
-      "path": "vendor/kurosaki-core/src/expansion_audio.rs",
-      "sha256": "fefc6d2fb9c2cdfbebd31eeaf4092d9462cd2ecfa2966f48ec1090745fb0feb0",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/src/lib.rs",
-      "sha256": "43f5bce43210eedee7a12053356e7a5900bfe4033c2f9ce5d5e00fccbfcbf81a",
-      "change": "modified"
-    },
-    {
-      "path": "vendor/kurosaki-core/src/mapper.rs",
-      "sha256": "764142a7a216e4c6bf3a93598fe9ebd8ea2067cf0e686422dc99c149f6e7573e",
-      "change": "modified"
-    },
-    {
-      "path": "vendor/kurosaki-core/src/nsf/container.rs",
-      "sha256": "647dd2b66aaf444b644754d7645a6e7230559f8ec5cf125ab3f91ddea0ffa3c7",
-      "change": "modified"
-    },
-    {
-      "path": "vendor/kurosaki-core/src/nsf.rs",
-      "sha256": "3f96061781efb5f3132125121be712ff74bed5f43af2079bda13f28b1e78a6b1",
-      "change": "modified"
-    },
-    {
-      "path": "vendor/kurosaki-core/src/ymfm_bridge.cpp",
-      "sha256": "c9fffeca5225105365a966f48a4cb2c9e0cd6bfd5eee0ec5f89303768b733430",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/LICENSE",
-      "sha256": "2d2e9213c170a9866c616fa85b6da993a6724e10befc61f468ed9bfb84c4691c",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/README.md",
-      "sha256": "85fa831f01bb266efe5384e56d0d1f921ca4275a4415ba0123c5226602a44a1a",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm.h",
-      "sha256": "f5ab6fed63c8669abab8403e0e93132e1dad0ae4d8e4954e7836ab9e5b228405",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm_adpcm.cpp",
-      "sha256": "74e5ded129ea7e532112e5b637d0a7bd4e127fd83331f1fac32011723051d4e0",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm_adpcm.h",
-      "sha256": "5933691971493b853a9be443f6e6fd74f63869aa21225f66dd89fc20de20914d",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm_fm.h",
-      "sha256": "1b27bfb7fa4963d7c54cb06fd9bf659450362d8ed496c6af7d487b068cac45c9",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm_fm.ipp",
-      "sha256": "4fb7fe59d4494a19e9f9c7888eb644a63d86e109fdefb27a8117bf6a5f6ab4b9",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm_misc.cpp",
-      "sha256": "a2113ec915bf55e23169d9524d9db93d6589f9b2aa000daeb495ff839b6282d9",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm_misc.h",
-      "sha256": "90739bd270a7b8b035275689e0f61ad4f8e0b9bcfd3f203816f97d54fe539b9d",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm_opn.cpp",
-      "sha256": "8734c6d5a6e1bf49a08eeb33d260d39c17cd1d26f5db506e5d0d3e416913b489",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm_opn.h",
-      "sha256": "1950990c3ea0c6d492a20f66a683a372a7367ef39f7830aa65b20a20d1bcbef5",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm_ssg.cpp",
-      "sha256": "73a3028a77f13f3769b7705079659eb8325431a67b8164ded25e12f324f42bfd",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/src/ymfm_ssg.h",
-      "sha256": "27966b0887fe98f2d06a96be2776c911107e2f2a13a64f9a349e1ffc19cf7584",
-      "change": "added"
-    },
-    {
-      "path": "vendor/kurosaki-core/vendor/ymfm/UPSTREAM.json",
-      "sha256": "6f1b69d4fb6e18c54be05fced98a5ec04f2cadfa2421795b0f9a30e9055bb665",
-      "change": "added"
-    },
-    {
-      "path": "vendor/plita_ui/src/lib.rs",
-      "sha256": "57d4c9bf7de782074e5b3587b7647610d0d3b6c0d2e5c909adcf9a7bdaef5432",
-      "change": "modified"
-    },
-    {
-      "path": "scripts/native_package.py",
-      "sha256": "0739cc4b35601704acbc174d41965d5f30da0bbd72abbfe04012d40ca020f728",
-      "change": "modified"
-    },
-    {
-      "path": "assets/fonts/NotoSansJP-OFL.txt",
-      "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9",
-      "change": "added"
-    },
-    {
-      "path": "assets/fonts/NotoSansJP-Regular-OFL.txt",
-      "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
-      "change": "added"
-    },
-    {
-      "path": "assets/fonts/NotoSansJP-Regular.otf",
-      "sha256": "dff723ba59d57d136764a04b9b2d03205544f7cd785a711442d6d2d085ac5073",
-      "change": "added"
-    },
-    {
-      "path": "assets/fonts/NotoSansJP[wght].ttf",
-      "sha256": "c2f3b4d463500a2ddcd3849cded1fceeb9fd6d1c32e6cbecd568453ba50fc68f",
-      "change": "added"
-    },
-    {
-      "path": "licenses/assets/NotoSansJP-OFL.txt",
-      "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9",
-      "change": "added"
-    },
-    {
-      "path": "licenses/assets/NotoSansJP-PROVENANCE.json",
-      "sha256": "0b1a0729a7b76ba97af9b384c9427fa3c2328e09f161b932420adf70e9b33426",
-      "change": "added"
-    },
-    {
-      "path": "licenses/assets/NotoSansJP-Regular-OFL.txt",
-      "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
-      "change": "added"
-    },
-    {
-      "path": "licenses/assets/NotoSansJP-Regular-PROVENANCE.json",
-      "sha256": "89015ad22f32bf3e0246aeb2ec4aa3b48362fb9510f70db9bb35284cdd83b282",
-      "change": "added"
-    },
-    {
-      "path": "licenses/dependencies/ymfm/LICENSE",
-      "sha256": "2d2e9213c170a9866c616fa85b6da993a6724e10befc61f468ed9bfb84c4691c",
-      "change": "added"
-    },
-    {
-      "path": "licenses/dependencies/ymfm/UPSTREAM.json",
-      "sha256": "6f1b69d4fb6e18c54be05fced98a5ec04f2cadfa2421795b0f9a30e9055bb665",
-      "change": "added"
-    },
-    {
-      "path": "docs/AUDIO_FORMATS.md",
-      "sha256": "284a0db0067842748bd9a8206ce3d030738001c2e09959d74838c5f4a0bbc96f",
-      "change": "added"
     },
     {
       "path": "Cargo.toml",
-      "sha256": "5c9aa9442427b60a503ba022f5cafcc0bca1c52f1a52663544e8fdc3cbdcb87b",
+      "sha256": "e0e5e2ba656e7abdb2bc2e14fd7c06e909ec41fd5c56e48c6897d7d277e56c7b",
       "change": "modified"
     },
     {
       "path": "Cargo.lock",
-      "sha256": "b6f0ad43624e71a4c2ffa00a846e8f227824661774bdc254fe69ab59714d2e3c",
-      "change": "modified"
-    },
-    {
-      "path": "fcseq.py",
-      "sha256": "ae22b630b9adaa69fec76a944e5e705c244c5a381829411eb0bbecb933a623a9",
-      "change": "modified"
-    },
-    {
-      "path": "fcseq_native.pyi",
-      "sha256": "f671d7cd605c822cea93b124e32a16029ad1bf5a7e00470f3a3fe661db8c4162",
-      "change": "modified"
-    },
-    {
-      "path": "LICENSE_AUDIT.json",
-      "sha256": "a7f49d133140579206a6acac4cf31d53acdbeb8ed40d0b1f4bd416d1f176a481",
-      "change": "modified"
-    },
-    {
-      "path": "THIRD_PARTY_NOTICES.md",
-      "sha256": "c53d02283b9d310e44ba0afdad40d6400296537a45488792af6fb34f071ac50a",
+      "sha256": "98a659893a7d06407a01244242489dcbcfb2b2ef60cc3db7a4e9375708d3180a",
       "change": "modified"
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "bba65ec2276bfd61e339972779e402bd61ada58766066860c43505b78b1df545",
+      "sha256": "a494dc615d6347aa3a007cf99136a0ec19793bea72aa381446cf84d3e44b078f",
       "change": "modified"
     },
     {
-      "path": "SOURCE_SNAPSHOT.json",
-      "sha256": "2fdc9567ae114d91fd83de10d8549c1644667705a9789e51bdd66a8ab6b54001",
+      "path": "LICENSE_AUDIT.json",
+      "sha256": "2598297554082379c10c232ccb566d98a6126c15450829523894dae485b6658a",
       "change": "modified"
     },
     {
       "path": "README.de.md",
-      "sha256": "19f2fe2628f1b2bd83683ee3838cd934a7e2df71b6ac4257242bdfc987048ad5",
+      "sha256": "803c85fff49893d8c0798553e6583880e93ce22a240ed17ec3c4649f198295dc",
       "change": "modified"
     },
     {
       "path": "README.en.md",
-      "sha256": "2acc368343dfcbc1aa572528f9b674ab972d5cc973e9708e4e635da93be41725",
+      "sha256": "c62ba502b0db5d65080d0a3593b4b2376365b4c1fefd8715d2904e8b304052c4",
       "change": "modified"
     },
     {
       "path": "README.es.md",
-      "sha256": "3831e87a938640f5783083ff454666f79d5c27ccb8cd7495e4ef93654ee3031d",
+      "sha256": "e670e3f39c7bc331e26097763c2c1061b8873e44416e342629e81a11f8fb0733",
       "change": "modified"
     },
     {
       "path": "README.fr.md",
-      "sha256": "878f464ba20a2d29daf869e856606eac1fb0e947ad8becd9719b5098d0ae23a8",
+      "sha256": "3d60ca47d47ff228695b5c24aede4c762fdc62e3c412ca533a6f9f6b2765e84e",
       "change": "modified"
     },
     {
       "path": "README.ja.md",
-      "sha256": "f20be55bbfff344aba844554eaea083754eddbffc68bb9e6a2dcf79f38b695b0",
+      "sha256": "06eb07af70f1a8f0cb0459174adc840eb0fe617429675f99ea04258c88fdaa66",
       "change": "modified"
     },
     {
       "path": "README.ko.md",
-      "sha256": "d1f0b405baa84cdf6c18dab7646458c41deaabba97d51cba91a14bce2b289418",
+      "sha256": "9e72c4246c714f914146bfa6e528ece3890b4165356bd93681d592cd8f9da545",
       "change": "modified"
     },
     {
       "path": "README.md",
-      "sha256": "2acc368343dfcbc1aa572528f9b674ab972d5cc973e9708e4e635da93be41725",
+      "sha256": "c62ba502b0db5d65080d0a3593b4b2376365b4c1fefd8715d2904e8b304052c4",
       "change": "modified"
     },
     {
       "path": "README.pt-BR.md",
-      "sha256": "e931f9f1dce6263a0c7f38138845c350fb1a0fea69668194f7ad6b4f864cb94f",
+      "sha256": "75b2a7aa98b9b227fa101585770630c41c22d94e60218a99132826ded2fa45e3",
       "change": "modified"
     },
     {
       "path": "README.pt.md",
-      "sha256": "e931f9f1dce6263a0c7f38138845c350fb1a0fea69668194f7ad6b4f864cb94f",
+      "sha256": "75b2a7aa98b9b227fa101585770630c41c22d94e60218a99132826ded2fa45e3",
       "change": "modified"
     },
     {
       "path": "README.zh-CN.md",
-      "sha256": "f98ba8a86e4f0a84e1b2debd521b64976b508e76aaf4d71b3f4d7b951a6de319",
+      "sha256": "50f3fb6a1e15bd5ba340a92dcc752e4859b0dd9e3677bf222f87555d531b212c",
       "change": "modified"
     },
     {
       "path": "README.zh-TW.md",
-      "sha256": "1db0a0ee408a267ae0533d011d0e1e92618a007f9238fdebfbb7b592d952448a",
+      "sha256": "d3a37eaa5f3d8aadeac2df626a55f59cd2f19a1d2f788aaafc3bd18ab0691eba",
       "change": "modified"
     }
   ],
   "registry_dependency_versions_changed": false,
-  "additional_audio_engine": "ymfm (BSD-3-Clause), pinned source",
-  "japanese_fonts": "Noto Sans JP (OFL-1.1), unmodified",
   "license_inventory_packages": 279,
   "fcq_backward_compatibility": true,
-  "new_container": "NSF2",
-  "public_portability_and_plita_branding_preserved": true
+  "public_portability_and_plita_branding_preserved": true,
+  "ui_reference": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll.htm",
+  "white_key_width_before_px": 150,
+  "white_key_width_after_px": 88
 }

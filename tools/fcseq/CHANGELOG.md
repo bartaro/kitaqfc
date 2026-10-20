@@ -1,3 +1,43 @@
+# FCSEQ 0.5.1
+
+## en
+
+Fixed Esc cancellation in the section-name dialog and native named-key handling for Enter, Backspace, arrows and other shortcuts. Shortened the Key Editor white keys from 150 to 88 pixels, adjusted black keys and labels, and gave the recovered width to the note grid.
+
+## ja
+
+セクション名の入力画面をEscでキャンセルできない不具合を修正しました。Enter、Backspace、矢印キーなども、plitaから届くキー名を正しく認識します。キーエディタの白鍵を150pxから88pxへ短くし、黒鍵と音名表示を調整しました。空いた幅はノート編集領域に割り当てています。
+
+## ko
+
+섹션 이름 입력 창에서 Esc로 취소할 수 없던 문제를 수정했습니다. Enter, Backspace, 방향키 등 plita가 전달하는 특수 키도 올바르게 인식합니다. 키 에디터의 흰 건반을 150px에서 88px로 줄이고 검은 건반과 음이름 표시를 조정해, 확보한 공간을 음표 편집 영역에 더했습니다.
+
+## zh-CN
+
+修复了节名称输入框无法按 Esc 取消的问题，并正确识别 plita 传入的 Enter、Backspace、方向键等特殊按键。钢琴编辑器的白键由 150px 缩短至 88px，黑键和音名标注也相应调整，腾出的空间用于音符编辑。
+
+## zh-TW
+
+修正了樂段名稱輸入框無法按 Esc 取消的問題，並正確辨識 plita 傳入的 Enter、Backspace、方向鍵等特殊按鍵。鋼琴編輯器的白鍵由 150px 縮短至 88px，黑鍵和音名標示也一併調整，騰出的空間用於音符編輯。
+
+## fr
+
+La touche Échap annule désormais la saisie du nom d'une section. Les touches Entrée, Retour arrière, les flèches et les autres touches spéciales transmises par plita sont aussi reconnues correctement. Dans l'éditeur de piste, les touches blanches passent de 150 à 88 pixels ; les touches noires et les noms de notes ont été adaptés, et la grille profite de l'espace libéré.
+
+## es
+
+Se corrige la cancelación con Esc al cambiar el nombre de una sección, así como el reconocimiento de Intro, Retroceso, las flechas y otras teclas especiales que envía plita. Las teclas blancas del editor de pista se acortan de 150 a 88 píxeles; se ajustan las negras y los nombres de notas, y el espacio ganado se añade a la cuadrícula.
+
+## de
+
+Esc bricht die Eingabe eines Abschnittsnamens jetzt zuverlässig ab. Auch Eingabetaste, Rücktaste, Pfeiltasten und weitere von plita gemeldete Sondertasten werden korrekt erkannt. Im Spur-Editor sind die weißen Tasten nun 88 statt 150 Pixel breit. Schwarze Tasten und Notennamen wurden angepasst; der gewonnene Platz erweitert das Notenraster.
+
+## pt-BR
+
+A tecla Esc agora cancela a edição do nome de uma seção. Enter, Backspace, as setas e outras teclas especiais enviadas pelo plita também são reconhecidas corretamente. As teclas brancas do editor de pista passaram de 150 para 88 pixels; as pretas e os nomes das notas foram ajustados, e o espaço liberado foi acrescentado à grade de notas.
+
+---
+
 # FCSEQ 0.5.0
 
 ## en

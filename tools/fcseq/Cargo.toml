@@ -1,6 +1,6 @@
 [package]
 name = "fcseq"
-version = "0.5.0"
+version = "0.5.1"
 authors = ["DAISUKE OBA"]
 rust-version = "1.92"
 repository = "https://github.com/bartaro/kitaqfc"

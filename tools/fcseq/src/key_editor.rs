@@ -1,4 +1,5 @@
 use super::*;
+pub(super) const KEYBOARD_WIDTH: f32 = 88.0;
 impl Studio {
     pub(super) fn clamp_key_range(&mut self) {
         let (lo, hi) = self.score.expansion.kind(self.track).bounds();
@@ -47,12 +48,14 @@ impl Studio {
     }
     pub(super) fn keyboard_rect(&self) -> Rect {
         let g = self.grid();
-        Rect::new(16.0, g.y, 150.0, g.height)
+        Rect::new(16.0, g.y, KEYBOARD_WIDTH, g.height)
     }
     pub(super) fn draw_keyboard(&self, d: &mut DrawList) {
         let g = self.grid();
         let h = self.key_height();
-        self.text(d, 52.0, 152.0, "KEYS", 0.72, ACCENT);
+        let keys = self.keyboard_rect();
+        let black_width = keys.width * 0.66;
+        self.text(d, keys.x + 28.0, 152.0, "KEYS", 0.72, ACCENT);
         for pitch in self.key_low..self.key_low + self.key_rows {
             let y = g.bottom() - (pitch - self.key_low + 1) as f32 * h;
             let black = matches!(pitch % 12, 1 | 3 | 6 | 8 | 10);
@@ -75,27 +78,34 @@ impl Studio {
                 },
             );
             d.fill_rect(
-                Rect::new(16.0, y, 150.0, h - 1.0),
+                Rect::new(keys.x, y, keys.width, h - 1.0),
                 Color::rgb8(214, 223, 228),
             );
             if black {
-                d.fill_rect(Rect::new(16.0, y, 102.0, h - 1.0), Color::rgb8(35, 42, 51));
+                d.fill_rect(Rect::new(keys.x, y, black_width, h - 1.0), Color::rgb8(35, 42, 51));
             }
             if hit {
                 d.fill_rect(
-                    Rect::new(16.0, y, if black { 102.0 } else { 150.0 }, h - 1.0),
+                    Rect::new(keys.x, y, if black { black_width } else { keys.width }, h - 1.0),
                     ACCENT.with_alpha(0.65),
                 );
             }
             if h >= 14.0 {
                 let text = self.score.expansion.pitch_name(pitch, self.track);
+                let available = if black { black_width } else { keys.width } - 12.0;
+                let scale = 0.58 * (available / measure_text_width(&text, 0.58).max(1.0)).min(1.0);
+                let x = if black || text.chars().count() > 4 {
+                    keys.x + 6.0
+                } else {
+                    keys.right() - measure_text_width(&text, scale) - 6.0
+                };
                 d.push_clip(self.keyboard_rect());
                 self.text(
                     d,
-                    if black || text.chars().count() > 4 { 24.0 } else { 122.0 },
+                    x,
                     y + (h - 10.0) / 2.0,
                     &text,
-                    0.58,
+                    scale,
                     if black { TEXT } else { BG },
                 );
                 d.pop_clip();
@@ -177,6 +187,21 @@ mod tests {
         assert_eq!(a.track, 1);
         assert!(a.selection.is_empty());
         assert!(a.keyboard_rect().right() <= a.grid().x);
+        // The space released by the shorter keyboard is a usable note grid.
+        let p = Point::new(140.0, a.grid().y + a.key_height() * 4.5);
+        assert!(a.grid().contains(p));
+        assert!(!a.keyboard_rect().contains(p));
+        let pitch = a.key_pitch(p.y);
+        a.handle_event(UiEvent::PointerDoubleClick {
+            position: p,
+            button: PointerButton::Primary,
+        });
+        assert_eq!(a.score.sections[0].tracks[1].notes.len(), 1);
+        assert_eq!(a.score.sections[0].tracks[1].notes[0].note, pitch);
+        for b in a.buttons().into_iter().filter(|b| matches!(b.action, Action::KeyZoom(_))) {
+            assert!(b.rect.x >= a.keyboard_rect().x);
+            assert!(b.rect.right() <= a.keyboard_rect().right());
+        }
         a.draw_list();
         a.apply(Action::KeyEditor);
         assert!(!a.key_editor);

@@ -58,6 +58,16 @@ fn short(s: &str, n: usize) -> String {
         v
     }
 }
+fn logical_key(key: &str) -> String {
+    // plita sends e.g. Named(Escape)|Code(Escape); retain support for plain
+    // logical names too, without treating the physical key as typed text.
+    let logical = key.split('|').next().unwrap_or(key);
+    logical
+        .strip_prefix("Named(")
+        .and_then(|named| named.strip_suffix(')'))
+        .unwrap_or(logical)
+        .to_uppercase()
+}
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum Field {
     Name,
@@ -336,10 +346,15 @@ impl Studio {
         self.score != self.saved
     }
     fn grid(&self) -> Rect {
+        let left = if self.key_editor {
+            16.0 + key_editor::KEYBOARD_WIDTH + 12.0
+        } else {
+            178.0
+        };
         Rect::new(
-            178.0,
+            left,
             174.0,
-            (self.size.width - 460.0).max(500.0),
+            (self.size.width - left - 282.0).max(500.0),
             (self.size.height - 250.0).max(460.0),
         )
     }
@@ -832,8 +847,9 @@ impl Studio {
             // Key-editor toggle occupies this row; vertical zoom uses the left
             // keyboard header instead, preserving the transport layout.
             let len = b.len();
-            b[len - 2].rect = Rect::new(16.0, 146.0, 28.0, 24.0);
-            b[len - 1].rect = Rect::new(138.0, 146.0, 28.0, 24.0);
+            let keys = self.keyboard_rect();
+            b[len - 2].rect = Rect::new(keys.x, 146.0, 24.0, 24.0);
+            b[len - 1].rect = Rect::new(keys.right() - 24.0, 146.0, 24.0, 24.0);
         } else {
             b.push(Button::new(
                 Action::TrackPage(-1),
@@ -2349,7 +2365,7 @@ impl PlitaProgram for Studio {
         if self.input.is_some() {
             match event {
                 UiEvent::KeyDown { key, ctrl, .. } => {
-                    let key = key.split('|').next().unwrap_or(&key).to_uppercase();
+                    let key = logical_key(&key);
                     match key.as_str() {
                         "ENTER" | "RETURN" => self.finish_input(),
                         "ESCAPE" => self.input = None,
@@ -2602,7 +2618,7 @@ impl PlitaProgram for Studio {
             } => {
                 self.modifier = ctrl || shift;
                 self.shift = shift;
-                let k = key.split('|').next().unwrap_or(&key).to_uppercase();
+                let k = logical_key(&key);
                 if k == "E" && !ctrl && self.modal.is_none() && self.score.nsf.is_none() {
                     self.apply(Action::KeyEditor);
                     return UiResponse::redraw();
@@ -3306,6 +3322,61 @@ mod tests {
             alt: false,
             meta: false,
         });
+    }
+    #[test]
+    fn native_named_keys_reach_editor_shortcuts_and_modal_cancel() {
+        let mut a = app();
+        a.score.sections[0].tracks[0].notes.push(Note::new(0, 4, 60));
+        a.selection = vec![(0, 0)];
+        key(&mut a, "Named(ArrowUp)|Code(ArrowUp)", false, false);
+        assert_eq!(a.score.sections[0].tracks[0].notes[0].note, 61);
+        key(&mut a, "Named(ArrowRight)|Code(ArrowRight)", false, false);
+        assert_eq!(a.score.sections[0].tracks[0].notes[0].row, 1);
+        key(&mut a, "Named(F1)|Code(F1)", false, false);
+        assert_eq!(a.modal, Some(2));
+        key(&mut a, "Named(Escape)|Code(Escape)", false, false);
+        assert!(a.modal.is_none());
+        a.selection = vec![(0, 0)];
+        key(&mut a, "Named(Delete)|Code(Delete)", false, false);
+        assert!(a.score.sections[0].tracks[0].notes.is_empty());
+        key(&mut a, "z|Code(KeyZ)", true, false);
+        assert_eq!(a.score.sections[0].tracks[0].notes.len(), 1);
+    }
+    #[test]
+    fn section_rename_cancels_native_escape_and_commits_native_enter() {
+        for language in [Language::English, Language::Japanese] {
+            for escape in ["Escape", "Named(Escape)|Code(Escape)"] {
+                let mut a = app();
+                a.language = language;
+                a.score.sections[0].tracks[0].notes.push(Note::new(0, 4, 60));
+                a.selection = vec![(0, 0)];
+                a.saved = a.score.clone();
+                let before = a.score.clone();
+                // Open the same menu item and input overlay as a real click.
+                a.menu = Some(2);
+                let b = a.buttons().into_iter().find(|b|
+                    b.action == Action::Input(Field::SectionName)).unwrap();
+                let p = Point::new(b.rect.x + 5.0, b.rect.y + 5.0);
+                a.handle_event(UiEvent::PointerDown { position: p, button: PointerButton::Primary });
+                a.handle_event(UiEvent::PointerUp { position: p, button: PointerButton::Primary });
+                assert!(a.input.is_some());
+                a.handle_event(UiEvent::ImeCommit { text: "変更後の名前".into() });
+                key(&mut a, escape, false, false);
+                assert!(a.input.is_none(), "{escape}");
+                assert_eq!(a.score, before);
+                assert_eq!(a.selection, vec![(0, 0)]);
+                assert!(a.undo.is_empty());
+                assert!(!a.dirty());
+                a.begin_input(Field::SectionName);
+                a.handle_event(UiEvent::TextInput { text: "New section".into() });
+                key(&mut a, "Named(Backspace)|Code(Backspace)", false, false);
+                key(&mut a, "Named(Enter)|Code(Enter)", false, false);
+                assert!(a.input.is_none());
+                assert_eq!(a.score.sections[0].name, "New sectio");
+                a.undo(false);
+                assert_eq!(a.score, before);
+            }
+        }
     }
     #[test]
     fn empty_startup_pointer_resize_and_history() {

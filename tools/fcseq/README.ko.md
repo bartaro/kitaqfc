@@ -1,4 +1,4 @@
-# FCSEQ 0.5.0
+# FCSEQ 0.5.1
 
 [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt-BR.md)
 
