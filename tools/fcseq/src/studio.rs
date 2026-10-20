@@ -3354,7 +3354,7 @@ mod tests {
                 let before = a.score.clone();
                 // Open the same menu item and input overlay as a real click.
                 a.menu = Some(2);
-                let b = a.buttons().into_iter().find(|b|
+                let b = a.menu_buttons().into_iter().find(|b|
                     b.action == Action::Input(Field::SectionName)).unwrap();
                 let p = Point::new(b.rect.x + 5.0, b.rect.y + 5.0);
                 a.handle_event(UiEvent::PointerDown { position: p, button: PointerButton::Primary });

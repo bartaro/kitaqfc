@@ -21,7 +21,7 @@
     "src/python.rs": "5b1aa8ca8da64adcb93e065a14747615f014a577695709a157f92234c9baca23",
     "src/samples.rs": "e3849d23763fbddf09f37131ab4a989732828c2882df14e4c6267c5128c2c9d9",
     "src/services.rs": "a518496c52023f6842ce4b7950061a34bfbe4bd7c14c02620fcd33b4aa513bc6",
-    "src/studio.rs": "8c05813e7a9a299818bb5209fb820fecf249b9fdb4e64ae24d62433b1d667e5a",
+    "src/studio.rs": "dede7060d96e91b63fac6199023cfea17ecf3df89a237c19b16ca551b0446918",
     "src/wave_graph.rs": "b0666f0bdec1b22634f9be83aabf55dfb89caa9b55b04220915460ac47df382b",
     "tests/core.rs": "d7a218853586c7de5537370b70050f81bef777fff77e899fce417427394cdaab",
     "tests/expansion.rs": "e8b55fa2f2791120234a76bbaa6c45cbb35f2252352ca9d38581c588b6f12fe8",
