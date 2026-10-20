@@ -198,9 +198,12 @@ mod tests {
         });
         assert_eq!(a.score.sections[0].tracks[1].notes.len(), 1);
         assert_eq!(a.score.sections[0].tracks[1].notes[0].note, pitch);
-        for b in a.buttons().into_iter().filter(|b| matches!(b.action, Action::KeyZoom(_))) {
+        for b in a.buttons().into_iter().filter(|b| matches!(b.action, Action::KeyZoom(_) | Action::KeyTrack(_))) {
             assert!(b.rect.x >= a.keyboard_rect().x);
             assert!(b.rect.right() <= a.keyboard_rect().right());
+        }
+        for b in a.buttons().into_iter().filter(|b| matches!(b.action, Action::Mute(_) | Action::Solo(_))) {
+            assert!(b.rect.bottom() <= a.grid().y);
         }
         a.draw_list();
         a.apply(Action::KeyEditor);

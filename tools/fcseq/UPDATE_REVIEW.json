@@ -5,12 +5,12 @@
   "synchronized_local_files": [
     {
       "path": "src/studio.rs",
-      "sha256": "dede7060d96e91b63fac6199023cfea17ecf3df89a237c19b16ca551b0446918",
+      "sha256": "812d49be0683e7ceffd1aee7ddc8b272c021f8e7aee99dac5456347969396369",
       "change": "modified"
     },
     {
       "path": "src/key_editor.rs",
-      "sha256": "bced6d7610536a576504d626c44f2c682151186fe5e64bfe7583b914793a3dbd",
+      "sha256": "c48d6275d794026fb989e9589cdfab8858d6cc11ffa01c5830c38e9e57a1bfc6",
       "change": "modified"
     },
     {

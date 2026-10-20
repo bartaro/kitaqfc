@@ -815,18 +815,24 @@ impl Studio {
         if self.key_editor {
             for (a, x, label) in [
                 (Action::KeyTrack(-1), 16.0, "<"),
-                (Action::KeyTrack(1), 54.0, ">"),
-                (Action::Mute(self.track), 92.0, "M"),
-                (Action::Solo(self.track), 130.0, "S"),
+                (Action::KeyTrack(1), 64.0, ">"),
             ] {
                 b.push(Button::new(
                     a,
                     x,
                     self.grid().bottom() + 10.0,
-                    32.0,
+                    40.0,
                     label,
                     None,
                 ));
+            }
+            for (action, offset, label) in [
+                (Action::Mute(self.track), 0.0, "MUTE"),
+                (Action::Solo(self.track), 124.0, "SOLO"),
+            ] {
+                let mut button = Button::new(action, self.rx() + offset, 146.0, 112.0, label, None);
+                button.rect.height = 24.0;
+                b.push(button);
             }
             b.push(Button::new(
                 Action::KeyZoom(-1),
