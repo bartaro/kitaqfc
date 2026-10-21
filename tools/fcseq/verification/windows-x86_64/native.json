@@ -1,12 +1,12 @@
 {
   "passed": true,
-  "version": "0.5.0",
-  "source_commit": "d4aaa793d8894c1923c80dc79101e92054d4d40a",
+  "version": "0.5.1",
+  "source_commit": "e07b06d07f4017bbf5fb234c691d3dd4f4b71571",
   "platform": "windows-x86_64",
   "system": "Windows-10-10.0.26100-SP0",
   "python": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
   "rust_tests": {
-    "passed": 49,
+    "passed": 51,
     "failed": 0,
     "suites": 7
   },
@@ -202,9 +202,9 @@
     }
   ],
   "binaries": {
-    "fcseq.exe": "38bc4b25a99058ad725b98fb630e3bfe60fdca727e39010e172784ada044f47a",
-    "fcseq-cli.exe": "411f665838ca4c5a2ce3096a1f4b9a87ec6ea32e6980827ea4256073b8dce450",
-    "fcseq_native.pyd": "3a183eea6a04af7e64c3a6612d25a35ab8c619f412c47ae8aa3da793b1ba3561"
+    "fcseq.exe": "edf969f5e14c8003d8f8bec013c23788c18dda73d8c12039b92552ef1358d082",
+    "fcseq-cli.exe": "2d89f752ce2c8c989c9b2da611f75a535aa149dac4f68531730cb743888ca0aa",
+    "fcseq_native.pyd": "5a81791c0d8333aa59bfe6a4bafe5f04d0260fff2615134349aab2f80ae356fe"
   },
   "native_audio_output_device_tested": false,
   "physical_hardware_tested": false

@@ -1,13 +1,13 @@
-# FCSEQ 0.5.0 native downloads
+# FCSEQ 0.5.1 native downloads
 
 Each ZIP contains GUI, CLI, optional Python 3.10+ bindings, nine manuals, fonts and all required notices/source archives. Extract the whole archive.
 
 | Platform | Complete ZIP | SHA-256 |
 |---|---|---|
-| windows-x86_64 | [fcseq-0.5.0-windows-x86_64.zip](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fcseq/downloads/fcseq-0.5.0-windows-x86_64.zip) | `80a250770b836f68800f8d31300377807d50a48c9fbe5ac418bc233c2481cf9c` |
-| linux-x86_64 | [fcseq-0.5.0-linux-x86_64.zip](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fcseq/downloads/fcseq-0.5.0-linux-x86_64.zip) | `7a41d4037b899a9e61e22e2b045c46b244553b50d25d61ff1746cb56bdd582dc` |
-| macos-arm64 | [fcseq-0.5.0-macos-arm64.zip](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fcseq/downloads/fcseq-0.5.0-macos-arm64.zip) | `48ebde9845fa47e172cc157c8a249c9057e57f4a8b8b3ffe8cc77bcc0a92b775` |
-| macos-x86_64 | [fcseq-0.5.0-macos-x86_64.zip](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fcseq/downloads/fcseq-0.5.0-macos-x86_64.zip) | `7942f238f69012c5458f3e9bbf69d88634e5c64a90775fb8676b2f3a8b47f9ab` |
+| windows-x86_64 | [fcseq-0.5.1-windows-x86_64.zip](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fcseq/downloads/fcseq-0.5.1-windows-x86_64.zip) | `fc279bec031c36670d8267c837c3a255dcea22390ec2ee0b6af887af34df32f9` |
+| linux-x86_64 | [fcseq-0.5.1-linux-x86_64.zip](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fcseq/downloads/fcseq-0.5.1-linux-x86_64.zip) | `d2d645eb979a5f5c760860b13c447e58cac291ae4dc4c5880f1a83ba6ec89544` |
+| macos-arm64 | [fcseq-0.5.1-macos-arm64.zip](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fcseq/downloads/fcseq-0.5.1-macos-arm64.zip) | `64af9f40dbba6ea6192eed52e641add47d80c34fa67f04d7356793062e1c3736` |
+| macos-x86_64 | [fcseq-0.5.1-macos-x86_64.zip](https://github.com/bartaro/kitaqfc/raw/refs/heads/main/tools/fcseq/downloads/fcseq-0.5.1-macos-x86_64.zip) | `babafb3b74cf9e3200b8e3118dae26a95ee60bcbde1da42c904c7e7d15e0722a` |
 
 [Manuals](../README.md) · [Verification](../VERIFICATION.md) · [License notices](../THIRD_PARTY_NOTICES.md)
 

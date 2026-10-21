@@ -1,9 +1,9 @@
-[2m2026-10-18T22:53:44.244537Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m window created [3mtitle[0m[2m=[0mFCSEQ - plita Famicom Sequencer [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mscale_factor[0m[2m=[0m1.0
-[2m2026-10-18T22:53:44.244746Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m creating WGPU instance [3mrequested_backends[0m[2m=[0mBackends(VULKAN | GL | DX12) [3mcompiled_backends[0m[2m=[0mBackends(VULKAN | GL | DX12)
-[2m2026-10-18T22:53:44.473591Z[0m [33m WARN[0m [2mwgpu_hal::gles::adapter[0m[2m:[0m Returned GL context is 1.1, when 3.3+ is needed
-[2m2026-10-18T22:53:44.473669Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m selected GPU adapter [3mname[0m[2m=[0mMicrosoft Basic Render Driver [3mbackend[0m[2m=[0mDx12 [3mdevice_type[0m[2m=[0mCpu
-[2m2026-10-18T22:53:44.606324Z[0m [32m INFO[0m [2mvello::wgpu_engine[0m[2m:[0m Initialising shader modules in parallel using 2 threads
-[2m2026-10-18T22:53:50.737800Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m GPU renderer initialized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mformat[0m[2m=[0mBgra8UnormSrgb [3mpresent_mode[0m[2m=[0mFifo
-[2m2026-10-18T22:53:50.933978Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m renderer attached to window [3msurface_format[0m[2m=[0mBgra8UnormSrgb [3msurface_supported[0m[2m=[0mtrue
-[2m2026-10-18T22:53:50.978092Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m window resized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900
-[2m2026-10-18T22:53:50.978250Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m window resized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900
+[2m2026-10-20T23:57:57.692219Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m window created [3mtitle[0m[2m=[0mFCSEQ - plita Famicom Sequencer [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mscale_factor[0m[2m=[0m1.0
+[2m2026-10-20T23:57:57.692348Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m creating WGPU instance [3mrequested_backends[0m[2m=[0mBackends(VULKAN | GL | DX12) [3mcompiled_backends[0m[2m=[0mBackends(VULKAN | GL | DX12)
+[2m2026-10-20T23:57:57.917761Z[0m [33m WARN[0m [2mwgpu_hal::gles::adapter[0m[2m:[0m Returned GL context is 1.1, when 3.3+ is needed
+[2m2026-10-20T23:57:57.917839Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m selected GPU adapter [3mname[0m[2m=[0mMicrosoft Basic Render Driver [3mbackend[0m[2m=[0mDx12 [3mdevice_type[0m[2m=[0mCpu
+[2m2026-10-20T23:57:58.051501Z[0m [32m INFO[0m [2mvello::wgpu_engine[0m[2m:[0m Initialising shader modules in parallel using 2 threads
+[2m2026-10-20T23:58:04.071583Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m GPU renderer initialized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mformat[0m[2m=[0mBgra8UnormSrgb [3mpresent_mode[0m[2m=[0mFifo
+[2m2026-10-20T23:58:04.260295Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m renderer attached to window [3msurface_format[0m[2m=[0mBgra8UnormSrgb [3msurface_supported[0m[2m=[0mtrue
+[2m2026-10-20T23:58:04.307608Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m window resized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900
+[2m2026-10-20T23:58:04.307809Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m window resized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900

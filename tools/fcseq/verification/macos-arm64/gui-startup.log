@@ -1,8 +1,8 @@
-[2m2026-10-18T22:53:29.430727Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m window created [3mtitle[0m[2m=[0mFCSEQ - plita Famicom Sequencer [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mscale_factor[0m[2m=[0m1.0
-[2m2026-10-18T22:53:29.430849Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m creating WGPU instance [3mrequested_backends[0m[2m=[0mBackends(METAL) [3mcompiled_backends[0m[2m=[0mBackends(METAL)
-[2m2026-10-18T22:53:29.434398Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m selected GPU adapter [3mname[0m[2m=[0mApple Paravirtual device [3mbackend[0m[2m=[0mMetal [3mdevice_type[0m[2m=[0mIntegratedGpu
-[2m2026-10-18T22:53:31.658865Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m GPU renderer initialized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mformat[0m[2m=[0mBgra8UnormSrgb [3mpresent_mode[0m[2m=[0mFifo
-[2m2026-10-18T22:53:31.785372Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m renderer attached to window [3msurface_format[0m[2m=[0mBgra8UnormSrgb [3msurface_supported[0m[2m=[0mtrue
-[2m2026-10-18T22:53:31.867493Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m window resized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900
-[2m2026-10-18T22:53:31.867659Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m window resized [3mwidth[0m[2m=[0m1120 [3mheight[0m[2m=[0m780
-[2m2026-10-18T22:53:31.867664Z[0m [34mDEBUG[0m [2mplita_render[0m[2m:[0m resizing surface [3mwidth[0m[2m=[0m1120 [3mheight[0m[2m=[0m780
+[2m2026-10-20T23:57:01.984744Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m window created [3mtitle[0m[2m=[0mFCSEQ - plita Famicom Sequencer [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mscale_factor[0m[2m=[0m1.0
+[2m2026-10-20T23:57:01.984803Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m creating WGPU instance [3mrequested_backends[0m[2m=[0mBackends(METAL) [3mcompiled_backends[0m[2m=[0mBackends(METAL)
+[2m2026-10-20T23:57:01.988138Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m selected GPU adapter [3mname[0m[2m=[0mApple Paravirtual device [3mbackend[0m[2m=[0mMetal [3mdevice_type[0m[2m=[0mIntegratedGpu
+[2m2026-10-20T23:57:03.916886Z[0m [32m INFO[0m [2mplita_render[0m[2m:[0m GPU renderer initialized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900 [3mformat[0m[2m=[0mBgra8UnormSrgb [3mpresent_mode[0m[2m=[0mFifo
+[2m2026-10-20T23:57:04.006440Z[0m [32m INFO[0m [2mplita_window[0m[2m:[0m renderer attached to window [3msurface_format[0m[2m=[0mBgra8UnormSrgb [3msurface_supported[0m[2m=[0mtrue
+[2m2026-10-20T23:57:04.040921Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m window resized [3mwidth[0m[2m=[0m1360 [3mheight[0m[2m=[0m900
+[2m2026-10-20T23:57:04.041065Z[0m [34mDEBUG[0m [2mplita_window[0m[2m:[0m window resized [3mwidth[0m[2m=[0m1120 [3mheight[0m[2m=[0m780
+[2m2026-10-20T23:57:04.041073Z[0m [34mDEBUG[0m [2mplita_render[0m[2m:[0m resizing surface [3mwidth[0m[2m=[0m1120 [3mheight[0m[2m=[0m780

@@ -4,7 +4,7 @@ running 0 tests
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
 
-running 15 tests
+running 17 tests
 test studio::tests::cancelled_playback_cannot_start_when_old_worker_finishes ... ok
 test studio::tests::clicking_or_rejected_edit_does_not_pollute_history ... ok
 test studio::tests::direct_inputs_are_transactional ... ok
@@ -14,14 +14,16 @@ test studio::i18n::tests::japanese_labels_templates_and_unicode_input ... ok
 test studio::tests::keyboard_copy_paste_group_move_and_shortcuts ... ok
 test studio::tests::menu_buttons_have_real_icons_and_do_not_hit_when_disabled ... ok
 test studio::tests::n163_and_fds_wave_drawing_interpolates_and_undoes ... ok
-test studio::tests::nsf_player_selection_duration_and_note_protection ... ok
+test studio::tests::native_named_keys_reach_editor_shortcuts_and_modal_cancel ... ok
 test studio::tests::instrument_controls_stay_inside_small_window_and_modify_selected_voice ... ok
-test studio::tests::stopping_playback_preserves_export_completion ... ok
-test studio::wave_graph::tests::smooth_curve_hits_samples_without_overshoot ... ok
-test studio::key_editor::tests::new_chip_controls_and_keyboard_stay_reachable ... ok
 test studio::tests::section_delete_undo_redo_and_view_stay_valid ... ok
+test studio::tests::stopping_playback_preserves_export_completion ... ok
+test studio::tests::section_rename_cancels_native_escape_and_commits_native_enter ... ok
+test studio::wave_graph::tests::smooth_curve_hits_samples_without_overshoot ... ok
+test studio::tests::nsf_player_selection_duration_and_note_protection ... ok
+test studio::key_editor::tests::new_chip_controls_and_keyboard_stay_reachable ... ok
 
-test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
 
 
 running 0 tests
@@ -52,7 +54,7 @@ test psg_pitch_is_a440_and_vt_raw_dma_reads_cpu_ram ... ok
 test ssg_noise_envelope_fm_parameters_and_pcm_processing_are_shared ... ok
 test every_new_expansion_voice_reaches_preview_and_nsf ... ok
 
-test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.02s
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.03s
 
 
 running 7 tests
@@ -64,7 +66,7 @@ test independent_unbanked_n163_nsf_executes_ram_ports_and_sounds ... ok
 test waveform_edit_and_all_fm_fields_survive_fcq_and_change_sound ... ok
 test n163_pitch_scales_with_active_channels_and_wave_length ... ok
 
-test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.94s
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.95s
 
 
 running 11 tests
@@ -84,214 +86,214 @@ test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fin
 
     Updating crates.io index
  Downloading crates ...
-  Downloaded arrayref v0.3.9
+  Downloaded adler2 v2.0.1
   Downloaded ab_glyph_rasterizer v0.1.10
-  Downloaded color v0.3.3
-  Downloaded pollster v0.4.0
-  Downloaded autocfg v1.5.1
-  Downloaded cc v1.2.62
-  Downloaded profiling v1.0.18
-  Downloaded generic-array v0.14.7
-  Downloaded nu-ansi-term v0.50.3
+  Downloaded arrayref v0.3.9
+  Downloaded dlib v0.5.3
+  Downloaded equivalent v1.0.2
   Downloaded dpi v0.1.2
-  Downloaded alsa v0.9.1
-  Downloaded raw-window-handle v0.6.2
-  Downloaded tinyvec_macros v0.1.1
-  Downloaded futures-intrusive v0.5.0
-  Downloaded static_assertions v1.1.0
-  Downloaded polycool v0.4.0
-  Downloaded once_cell v1.21.4
-  Downloaded shlex v1.3.0
-  Downloaded percent-encoding v2.3.2
   Downloaded cfg-if v1.0.4
+  Downloaded cursor-icon v1.2.0
+  Downloaded ahash v0.8.12
+  Downloaded bit-set v0.8.0
+  Downloaded pollster v0.4.0
   Downloaded lazy_static v1.5.0
-  Downloaded peniko v0.6.1
-  Downloaded owned_ttf_parser v0.25.1
-  Downloaded lock_api v0.4.14
-  Downloaded thiserror v1.0.69
-  Downloaded pkg-config v0.3.33
-  Downloaded ordered-float v5.3.0
-  Downloaded thiserror-impl v1.0.69
-  Downloaded png v0.18.1
-  Downloaded xkbcommon-dl v0.4.2
-  Downloaded miniz_oxide v0.8.9
-  Downloaded calloop v0.13.0
-  Downloaded tiny-skia-path v0.11.4
-  Downloaded strict-num v0.1.1
-  Downloaded hashbrown v0.16.1
-  Downloaded xcursor v0.3.10
-  Downloaded wayland-sys v0.31.11
-  Downloaded wayland-cursor v0.31.14
+  Downloaded ab_glyph v0.2.32
+  Downloaded polycool v0.4.0
+  Downloaded alsa-sys v0.3.1
+  Downloaded bytemuck_derive v1.11.0
+  Downloaded allocator-api2 v0.2.21
   Downloaded wayland-csd-frame v0.3.0
-  Downloaded wgpu-core-deps-windows-linux-android v28.0.0
-  Downloaded version_check v0.9.5
-  Downloaded simd-adler32 v0.3.10
+  Downloaded slab v0.4.12
   Downloaded thiserror-impl v2.0.19
-  Downloaded scoped-tls v1.0.1
-  Downloaded renderdoc-sys v1.1.0
-  Downloaded zmij v1.0.23
-  Downloaded wayland-protocols-wlr v0.3.12
-  Downloaded smol_str v0.2.2
-  Downloaded tracing-log v0.2.0
-  Downloaded serde_derive v1.0.229
-  Downloaded wayland-scanner v0.31.10
-  Downloaded x11-dl v2.21.0
-  Downloaded vello_encoding v0.8.0
+  Downloaded presser v0.3.1
+  Downloaded tiny-skia-path v0.11.4
   Downloaded symphonia-bundle-mp3 v0.5.5
-  Downloaded serde_core v1.0.229
-  Downloaded wayland-protocols-plasma v0.3.12
-  Downloaded wayland-client v0.31.14
-  Downloaded wayland-backend v0.3.15
-  Downloaded xkeysym v0.2.1
-  Downloaded typenum v1.20.1
-  Downloaded zerocopy-derive v0.8.55
   Downloaded wgpu-types v28.0.0
-  Downloaded serde_json v1.0.151
+  Downloaded thread_local v1.1.10
+  Downloaded sctk-adwaita v0.10.1
+  Downloaded tinyvec_macros v0.1.1
+  Downloaded renderdoc-sys v1.1.0
+  Downloaded guillotiere v0.7.0
+  Downloaded wayland-scanner v0.31.10
+  Downloaded hashbrown v0.16.1
+  Downloaded spirv v0.3.0+sdk-1.3.268.0
+  Downloaded dasp_sample v0.11.0
+  Downloaded cpal v0.15.3
+  Downloaded xcursor v0.3.10
+  Downloaded kurbo v0.13.1
+  Downloaded zmij v1.0.23
+  Downloaded lock_api v0.4.14
+  Downloaded x11-dl v2.21.0
+  Downloaded sha2 v0.10.9
+  Downloaded vello v0.8.0
+  Downloaded xkbcommon-dl v0.4.2
+  Downloaded static_assertions v1.1.0
+  Downloaded wayland-sys v0.31.11
+  Downloaded libloading v0.8.9
   Downloaded symphonia-core v0.5.5
-  Downloaded wayland-protocols v0.32.12
-  Downloaded tiny-skia v0.11.4
+  Downloaded wayland-client v0.31.14
+  Downloaded smithay-client-toolkit v0.19.2
+  Downloaded zerocopy-derive v0.8.55
+  Downloaded claxon v0.4.3
+  Downloaded typenum v1.20.1
   Downloaded ttf-parser v0.21.1
+  Downloaded wayland-protocols v0.32.12
   Downloaded ttf-parser v0.25.1
-  Downloaded x11rb v0.13.2
+  Downloaded syn v2.0.119
   Downloaded wgpu v28.0.0
+  Downloaded x11rb v0.13.2
   Downloaded libc v0.2.189
   Downloaded zerocopy v0.8.55
-  Downloaded syn v2.0.119
-  Downloaded wgpu-core v28.0.1
   Downloaded unicode-width v0.2.2
-  Downloaded syn v3.0.3
-  Downloaded rustix v0.38.44
   Downloaded regex-syntax v0.8.11
-  Downloaded read-fonts v0.37.0
-  Downloaded wgpu-hal v28.0.1
-  Downloaded tracing v0.1.44
-  Downloaded rustix v1.1.4
-  Downloaded x11rb-protocol v0.13.2
+  Downloaded syn v3.0.3
+  Downloaded wgpu-core v28.0.1
   Downloaded skrifa v0.40.0
-  Downloaded tracing-subscriber v0.3.23
+  Downloaded rustix v0.38.44
+  Downloaded wgpu-hal v28.0.1
+  Downloaded rustix v1.1.4
+  Downloaded read-fonts v0.37.0
   Downloaded naga v28.0.0
-  Downloaded rodio v0.19.0
-  Downloaded smithay-client-toolkit v0.19.2
-  Downloaded winit v0.30.13
+  Downloaded x11rb-protocol v0.13.2
+  Downloaded tracing v0.1.44
+  Downloaded tracing-subscriber v0.3.23
+  Downloaded tiny-skia v0.11.4
+  Downloaded serde_json v1.0.151
+  Downloaded libm v0.2.16
   Downloaded regex-automata v0.4.16
-  Downloaded serde v1.0.229
-  Downloaded encoding_rs v0.8.35
+  Downloaded winit v0.30.13
+  Downloaded cc v1.2.62
+  Downloaded xkeysym v0.2.1
+  Downloaded rodio v0.19.0
   Downloaded quick-xml v0.39.4
+  Downloaded encoding_rs v0.8.35
+  Downloaded miniz_oxide v0.8.9
+  Downloaded wayland-backend v0.3.15
   Downloaded vello_shaders v0.8.0
-  Downloaded rfd v0.17.2
-  Downloaded vello v0.8.0
-  Downloaded tracing-core v0.1.36
   Downloaded unicode-ident v1.0.24
-  Downloaded sharded-slab v0.1.7
-  Downloaded ash v0.38.0+1.3.281
-  Downloaded sctk-adwaita v0.10.1
+  Downloaded tracing-core v0.1.36
   Downloaded tracing-attributes v0.1.31
   Downloaded tinyvec v1.12.0
-  Downloaded libm v0.2.16
-  Downloaded hashbrown v0.15.5
-  Downloaded lewton v0.10.2
+  Downloaded smallvec v1.15.2
+  Downloaded serde v1.0.229
+  Downloaded rfd v0.17.2
+  Downloaded glow v0.16.0
+  Downloaded errno v0.3.14
+  Downloaded ash v0.38.0+1.3.281
   Downloaded indexmap v2.14.0
-  Downloaded thread_local v1.1.10
+  Downloaded hashbrown v0.15.5
+  Downloaded byteorder v1.5.0
+  Downloaded vello_encoding v0.8.0
+  Downloaded linux-raw-sys v0.4.15
+  Downloaded percent-encoding v2.3.2
+  Downloaded generic-array v0.14.7
+  Downloaded version_check v0.9.5
+  Downloaded thiserror v2.0.19
+  Downloaded simd-adler32 v0.3.10
   Downloaded symphonia v0.5.5
   Downloaded svg_fmt v0.4.5
-  Downloaded scopeguard v1.2.0
-  Downloaded kurbo v0.13.1
+  Downloaded raw-window-handle v0.6.2
   Downloaded hashbrown v0.17.1
-  Downloaded gpu-allocator v0.28.0
-  Downloaded glow v0.16.0
-  Downloaded fontdue v0.9.3
-  Downloaded bitflags v2.13.1
-  Downloaded thiserror v2.0.19
-  Downloaded symphonia-metadata v0.5.5
-  Downloaded spirv v0.3.0+sdk-1.3.268.0
-  Downloaded smallvec v1.15.2
-  Downloaded slab v0.4.12
-  Downloaded memchr v2.8.3
   Downloaded half v2.7.1
-  Downloaded cpal v0.15.3
-  Downloaded codespan-reporting v0.12.0
-  Downloaded bytemuck v1.25.2
-  Downloaded num-traits v0.2.19
-  Downloaded memmap2 v0.9.10
-  Downloaded log v0.4.33
-  Downloaded litrs v1.0.0
-  Downloaded khronos-egl v6.0.0
-  Downloaded linux-raw-sys v0.4.15
-  Downloaded flate2 v1.1.9
-  Downloaded euclid v0.22.14
-  Downloaded bitflags v1.3.2
-  Downloaded bit-vec v0.8.0
-  Downloaded pin-project-lite v0.2.17
-  Downloaded ogg v0.8.0
-  Downloaded hound v3.5.1
-  Downloaded guillotiere v0.7.0
-  Downloaded fdeflate v0.3.7
-  Downloaded bytemuck_derive v1.11.0
-  Downloaded rustc-hash v1.1.0
-  Downloaded parking_lot_core v0.9.12
-  Downloaded cfg_aliases v0.2.2
-  Downloaded bit-set v0.8.0
-  Downloaded linebender_resource_handle v0.1.1
-  Downloaded futures-core v0.3.33
-  Downloaded block-buffer v0.10.4
-  Downloaded itoa v1.0.18
-  Downloaded gpu-descriptor v0.3.2
-  Downloaded cpufeatures v0.2.17
-  Downloaded byteorder v1.5.0
-  Downloaded matchers v0.2.0
-  Downloaded jobserver v0.1.34
-  Downloaded foldhash v0.1.5
-  Downloaded crc32fast v1.5.0
-  Downloaded cursor-icon v1.2.0
-  Downloaded hexf-parse v0.2.1
   Downloaded getrandom v0.3.4
-  Downloaded gethostname v1.1.0
-  Downloaded equivalent v1.0.2
-  Downloaded crypto-common v0.1.7
-  Downloaded calloop-wayland-source v0.3.0
-  Downloaded font-types v0.11.3
-  Downloaded find-msvc-tools v0.1.9
-  Downloaded libloading v0.8.9
-  Downloaded gpu-descriptor-types v0.2.0
-  Downloaded dlib v0.5.3
-  Downloaded polling v3.11.0
-  Downloaded aho-corasick v1.1.4
-  Downloaded sha2 v0.10.9
-  Downloaded proc-macro2 v1.0.107
-  Downloaded linux-raw-sys v0.12.1
-  Downloaded presser v0.3.1
-  Downloaded foldhash v0.2.0
-  Downloaded downcast-rs v1.2.1
-  Downloaded digest v0.10.7
-  Downloaded quote v1.0.47
-  Downloaded document-features v0.2.12
-  Downloaded dasp_sample v0.11.0
-  Downloaded claxon v0.4.3
-  Downloaded ahash v0.8.12
-  Downloaded allocator-api2 v0.2.21
-  Downloaded alsa-sys v0.3.1
-  Downloaded errno v0.3.14
-  Downloaded parking_lot v0.12.5
+  Downloaded bytemuck v1.25.2
+  Downloaded wgpu-core-deps-windows-linux-android v28.0.0
+  Downloaded gpu-allocator v0.28.0
   Downloaded arrayvec v0.7.8
-  Downloaded adler2 v2.0.1
+  Downloaded wayland-cursor v0.31.14
+  Downloaded tracing-log v0.2.0
+  Downloaded rustc-hash v1.1.0
+  Downloaded nu-ansi-term v0.50.3
+  Downloaded matchers v0.2.0
+  Downloaded lewton v0.10.2
+  Downloaded jobserver v0.1.34
+  Downloaded crc32fast v1.5.0
+  Downloaded cfg_aliases v0.2.2
+  Downloaded wayland-protocols-plasma v0.3.12
+  Downloaded sharded-slab v0.1.7
+  Downloaded fontdue v0.9.3
+  Downloaded find-msvc-tools v0.1.9
+  Downloaded autocfg v1.5.1
+  Downloaded color v0.3.3
+  Downloaded block-buffer v0.10.4
+  Downloaded shlex v1.3.0
+  Downloaded peniko v0.6.1
+  Downloaded ordered-float v5.3.0
+  Downloaded memchr v2.8.3
+  Downloaded linux-raw-sys v0.12.1
+  Downloaded hound v3.5.1
+  Downloaded gpu-descriptor v0.3.2
+  Downloaded bitflags v2.13.1
+  Downloaded wayland-protocols-wlr v0.3.12
+  Downloaded num-traits v0.2.19
+  Downloaded khronos-egl v6.0.0
+  Downloaded futures-intrusive v0.5.0
+  Downloaded flate2 v1.1.9
+  Downloaded codespan-reporting v0.12.0
+  Downloaded calloop-wayland-source v0.3.0
+  Downloaded bitflags v1.3.2
+  Downloaded thiserror-impl v1.0.69
+  Downloaded scoped-tls v1.0.1
+  Downloaded pin-project-lite v0.2.17
+  Downloaded hexf-parse v0.2.1
+  Downloaded euclid v0.22.14
+  Downloaded profiling v1.0.18
+  Downloaded parking_lot_core v0.9.12
+  Downloaded gpu-descriptor-types v0.2.0
+  Downloaded foldhash v0.2.0
+  Downloaded digest v0.10.7
+  Downloaded symphonia-metadata v0.5.5
+  Downloaded serde_derive v1.0.229
+  Downloaded serde_core v1.0.229
+  Downloaded owned_ttf_parser v0.25.1
+  Downloaded linebender_resource_handle v0.1.1
+  Downloaded fdeflate v0.3.7
+  Downloaded downcast-rs v1.2.1
+  Downloaded bit-vec v0.8.0
+  Downloaded aho-corasick v1.1.4
+  Downloaded smol_str v0.2.2
+  Downloaded quote v1.0.47
+  Downloaded polling v3.11.0
+  Downloaded png v0.18.1
+  Downloaded ogg v0.8.0
+  Downloaded itoa v1.0.18
+  Downloaded futures-core v0.3.33
+  Downloaded foldhash v0.1.5
+  Downloaded document-features v0.2.12
+  Downloaded crypto-common v0.1.7
+  Downloaded calloop v0.13.0
+  Downloaded parking_lot v0.12.5
+  Downloaded once_cell v1.21.4
+  Downloaded gethostname v1.1.0
+  Downloaded thiserror v1.0.69
+  Downloaded memmap2 v0.9.10
+  Downloaded alsa v0.9.1
+  Downloaded proc-macro2 v1.0.107
+  Downloaded litrs v1.0.0
+  Downloaded strict-num v0.1.1
+  Downloaded scopeguard v1.2.0
+  Downloaded pkg-config v0.3.33
+  Downloaded log v0.4.33
+  Downloaded font-types v0.11.3
+  Downloaded cpufeatures v0.2.17
   Downloaded as-raw-xcb-connection v1.0.1
-  Downloaded ab_glyph v0.2.32
  Downloading crates ...
   Downloaded windows v0.62.0
  Downloading crates ...
   Downloaded windows-core v0.62.0
    Compiling plita_ui v0.0.1 (/home/runner/work/kitaqfc/kitaqfc/tools/fcseq/vendor/plita_ui)
    Compiling kurosaki-core v0.1.0 (/home/runner/work/kitaqfc/kitaqfc/tools/fcseq/vendor/kurosaki-core)
-   Compiling fcseq v0.5.0 (/home/runner/work/kitaqfc/kitaqfc/tools/fcseq)
+   Compiling fcseq v0.5.1 (/home/runner/work/kitaqfc/kitaqfc/tools/fcseq)
    Compiling plita_render v0.0.1 (/home/runner/work/kitaqfc/kitaqfc/tools/fcseq/vendor/plita_render)
    Compiling plita_window v0.0.1 (/home/runner/work/kitaqfc/kitaqfc/tools/fcseq/vendor/plita_window)
    Compiling plita_app v0.0.1 (/home/runner/work/kitaqfc/kitaqfc/tools/fcseq/vendor/plita_app)
    Compiling plita v0.0.1 (/home/runner/work/kitaqfc/kitaqfc/tools/fcseq/vendor/plita)
-    Finished `release` profile [optimized] target(s) in 36.98s
-     Running unittests src/lib.rs (target/release/deps/fcseq_native-e4ee0978daca1639)
-     Running unittests src/main.rs (target/release/deps/fcseq-6f9c30aaa1e0e87e)
-     Running unittests src/bin/fcseq-cli.rs (target/release/deps/fcseq_cli-89d8a73c60d1cc44)
-     Running tests/core.rs (target/release/deps/core-142f4029d6f9c41a)
-     Running tests/expansion.rs (target/release/deps/expansion-a2264a13019de583)
-     Running tests/instruments.rs (target/release/deps/instruments-13bdd99b300a4ffe)
-     Running tests/nsf.rs (target/release/deps/nsf-090c5adc98665d02)
+    Finished `release` profile [optimized] target(s) in 31.49s
+     Running unittests src/lib.rs (target/release/deps/fcseq_native-d9690ed369be1f15)
+     Running unittests src/main.rs (target/release/deps/fcseq-6722c5fba1173bce)
+     Running unittests src/bin/fcseq-cli.rs (target/release/deps/fcseq_cli-14d619efa2f5a260)
+     Running tests/core.rs (target/release/deps/core-57c19ee9fa22812a)
+     Running tests/expansion.rs (target/release/deps/expansion-0269053952e40d3c)
+     Running tests/instruments.rs (target/release/deps/instruments-8f65c33faefeea91)
+     Running tests/nsf.rs (target/release/deps/nsf-b4c38ac84bed7a68)

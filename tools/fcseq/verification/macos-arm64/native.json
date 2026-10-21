@@ -1,12 +1,12 @@
 {
   "passed": true,
-  "version": "0.5.0",
-  "source_commit": "d4aaa793d8894c1923c80dc79101e92054d4d40a",
+  "version": "0.5.1",
+  "source_commit": "e07b06d07f4017bbf5fb234c691d3dd4f4b71571",
   "platform": "macos-arm64",
   "system": "macOS-15.7.9-arm64-arm-64bit",
   "python": "3.10.11 (v3.10.11:7d4cc5aa85, Apr  4 2023, 19:05:19) [Clang 13.0.0 (clang-1300.0.29.30)]",
   "rust_tests": {
-    "passed": 49,
+    "passed": 51,
     "failed": 0,
     "suites": 7
   },
@@ -202,9 +202,9 @@
     }
   ],
   "binaries": {
-    "fcseq": "b06acdebc6bf212e0748162bc89679cc6e6dec0af686e4da8957a445122b824b",
-    "fcseq-cli": "d2741fc0f6afdf6b7e9c774081bd95d3f177b11205a2a212833ac4512cdbe793",
-    "fcseq_native.so": "be85d4541dc424fa8ea53ce2af5d05aa9433e0f2ea483a19e2df629a38277582"
+    "fcseq": "cc0416f82a162b7d5b6bc60020672ef030a2c7f63c078d20a4d94b050fbebfef",
+    "fcseq-cli": "7a26ef65de472b7e3b0a9e36abe3ff1404bd6601e1fc7d2df661eb33468c26b5",
+    "fcseq_native.so": "96c8e9c58dc6514578dca3ac0050d112bdf527668e89a28d950497c83d8f14e2"
   },
   "native_audio_output_device_tested": false,
   "physical_hardware_tested": false

@@ -1,18 +1,19 @@
-# FCSEQ 0.5.0 verification
+# FCSEQ 0.5.1 verification
 
-All four native builds and verification jobs passed: [GitHub Actions run](https://github.com/bartaro/kitaqfc/actions/runs/39174042501).
-Binary source commit: `d4aaa793d8894c1923c80dc79101e92054d4d40a`. Toolchain: Rust 1.93.1, CPython 3.10 abi3.
+All four native builds and verification jobs passed: [GitHub Actions run](https://github.com/bartaro/kitaqfc/actions/runs/39518117575).
+Binary source commit: `e07b06d07f4017bbf5fb234c691d3dd4f4b71571`. Toolchain: Rust 1.93.1, CPython 3.10 abi3.
 GUI and CLI are built without the Python feature; the optional extension is built separately.
 The following counts come from execution on the stated native operating system.
 
 | Platform | Rust tests | Python tests | Audio configurations / combined voices | Native GUI startup |
 |---|---:|---:|---|---|
-| windows-x86_64 | 49 | 15 | 9 / 88 | passed |
-| linux-x86_64 | 49 | 15 | 9 / 88 | passed |
-| macos-arm64 | 49 | 15 | 9 / 88 | passed |
-| macos-x86_64 | 49 | 15 | 9 / 88 | passed |
+| windows-x86_64 | 51 | 15 | 9 / 88 | passed |
+| linux-x86_64 | 51 | 15 | 9 / 88 | passed |
+| macos-arm64 | 51 | 15 | 9 / 88 | passed |
+| macos-x86_64 | 51 | 15 | 9 / 88 | passed |
 
-Rust coverage includes editor selection/history, single-track piano-key editing,
+Rust coverage includes native plita named-key input, section-name cancellation,
+compact keyboard/grid hit testing, editor selection/history, single-track piano-key editing,
 Japanese text input, waveform curves without overshoot, instrument parameters,
 every expansion voice, NSF/NSF2/NSFe execution and bounded malformed input.
 5B and EPSM pitch are checked against A440. NSF2 tests exercise timer IRQ,
