@@ -1,4 +1,4 @@
-# FCSEQ 0.5.1
+# FCSEQ 0.5.2
 
 [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt-BR.md)
 
@@ -21,6 +21,10 @@ For detailed editing, double-click the track name or press **E**. The Key Editor
 Use Ctrl/Shift-click or drag a rectangle to select notes. Ctrl+A selects the current track; Ctrl+C/X/V copies, cuts or pastes at the cursor. Ctrl+D duplicates and Delete removes the selection. Ctrl+Z/Y undoes or redoes changes. Arrow keys move or transpose; Shift+Up/Down moves by an octave. G changes the grid, Q aligns notes to it, F fits the section, Home returns to the start, and +/− zooms horizontally.
 
 Space starts or stops playback. **LOOP** repeats the current section; **AUDITION** plays the selection. Mute and solo settings also affect exports. Use **SONG** to add, rename or reorder sections. A project can hold 16 sections of up to 256 bars each. Click the tempo or bar count to edit it. Ctrl+N/O/S/Shift+S creates, opens, saves or saves under a new name. Recovery files are written to `out/recovery_<process-id>.fcq` beside the program; open one and use Save As to recover your work.
+
+Mute and solo can be changed during playback without restarting the section or loop. Multiple solo tracks play together; a muted track stays silent even when solo is on. Selected-note audition also follows these settings. A new mix is prepared in the background and applied at the current playback position; recently used mixes switch from cache. Undo/redo also preserves playback when only these settings change.
+
+Tempo uses accumulated timing, including when BPM is an integer. At 108 BPM a sixteenth note needs about 8.35 NTSC frames, so FCSEQ combines 8- and 9-frame intervals instead of always using 8. Each row boundary stays within half a playback tick of its ideal time. PCM uses the same rule at 4 kHz. Preview and all exports share this timing. The legacy frames_per_row/ticks_per_row fields are rounded estimates; use event deadlines or average_ticks_per_row for timing calculations.
 
 ## Choose a sound chip
 

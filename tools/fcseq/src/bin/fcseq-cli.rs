@@ -27,7 +27,7 @@ fn run() -> Result<(), String> {
             if s.nsf.is_some() {
                 nsf::info(&s)?
             } else {
-                serde_json::json!({"valid":true,"expansion":s.expansion,"channels":s.expansion.channels(),"sections":s.sections.len(),"frames_per_row":s.frames_per_row()})
+                serde_json::json!({"valid":true,"expansion":s.expansion,"channels":s.expansion.channels(),"sections":s.sections.len(),"frames_per_row":s.frames_per_row(),"ticks_per_row":s.ticks_per_row(),"average_ticks_per_row":s.average_ticks_per_row(),"requested_bpm":s.bpm,"actual_bpm":s.actual_bpm(),"tick_rate_hz":s.tick_rate(),"duration_seconds":s.duration_seconds(),"timing":"accumulated-row-deadlines"})
             }
         }
         "export-nsf" | "export-nsfe" | "export-nsf2" => {

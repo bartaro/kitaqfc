@@ -8,6 +8,21 @@ class ScoreTests(unittest.TestCase):
  def test_roundtrip(self):
   with tempfile.TemporaryDirectory() as t:
    p=Path(t)/'song.fcseq';f.save(self.doc,p);self.assertEqual(f.load(p),self.doc)
+ def test_fractional_frame_tempo_matches_native_exports(self):
+  self.doc['bpm']=108
+  expected=int(64*f.FPS*15/108+.5)
+  report=f.validate(self.doc)
+  self.assertEqual(report['timing'],'accumulated-row-deadlines')
+  self.assertAlmostEqual(report['duration_seconds'],expected/f.FPS)
+  self.assertLess(abs(report['actual_bpm']-108),.1)
+  with tempfile.TemporaryDirectory() as t:
+   exported=f.export_kitaqfc(self.doc,t)
+   self.assertAlmostEqual(exported['actual_bpm'],report['actual_bpm'])
+   events=json.loads((Path(t)/'register_events.json').read_text())
+   self.assertEqual(events[0]['frames'],expected)
+   path=Path(t)/'tempo.wav';f.render_wav(self.doc,path)
+   with wave.open(str(path)) as w:
+    self.assertLess(abs(w.getnframes()/w.getframerate()-64*15/108),1/f.FPS)
  def test_overlap_and_overrun_rejected(self):
   tr=self.doc['sections'][0]['tracks'][0];tr['notes'].append(copy.deepcopy(tr['notes'][0]))
   with self.assertRaisesRegex(ValueError,'Overlapping'):f.validate(self.doc)

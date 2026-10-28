@@ -418,6 +418,20 @@ impl Score {
     pub fn ticks_per_row(&self) -> u32 {
         (self.tick_rate() * 15.0 / self.bpm).round() as u32
     }
+    /// Round the cumulative deadline, not each individual sixteenth note.
+    /// `ticks_per_row` remains a rounded estimate for older callers.
+    pub fn row_tick(&self, row: u32) -> u32 {
+        (row as f64 * self.tick_rate() * 15.0 / self.bpm).round() as u32
+    }
+    pub fn average_ticks_per_row(&self) -> f64 {
+        self.tick_rate() * 15.0 / self.bpm
+    }
+    pub fn duration_seconds(&self) -> f64 {
+        self.sections.iter().map(|s| self.row_tick(s.rows as u32) as f64 / self.tick_rate()).sum()
+    }
+    pub fn actual_bpm(&self) -> f64 {
+        self.sections.iter().map(|s| s.rows as f64).sum::<f64>() * 15.0 / self.duration_seconds()
+    }
     pub fn tick_rate(&self) -> f64 {
         if self.sections.iter().any(|s| {
             s.tracks

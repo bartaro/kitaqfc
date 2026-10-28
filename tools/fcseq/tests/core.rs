@@ -264,6 +264,6 @@ fn very_long_silent_sections_encode_without_delay_overflow() {
         total += delay as u32;
         p += count as usize * 3;
     }
-    assert_eq!(total, 4096 * s.frames_per_row());
+    assert_eq!(total, s.row_tick(4096));
     assert!(total > 65535);
 }

@@ -1,91 +1,141 @@
 {
-  "version": "0.5.1",
-  "repository_base_commit": "65de41085f88a1132af8200661052143259def9f",
-  "previous_fcseq_release_commit": "4040cfddeebe8c78b2ec106f38b9163c973ec874",
+  "version": "0.5.2",
+  "repository_base_commit": "20ce73bd8e07db6e365580f065817cbd85d798ec",
+  "previous_fcseq_release_commit": "20ce73bd8e07db6e365580f065817cbd85d798ec",
   "synchronized_local_files": [
     {
       "path": "src/studio.rs",
-      "sha256": "812d49be0683e7ceffd1aee7ddc8b272c021f8e7aee99dac5456347969396369",
+      "sha256": "c6a234c08c3be990f73ff8a2ad2bb43e683691de309bee9320db715d4c1539ba",
       "change": "modified"
     },
     {
       "path": "src/key_editor.rs",
-      "sha256": "c48d6275d794026fb989e9589cdfab8858d6cc11ffa01c5830c38e9e57a1bfc6",
+      "sha256": "be43d7ec7956df50084ef764cc46403c2fe17531cbea2dc23c91096016aece04",
+      "change": "modified"
+    },
+    {
+      "path": "src/locale_ja.tsv",
+      "sha256": "b5ae15f1526be9278706756b3af56f728ca1e1868996ce4b38bc8abcdaf1fede",
+      "change": "modified"
+    },
+    {
+      "path": "src/monitor.rs",
+      "sha256": "8555c10e869808df65e0b44119ab93493d932689f81d0105f2492024f30861ed",
+      "change": "added"
+    },
+    {
+      "path": "src/model.rs",
+      "sha256": "0b95397f24541c94c295f82204d40db5ac0f396b848305a63648ba801c79c1a8",
+      "change": "modified"
+    },
+    {
+      "path": "src/services.rs",
+      "sha256": "04dff9fe3bf825a0e9e38ae282830784a96ae45a7358b2402cc5c4f00a4fc475",
+      "change": "modified"
+    },
+    {
+      "path": "src/bin/fcseq-cli.rs",
+      "sha256": "3db62fd417a5bc8a7b5b980727b059e3b4dc889dd66d4b941008db6d0a8f83d1",
+      "change": "modified"
+    },
+    {
+      "path": "fcseq.py",
+      "sha256": "de03c1696dee7779f173738941f4473b5f707ca4ec00683e6ab4295895676512",
+      "change": "modified"
+    },
+    {
+      "path": "tests/core.rs",
+      "sha256": "5e397ddf08610dc5131b7fb6055f42db7849638164e913e8de9bdd43eb95d0fb",
+      "change": "modified"
+    },
+    {
+      "path": "tests/test_fcseq.py",
+      "sha256": "2ffa4c82f491be79fafdd703d438d95085c8d7eb91b197db80ba779cdaf9b977",
+      "change": "modified"
+    },
+    {
+      "path": "tests/tempo.rs",
+      "sha256": "53c0446d9b3f7a6cdb009c746dc9f0f80ad62b446423b2f30858c4be404a3d16",
+      "change": "added"
+    },
+    {
+      "path": "docs/AUDIO_FORMATS.md",
+      "sha256": "1bc37fc3241a0a7359d16e8e6cea80b6c30a6eab1f6b745381f87450610882bf",
       "change": "modified"
     },
     {
       "path": "Cargo.toml",
-      "sha256": "e0e5e2ba656e7abdb2bc2e14fd7c06e909ec41fd5c56e48c6897d7d277e56c7b",
+      "sha256": "89e9ca940e301d5db774953dcf70c346d29c5298a0e17277dd974637e81d807b",
       "change": "modified"
     },
     {
       "path": "Cargo.lock",
-      "sha256": "98a659893a7d06407a01244242489dcbcfb2b2ef60cc3db7a4e9375708d3180a",
+      "sha256": "31127b7be8708bbd8c25649afaeed758fe5c3fd07dac32969c6b596a0669abc1",
       "change": "modified"
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "a494dc615d6347aa3a007cf99136a0ec19793bea72aa381446cf84d3e44b078f",
+      "sha256": "937fccad3edb50487e4c653e844d34a74f156269b7a5bdf1d1d4073f1f2d8eca",
       "change": "modified"
     },
     {
       "path": "LICENSE_AUDIT.json",
-      "sha256": "2598297554082379c10c232ccb566d98a6126c15450829523894dae485b6658a",
+      "sha256": "52765e5c069d8320bf2cd8fd1056c3bab13e5c1354e887bbe2da4d69001c4205",
       "change": "modified"
     },
     {
       "path": "README.de.md",
-      "sha256": "803c85fff49893d8c0798553e6583880e93ce22a240ed17ec3c4649f198295dc",
+      "sha256": "99bc2b62f3c38c1d36636de146e1c2fc770d4a0bab5ecd8f2c58e71adc2d3e8c",
       "change": "modified"
     },
     {
       "path": "README.en.md",
-      "sha256": "c62ba502b0db5d65080d0a3593b4b2376365b4c1fefd8715d2904e8b304052c4",
+      "sha256": "74372fffa3a4ac257311fd2863fa7c4d11b16fb24796de64ceeef90ae0e3abd2",
       "change": "modified"
     },
     {
       "path": "README.es.md",
-      "sha256": "e670e3f39c7bc331e26097763c2c1061b8873e44416e342629e81a11f8fb0733",
+      "sha256": "78165d5171f66d165e30daefff384f3e641b62bfda1d9bb0cee672e9d5e4b9d1",
       "change": "modified"
     },
     {
       "path": "README.fr.md",
-      "sha256": "3d60ca47d47ff228695b5c24aede4c762fdc62e3c412ca533a6f9f6b2765e84e",
+      "sha256": "17470a45801594f7b35ecf98b552721632bd5117775c7aa35b53c768d52187f3",
       "change": "modified"
     },
     {
       "path": "README.ja.md",
-      "sha256": "06eb07af70f1a8f0cb0459174adc840eb0fe617429675f99ea04258c88fdaa66",
+      "sha256": "163ad75f82fa3955bd5b53bf7772b86f1240a5744fe2cb3b9cd8af7954ee2fab",
       "change": "modified"
     },
     {
       "path": "README.ko.md",
-      "sha256": "9e72c4246c714f914146bfa6e528ece3890b4165356bd93681d592cd8f9da545",
+      "sha256": "070624f81ea97b984baf15d1896fa3326627579732e6d1854fa9124767aeed15",
       "change": "modified"
     },
     {
       "path": "README.md",
-      "sha256": "c62ba502b0db5d65080d0a3593b4b2376365b4c1fefd8715d2904e8b304052c4",
+      "sha256": "74372fffa3a4ac257311fd2863fa7c4d11b16fb24796de64ceeef90ae0e3abd2",
       "change": "modified"
     },
     {
       "path": "README.pt-BR.md",
-      "sha256": "75b2a7aa98b9b227fa101585770630c41c22d94e60218a99132826ded2fa45e3",
+      "sha256": "bc93bc8e466dbca7179607c89f1a2cf23a0146fd9745fbf7654108290c846c9e",
       "change": "modified"
     },
     {
       "path": "README.pt.md",
-      "sha256": "75b2a7aa98b9b227fa101585770630c41c22d94e60218a99132826ded2fa45e3",
+      "sha256": "bc93bc8e466dbca7179607c89f1a2cf23a0146fd9745fbf7654108290c846c9e",
       "change": "modified"
     },
     {
       "path": "README.zh-CN.md",
-      "sha256": "50f3fb6a1e15bd5ba340a92dcc752e4859b0dd9e3677bf222f87555d531b212c",
+      "sha256": "c8a5e8b08ab249c8c5d3a284aad5e897557184289a4ac50560f49ebd31190da1",
       "change": "modified"
     },
     {
       "path": "README.zh-TW.md",
-      "sha256": "d3a37eaa5f3d8aadeac2df626a55f59cd2f19a1d2f788aaafc3bd18ab0691eba",
+      "sha256": "78e9bf8d94c1c4edcc4469a1f86104154bcac8b1898263d3348dae32d29e2109",
       "change": "modified"
     }
   ],
@@ -93,7 +143,20 @@
   "license_inventory_packages": 279,
   "fcq_backward_compatibility": true,
   "public_portability_and_plita_branding_preserved": true,
-  "ui_reference": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/pianoroll.htm",
-  "white_key_width_before_px": 150,
-  "white_key_width_after_px": 88
+  "track_mix_preserves_position_and_loop": true,
+  "selected_audition_honors_track_mix": true,
+  "live_mix_source": "same KUROSAKI offline renderer; background replacement at current sample cursor",
+  "live_mix_cache_limit": 8,
+  "buffer_switch_crossfade_samples": 128,
+  "tempo_scheduling": "round cumulative row deadlines; <=0.5 tick error at every row",
+  "tempo_paths": [
+    "preview",
+    "WAV",
+    "C driver",
+    "NSF",
+    "NSF2",
+    "NSFe",
+    "CLI",
+    "Python"
+  ]
 }

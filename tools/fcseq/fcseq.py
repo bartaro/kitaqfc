@@ -26,10 +26,13 @@ def validate(doc):
     pcm_channel={'mmc5':7,'vt02':9}.get(doc['expansion'])
     tick_rate=4000.0 if pcm_channel is not None and any(s['tracks'][pcm_channel]['notes'] for s in doc['sections']) else FPS
     fpr = int(tick_rate * 15 / doc['bpm'] + .5)
+    duration = sum(int(s['rows'] * tick_rate * 15 / doc['bpm'] + .5) / tick_rate for s in doc['sections'])
+    total_rows = sum(s['rows'] for s in doc['sections'])
     return dict(sections=len(doc['sections']), channels=len(doc['sections'][0]['tracks']),
                 expansion=doc['expansion'], notes=sum(len(t['notes']) for s in doc['sections'] for t in s['tracks']),
-                frames_per_row=fpr, requested_bpm=doc['bpm'], actual_bpm=tick_rate * 15 / fpr, tick_rate_hz=tick_rate,
-                duration_seconds=sum(s['rows'] for s in doc['sections']) * fpr / tick_rate)
+                frames_per_row=fpr, ticks_per_row=fpr, average_ticks_per_row=tick_rate * 15 / doc['bpm'],
+                requested_bpm=doc['bpm'], actual_bpm=total_rows * 15 / duration, tick_rate_hz=tick_rate,
+                timing='accumulated-row-deadlines', duration_seconds=duration)
 
 def export_kitaqfc(doc, directory, header='fcseq_score.h'):
     return json.loads(controller(doc).export_kitaqfc(str(directory), header))

@@ -1,4 +1,4 @@
-# FCSEQ 0.5.1
+# FCSEQ 0.5.2
 
 [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt-BR.md)
 
@@ -21,6 +21,10 @@ Ein Doppelklick auf den Spurnamen oder die Taste E öffnet die einzelne Spur mit
 Mehrere Noten wählen Sie mit Strg/Umschalt+Klick oder einem Auswahlrechteck. Strg+A markiert die aktuelle Spur; Strg+C/X/V kopiert, schneidet aus und fügt am Cursor ein. Strg+D dupliziert, Entf löscht, Strg+Z/Y macht Änderungen rückgängig oder stellt sie wieder her. Pfeiltasten verschieben und transponieren; Umschalt+Auf/Ab transponiert um eine Oktave. G ändert das Raster, Q richtet Noten daran aus, F passt die Ansicht an, Pos1 springt zum Anfang und +/− zoomt die Zeitachse.
 
 Die Leertaste startet oder stoppt die Wiedergabe. LOOP wiederholt den Abschnitt, AUDITION spielt die Auswahl. Stumm- und Soloschaltung wirken auch beim Export. Unter SONG verwalten Sie bis zu 16 Abschnitte mit jeweils 256 Takten. Tempo und Taktzahl lassen sich anklicken und bearbeiten. Strg+N/O/S/Umschalt+S erstellt, öffnet, speichert oder speichert unter neuem Namen. Eine Wiederherstellungsdatei liegt unter `out/recovery_<process-id>.fcq` neben dem Programm; öffnen Sie sie und wählen Sie Speichern unter.
+
+Stumm und Solo lassen sich während der Wiedergabe umschalten, ohne den Abschnitt oder die Schleife neu zu starten. Mehrere Solo-Spuren erklingen gemeinsam; eine stummgeschaltete Spur bleibt auch bei aktiviertem Solo stumm. Das gilt auch beim Vorhören ausgewählter Noten. Der neue Mix wird im Hintergrund berechnet und an der aktuellen Wiedergabeposition übernommen. Kürzlich verwendete Mischungen kommen aus dem Cache. Auch beim Rückgängigmachen oder Wiederherstellen dieser Einstellungen läuft die Wiedergabe weiter.
+
+Die Tempoberechnung sammelt Zeitbruchteile auch bei ganzzahligen BPM. Eine Sechzehntelnote bei 108 BPM dauert etwa 8,35 NTSC-Frames; FCSEQ kombiniert deshalb Abstände von 8 und 9 Frames. Jeder Rasterpunkt weicht höchstens einen halben Wiedergabetakt vom idealen Zeitpunkt ab. PCM verwendet dieselbe Regel bei 4 kHz. Vorschau und Exporte nutzen dieselbe Zeitachse. Die bisherigen Felder frames_per_row/ticks_per_row sind gerundete Näherungen; für Zeitberechnungen dienen die Ereigniszeitpunkte oder average_ticks_per_row.
 
 ## Klangchips und Instrumente
 

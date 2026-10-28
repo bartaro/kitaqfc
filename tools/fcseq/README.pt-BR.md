@@ -1,4 +1,4 @@
-# FCSEQ 0.5.1
+# FCSEQ 0.5.2
 
 [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt-BR.md)
 
@@ -21,6 +21,10 @@ Dê dois cliques no nome da pista ou pressione E para abrir seu editor com um pi
 Use Ctrl/Shift+clique ou arraste um retângulo para selecionar várias notas. Ctrl+A seleciona a pista atual; Ctrl+C/X/V copia, recorta e cola no cursor. Ctrl+D duplica, Delete exclui e Ctrl+Z/Y desfaz ou refaz. As setas movem ou transpõem notas; Shift+Cima/Baixo transpõe uma oitava. G altera a grade, Q alinha as notas, F enquadra a seção, Home volta ao início e +/− ajusta o zoom horizontal.
 
 Espaço inicia ou para a reprodução. LOOP repete a seção, e AUDITION toca a seleção. Silenciar e solo também afetam as exportações. SONG permite criar, renomear e reorganizar até 16 seções de 256 compassos cada. Clique no andamento ou na quantidade de compassos para editar. Ctrl+N/O/S/Shift+S cria, abre, salva ou salva com outro nome. Para recuperar trabalho, abra `out/recovery_<process-id>.fcq`, ao lado do programa, e use Salvar como.
+
+Você pode alternar silenciar e solo durante a reprodução sem voltar ao início da seção ou do loop. Várias faixas em solo tocam juntas; uma faixa silenciada continua sem som mesmo com solo ativo. A prévia das notas selecionadas também segue esses ajustes. A nova mixagem é preparada em segundo plano e aplicada na posição atual; mixagens recentes são recuperadas do cache. Desfazer ou refazer apenas esses ajustes também mantém a reprodução.
+
+O cálculo do andamento acumula as frações de tempo mesmo quando o BPM é inteiro. A 108 BPM, uma semicolcheia dura cerca de 8,35 quadros NTSC: o FCSEQ combina intervalos de 8 e 9 quadros. Cada limite da grade fica a no máximo meio tick do instante ideal. O PCM aplica a mesma regra a 4 kHz; a prévia e as exportações usam os mesmos tempos. Os campos antigos frames_per_row/ticks_per_row são estimativas arredondadas: nos cálculos de tempo, use os instantes dos eventos ou average_ticks_per_row.
 
 ## Chips, timbres e formas de onda
 

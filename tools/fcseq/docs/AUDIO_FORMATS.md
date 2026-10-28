@@ -81,7 +81,16 @@ fade. Each section is a subsong, ending at its section boundary. Re-exporting
 an imported project to the same container preserves its original bytes.
 
 PCM scores use a 250 μs PLAY interval (4 kHz); other scores use the NTSC interval.
-The C driver reports `FCSEQ_TICK_RATE_HZ` and `ticks_per_row` for the same timing.
+The C driver reports `FCSEQ_TICK_RATE_HZ`. Row r is scheduled at
+`round(r * tick_rate_hz * 15 / requested_bpm)`, so 108 BPM uses 8/9 NTSC
+frames per sixteenth rather than always 8. Starts, ends, PCM lengths, decay
+limits and the shared SSG mixer all use these cumulative deadlines. Each row
+boundary is within half a playback tick of its ideal time; the end of each
+finite section is rounded once. Preview, WAV, C, NSF, NSF2 and NSFe share
+this timeline. `frames_per_row` and `ticks_per_row` remain rounded estimates
+for compatibility, not fixed scheduling steps. `average_ticks_per_row`,
+`requested_bpm`, finite-section `actual_bpm`, and `duration_seconds` report
+the accumulated timing through CLI, Python and C-export metadata.
 The host must supply that call rate and keep code/data accessible to the CPU.
 High write density or unusually large imported programs can exceed the bounded
 CPU execution budget; export is not a promise that every arrangement fits every

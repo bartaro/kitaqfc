@@ -31,6 +31,8 @@ mod i18n;
 mod instrument_ui;
 #[path = "key_editor.rs"]
 mod key_editor;
+#[path = "monitor.rs"]
+mod monitor;
 #[path = "wave_graph.rs"]
 mod wave_graph;
 use i18n::Language;
@@ -245,6 +247,7 @@ pub struct Studio {
     started: Option<Instant>,
     playing_loop: bool,
     play_rows: u16,
+    monitor: Option<monitor::Monitor>,
     smoke_ticks: Option<u8>,
     last_recovery: Instant,
     recovery_revision: usize,
@@ -332,6 +335,7 @@ impl Studio {
             sink: None,
             started: None,
             playing_loop: false,
+            monitor: None,
             play_rows: 64,
             smoke_ticks: None,
             last_recovery: Instant::now(),
@@ -457,7 +461,7 @@ impl Studio {
             self.clamp_key_range();
         }
     }
-    fn remember(&mut self, before: Score) {
+    fn record_history(&mut self, before: Score) -> bool {
         if before != self.score {
             self.undo.push(before);
             if self.undo.len() > 48 {
@@ -465,8 +469,42 @@ impl Studio {
             }
             self.redo.clear();
             self.revision += 1;
-            self.stop();
+            return true;
         }
+        false
+    }
+    fn remember(&mut self, before: Score) {
+        if self.record_history(before) { self.stop(); }
+    }
+    fn toggle_track_mix(&mut self, ch: usize, solo: bool) {
+        let before = self.score.clone();
+        let part = self.part;
+        match editing::transaction(&mut self.score, |score| {
+            let track = &mut score.sections[part].tracks[ch];
+            if solo { track.solo = !track.solo; } else { track.mute = !track.mute; }
+            Ok(())
+        }) {
+            Ok(()) => {
+                if self.record_history(before) { self.update_monitor(); }
+            }
+            Err(error) => self.status = error,
+        }
+    }
+    fn update_monitor(&mut self) {
+        let Some(mut monitor) = self.monitor.take() else { return };
+        monitor.sync_flags(&self.score);
+        if monitor.is_ready() {
+            self.status = if monitor.update() {
+                "Updating track playback..."
+            } else {
+                "Playing / Space to stop"
+            }.into();
+        } else {
+            // Initial rendering has not reached the device yet. Cancel that
+            // receiver so the old flags can never start playing afterwards.
+            self.launch_render(monitor.score.clone(), monitor.part, monitor.looped);
+        }
+        self.monitor = Some(monitor);
     }
     fn change(&mut self, f: impl FnOnce(&mut Score) -> Result<(), String>) {
         let before = self.score.clone();
@@ -490,13 +528,14 @@ impl Studio {
         }
     }
     fn undo(&mut self, redo: bool) {
-        self.stop();
         let next = if redo {
             self.redo.pop()
         } else {
             self.undo.pop()
         };
         if let Some(next) = next {
+            let mix_only = monitor::same_music(&self.score, &next);
+            if !mix_only { self.stop(); }
             let old = std::mem::replace(&mut self.score, next);
             if redo {
                 self.undo.push(old);
@@ -506,6 +545,7 @@ impl Studio {
             self.selection.clear();
             self.clamp_view();
             self.revision += 1;
+            if mix_only { self.update_monitor(); }
             self.status = if redo { "Redone" } else { "Undone" }.into();
         }
     }
@@ -1465,14 +1505,8 @@ impl Studio {
                     self.status.clone()
                 };
             }
-            Action::Mute(c) => self.change(|s| {
-                s.sections[part].tracks[c].mute = !s.sections[part].tracks[c].mute;
-                Ok(())
-            }),
-            Action::Solo(c) => self.change(|s| {
-                s.sections[part].tracks[c].solo = !s.sections[part].tracks[c].solo;
-                Ok(())
-            }),
+            Action::Mute(c) => self.toggle_track_mix(c, false),
+            Action::Solo(c) => self.toggle_track_mix(c, true),
             Action::Samples => self.modal = Some(0),
             Action::Wave => {
                 self.instrument_track = self.selection.first().map(|v| v.0).unwrap_or(self.track);
@@ -1591,6 +1625,7 @@ impl Studio {
         }
     }
     fn stop(&mut self) {
+        self.monitor = None;
         if let Some(c) = self.cancel.take() {
             c.store(true, Ordering::Relaxed);
             self.job = None;
@@ -1874,14 +1909,16 @@ impl Studio {
         });
     }
     fn start_audio(&mut self, selected: bool) {
+        if self.job.is_some() && self.cancel.is_none() {
+            self.status = "A file export is already running".into();
+            return;
+        }
         let mut s = self.score.clone();
         let mut part = self.part;
         if selected {
             let clip = Clipboard::copy(&s, part, &self.selection);
             for t in &mut s.sections[part].tracks {
                 t.notes.clear();
-                t.mute = false;
-                t.solo = false;
             }
             for (c, n) in clip.notes {
                 s.sections[part].tracks[c].notes.push(n);
@@ -1897,15 +1934,17 @@ impl Studio {
             s.sections = vec![s.sections[part].clone()];
             part = 0;
         }
-        self.launch_render(s, part, self.score.loop_playback && !selected);
+        let looped = self.score.loop_playback && !selected;
+        let monitor = s.nsf.is_none().then(|| monitor::Monitor::new(s.clone(), part, self.part, looped));
+        self.launch_render(s, part, looped);
+        self.monitor = monitor;
     }
     fn play_sample(&mut self) {
         let Some(sample) = self.score.samples.get(self.sample).cloned() else {
             return;
         };
         let mut score = Score::empty();
-        let length = ((sample.end - sample.start) as f64 / sample.sample_rate as f64 * FPS
-            / score.frames_per_row() as f64)
+        let length = ((sample.end - sample.start) as f64 / sample.sample_rate as f64 * score.bpm / 15.0)
             .ceil() as u16;
         score.samples.push(sample.clone());
         score.sections[0].rows = (length + 1).div_ceil(16) * 16;
@@ -1948,7 +1987,7 @@ impl Studio {
             self.job = None;
             self.cancel = None;
             match result {
-                Err(e) => self.status = e,
+                Err(e) => { self.monitor = None; self.status = e; },
                 Ok(JobOutput::Done(message)) => self.status = message,
                 Ok(JobOutput::Audio(samples, looped)) => {
                     if self.audio.is_none() {
@@ -1961,11 +2000,12 @@ impl Studio {
                             .ok_or("No audio output device. WAV export is available.")?
                             .1;
                         let sink = Sink::try_new(handle).map_err(|_| "Audio device unavailable")?;
-                        let source = rodio::buffer::SamplesBuffer::new(1, 44100, samples);
-                        if looped {
-                            sink.append(source.repeat_infinite());
+                        if let Some(monitor) = self.monitor.as_mut() {
+                            sink.append(monitor.attach(samples));
                         } else {
-                            sink.append(source);
+                            let source = rodio::buffer::SamplesBuffer::new(1, 44100, samples);
+                            if looped { sink.append(source.repeat_infinite()); }
+                            else { sink.append(source); }
                         }
                         Ok::<_, &str>(sink)
                     })();
@@ -1976,15 +2016,30 @@ impl Studio {
                             self.playing_loop = looped;
                             self.status = "Playing / Space to stop".into();
                         }
-                        Err(e) => self.status = e.into(),
+                        Err(e) => { self.monitor = None; self.status = e.into(); },
                     }
                 }
             }
+        }
+        if let Some(result) = self.monitor.as_mut().and_then(|monitor| monitor.poll()) {
+            self.status = match result {
+                Ok(()) => "Playing / Space to stop".into(),
+                Err(error) => error,
+            };
         }
         if self.sink.as_ref().is_some_and(|s| s.empty()) {
             self.stop();
             self.status = "Playback finished".into();
         }
+    }
+    fn playback_row(&self, start: Instant) -> f64 {
+        let mut seconds = start.elapsed().as_secs_f64();
+        if self.playing_loop {
+            let duration = self.monitor.as_ref().and_then(|m| m.duration_seconds())
+                .unwrap_or(self.score.row_tick(self.play_rows as u32) as f64 / self.score.tick_rate());
+            if duration > 0.0 { seconds %= duration; }
+        }
+        (seconds * self.score.bpm / 15.0).min(self.play_rows as f64)
     }
     fn modal_rect(&self) -> Rect {
         Rect::new(
@@ -2334,11 +2389,7 @@ impl PlitaProgram for Studio {
         let active = self.job.is_some() || self.started.is_some();
         self.poll();
         if let Some(start) = self.started {
-            let mut row =
-                (start.elapsed().as_secs_f64() * self.score.tick_rate() / self.score.ticks_per_row() as f64) as u32;
-            if self.playing_loop {
-                row %= self.play_rows as u32;
-            }
+            let row = self.playback_row(start) as u32;
             if self.modal.is_none() {
                 self.page = (row.min(self.score.sections[self.part].rows as u32 - 1) as u16
                     / self.visible)
@@ -2870,12 +2921,7 @@ impl PlitaProgram for Studio {
             }
         }
         let row = if let Some(start) = self.started {
-            let r = start.elapsed().as_secs_f32() * self.score.tick_rate() as f32 / self.score.ticks_per_row() as f32;
-            if self.playing_loop {
-                r % self.play_rows as f32
-            } else {
-                r
-            }
+            self.playback_row(start) as f32
         } else {
             self.cursor as f32
         };
@@ -3025,8 +3071,12 @@ impl PlitaProgram for Studio {
             g.bottom() + 10.0,
             &format!(
                 "NTSC {:.2} BPM / {} TICKS",
-                self.score.tick_rate() * 15.0 / self.score.ticks_per_row() as f64,
-                self.score.ticks_per_row()
+                self.score.bpm,
+                if self.score.average_ticks_per_row().floor() == self.score.average_ticks_per_row().ceil() {
+                    self.score.ticks_per_row().to_string()
+                } else {
+                    format!("{:.0}/{:.0}", self.score.average_ticks_per_row().floor(), self.score.average_ticks_per_row().ceil())
+                }
             ),
             0.65,
             MUTED,
@@ -3483,6 +3533,72 @@ mod tests {
         assert_eq!(a.score, before);
     }
     #[test]
+    fn mute_solo_buttons_keep_playing_and_undo_tracks_the_mix() {
+        for key_editor in [false, true] {
+            let mut a = app();
+            a.score.sections[0].rows = 16;
+            for ch in 0..2 { a.score.sections[0].tracks[ch].notes.push(Note::new(0, 16, 60 + ch as u8 * 7)); }
+            if key_editor { a.open_key_track(1); }
+            let mut monitor = monitor::Monitor::new(a.score.clone(), 0, 0, true);
+            let _source = monitor.attach(services::render(&a.score, 0, None).unwrap());
+            a.monitor = Some(monitor);
+            let started = Instant::now();
+            a.started = Some(started);
+            for action in [Action::Mute(1), Action::Solo(1)] {
+                let button = a.buttons().into_iter().find(|b| b.action == action).unwrap();
+                let p = Point::new(button.rect.x + 4.0, button.rect.y + 4.0);
+                a.handle_event(UiEvent::PointerDown { position: p, button: PointerButton::Primary });
+                a.handle_event(UiEvent::PointerUp { position: p, button: PointerButton::Primary });
+                assert_eq!(a.started, Some(started));
+                assert!(a.monitor.is_some());
+            }
+            assert!(a.score.sections[0].tracks[1].mute && a.score.sections[0].tracks[1].solo);
+            assert!((0..5).any(|ch| a.score.sections[0].audible(ch)) == false);
+            a.undo(false);
+            assert!(!a.score.sections[0].tracks[1].solo);
+            assert_eq!(a.started, Some(started));
+            a.undo(false);
+            assert!(!a.score.sections[0].tracks[1].mute);
+            a.undo(true);
+            assert!(a.score.sections[0].tracks[1].mute);
+            assert_eq!(a.started, Some(started));
+            a.open_key_track(0);
+            let button = a.buttons().into_iter().find(|b| b.action == Action::Solo(0)).unwrap();
+            let p = Point::new(button.rect.x + 4.0, button.rect.y + 4.0);
+            a.handle_event(UiEvent::PointerDown { position: p, button: PointerButton::Primary });
+            a.handle_event(UiEvent::PointerUp { position: p, button: PointerButton::Primary });
+            assert!(a.score.sections[0].tracks[0].solo);
+            assert!(!a.score.sections[0].tracks[1].solo);
+            assert!(a.score.sections[0].tracks[1].mute);
+            assert_eq!(a.started, Some(started));
+            a.stop();
+            assert!(a.monitor.is_none());
+        }
+    }
+    #[test]
+    fn selected_audition_keeps_mix_flags_and_pending_render_is_cancelled() {
+        let mut a = app();
+        a.score.sections[0].tracks[0].notes.push(Note::new(0, 4, 69));
+        a.score.sections[0].tracks[0].mute = true;
+        a.selection = vec![(0, 0)];
+        a.start_audio(true);
+        assert!(a.monitor.as_ref().unwrap().score.sections[0].tracks[0].mute);
+        let old = a.cancel.as_ref().unwrap().clone();
+        a.apply(Action::Mute(0));
+        assert!(old.load(Ordering::Relaxed));
+        assert!(!a.monitor.as_ref().unwrap().score.sections[0].tracks[0].mute);
+        assert!(a.job.is_some());
+        a.stop();
+        assert!(a.monitor.is_none());
+        let (tx, rx) = mpsc::channel();
+        a.job = Some(rx);
+        a.apply(Action::Solo(0));
+        assert!(a.job.is_some());
+        tx.send(Ok(JobOutput::Done("Export completed".into()))).unwrap();
+        a.poll();
+        assert_eq!(a.status, "Export completed");
+    }
+    #[test]
     fn cancelled_playback_cannot_start_when_old_worker_finishes() {
         let mut a = app();
         let (tx, rx) = mpsc::channel();
@@ -3530,7 +3646,7 @@ mod tests {
         assert_eq!(a.score.nsf.as_ref().unwrap().song, 1);
         a.undo(false);
         assert_eq!(a.score.nsf.as_ref().unwrap().seconds, 7);
-        assert_eq!(a.score.nsf.as_ref().unwrap().duration_ms, Some(6389));
+        assert_eq!(a.score.nsf.as_ref().unwrap().duration_ms, Some(6406));
         let p = Point::new(200.0, 400.0);
         a.handle_event(UiEvent::PointerDoubleClick {
             position: p,

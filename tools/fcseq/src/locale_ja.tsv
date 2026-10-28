@@ -231,6 +231,7 @@ Export completed	書き出しが完了しました
 Exported {}	書き出しました: {}
 Playback finished	再生が終了しました
 Playing / Space to stop	再生中 / Spaceで停止
+Updating track playback...	トラックの再生設定を反映中...
 Playback stopped; file export continues	再生を停止しました。ファイルの書き出しは続行します
 Copied {} notes; click destination, then Ctrl+V	{} ノートをコピーしました。貼り付け先をクリックしてCtrl+Vを押してください
 Import a sample first	先にサンプルを読み込んでください

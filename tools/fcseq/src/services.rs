@@ -104,8 +104,7 @@ pub fn compile(score: &Score, part: usize) -> Result<Stream, String> {
     score.validate()?;
     let sec = score.sections.get(part).ok_or("Section out of range")?;
     let tick_rate = score.tick_rate();
-    let fpr = score.ticks_per_row();
-    let frames = sec.rows as u32 * fpr;
+    let frames = score.row_tick(sec.rows as u32);
     let used = score
         .sections
         .iter()
@@ -187,7 +186,7 @@ pub fn compile(score: &Score, part: usize) -> Result<Stream, String> {
             continue;
         }
         for n in &track.notes {
-            let end = n.end() as u32 * fpr;
+            let end = score.row_tick(n.end() as u32);
             match score.expansion.kind(ch) {
                 Voice::Pulse => emit(&mut events, end, 0x4000 + ch as u16 * 4, 0x30),
                 Voice::Triangle => emit(&mut events, end, 0x4008, 0x80),
@@ -226,7 +225,8 @@ pub fn compile(score: &Score, part: usize) -> Result<Stream, String> {
         }
         let kind = score.expansion.kind(ch);
         for n in &track.notes {
-            let start = n.row as u32 * fpr;
+            let start = score.row_tick(n.row as u32);
+            let duration = score.row_tick(n.end() as u32) - start;
             let sound = n.sound(ch);
             let timer =
                 (CPU / (if kind == Voice::Triangle {
@@ -375,7 +375,7 @@ pub fn compile(score: &Score, part: usize) -> Result<Stream, String> {
                 let mut previous = 128;
                 for (age, value) in values
                     .into_iter()
-                    .take((n.length as u32 * fpr) as usize)
+                    .take(duration as usize)
                     .enumerate()
                 {
                     let v = (128 + (i32::from(value) - 128) * i32::from(sound.volume) / 15)
@@ -388,7 +388,7 @@ pub fn compile(score: &Score, part: usize) -> Result<Stream, String> {
                 let end = (start
                     + sample.pcm8_length(tick_rate * 2f64.powf((60.0 - f64::from(n.note)) / 12.0))
                         as u32)
-                    .min(n.end() as u32 * fpr);
+                    .min(score.row_tick(n.end() as u32));
                 emit(&mut events, end, addr, 128);
             }
             if sound.decay > 0
@@ -397,7 +397,7 @@ pub fn compile(score: &Score, part: usize) -> Result<Stream, String> {
                     Voice::Triangle | Voice::Dpcm | Voice::VtTriangle | Voice::Pcm
                 )
             {
-                let end = n.length as u32 * fpr;
+                let end = duration;
                 let mut previous = sound.volume;
                 let decay = (f64::from(sound.decay) * tick_rate / FPS).round().max(1.0) as u32;
                 for age in 1..end.min(decay + 1) {
@@ -475,7 +475,7 @@ pub fn compile(score: &Score, part: usize) -> Result<Stream, String> {
             .flat_map(|t| {
                 t.notes
                     .iter()
-                    .flat_map(|n| [n.row as u32 * fpr, n.end() as u32 * fpr])
+                    .flat_map(|n| [score.row_tick(n.row as u32), score.row_tick(n.end() as u32)])
             })
             .collect();
         let mut previous = 0x3f;
@@ -486,7 +486,7 @@ pub fn compile(score: &Score, part: usize) -> Result<Stream, String> {
                     if let Some(n) = sec.tracks[ch]
                         .notes
                         .iter()
-                        .find(|n| n.row as u32 * fpr <= time && time < n.end() as u32 * fpr)
+                        .find(|n| score.row_tick(n.row as u32) <= time && time < score.row_tick(n.end() as u32))
                     {
                         let sound = n.sound(ch);
                         if sound.tone {
@@ -734,7 +734,7 @@ pub fn export(score: &Score, path: &Path) -> Result<serde_json::Value, String> {
         std::fs::write(path.join(format!("sample_{i:02}.dmc")), sample.encode()?)
             .map_err(|e| e.to_string())?;
     }
-    let report = serde_json::json!({"format":"fcseq-export-2","expansion":score.expansion,"channels":score.expansion.channels(),"tick_rate_hz":score.tick_rate(),"frames_per_row":score.frames_per_row(),"ticks_per_row":score.ticks_per_row(),"actual_bpm":score.tick_rate()*15.0/score.ticks_per_row()as f64,"sections":score.sections.iter().enumerate().map(|(i,s)|serde_json::json!({"name":s.name,"rows":s.rows,"bytes":sizes[i]})).collect::<Vec<_>>(),"dpcm_offsets":streams[0].sample_offsets,"dpcm_base":49152,"dpcm_placement":"Map dpcm_bank.bin at CPU $C000, keep mapped during playback; reserve vectors $FFFA..$FFFF. FDS requires matching writable sample memory or a compatible playback environment.","mapper":match score.expansion{Expansion::None=>"any compatible 2A03 board",Expansion::Vrc6=>"VRC6 mapper 24 (mapper 26 needs A0/A1 remapping)",Expansion::Vrc7=>"VRC7 mapper 85",Expansion::Fds=>"FDS 2C33",Expansion::N163=>"Namco 163 mapper 19; enable audio and keep driver/data mapped",Expansion::Mmc5=>"MMC5 mapper 5",Expansion::Sunsoft5b=>"SUNSOFT 5B mapper 69",Expansion::Epsm=>"EPSM YMF288 on CPU $401C..$401F",Expansion::Vt02=>"VT02+ second APU"},"driver":"Call fcseq_start(section) then fcseq_tick at tick_rate_hz (4000 Hz for PCM, otherwise NTSC frame rate); stream/driver must stay CPU-visible. Large songs require host bank planning. Export is data + driver, not a game ROM."});
+    let report = serde_json::json!({"format":"fcseq-export-2","expansion":score.expansion,"channels":score.expansion.channels(),"tick_rate_hz":score.tick_rate(),"frames_per_row":score.frames_per_row(),"ticks_per_row":score.ticks_per_row(),"average_ticks_per_row":score.average_ticks_per_row(),"requested_bpm":score.bpm,"actual_bpm":score.actual_bpm(),"duration_seconds":score.duration_seconds(),"timing":"accumulated-row-deadlines","sections":score.sections.iter().enumerate().map(|(i,s)|serde_json::json!({"name":s.name,"rows":s.rows,"bytes":sizes[i]})).collect::<Vec<_>>(),"dpcm_offsets":streams[0].sample_offsets,"dpcm_base":49152,"dpcm_placement":"Map dpcm_bank.bin at CPU $C000, keep mapped during playback; reserve vectors $FFFA..$FFFF. FDS requires matching writable sample memory or a compatible playback environment.","mapper":match score.expansion{Expansion::None=>"any compatible 2A03 board",Expansion::Vrc6=>"VRC6 mapper 24 (mapper 26 needs A0/A1 remapping)",Expansion::Vrc7=>"VRC7 mapper 85",Expansion::Fds=>"FDS 2C33",Expansion::N163=>"Namco 163 mapper 19; enable audio and keep driver/data mapped",Expansion::Mmc5=>"MMC5 mapper 5",Expansion::Sunsoft5b=>"SUNSOFT 5B mapper 69",Expansion::Epsm=>"EPSM YMF288 on CPU $401C..$401F",Expansion::Vt02=>"VT02+ second APU"},"driver":"Call fcseq_start(section) then fcseq_tick at tick_rate_hz (4000 Hz for PCM, otherwise NTSC frame rate); stream/driver must stay CPU-visible. Large songs require host bank planning. Export is data + driver, not a game ROM."});
     std::fs::write(
         path.join("fcseq_export.json"),
         serde_json::to_vec_pretty(&report).unwrap(),

@@ -1,4 +1,4 @@
-# FCSEQ 0.5.1
+# FCSEQ 0.5.2
 
 [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt-BR.md)
 
@@ -21,6 +21,10 @@ Haz doble clic en el nombre de una pista o pulsa E para abrir su editor con un p
 Usa Ctrl/Mayús+clic o arrastra un rectángulo para seleccionar varias notas. Ctrl+A selecciona la pista actual; Ctrl+C/X/V copia, corta y pega en el cursor. Ctrl+D duplica, Supr elimina y Ctrl+Z/Y deshace o rehace. Las flechas mueven o transportan las notas; Mayús+Arriba/Abajo cambia una octava. G cambia la cuadrícula, Q ajusta las notas a ella, F encaja la sección, Inicio vuelve al principio y +/− controla el zoom horizontal.
 
 Espacio inicia o detiene la reproducción. LOOP repite la sección y AUDITION reproduce la selección. Silencio y solo también afectan a los archivos exportados. SONG permite añadir, renombrar y ordenar hasta 16 secciones de 256 compases cada una. Pulsa el tempo o los compases para editarlos. Ctrl+N/O/S/Mayús+S crea, abre, guarda o guarda con otro nombre. Para recuperar trabajo, abre `out/recovery_<process-id>.fcq`, junto al programa, y usa Guardar como.
+
+Puede cambiar silencio y solo durante la reproducción sin volver al principio de la sección o del bucle. Varias pistas en solo suenan juntas; una pista silenciada permanece en silencio aunque active solo. La escucha de las notas seleccionadas respeta estos ajustes. La nueva mezcla se prepara en segundo plano y se aplica en la posición actual; las mezclas recientes se recuperan de la caché. Deshacer o rehacer únicamente estos ajustes también mantiene la reproducción.
+
+El cálculo del tempo acumula las fracciones de tiempo incluso con un BPM entero. A 108 BPM, una semicorchea ocupa unos 8,35 fotogramas NTSC: FCSEQ combina intervalos de 8 y 9 fotogramas. Cada límite de la cuadrícula queda a menos de medio tick de su tiempo ideal. El PCM aplica la misma regla a 4 kHz; la escucha y las exportaciones comparten estos tiempos. Los campos antiguos frames_per_row/ticks_per_row son estimaciones redondeadas: para calcular tiempos, use los instantes de los eventos o average_ticks_per_row.
 
 ## Chips y edición de timbres
 

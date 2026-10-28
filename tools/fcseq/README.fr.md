@@ -1,4 +1,4 @@
-# FCSEQ 0.5.1
+# FCSEQ 0.5.2
 
 [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt-BR.md)
 
@@ -21,6 +21,10 @@ Double-cliquez sur le nom de la piste, ou appuyez sur **E**, pour ouvrir l'édit
 Ctrl/Maj+clic et le rectangle de sélection permettent de sélectionner plusieurs notes. Ctrl+A sélectionne la piste courante ; Ctrl+C/X/V copie, coupe et colle au curseur. Ctrl+D duplique, Suppr efface et Ctrl+Z/Y annule ou rétablit. Les flèches déplacent ou transposent les notes ; Maj+Haut/Bas transpose d'une octave. G change la grille, Q y aligne les notes, F ajuste la vue, Début revient au début et +/− règle le zoom horizontal.
 
 Espace démarre ou arrête l'écoute. LOOP répète la section et AUDITION joue la sélection. Muet et solo s'appliquent aussi aux exports. SONG permet d'ajouter, de renommer et de réordonner les sections : jusqu'à 16 sections de 256 mesures chacune. Cliquez sur le tempo ou le nombre de mesures pour les modifier. Ctrl+N/O/S/Maj+S crée, ouvre, enregistre ou enregistre sous un autre nom. En cas d'interruption, ouvrez `out/recovery_<process-id>.fcq`, à côté du programme, puis utilisez Enregistrer sous.
+
+Vous pouvez changer la sourdine et le solo pendant la lecture sans revenir au début de la section ou de la boucle. Plusieurs pistes en solo jouent ensemble ; une piste muette le reste même en solo. L'écoute des notes sélectionnées respecte aussi ces réglages. Le nouveau mixage est préparé en arrière-plan puis appliqué à la position de lecture courante ; les mixages récents sont conservés en cache. Annuler ou rétablir uniquement ces réglages laisse la lecture se poursuivre.
+
+Le calcul du tempo cumule les fractions de temps, même avec un BPM entier. À 108 BPM, une double croche représente environ 8,35 images NTSC : FCSEQ combine donc des intervalles de 8 et 9 images. Chaque frontière de grille reste à moins d'un demi-tick de sa position idéale. Le PCM applique la même règle à 4 kHz ; préécoute et exports partagent cette chronologie. Les anciens champs frames_per_row/ticks_per_row sont des estimations arrondies : utilisez les échéances des événements ou average_ticks_per_row pour vos calculs.
 
 ## Puces, timbres et courbes
 

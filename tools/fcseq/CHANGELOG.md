@@ -1,3 +1,61 @@
+# FCSEQ 0.5.2
+
+## en
+
+Fixed track mute and solo stopping playback. Mix changes now preserve the playback position and loop; selected-note audition and keyboard preview respect the track settings. Multiple solo tracks play together, and mute takes priority. Undo/redo keeps playback running for mix-only changes, and cancelled updates cannot replace a newer mix.
+
+Tempo timing now rounds cumulative row deadlines instead of rounding every sixteenth note separately. At 108 BPM the NTSC scheduler combines 8- and 9-frame steps; PCM uses the same method on its 4 kHz clock. Note starts, note ends, envelopes, shared SSG mixers, preview, WAV and C/NSF/NSF2/NSFe exports follow the same timeline. CLI and Python timing reports were updated.
+
+## ja
+
+トラックのミュートやソロを押すと再生が停止する不具合を修正しました。再生位置とループを保ちながら設定を反映します。選択ノートと鍵盤の試聴にも設定が反映されます。複数トラックのソロは同時に鳴り、ミュートを優先します。ミュートとソロのUndo／Redoでも再生を継続し、取り消した古い処理が音声を上書きしないようにしました。
+
+テンポ計算を、16分音符ごとに丸める方式から累積時刻を丸める方式へ変更しました。108 BPMではNTSCの8フレームと9フレームを組み合わせ、PCMも4 kHzの時計で同じ方法を使います。発音開始・終了、減衰、SSGの共有ミキサー、プレビュー、WAV、C・NSF・NSF2・NSFeの出力を同じ時刻に揃え、CLIとPythonの時間情報も修正しました。
+
+## ko
+
+트랙의 음소거나 솔로를 누르면 재생이 멈추던 문제를 수정했습니다. 재생 위치와 루프를 유지하며 설정을 반영하고, 선택한 음표와 건반 미리 듣기에도 적용합니다. 여러 트랙을 솔로로 지정하면 함께 재생되며 음소거가 우선합니다. 음소거·솔로의 실행 취소와 다시 실행 중에도 재생이 이어지고, 취소된 이전 처리가 새 믹스를 덮어쓰지 않습니다.
+
+16분음표마다 시간을 반올림하는 대신 누적 시각을 반올림하도록 템포 계산을 바꿨습니다. 108 BPM에서는 NTSC의 8프레임과 9프레임 간격을 조합하며, PCM도 4 kHz 클록에서 같은 방식을 씁니다. 발음 시작·종료, 감쇠, SSG 공유 믹서, 미리 듣기, WAV와 C·NSF·NSF2·NSFe 내보내기가 같은 시간축을 따릅니다. CLI와 Python의 시간 정보도 수정했습니다.
+
+## zh-CN
+
+修复了点击轨道静音或独奏会停止播放的问题。切换时保留播放位置和循环，选中音符及键盘试听也会遵循轨道设置。可同时独奏多条轨道，静音优先。撤销或重做静音、独奏操作时继续播放，并防止已取消的旧任务覆盖新混音。
+
+节奏计算改为对累计时刻取整，而非逐个十六分音符取整。108 BPM 下，NTSC 调度会组合 8 帧和 9 帧间隔；PCM 在 4 kHz 时钟上采用相同方式。音符起止、衰减、SSG 共享混音器、预览、WAV 和 C、NSF、NSF2、NSFe 导出使用统一时间轴，CLI 与 Python 的时间信息也已修正。
+
+## zh-TW
+
+修正了點擊音軌靜音或獨奏會停止播放的問題。切換時保留播放位置與循環，選取音符和鍵盤試聽也會遵循音軌設定。可同時獨奏多條音軌，靜音優先。復原或重做靜音、獨奏操作時繼續播放，並防止已取消的舊工作覆寫新混音。
+
+節奏計算改為對累積時刻取整，而非逐個十六分音符取整。108 BPM 時，NTSC 排程會組合 8 幀和 9 幀間隔；PCM 在 4 kHz 時脈上採用相同方式。音符起訖、衰減、SSG 共享混音器、預覽、WAV 和 C、NSF、NSF2、NSFe 匯出使用統一時間軸，CLI 與 Python 的時間資訊也已修正。
+
+## fr
+
+Les boutons de sourdine et de solo n'arrêtent plus la lecture : la position et la boucle sont conservées. L'écoute des notes sélectionnées et du clavier respecte aussi ces réglages. Plusieurs pistes en solo jouent ensemble ; la sourdine reste prioritaire. Annuler ou rétablir ces réglages ne coupe plus la lecture, et une mise à jour annulée ne peut plus remplacer un mixage récent.
+
+Le tempo arrondit désormais les échéances cumulées plutôt que chaque double croche séparément. À 108 BPM, le séquenceur NTSC alterne des intervalles de 8 et 9 images ; le PCM applique la même méthode à 4 kHz. Débuts et fins de notes, décroissance, mixeur SSG partagé, préécoute, WAV et exports C/NSF/NSF2/NSFe suivent la même chronologie. Les durées annoncées par la CLI et Python ont aussi été corrigées.
+
+## es
+
+Los botones de silencio y solo ya no detienen la reproducción: conservan la posición y el bucle. La escucha de las notas seleccionadas y del teclado también respeta estos ajustes. Varias pistas en solo suenan juntas, con prioridad para el silencio. Deshacer o rehacer estos cambios mantiene la reproducción, y una actualización cancelada no puede sustituir una mezcla más reciente.
+
+El tempo ahora redondea los tiempos acumulados en vez de cada semicorchea por separado. A 108 BPM, el secuenciador NTSC combina intervalos de 8 y 9 fotogramas; el PCM aplica el mismo método con su reloj de 4 kHz. El inicio y final de las notas, el decaimiento, el mezclador SSG compartido, la escucha, WAV y las exportaciones C/NSF/NSF2/NSFe usan la misma línea temporal. También se corrigen los tiempos que muestran la CLI y Python.
+
+## de
+
+Stumm- und Solo-Schalter stoppen die Wiedergabe nicht mehr. Wiedergabeposition und Schleife bleiben erhalten; auch ausgewählte Noten und die Klaviatur berücksichtigen diese Einstellungen. Mehrere Solo-Spuren erklingen gemeinsam, wobei Stummschaltung Vorrang hat. Rückgängig und Wiederherstellen dieser Änderungen unterbrechen die Wiedergabe nicht; abgebrochene Berechnungen können keinen neueren Mix überschreiben.
+
+Die Tempoberechnung rundet nun die aufsummierten Zeitpunkte statt jeder Sechzehntelnote einzeln. Bei 108 BPM werden im NTSC-Takt Abstände von 8 und 9 Frames kombiniert; PCM verwendet dasselbe Verfahren mit 4 kHz. Notenanfänge und -enden, Abklingzeiten, gemeinsamer SSG-Mixer, Vorschau, WAV und C-/NSF-/NSF2-/NSFe-Exporte folgen derselben Zeitachse. Die Zeitangaben in CLI und Python wurden ebenfalls korrigiert.
+
+## pt-BR
+
+Os botões de silenciar e solo não interrompem mais a reprodução: a posição e o loop são mantidos. A prévia das notas selecionadas e do teclado também respeita esses ajustes. Várias faixas em solo tocam juntas, com prioridade para silenciar. Desfazer e refazer essas alterações mantém a reprodução, e uma atualização cancelada não substitui uma mixagem mais recente.
+
+O cálculo do andamento agora arredonda os tempos acumulados, em vez de cada semicolcheia separadamente. A 108 BPM, o sequenciador NTSC combina intervalos de 8 e 9 quadros; o PCM usa o mesmo método com seu relógio de 4 kHz. Inícios e finais de notas, decaimento, mixer SSG compartilhado, prévia, WAV e exportações C/NSF/NSF2/NSFe seguem a mesma linha do tempo. Os tempos informados pela CLI e pelo Python também foram corrigidos.
+
+---
+
 # FCSEQ 0.5.1
 
 ## en

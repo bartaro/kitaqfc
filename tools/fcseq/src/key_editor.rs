@@ -139,6 +139,11 @@ impl Studio {
             score.expansion.channels(),
         )];
         score.sections[0].rows = 16;
+        for (track, original) in score.sections[0].tracks.iter_mut()
+            .zip(&self.score.sections[self.part].tracks) {
+            track.mute = original.mute;
+            track.solo = original.solo;
+        }
         let mut note = Note::new(0, 4, pitch);
         note.sound = Some(sound);
         score.sections[0].tracks[ch].notes.push(note);

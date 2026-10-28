@@ -1,4 +1,4 @@
-# FCSEQ 0.5.1
+# FCSEQ 0.5.2
 
 [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md) · [Português](README.pt-BR.md)
 
@@ -21,6 +21,10 @@ Windows 需要 Direct3D 12 驱动和 Microsoft Visual C++ x64 运行库；macOS 
 按住 Ctrl/Shift 点击，或在空白处拖出选框，可选择多个音符。Ctrl+A 选择当前轨道；Ctrl+C/X/V 复制、剪切或在光标处粘贴；Ctrl+D 复制一份；Delete 删除。Ctrl+Z/Y 撤销或重做。方向键移动或移调，Shift+上/下移动一个八度。G 改变网格，Q 将音符对齐网格，F 显示整个段落，Home 回到开头，+/− 缩放时间轴。
 
 Space 控制播放与停止。LOOP 重复当前段落，AUDITION 试听选中的音符。静音和独奏也会影响导出。在 SONG 中可添加、命名和调整段落顺序，每个项目最多 16 个段落，每段最多 256 小节。点击速度或小节数即可修改。Ctrl+N/O/S/Shift+S 分别为新建、打开、保存、另存为。恢复文件位于程序旁的 `out/recovery_<process-id>.fcq`；需要时打开它并另存为。
+
+播放过程中可切换静音和独奏，无需从乐段或循环的开头重新播放。多条独奏轨道会一起播放；静音轨道即使开启独奏也不会发声。选中音符的试听同样遵循这些设置。新混音在后台准备完成后，从当前播放位置切换；最近使用的混音可从缓存切换。仅撤销或重做这些设置时，播放也会继续。
+
+即使 BPM 是整数，节奏计算也会累计时间的小数部分。108 BPM 的十六分音符在 NTSC 下约为 8.35 帧，因此会组合 8 帧和 9 帧间隔，而不是始终使用 8 帧。每个网格边界与理想时刻的误差不超过半个播放时钟周期。PCM 在 4 kHz 下使用同一规则，预览与所有导出保持一致。旧字段 frames_per_row/ticks_per_row 是取整后的近似值；计算时间请使用事件时刻或 average_ticks_per_row。
 
 ## 音源与音色
 
