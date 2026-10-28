@@ -303,18 +303,19 @@ fn exported_track_lengths_and_nsfe_playback_are_exact() {
     score.sections[0].rows = 896; // 56 bars, about 90 seconds
     let data = nsf::export_bytes(&score).unwrap();
     let file = kurosaki_core::nsf::NsfFile::from_bytes(&data).unwrap();
-    assert_eq!(file.header.duration_ms(1), Some(89451));
+    assert_eq!(file.header.duration_ms(1), Some(89601));
+    assert!((file.header.duration_ms(1).unwrap() as f64 / 1000.0 - 896.0 * 15.0 / score.bpm).abs() < 1.0 / FPS);
     assert_eq!(data[5], 1); // Optional metadata does not require NSF2.
     let nsfe = file.to_nsfe_bytes().unwrap();
     let restored = kurosaki_core::nsf::NsfFile::from_bytes(&nsfe).unwrap();
-    assert_eq!(restored.header.duration_ms(1), Some(89451));
+    assert_eq!(restored.header.duration_ms(1), Some(89601));
     assert_eq!(restored.header.expansion_bits, 16);
     let a = render(data, 0, 1);
     let b = render(nsfe.clone(), 0, 1);
     assert_eq!(a, b);
     assert_eq!(
         nsf::import_bytes(nsfe).unwrap().nsf.unwrap().duration_ms,
-        Some(89451)
+        Some(89601)
     );
 }
 

@@ -59,6 +59,11 @@
       "change": "added"
     },
     {
+      "path": "tests/nsf.rs",
+      "sha256": "ba5408ca474813af578616c92b9067e453dd678a399ba58c54a6e910b6ec3392",
+      "change": "modified"
+    },
+    {
       "path": "docs/AUDIO_FORMATS.md",
       "sha256": "1bc37fc3241a0a7359d16e8e6cea80b6c30a6eab1f6b745381f87450610882bf",
       "change": "modified"

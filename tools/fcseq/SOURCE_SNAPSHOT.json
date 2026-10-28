@@ -26,7 +26,7 @@
     "tests/core.rs": "5e397ddf08610dc5131b7fb6055f42db7849638164e913e8de9bdd43eb95d0fb",
     "tests/expansion.rs": "e8b55fa2f2791120234a76bbaa6c45cbb35f2252352ca9d38581c588b6f12fe8",
     "tests/instruments.rs": "86229bfc589fd28c24cbf54e00a9fd7cecad2307eb5c8ccfb8a3f739f6925a28",
-    "tests/nsf.rs": "0430f0ecac143e801a8fc15fb515e0a25d10e6d93c0ed227c0c9901faa4126a2",
+    "tests/nsf.rs": "ba5408ca474813af578616c92b9067e453dd678a399ba58c54a6e910b6ec3392",
     "tests/test_bindings.py": "3832af1a1f243b122c203fa40b8d60954da0a5594257d8146fda154dec7fc91c",
     "tests/test_expansion.py": "35ebdb689e790d4378a9a8372e4bcd070911f68ee2cc6a42bebcd6dbbd4c373e",
     "tests/test_fcseq.py": "2ffa4c82f491be79fafdd703d438d95085c8d7eb91b197db80ba779cdaf9b977",
