@@ -113,7 +113,9 @@ fn pcm_duration_and_shared_ssg_mixer_follow_fractional_note_edges() {
     score.sections[0].rows = 16;
     score.samples.push(Sample {
         name: "Tempo fixture".into(),
-        pcm: vec![12000; 22050],
+        pcm: (0..22050)
+            .map(|i| ((i as f64 * std::f64::consts::TAU * 440.0 / 44100.0).cos() * 12000.0) as i16)
+            .collect(),
         sample_rate: 44100,
         start: 0,
         end: 22050,
