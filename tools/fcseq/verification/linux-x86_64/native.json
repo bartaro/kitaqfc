@@ -1,14 +1,14 @@
 {
   "passed": true,
-  "version": "0.5.1",
-  "source_commit": "e07b06d07f4017bbf5fb234c691d3dd4f4b71571",
+  "version": "0.5.2",
+  "source_commit": "095a2a0cf6b6ccb7b066c13e00dbd26ac733d8c9",
   "platform": "linux-x86_64",
-  "system": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "system": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
   "python": "3.10.22 (main, Oct  1 2026, 14:30:20) [GCC 13.3.0]",
   "rust_tests": {
-    "passed": 51,
+    "passed": 59,
     "failed": 0,
-    "suites": 7
+    "suites": 8
   },
   "audio_tests": [
     {
@@ -202,9 +202,9 @@
     }
   ],
   "binaries": {
-    "fcseq": "9bfc2361ec106709888abfcdb30e2ea7f36bdfa3f5abff09e1d1aad1b57846eb",
-    "fcseq-cli": "f1098c707f4ff036c354081589d08af3af9c121288aedb69097b18ffc51ef3ee",
-    "fcseq_native.so": "5a93a29b9927655690d63b1432bd4a60e382a082c9d864b2b8e2917653b712ac"
+    "fcseq": "e8f2fcec986c716d654dd9a24d6bc4bc0e3b3dbd62179affde99ba8db3cc45c9",
+    "fcseq-cli": "341489ea75cce09a4e70afde862ef1fc516024dc705c5080dcd6e633d68e69ea",
+    "fcseq_native.so": "33e62e9c1dd08d51376011406dccfba01c182a810da4389c9491f73362826909"
   },
   "native_audio_output_device_tested": false,
   "physical_hardware_tested": false

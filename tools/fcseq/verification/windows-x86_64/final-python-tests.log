@@ -5,6 +5,7 @@ test_lengths_sections_and_custom_instruments (test_bindings.BindingTests) ... ok
 test_new_chips_nsf2_roundtrip_and_parameter_history (test_expansion.ExpansionTests) ... ok
 test_pcm_note_uses_first_imported_sample (test_expansion.ExpansionTests) ... ok
 test_export_is_generic_and_preserves_register_stream (test_fcseq.ScoreTests) ... ok
+test_fractional_frame_tempo_matches_native_exports (test_fcseq.ScoreTests) ... ok
 test_low_pulse_and_nonfinite_tempo (test_fcseq.ScoreTests) ... ok
 test_overlap_and_overrun_rejected (test_fcseq.ScoreTests) ... ok
 test_roundtrip (test_fcseq.ScoreTests) ... ok
@@ -15,6 +16,6 @@ test_renamed_legacy_project_opens_as_fcq (test_nsf.NsfTests) ... ok
 test_section_duration_metadata_and_nsfe_playback (test_nsf.NsfTests) ... ok
 
 ----------------------------------------------------------------------
-Ran 15 tests in 1.030s
+Ran 16 tests in 0.811s
 
 OK

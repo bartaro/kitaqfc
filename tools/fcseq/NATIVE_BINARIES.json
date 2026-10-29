@@ -1,31 +1,31 @@
 {
-  "version": "0.5.1",
-  "source_commit": "e07b06d07f4017bbf5fb234c691d3dd4f4b71571",
-  "workflow_url": "https://github.com/bartaro/kitaqfc/actions/runs/39518117575",
+  "version": "0.5.2",
+  "source_commit": "095a2a0cf6b6ccb7b066c13e00dbd26ac733d8c9",
+  "workflow_url": "https://github.com/bartaro/kitaqfc/actions/runs/40791474978",
   "rust": "1.93.1",
-  "python_wrapper_sha256": "ae22b630b9adaa69fec76a944e5e705c244c5a381829411eb0bbecb933a623a9",
+  "python_wrapper_sha256": "de03c1696dee7779f173738941f4473b5f707ca4ec00683e6ab4295895676512",
   "native_platforms": [
     {
       "platform": "windows-x86_64",
       "binaries": {
         "fcseq.exe": {
-          "sha256": "edf969f5e14c8003d8f8bec013c23788c18dda73d8c12039b92552ef1358d082",
-          "bytes": 11591168,
+          "sha256": "c2b34001b94d75a1ef7350b784c9c817107123e94cb294eb5f51637dc9a1e6d3",
+          "bytes": 11659776,
           "format": "PE x86_64"
         },
         "fcseq-cli.exe": {
-          "sha256": "2d89f752ce2c8c989c9b2da611f75a535aa149dac4f68531730cb743888ca0aa",
-          "bytes": 2048000,
+          "sha256": "ba2e5b08e42792fa7590376a972fcd71ea2dd9db30ced404bdc05a63b4db6165",
+          "bytes": 2060800,
           "format": "PE x86_64"
         },
         "fcseq_native.pyd": {
-          "sha256": "5a81791c0d8333aa59bfe6a4bafe5f04d0260fff2615134349aab2f80ae356fe",
-          "bytes": 1909248,
+          "sha256": "9253e2c791345fdd4aa55714af5c45a4c824f6c4cd58bb8703b917f7447b979e",
+          "bytes": 1915904,
           "format": "PE x86_64"
         }
       },
-      "rust_tests": 51,
-      "python_tests": 15,
+      "rust_tests": 59,
+      "python_tests": 16,
       "gui_native_startup": {
         "channels": 5,
         "empty_startup": true,
@@ -44,23 +44,23 @@
       "platform": "linux-x86_64",
       "binaries": {
         "fcseq": {
-          "sha256": "9bfc2361ec106709888abfcdb30e2ea7f36bdfa3f5abff09e1d1aad1b57846eb",
-          "bytes": 17253480,
+          "sha256": "e8f2fcec986c716d654dd9a24d6bc4bc0e3b3dbd62179affde99ba8db3cc45c9",
+          "bytes": 17338744,
           "format": "ELF x86_64"
         },
         "fcseq-cli": {
-          "sha256": "f1098c707f4ff036c354081589d08af3af9c121288aedb69097b18ffc51ef3ee",
-          "bytes": 2685304,
+          "sha256": "341489ea75cce09a4e70afde862ef1fc516024dc705c5080dcd6e633d68e69ea",
+          "bytes": 2694800,
           "format": "ELF x86_64"
         },
         "fcseq_native.so": {
-          "sha256": "5a93a29b9927655690d63b1432bd4a60e382a082c9d864b2b8e2917653b712ac",
-          "bytes": 2621272,
+          "sha256": "33e62e9c1dd08d51376011406dccfba01c182a810da4389c9491f73362826909",
+          "bytes": 2627952,
           "format": "ELF x86_64"
         }
       },
-      "rust_tests": 51,
-      "python_tests": 15,
+      "rust_tests": 59,
+      "python_tests": 16,
       "gui_native_startup": {
         "channels": 5,
         "empty_startup": true,
@@ -79,23 +79,23 @@
       "platform": "macos-arm64",
       "binaries": {
         "fcseq": {
-          "sha256": "cc0416f82a162b7d5b6bc60020672ef030a2c7f63c078d20a4d94b050fbebfef",
-          "bytes": 10517408,
+          "sha256": "b604f08f78ade029cdfd3549c0bd7f7e35a100cd1d35a8d606c01db9e570ebe8",
+          "bytes": 10596192,
           "format": "Mach-O arm64"
         },
         "fcseq-cli": {
-          "sha256": "7a26ef65de472b7e3b0a9e36abe3ff1404bd6601e1fc7d2df661eb33468c26b5",
-          "bytes": 2266032,
+          "sha256": "cccb7ea7df6c6e8345683ca0c7b982e790949e03a84e14d89622083ca1228189",
+          "bytes": 2283088,
           "format": "Mach-O arm64"
         },
         "fcseq_native.so": {
-          "sha256": "96c8e9c58dc6514578dca3ac0050d112bdf527668e89a28d950497c83d8f14e2",
-          "bytes": 2188816,
+          "sha256": "12e43d9dbaf72f9b21137c327bd44fd57e47923a0289f70273f0f05065dfcfd7",
+          "bytes": 2188896,
           "format": "Mach-O arm64"
         }
       },
-      "rust_tests": 51,
-      "python_tests": 15,
+      "rust_tests": 59,
+      "python_tests": 16,
       "gui_native_startup": {
         "channels": 5,
         "empty_startup": true,
@@ -114,23 +114,23 @@
       "platform": "macos-x86_64",
       "binaries": {
         "fcseq": {
-          "sha256": "de905579b6a7468c03a4dbf961937c822ad81190501a627d9795ffa3b2051659",
-          "bytes": 10860604,
+          "sha256": "84966b62190ab3c481a4ff6d55516d9b896577d5dc25965ce70b9aa0c841d4d2",
+          "bytes": 10934628,
           "format": "Mach-O x86_64"
         },
         "fcseq-cli": {
-          "sha256": "89afd1c232e4800061175416e5b5a0b5248e9decaa9df8a745fc99515a346f4e",
-          "bytes": 2341728,
+          "sha256": "b3870e56f523d7b62b6516d14e83ab987ff57c9f8a0b77eb298c39bfebf371ac",
+          "bytes": 2354624,
           "format": "Mach-O x86_64"
         },
         "fcseq_native.so": {
-          "sha256": "95e182c1c0fb1716608fa66882c6baa094c06707471e50767966e9eb618e34b0",
-          "bytes": 2255084,
+          "sha256": "15e70249c4b162348b5b2a7ee66e8c1c1e7284e9b471c38663a3c3694889c63b",
+          "bytes": 2259284,
           "format": "Mach-O x86_64"
         }
       },
-      "rust_tests": 51,
-      "python_tests": 15,
+      "rust_tests": 59,
+      "python_tests": 16,
       "gui_native_startup": {
         "channels": 5,
         "empty_startup": true,
