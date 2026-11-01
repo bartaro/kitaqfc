@@ -40,6 +40,16 @@
 #include "vrc6_sound.h"
 #include "vrc7_sound.h"
 #include "mapper.h"
+#include "zx0.h"
+#include "rpg.h"
+#include "slg.h"
+#include "camera.h"
+#include "sprite_order.h"
+#include "math.h"
+#include "physics2d_circle.h"
+#include "wire3d_model.h"
+#include "wire3d_rig.h"
+#include "raster.h"
 // This final include adds function-like macros, including zero-argument nes_oam_dma.
 // Use selective headers when calling the page-argument runtime API with the same name.
 #include "nes_game.h"

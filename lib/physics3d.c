@@ -1,54 +1,30 @@
 #include "physics3d.h"
-#include "physics2d.h"
 
-// Foreground physics routines; do not re-enter them from NMI or IRQ.
+
 
 s16 kq3d_asm_value;
 s16 kq3d_asm_operand;
 s16 kq3d_asm_limit;
 s16 kq3d_asm_tmp;
 
-// Add the shared operand to the shared value using compiler-generated 16-bit arithmetic.
-// The 16-bit result wraps; this is not saturating addition.
-void kq3d__add_value()
-{
-    kq3d_asm_value = (s16)(kq3d_asm_value + kq3d_asm_operand);
-}
+void kq3d_add_s16_asm() { kq3d_asm_value=(s16)(kq3d_asm_value+kq3d_asm_operand); }
 
-// Negate a negative shared value in place. The minimum signed value remains
-// 0x8000 and cannot be used as a positive s16 magnitude.
-void kq3d__abs_value()
-{
-    if (kq3d_asm_value < 0) kq3d_asm_value = (s16)(0 - kq3d_asm_value);
-}
+void kq3d_abs_s16_asm() { if(kq3d_asm_value<0) kq3d_asm_value=(s16)(0-kq3d_asm_value); }
 
-// Clamp the shared value to +/- the shared nonnegative limit.
-void kq3d__clamp_value()
-{
-    if (kq3d_asm_value > kq3d_asm_limit) kq3d_asm_value = kq3d_asm_limit;
-    else if (kq3d_asm_value < (s16)(0 - kq3d_asm_limit)) kq3d_asm_value = (s16)(0 - kq3d_asm_limit);
-}
+void kq3d_clamp_abs_s16_asm() { if(kq3d_asm_value>kq3d_asm_limit) kq3d_asm_value=kq3d_asm_limit; else if(kq3d_asm_value<(s16)(0-kq3d_asm_limit)) kq3d_asm_value=(s16)(0-kq3d_asm_limit); }
 
-// Return a magnitude through shared helper scratch. Exclude -32768 when
-// a positive result is required; this helper is not reentrant.
 s16 kq3d__abs_s16(s16 v)
 {
     kq3d_asm_value = v;
-    kq3d__abs_value();
+    kq3d_abs_s16_asm();
     return kq3d_asm_value;
 }
 
-// Keep the largest incoming impact seen since the caller last cleared it.
-// This does not inspect break_speed, change flags, or deactivate the body.
 void kq3d__record_impact(KQBody3D* body, s16 impact)
 {
     if (impact > body->last_impact_speed) body->last_impact_speed = impact;
 }
 
-// For closing motion on the selected axis, record impact on both bodies,
-// then apply an inverse-mass-weighted impulse using averaged restitution clamped
-// to 0..256. Axis 0 is X, 1 is Y, all others are Z; normal must be +/-1.
-// Intermediate products are signed 16-bit and must remain representable.
 void kq3d__bounce_axis(KQBody3D* a, KQBody3D* b, u8 axis, s16 normal)
 {
     s16 va;
@@ -119,9 +95,6 @@ void kq3d__bounce_axis(KQBody3D* a, KQBody3D* b, u8 axis, s16 normal)
     }
 }
 
-// Borrow the body array without initializing it. Set gravity (0,24,0), four
-// contact passes and a per-axis speed limit of 512. Null world is ignored;
-// the caller retains ownership and must keep the array alive.
 void kq3d_world_init(KQWorld3D* world, KQBody3D* bodies, u8 body_count)
 {
     if (world == 0) return;
@@ -135,10 +108,6 @@ void kq3d_world_init(KQWorld3D* world, KQBody3D* bodies, u8 body_count)
     world->max_speed = 512;
 }
 
-// Store the requested mass; nonpositive mass makes the body static.
-// For positive mass compute inverse weight as max(1,32767/max(mass,64)).
-// The stored mass retains the original input; this is a relative solver weight,
-// not an exact Q8 reciprocal. Null body is ignored.
 void kq3d_body_set_mass(KQBody3D* body, s16 mass_q8)
 {
     if (body == 0) return;
@@ -155,9 +124,6 @@ void kq3d_body_set_mass(KQBody3D* body, s16 mass_q8)
     if (body->inv_mass_q8 <= 0) body->inv_mass_q8 = 1;
 }
 
-// Initialize an active centered box with zero velocity/acceleration,
-// restitution 224, cleared impact/flags and mass set through the weight helper.
-// The caller supplies valid half extents. Null body is ignored.
 void kq3d_body_init(KQBody3D* body, s16 x, s16 y, s16 z, s16 half_x, s16 half_y, s16 half_z, s16 mass_q8)
 {
     if (body == 0) return;
@@ -182,9 +148,6 @@ void kq3d_body_init(KQBody3D* body, s16 x, s16 y, s16 z, s16 half_x, s16 half_y,
     kq3d_body_set_mass(body, mass_q8);
 }
 
-// Test strict overlap on all three axes; face-only contact returns false.
-// Valid pointers are required and flags are ignored. Center differences and
-// extent sums must fit the signed 16-bit magnitude calculations.
 u8 kq3d_overlap_aabb(const KQBody3D* a, const KQBody3D* b)
 {
     s16 dx = kq3d__abs_s16((s16)(b->x - a->x));
@@ -201,13 +164,219 @@ u8 kq3d_overlap_aabb(const KQBody3D* a, const KQBody3D* b)
     return 1;
 }
 
+// Exact sphere-versus-box overlap after a cheap AABB broad-phase check.
+// Sphere radius is half_x; other half extents are ignored for flagged spheres.
+u8 kq3d_overlap_sphere_aabb(const KQBody3D* sphere, const KQBody3D* box)
+{
+    s16 dx;
+    s16 dy;
+    s16 dz;
+    s16 radius;
+    s16 closest_x;
+    s16 closest_y;
+    s16 closest_z;
+    u16 distance_sq;
+    u16 radius_sq;
+    u16 distance;
+
+    if (sphere == 0 || box == 0) return 0;
+    radius = sphere->half_x;
+    if (radius <= 0) return 0;
+    // Inclusive broad phase: tangent spheres still need an impulse when they
+    // are moving into a paddle face.
+    if (kq3d__abs_s16((s16)(sphere->x - box->x)) > (s16)(radius + box->half_x)) return 0;
+    if (kq3d__abs_s16((s16)(sphere->y - box->y)) > (s16)(radius + box->half_y)) return 0;
+    if (kq3d__abs_s16((s16)(sphere->z - box->z)) > (s16)(radius + box->half_z)) return 0;
+
+    dx = (s16)(sphere->x - box->x);
+    dy = (s16)(sphere->y - box->y);
+    dz = (s16)(sphere->z - box->z);
+    closest_x = dx;
+    closest_y = dy;
+    closest_z = dz;
+    if (closest_x < (s16)(0 - box->half_x)) closest_x = (s16)(0 - box->half_x);
+    else if (closest_x > box->half_x) closest_x = box->half_x;
+    if (closest_y < (s16)(0 - box->half_y)) closest_y = (s16)(0 - box->half_y);
+    else if (closest_y > box->half_y) closest_y = box->half_y;
+    if (closest_z < (s16)(0 - box->half_z)) closest_z = (s16)(0 - box->half_z);
+    else if (closest_z > box->half_z) closest_z = box->half_z;
+
+    dx = (s16)(dx - closest_x);
+    dy = (s16)(dy - closest_y);
+    dz = (s16)(dz - closest_z);
+    if (kq3d__abs_s16(dx) > radius) return 0;
+    if (kq3d__abs_s16(dy) > radius) return 0;
+    if (kq3d__abs_s16(dz) > radius) return 0;
+
+    distance_sq = (u16)((u16)(dx * dx) + (u16)(dy * dy) + (u16)(dz * dz));
+    radius_sq = (u16)(radius * radius);
+    if (distance_sq <= radius_sq) return 1;
+    distance = 0;
+    while ((u16)((distance + 1) * (distance + 1)) <= distance_sq)
+        distance++;
+    return (u8)(distance < (u16)radius);
+}
+
+static s16 kq3d__clamp_s16(s16 value, s16 low, s16 high)
+{
+    if (value < low) return low;
+    if (value > high) return high;
+    return value;
+}
+
+static void kq3d__bounce_normal(KQBody3D* a, KQBody3D* b, s16 nx, s16 ny, s16 nz)
+{
+    s16 rel_x = (s16)(b->vx - a->vx);
+    s16 rel_y = (s16)(b->vy - a->vy);
+    s16 rel_z = (s16)(b->vz - a->vz);
+    s16 rel = (s16)(((rel_x * nx) + (rel_y * ny) + (rel_z * nz)) >> 8);
+    s16 impact;
+    s16 inv_a;
+    s16 inv_b;
+    s16 inv_sum;
+    s16 restitution;
+    s16 push;
+    s16 dv_a;
+    s16 dv_b;
+
+    if (rel >= 0) return;
+    impact = (s16)(0 - rel);
+    kq3d__record_impact(a, impact);
+    kq3d__record_impact(b, impact);
+    if (a->active == 0 || b->active == 0) return;
+    inv_a = a->inv_mass_q8;
+    inv_b = b->inv_mass_q8;
+    inv_sum = (s16)(inv_a + inv_b);
+    if (inv_sum <= 0) return;
+
+    restitution = (s16)((a->restitution_q8 + b->restitution_q8) >> 1);
+    if (restitution < 0) restitution = 0;
+    if (restitution > 256) restitution = 256;
+    push = (s16)((impact * (s16)(256 + restitution)) >> 8);
+    if (push <= 0) push = 1;
+    dv_a = (s16)((push * inv_a) / inv_sum);
+    dv_b = (s16)(push - dv_a);
+    if (inv_a > 0)
+    {
+        a->vx = (s16)(a->vx - (s16)((nx * dv_a) >> 8));
+        a->vy = (s16)(a->vy - (s16)((ny * dv_a) >> 8));
+        a->vz = (s16)(a->vz - (s16)((nz * dv_a) >> 8));
+    }
+    if (inv_b > 0)
+    {
+        b->vx = (s16)(b->vx + (s16)((nx * dv_b) >> 8));
+        b->vy = (s16)(b->vy + (s16)((ny * dv_b) >> 8));
+        b->vz = (s16)(b->vz + (s16)((nz * dv_b) >> 8));
+    }
+}
+
+static void kq3d__resolve_sphere_box(KQBody3D* a, KQBody3D* b, KQBody3D* sphere, KQBody3D* box)
+{
+    s16 rx = (s16)(sphere->x - box->x);
+    s16 ry = (s16)(sphere->y - box->y);
+    s16 rz = (s16)(sphere->z - box->z);
+    s16 qx = kq3d__clamp_s16(rx, (s16)(0 - box->half_x), box->half_x);
+    s16 qy = kq3d__clamp_s16(ry, (s16)(0 - box->half_y), box->half_y);
+    s16 qz = kq3d__clamp_s16(rz, (s16)(0 - box->half_z), box->half_z);
+    s16 tx = (s16)(qx - rx);
+    s16 ty = (s16)(qy - ry);
+    s16 tz = (s16)(qz - rz);
+    s16 nx;
+    s16 ny;
+    s16 nz;
+    s16 penetration;
+    s16 inv_a;
+    s16 inv_b;
+    s16 inv_sum;
+    s16 move_a;
+    s16 move_b;
+    u16 distance_sq;
+    u16 distance;
+    u8 sphere_is_a = (u8)(sphere == a);
+
+    if (kq3d_overlap_sphere_aabb(sphere, box) == 0) return;
+    distance_sq = (u16)((u16)(tx * tx) + (u16)(ty * ty) + (u16)(tz * tz));
+    if (distance_sq != 0)
+    {
+        distance = 0;
+        while ((u16)((distance + 1) * (distance + 1)) <= distance_sq)
+            distance++;
+        if (distance == 0) distance = 1;
+        penetration = (s16)(sphere->half_x - (s16)distance);
+        nx = (s16)((tx * (s16)256) / (s16)distance);
+        ny = (s16)((ty * (s16)256) / (s16)distance);
+        nz = (s16)((tz * (s16)256) / (s16)distance);
+    }
+    else
+    {
+        // When the center is inside the box, separate it through the nearest
+        // face. At an exact center tie, velocity selects the incoming side.
+        s16 rvx = (s16)(sphere->vx - box->vx);
+        s16 rvy = (s16)(sphere->vy - box->vy);
+        s16 rvz = (s16)(sphere->vz - box->vz);
+        s16 gap_x = (s16)(box->half_x - kq3d__abs_s16(rx));
+        s16 gap_y = (s16)(box->half_y - kq3d__abs_s16(ry));
+        s16 gap_z = (s16)(box->half_z - kq3d__abs_s16(rz));
+
+        nx = 0; ny = 0; nz = 0;
+        if (gap_x <= gap_y && gap_x <= gap_z)
+        {
+            nx = (rx > 0 || (rx == 0 && rvx < 0)) ? (s16)-256 : (s16)256;
+            penetration = (s16)(sphere->half_x + gap_x);
+        }
+        else if (gap_y <= gap_z)
+        {
+            ny = (ry > 0 || (ry == 0 && rvy < 0)) ? (s16)-256 : (s16)256;
+            penetration = (s16)(sphere->half_x + gap_y);
+        }
+        else
+        {
+            nz = (rz > 0 || (rz == 0 && rvz < 0)) ? (s16)-256 : (s16)256;
+            penetration = (s16)(sphere->half_x + gap_z);
+        }
+    }
+
+    if (sphere_is_a == 0)
+    {
+        nx = (s16)(0 - nx);
+        ny = (s16)(0 - ny);
+        nz = (s16)(0 - nz);
+    }
+    inv_a = a->inv_mass_q8;
+    inv_b = b->inv_mass_q8;
+    inv_sum = (s16)(inv_a + inv_b);
+    if (inv_sum <= 0) return;
+    if (penetration < 0) penetration = 0;
+    move_a = (s16)((penetration * inv_a) / inv_sum);
+    move_b = (s16)(penetration - move_a);
+    if (inv_a > 0)
+    {
+        a->x = (s16)(a->x - (s16)((nx * move_a) >> 8));
+        a->y = (s16)(a->y - (s16)((ny * move_a) >> 8));
+        a->z = (s16)(a->z - (s16)((nz * move_a) >> 8));
+    }
+    if (inv_b > 0)
+    {
+        b->x = (s16)(b->x + (s16)((nx * move_b) >> 8));
+        b->y = (s16)(b->y + (s16)((ny * move_b) >> 8));
+        b->z = (s16)(b->z + (s16)((nz * move_b) >> 8));
+    }
+    kq3d__bounce_normal(a, b, nx, ny, nz);
+}
+
 // Resolve one pair with axis-aligned positional correction and mass-weighted bounce.
-// Separate overlapping boxes on the least-penetrating axis, preferring X
-// then Y then Z on ties, and apply an axis impulse for closing velocity.
-// Position correction uses inverse-mass weights; two static bodies are skipped.
-// Intermediate products must fit 16 bits; break flags are not set here.
 void kq3d__resolve_pair(KQBody3D* a, KQBody3D* b)
 {
+    if ((a->flags & KQ3D_BODY_SPHERE) != 0 && (b->flags & KQ3D_BODY_SPHERE) == 0)
+    {
+        kq3d__resolve_sphere_box(a, b, a, b);
+        return;
+    }
+    if ((b->flags & KQ3D_BODY_SPHERE) != 0 && (a->flags & KQ3D_BODY_SPHERE) == 0)
+    {
+        kq3d__resolve_sphere_box(a, b, b, a);
+        return;
+    }
     if (kq3d_overlap_aabb(a, b) == 0) return;
 
     s16 dx = (s16)(b->x - a->x);
@@ -260,66 +429,62 @@ void kq3d__resolve_pair(KQBody3D* a, KQBody3D* b)
     }
 }
 
-// Reset impact for one active dynamic body, add gravity and persistent body
-// acceleration, clamp velocity per axis and advance position. Static/inactive
-// bodies retain impact state. Null inputs are ignored; no contacts are solved.
-// Use a nonnegative speed limit and avoid overflow before clamping.
-void kq3d_integrate_body(KQWorld3D* world, KQBody3D* body)
+static void kq3d__integrate_body(KQWorld3D* world, KQBody3D* body, u8 allow_static)
 {
     if (world == 0) return;
     if (body == 0) return;
     if (body->active == 0) return;
-    if (body->inv_mass_q8 <= 0) return;
+    if (body->inv_mass_q8 <= 0 && allow_static == 0) return;
 
     body->last_impact_speed = 0;
     kq3d_asm_value = body->vx;
     kq3d_asm_operand = world->gravity_x;
-    kq3d__add_value();
+    kq3d_add_s16_asm();
     kq3d_asm_operand = body->ax;
-    kq3d__add_value();
+    kq3d_add_s16_asm();
     kq3d_asm_limit = world->max_speed;
-    kq3d__clamp_value();
+    kq3d_clamp_abs_s16_asm();
     body->vx = kq3d_asm_value;
 
     kq3d_asm_value = body->vy;
     kq3d_asm_operand = world->gravity_y;
-    kq3d__add_value();
+    kq3d_add_s16_asm();
     kq3d_asm_operand = body->ay;
-    kq3d__add_value();
+    kq3d_add_s16_asm();
     kq3d_asm_limit = world->max_speed;
-    kq3d__clamp_value();
+    kq3d_clamp_abs_s16_asm();
     body->vy = kq3d_asm_value;
 
     kq3d_asm_value = body->vz;
     kq3d_asm_operand = world->gravity_z;
-    kq3d__add_value();
+    kq3d_add_s16_asm();
     kq3d_asm_operand = body->az;
-    kq3d__add_value();
+    kq3d_add_s16_asm();
     kq3d_asm_limit = world->max_speed;
-    kq3d__clamp_value();
+    kq3d_clamp_abs_s16_asm();
     body->vz = kq3d_asm_value;
 
     kq3d_asm_value = body->x;
     kq3d_asm_operand = body->vx;
-    kq3d__add_value();
+    kq3d_add_s16_asm();
     body->x = kq3d_asm_value;
 
     kq3d_asm_value = body->y;
     kq3d_asm_operand = body->vy;
-    kq3d__add_value();
+    kq3d_add_s16_asm();
     body->y = kq3d_asm_value;
 
     kq3d_asm_value = body->z;
     kq3d_asm_operand = body->vz;
-    kq3d__add_value();
+    kq3d_add_s16_asm();
     body->z = kq3d_asm_value;
 }
 
-// Integrate active dynamic bodies and reset their impact values, then solve
-// each active unordered pair for the configured passes (zero means one).
-// Static bodies retain previous impact maxima until the game clears them.
-// Acceleration persists; flags and break thresholds remain game-owned.
-// This discrete solver shares non-reentrant helper scratch and can miss fast crossings.
+void kq3d_integrate_body(KQWorld3D* world, KQBody3D* body)
+{
+    kq3d__integrate_body(world, body, 0);
+}
+
 void kq3d_step(KQWorld3D* world)
 {
     if (world == 0) return;
@@ -331,51 +496,67 @@ void kq3d_step(KQWorld3D* world)
     u8 i;
     for (i = 0; i < count; i++)
     {
-        KQBody3D* b = &bodies[(u8)i];
+        KQBody3D* b = &bodies[(__safe_index u8)i];
+        u8 kinematic = (u8)(b->flags & KQ3D_BODY_KINEMATIC);
         if (b->active == 0) continue;
-        if (b->inv_mass_q8 <= 0) continue;
+        if (b->inv_mass_q8 <= 0 && kinematic == 0) continue;
 
         b->last_impact_speed = 0;
         kq3d_asm_value = b->vx;
         kq3d_asm_operand = world->gravity_x;
-        kq3d__add_value();
+        kq3d_add_s16_asm();
         kq3d_asm_operand = b->ax;
-        kq3d__add_value();
+        kq3d_add_s16_asm();
         kq3d_asm_limit = world->max_speed;
-        kq3d__clamp_value();
+        kq3d_clamp_abs_s16_asm();
         b->vx = kq3d_asm_value;
 
         kq3d_asm_value = b->vy;
         kq3d_asm_operand = world->gravity_y;
-        kq3d__add_value();
+        kq3d_add_s16_asm();
         kq3d_asm_operand = b->ay;
-        kq3d__add_value();
+        kq3d_add_s16_asm();
         kq3d_asm_limit = world->max_speed;
-        kq3d__clamp_value();
+        kq3d_clamp_abs_s16_asm();
         b->vy = kq3d_asm_value;
+
+        // Kinematic bodies only move on their controlled X/Y axes. Their
+        // inverse mass remains zero, so contacts never push them around.
+        if (kinematic != 0)
+        {
+            kq3d_asm_value = b->x;
+            kq3d_asm_operand = b->vx;
+            kq3d_add_s16_asm();
+            b->x = kq3d_asm_value;
+            kq3d_asm_value = b->y;
+            kq3d_asm_operand = b->vy;
+            kq3d_add_s16_asm();
+            b->y = kq3d_asm_value;
+            continue;
+        }
 
         kq3d_asm_value = b->vz;
         kq3d_asm_operand = world->gravity_z;
-        kq3d__add_value();
+        kq3d_add_s16_asm();
         kq3d_asm_operand = b->az;
-        kq3d__add_value();
+        kq3d_add_s16_asm();
         kq3d_asm_limit = world->max_speed;
-        kq3d__clamp_value();
+        kq3d_clamp_abs_s16_asm();
         b->vz = kq3d_asm_value;
 
         kq3d_asm_value = b->x;
         kq3d_asm_operand = b->vx;
-        kq3d__add_value();
+        kq3d_add_s16_asm();
         b->x = kq3d_asm_value;
 
         kq3d_asm_value = b->y;
         kq3d_asm_operand = b->vy;
-        kq3d__add_value();
+        kq3d_add_s16_asm();
         b->y = kq3d_asm_value;
 
         kq3d_asm_value = b->z;
         kq3d_asm_operand = b->vz;
-        kq3d__add_value();
+        kq3d_add_s16_asm();
         b->z = kq3d_asm_value;
     }
 
@@ -387,24 +568,25 @@ void kq3d_step(KQWorld3D* world)
     {
         for (i = 0; i < count; i++)
         {
-            KQBody3D* a = &bodies[(u8)i];
+            KQBody3D* a = &bodies[(__safe_index u8)i];
             if (a->active == 0) continue;
 
             u8 j;
             for (j = (u8)(i + 1); j < count; j++)
             {
-                KQBody3D* b = &bodies[(u8)j];
+                KQBody3D* b = &bodies[(__safe_index u8)j];
                 if (b->active == 0) continue;
+                // Two immovable bodies cannot receive a solver correction.
+                // Skip their AABB test because resolve_pair would return once
+                // it finds the inverse-mass sum is zero.
+                if (a->inv_mass_q8 <= 0 && b->inv_mass_q8 <= 0) continue;
                 kq3d__resolve_pair(a, b);
             }
         }
     }
 }
 
-// Sum three signed products, each divided by 256 toward zero before
-// addition. Coefficients are signed bytes scaled by 1/256. The 16-bit sum is
-// not saturated, so keep products and their sum within the intended range.
 s16 kq3d_dot_q8_8(s16 x, s16 y, s16 z, s8 ax, s8 ay, s8 az)
 {
-    return (s16)(kq2d_scale_q8(x,(s16)ax) + kq2d_scale_q8(y,(s16)ay) + kq2d_scale_q8(z,(s16)az));
+    return (s16)(kq2d_scale_q8(x,(s16)ax)+kq2d_scale_q8(y,(s16)ay)+kq2d_scale_q8(z,(s16)az));
 }

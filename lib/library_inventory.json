@@ -1,0 +1,1308 @@
+{
+  "date": "2026-11-02",
+  "scope": "all C/header modules in both GB library roots; pinball deferred and GB-specific hardware/communication excluded by user",
+  "counts": {
+    "existing_native": 16,
+    "excluded_gb_hardware": 9,
+    "ported_native": 20,
+    "native_renderer_family": 7,
+    "extended_native": 3,
+    "deferred_by_user": 2
+  },
+  "modules": [
+    {
+      "module": "asset",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/asset.c",
+          "sha256": "d9bb8db1577121b975a6771da4f25ac34dc75b7e5d2325dcf6e82bc62cf87896"
+        },
+        {
+          "path": "kitaqgb_rust/lib/asset.h",
+          "sha256": "3c12ee1a6eff8c23c6f5dbe564a15f0cca7ca04f258428dc85b4e64e69706822"
+        },
+        {
+          "path": "lib/asset.c",
+          "sha256": "d9bb8db1577121b975a6771da4f25ac34dc75b7e5d2325dcf6e82bc62cf87896"
+        },
+        {
+          "path": "lib/asset.h",
+          "sha256": "3c12ee1a6eff8c23c6f5dbe564a15f0cca7ca04f258428dc85b4e64e69706822"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/asset.c",
+        "kitaqfc_rust/lib/asset.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "audio",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/audio.c",
+          "sha256": "7b91d88a134e5916372f61c82eddceff097880aacee04e8c7e5c7e2f2d05ada3"
+        },
+        {
+          "path": "kitaqgb_rust/lib/audio.h",
+          "sha256": "7d6705953024f21d90211be02343bf539f6bff250c43905e9f1ae037d0e9a9e9"
+        },
+        {
+          "path": "lib/audio.c",
+          "sha256": "7b91d88a134e5916372f61c82eddceff097880aacee04e8c7e5c7e2f2d05ada3"
+        },
+        {
+          "path": "lib/audio.h",
+          "sha256": "7d6705953024f21d90211be02343bf539f6bff250c43905e9f1ae037d0e9a9e9"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/audio.c",
+        "kitaqfc_rust/lib/audio.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "audio_hwregs_gb",
+      "status": "excluded_gb_hardware",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/audio_hwregs_gb.c",
+          "sha256": "0963199b2371ef284ea5013c4263bb636c3dad92f1272210905181b583dfd036"
+        },
+        {
+          "path": "lib/audio_hwregs_gb.c",
+          "sha256": "0963199b2371ef284ea5013c4263bb636c3dad92f1272210905181b583dfd036"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/audio.h",
+        "kitaqfc_rust/lib/intrinsics.h"
+      ],
+      "note": "GB-specific registers excluded by user; existing native NES interfaces listed as references"
+    },
+    {
+      "module": "audio_vblank",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/audio_vblank.c",
+          "sha256": "376f8d040e67ffd41478c53bcd2ebaa52847f7ae50ca3baabf961784fa8790fa"
+        },
+        {
+          "path": "kitaqgb_rust/lib/audio_vblank.h",
+          "sha256": "e6808c3fafef130b35e1ceb491ea46a0f9181d8186e4fd0c76e31d5e2241d35e"
+        },
+        {
+          "path": "lib/audio_vblank.c",
+          "sha256": "8e4aced18f5f63341c098452f1ca005c718e16f80fff6d5f09b2f02a4d288742"
+        },
+        {
+          "path": "lib/audio_vblank.h",
+          "sha256": "e6808c3fafef130b35e1ceb491ea46a0f9181d8186e4fd0c76e31d5e2241d35e"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/audio_vblank.c",
+        "kitaqfc_rust/lib/audio_vblank.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "bank",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/bank.c",
+          "sha256": "2b2ee0e992015f5b39f91c8ab521fec1262d44b945f9f41c69d813138b1b7b65"
+        },
+        {
+          "path": "kitaqgb_rust/lib/bank.h",
+          "sha256": "953ac90741999c455eeed185dd4040175c1d3dc4cdeaf2f28110a9bee9bd0a94"
+        },
+        {
+          "path": "lib/bank.c",
+          "sha256": "2b2ee0e992015f5b39f91c8ab521fec1262d44b945f9f41c69d813138b1b7b65"
+        },
+        {
+          "path": "lib/bank.h",
+          "sha256": "953ac90741999c455eeed185dd4040175c1d3dc4cdeaf2f28110a9bee9bd0a94"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/bank.c",
+        "kitaqfc_rust/lib/bank.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "camera",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/camera.c",
+          "sha256": "a0196f67a362c2babb5edf4b98eb811a3b5f5861f5af23eaaa9cc7dc920cee48"
+        },
+        {
+          "path": "kitaqgb_rust/lib/camera.h",
+          "sha256": "0a4520b64b9d31be0a3b934b02979339ff50c1b2621ca48bf31033c607018044"
+        },
+        {
+          "path": "lib/camera.c",
+          "sha256": "a0196f67a362c2babb5edf4b98eb811a3b5f5861f5af23eaaa9cc7dc920cee48"
+        },
+        {
+          "path": "lib/camera.h",
+          "sha256": "0a4520b64b9d31be0a3b934b02979339ff50c1b2621ca48bf31033c607018044"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/camera.c",
+        "kitaqfc_rust/lib/camera.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "cgb_palette",
+      "status": "excluded_gb_hardware",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/cgb_palette.c",
+          "sha256": "61ff3b948318af66485babe2626b1fad3355fe47ab3ffd0016d93e9812d6ccd0"
+        },
+        {
+          "path": "kitaqgb_rust/lib/cgb_palette.h",
+          "sha256": "ad2d4faa37b96776892670883805715bfc64b992b90dc65499b521bf21498842"
+        },
+        {
+          "path": "lib/cgb_palette.c",
+          "sha256": "61ff3b948318af66485babe2626b1fad3355fe47ab3ffd0016d93e9812d6ccd0"
+        },
+        {
+          "path": "lib/cgb_palette.h",
+          "sha256": "ad2d4faa37b96776892670883805715bfc64b992b90dc65499b521bf21498842"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/palette.h",
+        "kitaqfc_rust/lib/attribute.h"
+      ],
+      "note": "GB-specific registers excluded by user; existing native NES interfaces listed as references"
+    },
+    {
+      "module": "cgb_tile",
+      "status": "excluded_gb_hardware",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/cgb_tile.c",
+          "sha256": "3e3244c0d3420b8fd45625348eb26211d096c8ed2e8792c7fa93fa8bfadd5e42"
+        },
+        {
+          "path": "kitaqgb_rust/lib/cgb_tile.h",
+          "sha256": "93a79fceb3b6edb1653f99edd3305db611f1bee98ca44adc26f43056cfcd3260"
+        },
+        {
+          "path": "lib/cgb_tile.c",
+          "sha256": "3e3244c0d3420b8fd45625348eb26211d096c8ed2e8792c7fa93fa8bfadd5e42"
+        },
+        {
+          "path": "lib/cgb_tile.h",
+          "sha256": "93a79fceb3b6edb1653f99edd3305db611f1bee98ca44adc26f43056cfcd3260"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/tilemap.h",
+        "kitaqfc_rust/lib/attribute.h",
+        "kitaqfc_rust/lib/vram.h"
+      ],
+      "note": "GB-specific registers excluded by user; existing native NES interfaces listed as references"
+    },
+    {
+      "module": "chain",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/chain.c",
+          "sha256": "44a64ca55cd59812cfe552249818fe7da5db48ea9061796c560db14436248836"
+        },
+        {
+          "path": "kitaqgb_rust/lib/chain.h",
+          "sha256": "6e2d3572caafbc93d1ad234b7aee99ddb17e8d20658ac718065e78e6fe2d101f"
+        },
+        {
+          "path": "lib/chain.c",
+          "sha256": "44a64ca55cd59812cfe552249818fe7da5db48ea9061796c560db14436248836"
+        },
+        {
+          "path": "lib/chain.h",
+          "sha256": "6e2d3572caafbc93d1ad234b7aee99ddb17e8d20658ac718065e78e6fe2d101f"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/chain.c",
+        "kitaqfc_rust/lib/chain.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "danmaku",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/danmaku.c",
+          "sha256": "5a3a5030db75e42e8130f9fe43019a5ed38a709bdb612e8b385ceb572406a0c1"
+        },
+        {
+          "path": "kitaqgb_rust/lib/danmaku.h",
+          "sha256": "9465046d1d22373a7de4f1e9c5edb5e0fa02aa3ad4016cbc2bb9238154a8d5a7"
+        },
+        {
+          "path": "lib/danmaku.c",
+          "sha256": "66889ab7d9a81b96c5eb673e60faa0a64b30a224be3b64494ab88c7aeae42156"
+        },
+        {
+          "path": "lib/danmaku.h",
+          "sha256": "1f9c86a8ac5eec890184922c37154484963c5cadc77cb92c6ee9719e45b619e3"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/danmaku.c",
+        "kitaqfc_rust/lib/danmaku.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "debug",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/debug.c",
+          "sha256": "ea767ca2950f673a9e14790f927a8966e6579300b97cc8e487346bd312063e90"
+        },
+        {
+          "path": "kitaqgb_rust/lib/debug.h",
+          "sha256": "c749a2cb90bf5c306cfb7e83f68134b84179d9b9ae55a3e1f6c38baa58a1076a"
+        },
+        {
+          "path": "lib/debug.c",
+          "sha256": "ea767ca2950f673a9e14790f927a8966e6579300b97cc8e487346bd312063e90"
+        },
+        {
+          "path": "lib/debug.h",
+          "sha256": "c749a2cb90bf5c306cfb7e83f68134b84179d9b9ae55a3e1f6c38baa58a1076a"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/debug.c",
+        "kitaqfc_rust/lib/debug.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "dmg3d",
+      "status": "native_renderer_family",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/dmg3d.c",
+          "sha256": "294c5715f1f2d2f786f424de7cb437c33c3e218b30362570c74da1105f438866"
+        },
+        {
+          "path": "kitaqgb_rust/lib/dmg3d.h",
+          "sha256": "23517e60d8897d324f30637a5566671f2620a11b7edc8c99072c3fbd16451535"
+        },
+        {
+          "path": "lib/dmg3d.c",
+          "sha256": "294c5715f1f2d2f786f424de7cb437c33c3e218b30362570c74da1105f438866"
+        },
+        {
+          "path": "lib/dmg3d.h",
+          "sha256": "23517e60d8897d324f30637a5566671f2620a11b7edc8c99072c3fbd16451535"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/wire3d.h",
+        "kitaqfc_rust/lib/wire3d.c",
+        "kitaqfc_rust/lib/wire3d_model.h",
+        "kitaqfc_rust/lib/wire3d_model.c"
+      ],
+      "note": "CHR-RAM renderer; GB/CGB color, auxiliary VRAM and profile layouts require NES assets/integration"
+    },
+    {
+      "module": "entity",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/entity.c",
+          "sha256": "7f0cc0a713218e722d430334d825c3b19a656229d9496df6389c714ae85cbad7"
+        },
+        {
+          "path": "kitaqgb_rust/lib/entity.h",
+          "sha256": "d5a9d017a8827e67ee53386ab790b7aedbe0a23d89852f5b988ea256f3ae2d1c"
+        },
+        {
+          "path": "lib/entity.c",
+          "sha256": "7f0cc0a713218e722d430334d825c3b19a656229d9496df6389c714ae85cbad7"
+        },
+        {
+          "path": "lib/entity.h",
+          "sha256": "d5a9d017a8827e67ee53386ab790b7aedbe0a23d89852f5b988ea256f3ae2d1c"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/entity.c",
+        "kitaqfc_rust/lib/entity.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "fixed",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/fixed.c",
+          "sha256": "93aac2459403c162631724e52fa9002e25e28c41804c6dcacaea1115aab5c4a7"
+        },
+        {
+          "path": "kitaqgb_rust/lib/fixed.h",
+          "sha256": "2dc4c6bcb7b60edb78b8132b475eae0af79b29f525b82cbbe0c2d04b2764c854"
+        },
+        {
+          "path": "lib/fixed.c",
+          "sha256": "93aac2459403c162631724e52fa9002e25e28c41804c6dcacaea1115aab5c4a7"
+        },
+        {
+          "path": "lib/fixed.h",
+          "sha256": "2dc4c6bcb7b60edb78b8132b475eae0af79b29f525b82cbbe0c2d04b2764c854"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/fixed.c",
+        "kitaqfc_rust/lib/fixed.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "flags",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/flags.c",
+          "sha256": "214775b5e41dbd25548fac6a8f890e4fd2c9c99cf4adabd8365abcd2dc5d1b95"
+        },
+        {
+          "path": "lib/flags.c",
+          "sha256": "214775b5e41dbd25548fac6a8f890e4fd2c9c99cf4adabd8365abcd2dc5d1b95"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/flags.c",
+        "kitaqfc_rust/lib/flags.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "input",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/input.c",
+          "sha256": "4d9c8325ecbcc8dbbebdca294449a4bcc09fa303d5f6fcfe333eebfc11dd1822"
+        },
+        {
+          "path": "kitaqgb_rust/lib/input.h",
+          "sha256": "7228ddd44dbbab529850cab62377db78abb6889ab7886a73c81bc2487b17b736"
+        },
+        {
+          "path": "lib/input.c",
+          "sha256": "4d9c8325ecbcc8dbbebdca294449a4bcc09fa303d5f6fcfe333eebfc11dd1822"
+        },
+        {
+          "path": "lib/input.h",
+          "sha256": "7228ddd44dbbab529850cab62377db78abb6889ab7886a73c81bc2487b17b736"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/input.c",
+        "kitaqfc_rust/lib/input.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "link",
+      "status": "excluded_gb_hardware",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/link.c",
+          "sha256": "a6b16b395ae155d8c9a70196832fe07f160f8da06988b2f06c5a92921f231459"
+        },
+        {
+          "path": "kitaqgb_rust/lib/link.h",
+          "sha256": "723f54240b01ff65e9c4970d00369801c42399679928e50b3ed4a38b9305249b"
+        },
+        {
+          "path": "lib/link.c",
+          "sha256": "a6b16b395ae155d8c9a70196832fe07f160f8da06988b2f06c5a92921f231459"
+        },
+        {
+          "path": "lib/link.h",
+          "sha256": "723f54240b01ff65e9c4970d00369801c42399679928e50b3ed4a38b9305249b"
+        }
+      ],
+      "targets": [],
+      "note": "GB communications explicitly excluded by user on 2026-11-02"
+    },
+    {
+      "module": "link_dmg07",
+      "status": "excluded_gb_hardware",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/link_dmg07.c",
+          "sha256": "fcf2e07f5920048efae7062669fec135f19aba77507199583a679e5787af7967"
+        },
+        {
+          "path": "kitaqgb_rust/lib/link_dmg07.h",
+          "sha256": "1c856452e95d4257a14e7612fd5b16bb8f48f4de92c408aba2a39be81f92d82f"
+        },
+        {
+          "path": "lib/link_dmg07.c",
+          "sha256": "fcf2e07f5920048efae7062669fec135f19aba77507199583a679e5787af7967"
+        },
+        {
+          "path": "lib/link_dmg07.h",
+          "sha256": "1c856452e95d4257a14e7612fd5b16bb8f48f4de92c408aba2a39be81f92d82f"
+        }
+      ],
+      "targets": [],
+      "note": "GB communications explicitly excluded by user on 2026-11-02"
+    },
+    {
+      "module": "link_hwregs_gb",
+      "status": "excluded_gb_hardware",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/link_hwregs_gb.c",
+          "sha256": "3c6f3724f3424b1d91e591706efcdaffa0f1ced739e6da40630000f8483e5edb"
+        },
+        {
+          "path": "lib/link_hwregs_gb.c",
+          "sha256": "3c6f3724f3424b1d91e591706efcdaffa0f1ced739e6da40630000f8483e5edb"
+        }
+      ],
+      "targets": [],
+      "note": "GB communications explicitly excluded by user on 2026-11-02"
+    },
+    {
+      "module": "link_packet",
+      "status": "excluded_gb_hardware",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/link_packet.c",
+          "sha256": "611d7ee8275fb29eb57e99f1c62ae84d071fcf334fd5a617e026c13e52aeb9bb"
+        },
+        {
+          "path": "lib/link_packet.c",
+          "sha256": "611d7ee8275fb29eb57e99f1c62ae84d071fcf334fd5a617e026c13e52aeb9bb"
+        }
+      ],
+      "targets": [],
+      "note": "GB communications explicitly excluded by user on 2026-11-02"
+    },
+    {
+      "module": "map",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/map.c",
+          "sha256": "a1886a267da9ef83f4c7757adfb6d768842714fa1b5167a0137341bcd9a376b9"
+        },
+        {
+          "path": "lib/map.c",
+          "sha256": "a1886a267da9ef83f4c7757adfb6d768842714fa1b5167a0137341bcd9a376b9"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/map.c",
+        "kitaqfc_rust/lib/map.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "math",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/math.c",
+          "sha256": "269edc612e8a3613f6653e7b5d012dd7cff3ed1746604cfa8ea7c0708dd160d3"
+        },
+        {
+          "path": "lib/math.c",
+          "sha256": "269edc612e8a3613f6653e7b5d012dd7cff3ed1746604cfa8ea7c0708dd160d3"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/math.c",
+        "kitaqfc_rust/lib/math.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "menu",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/menu.c",
+          "sha256": "238f256b917189e855b82045b31ae396ce2ef38e1ac566118efcbf7b2ee8e12e"
+        },
+        {
+          "path": "lib/menu.c",
+          "sha256": "238f256b917189e855b82045b31ae396ce2ef38e1ac566118efcbf7b2ee8e12e"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/menu.c",
+        "kitaqfc_rust/lib/menu.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "physics2d",
+      "status": "extended_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/physics2d.c",
+          "sha256": "718bc320c68048c75341492eb63687e4188a66eaa2b4dc5bec7bb460922197a3"
+        },
+        {
+          "path": "kitaqgb_rust/lib/physics2d.h",
+          "sha256": "a0257fa232a363a07a8d72e3dc638807c2d2a187d95aa6b011af2255e211a49e"
+        },
+        {
+          "path": "lib/physics2d.c",
+          "sha256": "718bc320c68048c75341492eb63687e4188a66eaa2b4dc5bec7bb460922197a3"
+        },
+        {
+          "path": "lib/physics2d.h",
+          "sha256": "a0257fa232a363a07a8d72e3dc638807c2d2a187d95aa6b011af2255e211a49e"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/physics2d.c",
+        "kitaqfc_rust/lib/physics2d.h"
+      ],
+      "note": "Portable algorithms; GB fixed-bank/register-math opt-ins excluded"
+    },
+    {
+      "module": "physics2d_circle",
+      "status": "extended_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/physics2d_circle.c",
+          "sha256": "917c1797c2aa9b6009bcdfb23e2dafa816855c81d99f120ff21bedab7064bc4a"
+        },
+        {
+          "path": "kitaqgb_rust/lib/physics2d_circle.h",
+          "sha256": "a646dc0fe7c8375269a55f89e7032128451c9719b88e406df2ea307e28e375ca"
+        },
+        {
+          "path": "lib/physics2d_circle.c",
+          "sha256": "917c1797c2aa9b6009bcdfb23e2dafa816855c81d99f120ff21bedab7064bc4a"
+        },
+        {
+          "path": "lib/physics2d_circle.h",
+          "sha256": "a646dc0fe7c8375269a55f89e7032128451c9719b88e406df2ea307e28e375ca"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/physics2d_circle.c",
+        "kitaqfc_rust/lib/physics2d_circle.h"
+      ],
+      "note": "Portable algorithms; GB fixed-bank/register-math opt-ins excluded"
+    },
+    {
+      "module": "physics3d",
+      "status": "extended_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/physics3d.c",
+          "sha256": "820121a8e1dfc3c365c2ab7e6090fba27f97fe783258e416dde259d4541d1e17"
+        },
+        {
+          "path": "kitaqgb_rust/lib/physics3d.h",
+          "sha256": "4813e0e9b9412efe2157d16c53095cff4ac699c1e2858e37119f13da92469a15"
+        },
+        {
+          "path": "lib/physics3d.c",
+          "sha256": "f37b3f399886b42581064aa5a7deaa5db92a88c9df7206658cf5bd2dd9bdb4c1"
+        },
+        {
+          "path": "lib/physics3d.h",
+          "sha256": "4813e0e9b9412efe2157d16c53095cff4ac699c1e2858e37119f13da92469a15"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/physics3d.c",
+        "kitaqfc_rust/lib/physics3d.h"
+      ],
+      "note": "Portable algorithms; GB fixed-bank/register-math opt-ins excluded"
+    },
+    {
+      "module": "pinball",
+      "status": "deferred_by_user",
+      "sources": [
+        {
+          "path": "lib/pinball.c",
+          "sha256": "fab7b43445e127044b5818b7a50e2456d2e29943ae073fbd822ab17b928d6a75"
+        },
+        {
+          "path": "lib/pinball.h",
+          "sha256": "d2c02e808bcd5e1779ffe02590482f2f66698edcb01b7b8d32518bfb548e1f30"
+        }
+      ],
+      "targets": [],
+      "note": "Do not port pinball computation in this update"
+    },
+    {
+      "module": "pinball_tables",
+      "status": "deferred_by_user",
+      "sources": [
+        {
+          "path": "lib/pinball_tables.h",
+          "sha256": "d83e91b0d7650d9c9553e7249ceeec129d72fc6112e51238ee9dfcd698546d5b"
+        }
+      ],
+      "targets": [],
+      "note": "Do not port pinball computation in this update"
+    },
+    {
+      "module": "raster",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/raster.c",
+          "sha256": "3726a984c1c6be68ccd556890a40a43b0b8b7f34eb0d89abca78a8ac3edca76c"
+        },
+        {
+          "path": "kitaqgb_rust/lib/raster.h",
+          "sha256": "24b85cd06af8946d424a8c02bd35afe1a013e60cf0387a1c8baed7c44083aefd"
+        },
+        {
+          "path": "lib/raster.c",
+          "sha256": "3726a984c1c6be68ccd556890a40a43b0b8b7f34eb0d89abca78a8ac3edca76c"
+        },
+        {
+          "path": "lib/raster.h",
+          "sha256": "24b85cd06af8946d424a8c02bd35afe1a013e60cf0387a1c8baed7c44083aefd"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/raster.c",
+        "kitaqfc_rust/lib/raster.h"
+      ],
+      "note": "MMC3 bands; GB LY/RGB15/window register API replaced"
+    },
+    {
+      "module": "rle",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/rle.c",
+          "sha256": "2a46fe2d5aaa956db903deaefff2daa5f0530e08e25530b2bba91327d091708b"
+        },
+        {
+          "path": "lib/rle.c",
+          "sha256": "2a46fe2d5aaa956db903deaefff2daa5f0530e08e25530b2bba91327d091708b"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/rle.c",
+        "kitaqfc_rust/lib/rle.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "rng",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/rng.c",
+          "sha256": "7e631b04280944b1546e77c28b68268fef15fb6957050c6c6e92f2947ebf2772"
+        },
+        {
+          "path": "lib/rng.c",
+          "sha256": "7e631b04280944b1546e77c28b68268fef15fb6957050c6c6e92f2947ebf2772"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/rng.c",
+        "kitaqfc_rust/lib/rng.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "rpg",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/rpg.h",
+          "sha256": "40272e152808c102906709e856adb52098dfde3019668079c94c9b244562828f"
+        },
+        {
+          "path": "lib/rpg.h",
+          "sha256": "40272e152808c102906709e856adb52098dfde3019668079c94c9b244562828f"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/rpg.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "save",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/save.c",
+          "sha256": "331704166a92a60b71843d157ce096ac03a7d09a2878f7b48553401b5b1b3e56"
+        },
+        {
+          "path": "lib/save.c",
+          "sha256": "331704166a92a60b71843d157ce096ac03a7d09a2878f7b48553401b5b1b3e56"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/save.c",
+        "kitaqfc_rust/lib/save.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "scene",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/scene.c",
+          "sha256": "58526c4c62ad95ea5da6f42ffa533b6587f1e9f360e6486077f12d6d7c429dda"
+        },
+        {
+          "path": "kitaqgb_rust/lib/scene.h",
+          "sha256": "0fe93e2e3165cba6110c255ba29b84ca5432d26b1a7611876e06617f926c59b5"
+        },
+        {
+          "path": "lib/scene.c",
+          "sha256": "58526c4c62ad95ea5da6f42ffa533b6587f1e9f360e6486077f12d6d7c429dda"
+        },
+        {
+          "path": "lib/scene.h",
+          "sha256": "0fe93e2e3165cba6110c255ba29b84ca5432d26b1a7611876e06617f926c59b5"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/scene.c",
+        "kitaqfc_rust/lib/scene.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "script",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/script.c",
+          "sha256": "d91e78cfba77d9de17a1b76bb7f86e9888613fc7165dc60e0d329c13c981309c"
+        },
+        {
+          "path": "lib/script.c",
+          "sha256": "d91e78cfba77d9de17a1b76bb7f86e9888613fc7165dc60e0d329c13c981309c"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/script.c",
+        "kitaqfc_rust/lib/script.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "scroll",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/scroll.c",
+          "sha256": "16d1e1160c3f3e8f8e5f5a639f0601d5dc2c4b52a9981ed593f92835e2b01a01"
+        },
+        {
+          "path": "kitaqgb_rust/lib/scroll.h",
+          "sha256": "461f2068d521a11e3d2a8c1bc55a59974aed5ede95a518d66bfb401e78142786"
+        },
+        {
+          "path": "lib/scroll.c",
+          "sha256": "16d1e1160c3f3e8f8e5f5a639f0601d5dc2c4b52a9981ed593f92835e2b01a01"
+        },
+        {
+          "path": "lib/scroll.h",
+          "sha256": "461f2068d521a11e3d2a8c1bc55a59974aed5ede95a518d66bfb401e78142786"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/scroll.c",
+        "kitaqfc_rust/lib/scroll.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "slg",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/slg.h",
+          "sha256": "7cc9c7d261e6ac6a6dc783bfdfb7240696197938f3e3a28f197c6af35ad96d6a"
+        },
+        {
+          "path": "lib/slg.h",
+          "sha256": "7cc9c7d261e6ac6a6dc783bfdfb7240696197938f3e3a28f197c6af35ad96d6a"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/slg.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "slg_board",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/slg_board.c",
+          "sha256": "a4246ba50ba52fa00b4e85a16321ca463dd83c7b189ef324f38a176924e97bee"
+        },
+        {
+          "path": "lib/slg_board.c",
+          "sha256": "a4246ba50ba52fa00b4e85a16321ca463dd83c7b189ef324f38a176924e97bee"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/slg_board.c"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "slg_path",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/slg_path.c",
+          "sha256": "fae7dfc66e4a221c47850347e1ce7fbe35e9ccbbc6816733a8ef8667fef697ed"
+        },
+        {
+          "path": "lib/slg_path.c",
+          "sha256": "fae7dfc66e4a221c47850347e1ce7fbe35e9ccbbc6816733a8ef8667fef697ed"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/slg_path.c"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "slg_unit",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/slg_unit.c",
+          "sha256": "e73fc33522ad16aada5fa042ca557a9829075c158796ad831cb9bfb0ec80e6eb"
+        },
+        {
+          "path": "lib/slg_unit.c",
+          "sha256": "e73fc33522ad16aada5fa042ca557a9829075c158796ad831cb9bfb0ec80e6eb"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/slg_unit.c"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "sprite",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/sprite.c",
+          "sha256": "bd564784db0ed2cd5f4db366ea385db692448e856615124be034300de1a86780"
+        },
+        {
+          "path": "kitaqgb_rust/lib/sprite.h",
+          "sha256": "d1255346cc3c181e1f58db425132091cc5abfc9a8ed0b7a0a9ece6b379328ea5"
+        },
+        {
+          "path": "lib/sprite.c",
+          "sha256": "bd564784db0ed2cd5f4db366ea385db692448e856615124be034300de1a86780"
+        },
+        {
+          "path": "lib/sprite.h",
+          "sha256": "d1255346cc3c181e1f58db425132091cc5abfc9a8ed0b7a0a9ece6b379328ea5"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/sprite.c",
+        "kitaqfc_rust/lib/sprite.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "sprite_order",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/sprite_order.c",
+          "sha256": "64d9fa94d86301ddd3b144a0b364bfa52ab97aaad5ae22d0aa0f3c12acd6328c"
+        },
+        {
+          "path": "kitaqgb_rust/lib/sprite_order.h",
+          "sha256": "b09c2bfb165fbf4eb7621bacd9072d3bbb42aee1ceac4b37bea412fb4f6588a2"
+        },
+        {
+          "path": "lib/sprite_order.c",
+          "sha256": "64d9fa94d86301ddd3b144a0b364bfa52ab97aaad5ae22d0aa0f3c12acd6328c"
+        },
+        {
+          "path": "lib/sprite_order.h",
+          "sha256": "b09c2bfb165fbf4eb7621bacd9072d3bbb42aee1ceac4b37bea412fb4f6588a2"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/sprite_order.c",
+        "kitaqfc_rust/lib/sprite_order.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "system",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/system.c",
+          "sha256": "bf651c42f99486c16a89c9888385101baa7122d694b8a017b51d5bde355bd4c8"
+        },
+        {
+          "path": "kitaqgb_rust/lib/system.h",
+          "sha256": "f35c85dbbf234b6eb495d3ab2b0349df7762fd4205f68d78ea0e28091bdf7096"
+        },
+        {
+          "path": "lib/system.c",
+          "sha256": "bf651c42f99486c16a89c9888385101baa7122d694b8a017b51d5bde355bd4c8"
+        },
+        {
+          "path": "lib/system.h",
+          "sha256": "f35c85dbbf234b6eb495d3ab2b0349df7762fd4205f68d78ea0e28091bdf7096"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/system.c",
+        "kitaqfc_rust/lib/system.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "text",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/text.c",
+          "sha256": "49d8f6a0f29f8f67ff8659bb28160533178118a22a954032302f8d812468380b"
+        },
+        {
+          "path": "lib/text.c",
+          "sha256": "49d8f6a0f29f8f67ff8659bb28160533178118a22a954032302f8d812468380b"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/text.c",
+        "kitaqfc_rust/lib/text.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "vram",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/vram.c",
+          "sha256": "af5bbccc171ce6906c2457862bbd78299ae12329cbf8f3913c2257f8da2e6ce2"
+        },
+        {
+          "path": "kitaqgb_rust/lib/vram.h",
+          "sha256": "b25c6086aead5016eaace443279180a40917e696e256563e964e4ca33b1d648b"
+        },
+        {
+          "path": "lib/vram.c",
+          "sha256": "af5bbccc171ce6906c2457862bbd78299ae12329cbf8f3913c2257f8da2e6ce2"
+        },
+        {
+          "path": "lib/vram.h",
+          "sha256": "b25c6086aead5016eaace443279180a40917e696e256563e964e4ca33b1d648b"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/vram.c",
+        "kitaqfc_rust/lib/vram.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    },
+    {
+      "module": "wire3d",
+      "status": "native_renderer_family",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/wire3d.c",
+          "sha256": "4d0e236aee977ebca2d4132b34551f4309e1449085f6ca4cc23ed6c3407ce48c"
+        },
+        {
+          "path": "kitaqgb_rust/lib/wire3d.h",
+          "sha256": "52b9a36309d2a07387acbbdaa03241cf654ddfa4c9241dbe12702dea9bb76b47"
+        },
+        {
+          "path": "lib/wire3d.c",
+          "sha256": "4d0e236aee977ebca2d4132b34551f4309e1449085f6ca4cc23ed6c3407ce48c"
+        },
+        {
+          "path": "lib/wire3d.h",
+          "sha256": "52b9a36309d2a07387acbbdaa03241cf654ddfa4c9241dbe12702dea9bb76b47"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/wire3d.h",
+        "kitaqfc_rust/lib/wire3d.c",
+        "kitaqfc_rust/lib/wire3d_model.h",
+        "kitaqfc_rust/lib/wire3d_model.c"
+      ],
+      "note": "CHR-RAM renderer; GB/CGB color, auxiliary VRAM and profile layouts require NES assets/integration"
+    },
+    {
+      "module": "wire3d_audio_vblank",
+      "status": "excluded_gb_hardware",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/wire3d_audio_vblank.c",
+          "sha256": "2a219d137dddfcd9f95168af258d34c0d32a6c182043efcf134e8f7eafcd439a"
+        },
+        {
+          "path": "lib/wire3d_audio_vblank.c",
+          "sha256": "2a219d137dddfcd9f95168af258d34c0d32a6c182043efcf134e8f7eafcd439a"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/audio_vblank.h",
+        "kitaqfc_rust/lib/audio.h"
+      ],
+      "note": "GB NMI/audio glue excluded by user; use native FC scheduling"
+    },
+    {
+      "module": "wire3d_audio_vblank_dmg",
+      "status": "excluded_gb_hardware",
+      "sources": [
+        {
+          "path": "lib/wire3d_audio_vblank_dmg.c",
+          "sha256": "905d0f8b053eff6563916582b4c70d4e272e3326ea0f78da4fb91f51ca66e6d7"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/audio_vblank.h",
+        "kitaqfc_rust/lib/audio.h"
+      ],
+      "note": "GB NMI/audio glue excluded by user; use native FC scheduling"
+    },
+    {
+      "module": "wire3d_cgb",
+      "status": "native_renderer_family",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/wire3d_cgb.c",
+          "sha256": "a4f094e361842082487689b825f8356529f56f2e95c624af2f3286796f1cc2b4"
+        },
+        {
+          "path": "kitaqgb_rust/lib/wire3d_cgb.h",
+          "sha256": "3fe2d0bbc003a94b61730532a2cacf78b343d6a793bd04bf13e2131266ac5ba1"
+        },
+        {
+          "path": "lib/wire3d_cgb.c",
+          "sha256": "6c45fa78a8e10def2dd8076add4060b1d62af6858c4880d0014aa17d59deac47"
+        },
+        {
+          "path": "lib/wire3d_cgb.h",
+          "sha256": "f13959367894675431894d0c6c44176aeff2b7e314bbb4ba6885af5cf740189a"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/wire3d.h",
+        "kitaqfc_rust/lib/wire3d.c",
+        "kitaqfc_rust/lib/wire3d_model.h",
+        "kitaqfc_rust/lib/wire3d_model.c"
+      ],
+      "note": "CHR-RAM renderer; GB/CGB color, auxiliary VRAM and profile layouts require NES assets/integration"
+    },
+    {
+      "module": "wire3d_cgb_88",
+      "status": "native_renderer_family",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/wire3d_cgb_88.c",
+          "sha256": "53b8ca1a673f8b2f6c667c5564d5e82665f9c2eeb35563dacba71a502539a45b"
+        },
+        {
+          "path": "lib/wire3d_cgb_88.c",
+          "sha256": "53b8ca1a673f8b2f6c667c5564d5e82665f9c2eeb35563dacba71a502539a45b"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/wire3d.h",
+        "kitaqfc_rust/lib/wire3d.c",
+        "kitaqfc_rust/lib/wire3d_model.h",
+        "kitaqfc_rust/lib/wire3d_model.c"
+      ],
+      "note": "CHR-RAM renderer; GB/CGB color, auxiliary VRAM and profile layouts require NES assets/integration"
+    },
+    {
+      "module": "wire3d_dmg",
+      "status": "native_renderer_family",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/wire3d_dmg.c",
+          "sha256": "0b4cf7b18f613d3bee9c6d98db5574514881664abe416717838bdf83d468f153"
+        },
+        {
+          "path": "kitaqgb_rust/lib/wire3d_dmg.h",
+          "sha256": "a2656670a2588f200503db6cac30c97dd5214a849f7eb4c9401f9b8e95de2635"
+        },
+        {
+          "path": "lib/wire3d_dmg.c",
+          "sha256": "0b4cf7b18f613d3bee9c6d98db5574514881664abe416717838bdf83d468f153"
+        },
+        {
+          "path": "lib/wire3d_dmg.h",
+          "sha256": "a2656670a2588f200503db6cac30c97dd5214a849f7eb4c9401f9b8e95de2635"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/wire3d.h",
+        "kitaqfc_rust/lib/wire3d.c",
+        "kitaqfc_rust/lib/wire3d_model.h",
+        "kitaqfc_rust/lib/wire3d_model.c"
+      ],
+      "note": "CHR-RAM renderer; GB/CGB color, auxiliary VRAM and profile layouts require NES assets/integration"
+    },
+    {
+      "module": "wire3d_dmg_88",
+      "status": "native_renderer_family",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/wire3d_dmg_88.c",
+          "sha256": "68d8966665ef3d6b68b1f71453c907d04dd7ce66873cc218322eea8eb3b48c79"
+        },
+        {
+          "path": "lib/wire3d_dmg_88.c",
+          "sha256": "68d8966665ef3d6b68b1f71453c907d04dd7ce66873cc218322eea8eb3b48c79"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/wire3d.h",
+        "kitaqfc_rust/lib/wire3d.c",
+        "kitaqfc_rust/lib/wire3d_model.h",
+        "kitaqfc_rust/lib/wire3d_model.c"
+      ],
+      "note": "CHR-RAM renderer; GB/CGB color, auxiliary VRAM and profile layouts require NES assets/integration"
+    },
+    {
+      "module": "wire3d_dmg_96",
+      "status": "native_renderer_family",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/wire3d_dmg_96.c",
+          "sha256": "4b18013cea36d7c5219f6b13110f79b2bafbb268fc8a42e9161eba013da6e7d6"
+        },
+        {
+          "path": "lib/wire3d_dmg_96.c",
+          "sha256": "4b18013cea36d7c5219f6b13110f79b2bafbb268fc8a42e9161eba013da6e7d6"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/wire3d.h",
+        "kitaqfc_rust/lib/wire3d.c",
+        "kitaqfc_rust/lib/wire3d_model.h",
+        "kitaqfc_rust/lib/wire3d_model.c"
+      ],
+      "note": "CHR-RAM renderer; GB/CGB color, auxiliary VRAM and profile layouts require NES assets/integration"
+    },
+    {
+      "module": "wire3d_rig",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "lib/wire3d_rig.c",
+          "sha256": "b05ca175b5f3c0082bf702b14dce4f42943e6b23f9a3a9af585deb10243abedc"
+        },
+        {
+          "path": "lib/wire3d_rig.h",
+          "sha256": "94197dfb3ac2a91d6c8a854556b560108c24fba2fc8d984a7382c8070023f8e1"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/wire3d_rig.h",
+        "kitaqfc_rust/lib/wire3d_rig.c",
+        "kitaqfc_rust/lib/wire3d_rig_view.c"
+      ],
+      "note": "Software articulation and NES model scene drawing"
+    },
+    {
+      "module": "wire3d_rig_draw",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "lib/wire3d_rig_draw.c",
+          "sha256": "13fa0290de077c4f90673c4744ed847dd6085cf2cec098e2445094e52dba2696"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/wire3d_rig.h",
+        "kitaqfc_rust/lib/wire3d_rig.c",
+        "kitaqfc_rust/lib/wire3d_rig_view.c"
+      ],
+      "note": "Software articulation and NES model scene drawing"
+    },
+    {
+      "module": "wire3d_rig_view",
+      "status": "ported_native",
+      "sources": [
+        {
+          "path": "lib/wire3d_rig_view.c",
+          "sha256": "0b771e60e0c528c93b5ac9b5e876279b159b5c4c91e957b25631fe877c2b944a"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/wire3d_rig.h",
+        "kitaqfc_rust/lib/wire3d_rig.c",
+        "kitaqfc_rust/lib/wire3d_rig_view.c"
+      ],
+      "note": "Software articulation and NES model scene drawing"
+    },
+    {
+      "module": "zx0",
+      "status": "existing_native",
+      "sources": [
+        {
+          "path": "kitaqgb_rust/lib/zx0.c",
+          "sha256": "3740290f3b9105e9e0187863615c773ff5a9a4d44f5cbf60c83da3f4105348fc"
+        },
+        {
+          "path": "kitaqgb_rust/lib/zx0.h",
+          "sha256": "c1c14c5fd8b320427b2714f7741059427d5c4d250326f82b151792b64b9d75de"
+        }
+      ],
+      "targets": [
+        "kitaqfc_rust/lib/zx0.c",
+        "kitaqfc_rust/lib/zx0.h"
+      ],
+      "note": "FC implementation; not a claim of GB register/binary compatibility"
+    }
+  ]
+}

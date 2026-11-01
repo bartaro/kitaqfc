@@ -1,0 +1,139 @@
+[
+  {
+    "case": "rpg_state",
+    "modules": [
+      "flags.c",
+      "rng.c",
+      "rle.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "rpg_ui",
+    "modules": [
+      "rpg_runtime.c",
+      "input.c",
+      "text.c",
+      "menu.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "rpg_map",
+    "modules": [
+      "rpg_runtime.c",
+      "input.c",
+      "map.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "rpg_script",
+    "modules": [
+      "rpg_runtime.c",
+      "input.c",
+      "flags.c",
+      "text.c",
+      "script.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "slg",
+    "modules": [
+      "rpg_runtime.c",
+      "input.c",
+      "map.c",
+      "slg_board.c",
+      "slg_path.c",
+      "slg_unit.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "save",
+    "modules": [
+      "save.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "camera",
+    "modules": [
+      "camera.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "sprite_order",
+    "modules": [
+      "sprite_order.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "physics2d",
+    "modules": [
+      "fixed.c",
+      "physics2d.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "physics_circle",
+    "modules": [
+      "fixed.c",
+      "physics2d.c",
+      "physics2d_circle.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "physics3d",
+    "modules": [
+      "fixed.c",
+      "physics2d.c",
+      "physics3d.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "zx0",
+    "modules": [
+      "zx0.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "wire3d_model",
+    "modules": [
+      "wire3d.c",
+      "wire3d_model.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "wire3d_rig",
+    "modules": [
+      "wire3d.c",
+      "wire3d_model.c",
+      "wire3d_rig.c",
+      "wire3d_rig_view.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "raster",
+    "modules": [
+      "raster.c"
+    ],
+    "passed": true
+  },
+  {
+    "case": "math",
+    "modules": [
+      "math.c"
+    ],
+    "passed": true
+  }
+]

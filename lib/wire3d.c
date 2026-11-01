@@ -2,6 +2,8 @@
 // Independently implemented integer projection, pixel rasterization and
 // double-buffered NES CHR upload. No commercial game code or data is included.
 #include "wire3d.h"
+// Assembly table loads require permanently mapped ROM, even after auto packing.
+#pragma fixed_bank 0
 #include "wire3d_tables.h"
 __location(0x6800) u8 w3dfc_pixels[1536];
 __location(0x6E00) u8 w3dfc_dirty[192];
@@ -36,9 +38,21 @@ __prg_rom const u8 w3dfc_palette[16]={
     0x0F,0x2C,0x2C,0x2C,0x0F,0x2C,0x2C,0x2C,
     0x0F,0x2C,0x2C,0x2C,0x0F,0x2C,0x2C,0x2C
 };
+#pragma fixed_bank -1
 
 void Wire3DFC_Init(void) {
     u16 address;u8 x,y,tile;
+    // MMC3 powers up with undefined/aliased CHR registers. The renderer owns
+    // both complete CHR-RAM tables and requires identity bank mapping.
+    if(__mapper_id()==4) {
+        *(u8*)0x8000=0;*(u8*)0x8001=0;
+        *(u8*)0x8000=1;*(u8*)0x8001=2;
+        *(u8*)0x8000=2;*(u8*)0x8001=4;
+        *(u8*)0x8000=3;*(u8*)0x8001=5;
+        *(u8*)0x8000=4;*(u8*)0x8001=6;
+        *(u8*)0x8000=5;*(u8*)0x8001=7;
+        *(u8*)0xA001=128;
+    }
     __ppu_mask_set(0);__ppu_ctrl_set(0);
     // Both pattern tables have a zero high bitplane; all subsequent transfers
     // update only low bitplanes in the currently hidden table.

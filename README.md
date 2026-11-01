@@ -617,3 +617,9 @@ sh scripts/build.sh
 - [ライセンス英語原文](LICENSE) / [日本語参考訳](LICENSE.ja)
 
 プロジェクトのライセンスは、第三者のフォント、依存ライブラリ、ロゴ、商標に関する条件を置き換えるものではありません。再配布時は付属の権利表記も保持してください。
+
+## Library update (2026-11-02)
+
+RPG/ADV, SLG, camera, sprite ordering, physics, model/rig rendering and native NES raster APIs were added or extended. Existing ZX0 decoding was exercised on 6502. [Library inventory and integration constraints](lib/LIBRARY_PARITY.md) cover all 57 GB module names. GB-specific hardware and communication are excluded; pinball remains deferred.
+
+RPG/ADV・SLG・カメラ・スプライト順序・物理演算・3Dモデル/リグ・NESラスタ処理を追加・拡張しました。GB固有機能と通信は除外し、ピンボール演算は保留しています。

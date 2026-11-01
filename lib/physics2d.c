@@ -1,10 +1,12 @@
 #include "physics2d.h"
+s16 nes_kq2d_signed_q8(s16 a,s8 b) { return kq2d_scale_q8(a,(s16)b); }
+u16 nes_kq2d_mul_q8(u16 a,u8 b) { return (u16)kq2d_scale_q8((s16)a,(s16)b); }
 
 
 
 // Scale by a signed Q8 coefficient in -256..256, truncating the magnitude
-// before restoring the sign. Eight unrolled shift/add stages keep the product
-// in range; zero and +/-256 use exact shortcuts. Other coefficients are unsupported.
+// before restoring the sign. The assembly handles zero and +/-256 separately;
+// coefficients outside this interval are not supported.
 s16 kq2d_scale_q8(s16 value,s16 coefficient) {
     u16 magnitude;u16 product;u8 factor;u8 negative;
     __asm {
@@ -185,25 +187,15 @@ kqfc_scale_positive:
     }
 }
 
-// Fractional long division avoids overflowing numerator * 256 on a 16-bit arithmetic target.
+// Fractional long division avoids overflowing a 16-bit numerator * 256.
 // Return floor(256*numerator/denominator), capped at 256; zero denominator
 // returns zero. Keep denominator <= 32767 so doubling the remainder fits 16 bits.
-u16 kq2d__fraction_q8(u16 numerator, u16 denominator)
-{
-    u16 result;
-    u8 i;
-    if (denominator == 0) return 0;
-    if (numerator >= denominator) return 256;
-    result = 0;
-    for (i = 0; i < 8; i++) {
-        numerator <<= 1;
-        result <<= 1;
-        if (numerator >= denominator) { numerator -= denominator; result++; }
-    }
-    return result;
-}
+u16 kq2d__fraction_q8(u16 numerator,u16 denominator) { u16 value; u8 i; value=0; if(denominator==0) return 0; if(numerator>=denominator) return 256; for(i=0;i<8;i++) { numerator=(u16)(numerator<<1); value=(u16)(value<<1); if(numerator>=denominator) { numerator=(u16)(numerator-denominator); value++; } } return value; }
 
 // ceil(256 * sqrt(1 + (i/64)^2)) - 256. Round the ratio up as well.
+#ifdef KQ2D_CACHE_SURFACE
+#pragma fixed_bank 13
+#endif
 __prg_rom u8 kq2d_hypot_extra[] = {
     0,1,1,1,1,1,2,2,2,3,4,4,5,6,7,7,8,9,10,12,13,14,15,17,18,19,21,22,24,26,27,29,31,33,34,36,38,40,42,44,46,49,51,53,55,57,60,62,64,67,69,72,74,77,79,82,85,87,90,93,95,98,101,104,107
 };
@@ -211,6 +203,11 @@ __prg_rom u8 kq2d_hypot_extra[] = {
 // Reduce both velocity components with one conservative length estimate.
 // A null body is ignored; a nonpositive limit zeros velocity. This helper ignores
 // active/mass flags. Components and positive limits must have magnitude <= 16383.
+#ifdef KQ2D_CACHE_SURFACE
+#pragma fixed_bank 13
+void kq2d_body_limit_speed(KQBody2D* body,s16 max_speed) { s16 ax; s16 ay; u8 shift; u16 sum; u16 length; u16 ratio; u16 limit; if(body==0||max_speed<0) return; ax=body->vx<0?(s16)(0-body->vx):body->vx; ay=body->vy<0?(s16)(0-body->vy):body->vy; shift=0; while(ax>127||ay>127) { ax=(s16)(ax>>1); ay=(s16)(ay>>1); shift++; } sum=(u16)((u16)ax*ax+(u16)ay*ay); length=0; while((u16)(length*length)<sum) length++; limit=(u16)max_speed>>shift; if(length<=limit||length==0) return; ratio=kq2d__fraction_q8(limit,length); body->vx=kq2d_scale_q8(body->vx,(s16)ratio); body->vy=kq2d_scale_q8(body->vy,(s16)ratio); }
+#pragma fixed_bank -1
+#else
 void kq2d_body_limit_speed(KQBody2D* body, s16 max_speed)
 {
     u16 x;
@@ -232,12 +229,13 @@ void kq2d_body_limit_speed(KQBody2D* body, s16 max_speed)
     // The extra unit covers truncation when converting the estimate back to speed.
     ratio = (kq2d__fraction_q8(y, x) + 4) >> 2;
     if (ratio > 64) ratio = 64;
-    length = x + (u16)kq2d_scale_q8((s16)x, (s16)kq2d_hypot_extra[(u8)ratio]) + 1;
+    length = x + (u16)kq2d_scale_q8((s16)x, (s16)kq2d_hypot_extra[(__safe_index u8)ratio]) + 1;
     if (length <= (u16)max_speed) return;
     ratio = kq2d__fraction_q8((u16)max_speed, length);
     body->vx = kq2d_scale_q8(body->vx, (s16)ratio);
     body->vy = kq2d_scale_q8(body->vy, (s16)ratio);
 }
+#endif
 
 // Estimate a linear gap crossing: initial contact returns 0, and an endpoint
 // still outside or exactly on the surface returns 256. Otherwise interpolate in
@@ -252,6 +250,7 @@ u16 kq2d_surface_toi_q8(s16 start_gap, s16 end_gap)
 // Retain sub-unit gravity along a shallow support without rounding every fast hit.
 // For small resting velocities, scale at extra precision and round halves away
 // from zero. Values outside -63..63 use the ordinary truncating Q8 helper.
+#ifndef KQ2D_EXTERNAL_REST_COMPONENT
 s16 kq2d__rest_component(s16 value, s16 normal)
 {
     s16 product;
@@ -260,11 +259,74 @@ s16 kq2d__rest_component(s16 value, s16 normal)
     if(product < 0) return (s16)(0 - ((64-product) >> 7));
     return (s16)((product+64) >> 7);
 }
+#endif
 
 // Resolve incoming velocity relative to a moving surface and return the
 // positive incoming normal speed; null inputs or separating motion return zero.
 // Use a Q8 unit normal, nonnegative threshold/kick, and relative components
 // within +/-8191. This does not detect contact, move positions, or check body mass.
+#if defined(KQ2D_CACHE_SURFACE) && !defined(KQ2D_EXTERNAL_SURFACE)
+#pragma fixed_bank 13
+// Opt-in for banked GB builds: cache fields in direct-addressed temporaries.
+// The response and rounding order match the compact default implementation.
+s16 kq2d_body_resolve_surface(KQBody2D* body, const KQSurface2D* surface)
+{
+    s16 vx;
+    s16 vy;
+    s16 nx;
+    s16 ny;
+    s16 sx;
+    s16 sy;
+    s16 out_x;
+    s16 out_y;
+    s16 speed;
+    s16 tangent;
+    s16 bounce = 0;
+    s16 impulse;
+    s16 friction;
+    u8 friction_q8;
+    if (body == 0 || surface == 0) return 0;
+    out_x = body->vx;
+    out_y = body->vy;
+    sx = surface->vx;
+    sy = surface->vy;
+    nx = surface->nx_q8;
+    ny = surface->ny_q8;
+    vx = (s16)(out_x - sx);
+    vy = (s16)(out_y - sy);
+    speed = (s16)(kq2d_scale_q8(vx,nx) + kq2d_scale_q8(vy,ny));
+    if (speed >= 0) return 0;
+    speed = (s16)(0 - speed);
+    if (speed > surface->bounce_threshold) bounce = kq2d_scale_q8(speed,(s16)surface->restitution_q8);
+    if (bounce < surface->kick) bounce = surface->kick;
+    impulse = (s16)(speed + bounce);
+    friction_q8 = surface->friction_q8;
+    if (bounce == 0) {
+        tangent = (s16)(kq2d__rest_component(vy,nx) - kq2d__rest_component(vx,ny));
+        friction = kq2d_scale_q8(impulse,(s16)friction_q8);
+        if (tangent > friction) tangent = (s16)(tangent - friction);
+        else if (tangent < (s16)(0 - friction)) tangent = (s16)(tangent + friction);
+        else tangent = 0;
+        out_x = (s16)(sx - kq2d__rest_component(tangent,ny));
+        out_y = (s16)(sy + kq2d__rest_component(tangent,nx));
+    } else {
+        out_x = (s16)(out_x + kq2d_scale_q8(impulse,nx));
+        out_y = (s16)(out_y + kq2d_scale_q8(impulse,ny));
+        if (friction_q8 != 0) {
+            tangent = (s16)(kq2d_scale_q8(vy,nx) - kq2d_scale_q8(vx,ny));
+            friction = kq2d_scale_q8(impulse,(s16)friction_q8);
+            if (tangent > friction) tangent = friction;
+            if (tangent < (s16)(0 - friction)) tangent = (s16)(0 - friction);
+            out_x = (s16)(out_x + kq2d_scale_q8(tangent,ny));
+            out_y = (s16)(out_y - kq2d_scale_q8(tangent,nx));
+        }
+    }
+    body->vx = out_x;
+    body->vy = out_y;
+    return speed;
+}
+#pragma fixed_bank -1
+#elif !defined(KQ2D_EXTERNAL_SURFACE)
 s16 kq2d_body_resolve_surface(KQBody2D* body, const KQSurface2D* surface)
 {
     s16 vx;
@@ -306,42 +368,34 @@ s16 kq2d_body_resolve_surface(KQBody2D* body, const KQSurface2D* surface)
     }
     return speed;
 }
+#endif
 
-// Shared operands keep the port consistent with the body/world operations.
+// Shared operands avoid repeated C arithmetic in the hot integration path.
 // Do not call these helpers from an interrupt while another physics call is active.
 s16 kq2d_asm_value;
 s16 kq2d_asm_operand;
 s16 kq2d_asm_limit;
 s16 kq2d_asm_tmp;
 
-// Add the shared operand to the shared value using compiler-generated 16-bit arithmetic.
+// Add the shared operand to the shared value with carry between bytes.
 // The 16-bit result wraps; this routine does not saturate on signed overflow.
-void kq2d__add_value()
-{
-    kq2d_asm_value = (s16)(kq2d_asm_value + kq2d_asm_operand);
-}
+void kq2d_add_s16_asm() { kq2d_asm_value=(s16)(kq2d_asm_value+kq2d_asm_operand); }
 
 // Negate a negative shared value in place using two's complement.
 // The minimum signed value stays 0x8000, which is not a positive s16 magnitude.
-void kq2d__abs_value()
-{
-    if (kq2d_asm_value < 0) kq2d_asm_value = (s16)(0 - kq2d_asm_value);
-}
+void kq2d_abs_s16_asm() { if(kq2d_asm_value<0) kq2d_asm_value=(s16)(0-kq2d_asm_value); }
 
-// Clamp the shared signed value to the caller-supplied nonnegative limit.
-void kq2d__clamp_value()
-{
-    if (kq2d_asm_value > kq2d_asm_limit) kq2d_asm_value = kq2d_asm_limit;
-    else if (kq2d_asm_value < (s16)(0 - kq2d_asm_limit)) kq2d_asm_value = (s16)(0 - kq2d_asm_limit);
-}
+// Clamp the shared signed value to +/- the shared nonnegative limit. Compare
+// magnitude high bytes first, then low bytes; negative inputs use shared scratch.
+void kq2d_clamp_abs_s16_asm() { if(kq2d_asm_value>kq2d_asm_limit) kq2d_asm_value=kq2d_asm_limit; else if(kq2d_asm_value<(s16)(0-kq2d_asm_limit)) kq2d_asm_value=(s16)(0-kq2d_asm_limit); }
 
 // Internal helper: absolute value for signed 16-bit integers.
-// Return a magnitude through shared helper scratch; exclude -32768 when
+// Return a magnitude through shared assembly scratch; exclude -32768 when
 // a positive s16 result is required. Calls are not reentrant.
 s16 kq2d__abs_s16(s16 v)
 {
     kq2d_asm_value = v;
-    kq2d__abs_value();
+    kq2d_abs_s16_asm();
     return kq2d_asm_value;
 }
 
@@ -422,27 +476,27 @@ void kq2d_body_apply_gravity(KQBody2D* body, s16 gravity_x, s16 gravity_y, s16 m
 
     kq2d_asm_value = body->vx;
     kq2d_asm_operand = gravity_x;
-    kq2d__add_value();
+    kq2d_add_s16_asm();
     kq2d_asm_limit = max_speed;
-    kq2d__clamp_value();
+    kq2d_clamp_abs_s16_asm();
     body->vx = kq2d_asm_value;
 
     kq2d_asm_value = body->vy;
     kq2d_asm_operand = gravity_y;
-    kq2d__add_value();
+    kq2d_add_s16_asm();
     kq2d_asm_limit = max_speed;
-    kq2d__clamp_value();
+    kq2d_clamp_abs_s16_asm();
     body->vy = kq2d_asm_value;
 }
 
-// Scale both velocities by a signed eight-bit coefficient divided by 256.
+// Scale both velocities through the signed 8-bit coefficient intrinsic.
 // Despite the unsigned parameter, values 128..255 become negative coefficients;
 // this is not a full-range unsigned Q8 damping helper. Null is ignored.
 void kq2d_body_apply_friction(KQBody2D* body, u8 friction_q8)
 {
     if (body == 0) return;
-    body->vx = kq2d_scale_q8(body->vx, (s16)(s8)friction_q8);
-    body->vy = kq2d_scale_q8(body->vy, (s16)(s8)friction_q8);
+    body->vx = (s16)nes_kq2d_signed_q8(body->vx, (s8)friction_q8);
+    body->vy = (s16)nes_kq2d_signed_q8(body->vy, (s8)friction_q8);
 }
 
 // For one active dynamic body, add gravity, clamp each velocity axis and then
@@ -457,26 +511,26 @@ void kq2d_integrate_body(KQWorld2D* world, KQBody2D* body)
 
     kq2d_asm_value = body->vx;
     kq2d_asm_operand = world->gravity_x;
-    kq2d__add_value();
+    kq2d_add_s16_asm();
     kq2d_asm_limit = world->max_speed;
-    kq2d__clamp_value();
+    kq2d_clamp_abs_s16_asm();
     body->vx = kq2d_asm_value;
 
     kq2d_asm_value = body->vy;
     kq2d_asm_operand = world->gravity_y;
-    kq2d__add_value();
+    kq2d_add_s16_asm();
     kq2d_asm_limit = world->max_speed;
-    kq2d__clamp_value();
+    kq2d_clamp_abs_s16_asm();
     body->vy = kq2d_asm_value;
 
     kq2d_asm_value = body->x;
     kq2d_asm_operand = body->vx;
-    kq2d__add_value();
+    kq2d_add_s16_asm();
     body->x = kq2d_asm_value;
 
     kq2d_asm_value = body->y;
     kq2d_asm_operand = body->vy;
-    kq2d__add_value();
+    kq2d_add_s16_asm();
     body->y = kq2d_asm_value;
 }
 
@@ -576,7 +630,7 @@ void kq2d__resolve_pair(KQBody2D* a, KQBody2D* b)
 
 // Advance active dynamic bodies, then visit each active unordered pair for
 // the configured contact passes (zero means one). Static bodies still participate
-// as obstacles. The world borrows its array and shares non-reentrant helper scratch.
+// as obstacles. The world borrows its array and shares non-reentrant ASM scratch.
 // This is discrete integration; fast bodies can pass through thin obstacles.
 void kq2d_step(KQWorld2D* world)
 {
@@ -590,32 +644,32 @@ void kq2d_step(KQWorld2D* world)
     u8 i;
     for (i = 0; i < count; i++)
     {
-        KQBody2D* b = &bodies[(u8)i];
+        KQBody2D* b = &bodies[(__safe_index u8)i];
         if (b->active == 0) continue;
         if (b->inv_mass_q8 <= 0) continue;
 
         kq2d_asm_value = b->vx;
         kq2d_asm_operand = world->gravity_x;
-        kq2d__add_value();
+        kq2d_add_s16_asm();
         kq2d_asm_limit = world->max_speed;
-        kq2d__clamp_value();
+        kq2d_clamp_abs_s16_asm();
         b->vx = kq2d_asm_value;
 
         kq2d_asm_value = b->vy;
         kq2d_asm_operand = world->gravity_y;
-        kq2d__add_value();
+        kq2d_add_s16_asm();
         kq2d_asm_limit = world->max_speed;
-        kq2d__clamp_value();
+        kq2d_clamp_abs_s16_asm();
         b->vy = kq2d_asm_value;
 
         kq2d_asm_value = b->x;
         kq2d_asm_operand = b->vx;
-        kq2d__add_value();
+        kq2d_add_s16_asm();
         b->x = kq2d_asm_value;
 
         kq2d_asm_value = b->y;
         kq2d_asm_operand = b->vy;
-        kq2d__add_value();
+        kq2d_add_s16_asm();
         b->y = kq2d_asm_value;
     }
 
@@ -628,13 +682,13 @@ void kq2d_step(KQWorld2D* world)
     {
         for (i = 0; i < count; i++)
         {
-            KQBody2D* a = &bodies[(u8)i];
+            KQBody2D* a = &bodies[(__safe_index u8)i];
             if (a->active == 0) continue;
 
             u8 j;
             for (j = (u8)(i + 1); j < count; j++)
             {
-                KQBody2D* b = &bodies[(u8)j];
+                KQBody2D* b = &bodies[(__safe_index u8)j];
                 if (b->active == 0) continue;
                 kq2d__resolve_pair(a, b);
             }

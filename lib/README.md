@@ -21,6 +21,11 @@ The current C# build was compared with the previous distribution using 29 inputs
 Public library names intentionally follow the KITAQGB style: short, functional names
 without a `kitaqfc_` prefix.
 
+The [KITAQGB parity inventory](LIBRARY_PARITY.md) describes the RPG/ADV, SLG,
+ZX0, camera, sprite ordering, physics, model/rig and raster modules, with
+build instructions and RAM/hardware constraints. Pinball remains deferred;
+GB-specific hardware and communications are excluded.
+
 ## Core
 
 - `fc.h` - aggregate include
