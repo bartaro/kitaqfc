@@ -51,7 +51,10 @@ fn kurosaki_metadata_matches_reference_allocations_calls_actions_and_redaction()
         let metadata = work.join(format!("{name}.json"));
         args.extend([
             "-I".into(),
-            root.join("lib").to_string_lossy().into_owned(),
+            // These frozen metadata documents list every header prototype.
+            root.join("tests/frontend/reference/lib")
+                .to_string_lossy()
+                .into_owned(),
             format!("--mapper={}", string("mapper")),
             "--no-cache".into(),
             "--no-disasm".into(),

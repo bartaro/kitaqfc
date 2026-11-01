@@ -1,7 +1,7 @@
 name: KITAQFC native compiler tests
 on:
   push:
-    paths: ['.gitattributes', 'Cargo.*', 'src/**', 'tests/**', 'lib/**', 'tools/**', '.github/workflows/ci.yml']
+    paths: ['.gitattributes', 'Cargo.*', 'src/**', 'tests/**', 'lib/**', 'tools/**', 'verification/library-20261102/**', '.github/workflows/ci.yml']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -50,6 +50,12 @@ jobs:
       - name: Release helper execution on Windows
         if: runner.os == 'Windows'
         run: python tools/auxiliary_smoke.py --kind fc --bin-dir target/release --receipt auxiliary-platform.json
+      - name: Current library ROM compilation on Unix
+        if: runner.os != 'Windows'
+        run: python3 verification/library-20261102/runtime_libraries.py --compile-only --compiler target/release/kitaqfc --zx0 target/release/kitaqfc-zx0 --out library-check
+      - name: Current library ROM compilation on Windows
+        if: runner.os == 'Windows'
+        run: python verification/library-20261102/runtime_libraries.py --compile-only --compiler target/release/kitaqfc.exe --zx0 target/release/kitaqfc-zx0.exe --out library-check
       - name: Save native checkpoint executable
         uses: actions/upload-artifact@v4
         with:
@@ -69,6 +75,8 @@ jobs:
             target/release/kitaqfc-rights-name-guard
             target/release/kitaqfc-rights-name-guard.exe
             auxiliary-platform.json
+            library-check/results.json
+            library-check/run-inputs.json
             VERIFICATION_STATUS.json
             lib/
       - name: Remove build intermediates

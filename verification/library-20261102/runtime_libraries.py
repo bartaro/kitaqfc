@@ -4,16 +4,19 @@ import argparse,tempfile
 parser=argparse.ArgumentParser()
 parser.add_argument('--compiler',type=Path,required=True)
 parser.add_argument('--zx0',type=Path,required=True)
-parser.add_argument('--kurosaki',type=Path,required=True)
+parser.add_argument('--kurosaki',type=Path)
+parser.add_argument('--compile-only',action='store_true',help='Build all selected ROMs without an emulator or Pillow')
 parser.add_argument('--out',type=Path,default=None)
 parser.add_argument('cases',nargs='*')
 args=parser.parse_args();sys.argv=[sys.argv[0],*args.cases]
+compile_only=args.compile_only
+if not compile_only and args.kurosaki is None:parser.error('--kurosaki is required unless --compile-only is used')
 root=Path(__file__).resolve().parents[2];fc=root;lib=root/'lib'
-cli=args.kurosaki.resolve();compiler=args.compiler.resolve();zx0=args.zx0.resolve()
+cli=args.kurosaki.resolve() if args.kurosaki else None;compiler=args.compiler.resolve();zx0=args.zx0.resolve()
 out=args.out.resolve() if args.out else Path(tempfile.mkdtemp(prefix='kitaqfc-library-'))
 out.mkdir(parents=True,exist_ok=True)
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
-inputs={'compiler_sha256':sha(compiler),'kurosaki_sha256':sha(cli),'libraries':{p.name:sha(p) for p in sorted(lib.iterdir()) if p.is_file() and p.suffix in ['.c','.h']}}
+inputs={'compiler_sha256':sha(compiler),'zx0_sha256':sha(zx0),'kurosaki_sha256':sha(cli) if cli else None,'mode':'compile-only' if compile_only else 'runtime','libraries':{p.name:sha(p) for p in sorted(lib.iterdir()) if p.is_file() and p.suffix in ['.c','.h']}}
 cases={
 'state':(['flags.c','rng.c','rle.c'],'''u8 packed[]={3,9,2,7,0}; u8 buffer[8]; u8 a;
 flag_set(7); r[0]=(flag_get(7)!=0); flag_clear(7);r[1]=(flag_get(7)==0);
@@ -110,6 +113,11 @@ for name,(modules,body) in cases.items():
  if os.environ.get('KQ_TEST_OPT'):args+=['--nes-opt='+os.environ['KQ_TEST_OPT']]
  p=subprocess.run(args,capture_output=True);(out/(name+'-compile.log')).write_bytes(p.stdout+p.stderr)
  if p.returncode:print(name,'compile failed',(p.stdout+p.stderr).decode(errors='replace')[-800:]);continue
+ if compile_only:
+  rom=(out/(name+'.nes')).read_bytes()
+  assert rom[:4]==b'NES\x1a' and len(rom)>16,name
+  row={'case':name,'passed':True,'rom_sha256':hashlib.sha256(rom).hexdigest()};results.append(row);print(row)
+  continue
  snapshot=out/(name+'.json')
  p=subprocess.run([str(cli),'run',str(out/(name+'.nes')),'--frames',str(1200 if name=='geometry' else 240),'--headless','--json',str(out/(name+'-run.json')),'--snapshot',str(snapshot),'--png',str(out/(name+'.png'))],capture_output=True)
  (out/(name+'-run.log')).write_bytes(p.stdout+p.stderr)
@@ -136,6 +144,7 @@ for name,(modules,body) in cases.items():
  row={'case':name,'actual':actual,'expected':expected,'passed':actual==expected,'pc':s['cpu']['pc']};results.append(row);print(row)
 (out/'results.json').write_text(json.dumps(results,indent=2))
 assert len(results)==(len(sys.argv)-1 if len(sys.argv)>1 else len(cases)) and all(r['passed'] for r in results),results
-assert inputs['compiler_sha256']==sha(compiler) and inputs['kurosaki_sha256']==sha(cli)
+assert inputs['compiler_sha256']==sha(compiler) and inputs['zx0_sha256']==sha(zx0)
+assert inputs['kurosaki_sha256']==(sha(cli) if cli else None)
 assert inputs['libraries']=={p.name:sha(p) for p in sorted(lib.iterdir()) if p.is_file() and p.suffix in ['.c','.h']}
 (out/'run-inputs.json').write_text(json.dumps(inputs,indent=2)+'\n')

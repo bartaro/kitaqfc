@@ -234,7 +234,7 @@ void nes_rpg_rect(u8 x,u8 y,u8 w,u8 h,u8 value);
 void nes_rpg_row(u8 x,u8 y,const u8* src,u8 count);
 u16 nes_rpg_readpadex(u8 previous);
 
-#define __manhattan nes_rpg_manhattan
+// Keep the compiler's native __manhattan intrinsic available through fc.h.
 u8 nes_rpg_manhattan(u8 x1,u8 y1,u8 x2,u8 y2);
 
 void nes_rpg_flush(void);

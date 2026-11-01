@@ -29,10 +29,16 @@ fn known_rejection(name: &str) -> Option<Vec<(u16, usize, usize)>> {
 
 fn verify(lower: bool) {
     let (root, cases) = sources();
+    // Exact AST goldens require the same declarations and coordinates as their
+    // reference inputs. Current library APIs are exercised by separate tests.
+    let reference = root.join("tests/frontend/reference");
     for source in cases {
         let name = source.file_name().unwrap().to_str().unwrap();
-        let parsed =
-            parser::parse_files(&[source.clone()], &[root.join("lib"), root.clone()], false);
+        let parsed = parser::parse_files(
+            &[source.clone()],
+            &[reference.join("lib"), reference.clone()],
+            false,
+        );
         let errors = parsed
             .diagnostics
             .iter()
